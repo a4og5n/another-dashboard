@@ -1,0 +1,12 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "title": "Welcome to Next.js",
+    "description": "Get started by editing app/page.tsx"
+  }
+}

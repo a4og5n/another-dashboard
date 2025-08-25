@@ -1,0 +1,14 @@
+{
+  "entryPoints": ["src/**/*.ts", "src/**/*.tsx"],
+  "out": "docs",
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx"],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "theme": "default",
+  "name": "NextJS Project",
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "categoryOrder": ["Components", "Actions", "Types", "Schemas", "Utils", "*"],
+  "readme": "README.md"
+}
