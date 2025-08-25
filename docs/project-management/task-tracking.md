@@ -29,10 +29,10 @@
 - Comprehensive project management documentation created
 
 ### 🔥 Tomorrow's Priorities (Aug 26, 2025) - NEXT PHASE
-- [ ] **High:** Set up API service architecture (src/services/)
-- [ ] **High:** Create environment variables configuration
-- [ ] **Medium:** Initialize database schemas (if needed)
-- [ ] **Low:** Finalize ESLint/Prettier configurations
+- [ ] **High:** Set up API service architecture (src/services/) ← **Now in Day 3-5 detailed tasks**
+- [ ] **High:** Create environment variables configuration ← **Now in Day 3-5 detailed tasks**
+- [ ] **Medium:** Initialize database schemas (if needed) ← **Now in Day 3-5 detailed tasks**
+- [ ] **Low:** Finalize ESLint/Prettier configurations ← **Now in Day 3-5 detailed tasks**
 
 ### 🔥 Today's Priorities (Aug 25, 2025) - STATUS UPDATE
 - [x] **High:** Initialize Next.js 15 project with TypeScript ✅ **COMPLETE**
@@ -103,6 +103,30 @@
   - [ ] Add accessibility testing helpers with jest-axe
   - [ ] Create first test to verify setup
 
+#### Day 3-5: API Architecture & Environment Setup
+- [ ] **API Service Architecture (src/services/)**
+  - [ ] Create base API service class with error handling
+  - [ ] Set up HTTP client with axios/fetch wrapper
+  - [ ] Implement authentication middleware
+  - [ ] Create TypeScript interfaces for all API responses
+  - [ ] Add rate limiting and retry logic
+  - [ ] Set up API service factory pattern
+
+- [ ] **Environment Variables Configuration**
+  - [ ] Update .env.example with all required API keys
+  - [ ] Configure environment validation with Zod
+  - [ ] Set up development vs production environment handling
+  - [ ] Add environment variables to Vercel project settings
+  - [ ] Document API key setup instructions
+  - [ ] Test environment loading in both dev and production
+
+- [ ] **Database Schema Setup (if needed)**
+  - [ ] Choose database solution (Vercel Postgres vs external)
+  - [ ] Create database schema design document
+  - [ ] Set up database connection and migrations
+  - [ ] Add data validation and sanitization
+  - [ ] Configure connection pooling and error handling
+
 #### Day 5-7: Basic UI Foundation
 - [ ] **shadcn/ui Setup**
   - [ ] Install base components: Button, Card, Input, Select
@@ -150,7 +174,7 @@
   - [x] TypeDoc for documentation ✅
 
 ### In Progress 🚧
-#### Day 3-4: Development Toolchain - READY TO START
+#### Day 3-5: Development Toolchain & API Architecture - READY TO START
 - [ ] **ESLint Configuration**
   - [ ] Extend Next.js ESLint config
   - [ ] Add accessibility rules: `pnpm add -D eslint-plugin-jsx-a11y`
@@ -174,6 +198,20 @@
   - [ ] Set up test utilities and custom render function
   - [ ] Add accessibility testing helpers with jest-axe
   - [ ] Create comprehensive test examples
+
+- [ ] **API Service Architecture (High Priority)**
+  - [ ] Create base API service class with error handling
+  - [ ] Set up HTTP client with axios/fetch wrapper
+  - [ ] Implement authentication middleware
+  - [ ] Create TypeScript interfaces for all API responses
+  - [ ] Add rate limiting and retry logic
+
+- [ ] **Environment Variables Configuration (High Priority)**
+  - [ ] Update .env.example with all required API keys
+  - [ ] Configure environment validation with Zod
+  - [ ] Set up development vs production environment handling
+  - [ ] Add environment variables to Vercel project settings
+  - [ ] Document API key setup instructions
 
 ### Blocked ⛔
 <!-- Tasks waiting on external dependencies -->
