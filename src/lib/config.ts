@@ -16,7 +16,11 @@ const envSchema = z.object({
   MAILCHIMP_API_KEY: z
     .string()
     .min(1, "Mailchimp API key is required")
-    .default(process.env.NODE_ENV === "test" || process.env.CI === "true" ? "dummy-key-us1" : "")
+    .default(
+      process.env.NODE_ENV === "test" || process.env.CI === "true"
+        ? "dummy-key-us1"
+        : "",
+    )
     .refine(
       (val) => val.includes("-") && val.length > 10,
       "Mailchimp API key should contain a datacenter suffix (e.g., abc123-us1)",
@@ -24,7 +28,9 @@ const envSchema = z.object({
   MAILCHIMP_SERVER_PREFIX: z
     .string()
     .min(1, "Mailchimp server prefix is required")
-    .default(process.env.NODE_ENV === "test" || process.env.CI === "true" ? "us1" : "")
+    .default(
+      process.env.NODE_ENV === "test" || process.env.CI === "true" ? "us1" : "",
+    )
     .refine(
       (val) => /^[a-z]{2,4}\d*$/.test(val),
       "Mailchimp server prefix should be like: us1, us19, etc.",
@@ -128,8 +134,8 @@ export const isProd = env.NODE_ENV === "production";
  * Useful when API keys are not available in development or CI
  */
 export const shouldUseMockData =
-  env.ENABLE_MOCK_DATA || 
-  (isDev && !env.MAILCHIMP_API_KEY) || 
+  env.ENABLE_MOCK_DATA ||
+  (isDev && !env.MAILCHIMP_API_KEY) ||
   env.MAILCHIMP_API_KEY === "dummy-key-us1" ||
   process.env.CI === "true";
 

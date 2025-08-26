@@ -308,9 +308,7 @@ export function MailchimpDashboard() {
                 {/* Campaigns per page selector and pagination */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">
-                      Show
-                    </span>
+                    <span className="text-sm text-muted-foreground">Show</span>
                     <Select
                       value={campaignsPerPage.toString()}
                       onValueChange={handlePerPageChange}
