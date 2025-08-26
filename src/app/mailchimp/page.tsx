@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { CampaignsTable, AudiencesOverview } from '@/components/dashboard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ProgressiveLoading } from '@/components/ui/loading-state';
+import { Pagination } from '@/components/ui/pagination';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 
 interface DashboardData {
@@ -121,8 +124,18 @@ export default function MailchimpPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  // Pagination state
+  const campaignsPerPageOptions = [5, 10, 20, 50];
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const campaignsPerPageParam = parseInt(searchParams.get('perPage') || '10', 10);
+  const [campaignsPerPage, setCampaignsPerPage] = useState(campaignsPerPageParam);
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const [currentPage, setCurrentPage] = useState(pageParam);
+  const totalCampaigns = data?.campaigns.totalCampaigns ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCampaigns / campaignsPerPage));
 
-  const fetchDashboardData = async (isRefresh = false) => {
+  const fetchDashboardData = async (isRefresh = false, page = currentPage, perPage = campaignsPerPage) => {
     if (isRefresh) {
       setIsRefreshing(true);
     } else {
@@ -131,7 +144,7 @@ export default function MailchimpPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/mailchimp/dashboard');
+  const response = await fetch(`/api/mailchimp/dashboard?limit=${perPage}&page=${page}`);
       
       if (response.ok) {
         const dashboardData = await response.json();
@@ -155,8 +168,38 @@ export default function MailchimpPage() {
   };
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    fetchDashboardData(false, currentPage, campaignsPerPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, campaignsPerPage]);
+
+  // Sync page state with URL
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const params = new URLSearchParams(searchParams.toString());
+    if (page === 1) {
+      params.delete('page');
+      const query = params.toString();
+      router.replace(query ? `?${query}` : window.location.pathname);
+    } else {
+      params.set('page', page.toString());
+      router.replace(`?${params.toString()}`);
+    }
+  };
+
+  const handlePerPageChange = (value: string) => {
+    const perPage = parseInt(value, 10);
+    setCampaignsPerPage(perPage);
+    setCurrentPage(1);
+    const params = new URLSearchParams(searchParams.toString());
+    if (perPage === 10) {
+      params.delete('perPage');
+    } else {
+      params.set('perPage', perPage.toString());
+    }
+    params.delete('page');
+    const query = params.toString();
+    router.replace(query ? `?${query}` : window.location.pathname);
+  };
 
   return (
     <DashboardLayout>
@@ -211,10 +254,35 @@ export default function MailchimpPage() {
             </TabsList>
 
             <TabsContent value="campaigns" className="space-y-4">
-              <CampaignsTable
-                campaigns={data?.campaigns.recentCampaigns ?? []}
-                loading={isRefreshing}
-              />
+              <div className="flex flex-col gap-4">
+                <CampaignsTable
+                  campaigns={data?.campaigns.recentCampaigns ?? []}
+                  loading={isRefreshing}
+                />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Show</span>
+                    <Select value={campaignsPerPage.toString()} onValueChange={handlePerPageChange}>
+                      <SelectTrigger className="w-20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {campaignsPerPageOptions.map(opt => (
+                          <SelectItem key={opt} value={opt.toString()}>{opt}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground">campaigns per page</span>
+                  </div>
+                  <div className="flex justify-end w-full">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="audiences" className="space-y-4">
