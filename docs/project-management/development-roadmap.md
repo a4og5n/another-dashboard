@@ -116,7 +116,7 @@
 
 ### 🎯 Phase 5: Mailchimp Dashboard Enhancements (Optional)
 **Timeline:** As needed for user experience improvements
-**GitHub Issues:** [#3](https://github.com/a4og5n/another-dashboard/issues/3), [#4](https://github.com/a4og5n/another-dashboard/issues/4)
+**GitHub Issues:** [#3](https://github.com/a4og5n/another-dashboard/issues/3), [#4](https://github.com/a4og5n/another-dashboard/issues/4), [#5](https://github.com/a4og5n/another-dashboard/issues/5)
 
 #### Campaign Table Improvements:
 - [ ] **Pagination**: Navigate through campaigns in pages for better performance (#3)
@@ -131,11 +131,21 @@
   - Filter by send date, creation date, or custom ranges
   - Combined with pagination for efficient data handling
 
+#### Individual Campaign Analytics:
+- [ ] **Campaign Report Pages**: Detailed analytics for individual campaigns (#5)
+  - Create dedicated pages at `/mailchimp/campaign/[campaignId]` route
+  - Display comprehensive metrics: opens, clicks, bounces, geographic data
+  - Interactive charts and visualizations using Recharts
+  - Performance comparisons with industry benchmarks
+  - Time-series data showing hourly engagement breakdown
+  - E-commerce tracking and revenue attribution
+
 #### Technical Implementation Ready:
 - ✅ **Component Architecture**: CampaignsTable component ready for enhancement
-- ✅ **API Service Pattern**: BaseApiService supports parameter-based filtering
+- ✅ **API Service Pattern**: BaseApiService supports parameter-based filtering and detailed reports
 - ✅ **TypeScript Safety**: Interfaces established for extending functionality
-- ✅ **UI Components**: shadcn/ui date picker and pagination components available
+- ✅ **UI Components**: shadcn/ui date picker, pagination, and chart components available
+- ✅ **Routing System**: Next.js App Router ready for dynamic campaign routes
 
 ### 🎯 Phase 6: Additional Integrations (Optional)
 **Timeline:** As needed for business requirements
