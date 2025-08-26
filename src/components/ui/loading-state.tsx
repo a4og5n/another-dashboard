@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { DashboardSkeleton } from '@/components/ui/skeleton';
+import { MailchimpDashboardSkeleton } from '@/components/ui/skeleton';
 import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -37,7 +37,7 @@ export function LoadingState({
     return (
       <div className="space-y-6">
         {showSkeleton ? (
-          <DashboardSkeleton />
+          <MailchimpDashboardSkeleton />
         ) : (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
