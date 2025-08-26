@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const page = parseInt(searchParams.get("page") || "1", 10);
     const since = searchParams.get("since") || undefined;
     const campaignType = searchParams.get("type") || undefined;
 
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest) {
     const [campaignSummary, audienceSummary] = await Promise.all([
       mailchimp.getCampaignSummary({
         limit,
+        page,
         sinceDate: since,
         campaignType,
       }),

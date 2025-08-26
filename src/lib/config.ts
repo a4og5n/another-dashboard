@@ -92,6 +92,15 @@ export type Env = z.infer<typeof envSchema>;
  * Throws an error if validation fails
  */
 function parseEnv(): Env {
+  // Debug log: print loaded environment variables
+  console.log("DEBUG ENV:", {
+    MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY,
+    MAILCHIMP_SERVER_PREFIX: process.env.MAILCHIMP_SERVER_PREFIX,
+    NODE_ENV: process.env.NODE_ENV,
+    ENABLE_MOCK_DATA: process.env.ENABLE_MOCK_DATA,
+    DEBUG_API_CALLS: process.env.DEBUG_API_CALLS,
+  });
+
   const parsed = envSchema.safeParse(process.env);
 
   if (!parsed.success) {

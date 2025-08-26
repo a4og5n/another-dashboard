@@ -409,6 +409,7 @@ export class MailchimpService extends BaseApiService {
    */
   async getCampaignSummary(options?: {
     limit?: number;
+    page?: number;
     sinceDate?: string;
     campaignType?: string;
   }): Promise<
@@ -429,8 +430,13 @@ export class MailchimpService extends BaseApiService {
       }>;
     }>
   > {
+    const limit = options?.limit || 10;
+    const page = options?.page || 1;
+    const offset = (page - 1) * limit;
+
     const params: MailchimpReportsParams = {
-      count: options?.limit || 10,
+      count: limit,
+      offset: offset,
       sort_field: "send_time",
       sort_dir: "DESC",
     };
@@ -477,17 +483,15 @@ export class MailchimpService extends BaseApiService {
         avgOpenRate: Math.round(avgOpenRate * 10000) / 100, // Convert to percentage with 2 decimals
         avgClickRate: Math.round(avgClickRate * 10000) / 100,
         totalEmailsSent,
-        recentCampaigns: reports
-          .slice(0, options?.limit || 10)
-          .map((report) => ({
-            id: report.id,
-            title: report.campaign_title,
-            status: "sent", // Reports are only available for sent campaigns
-            emailsSent: report.emails_sent,
-            openRate: Math.round(report.opens.open_rate * 10000) / 100,
-            clickRate: Math.round(report.clicks.click_rate * 10000) / 100,
-            sendTime: report.send_time,
-          })),
+        recentCampaigns: reports.map((report) => ({
+          id: report.id,
+          title: report.campaign_title,
+          status: "sent", // Reports are only available for sent campaigns
+          emailsSent: report.emails_sent,
+          openRate: Math.round(report.opens.open_rate * 10000) / 100,
+          clickRate: Math.round(report.clicks.click_rate * 10000) / 100,
+          sendTime: report.send_time,
+        })),
       },
       rateLimit: this.rateLimit,
     };

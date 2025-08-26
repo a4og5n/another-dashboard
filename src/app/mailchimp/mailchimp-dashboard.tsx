@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { CampaignsTable, AudiencesOverview } from "@/components/dashboard";
@@ -164,38 +164,43 @@ export function MailchimpDashboard() {
   const totalCampaigns = data?.campaigns.totalCampaigns ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCampaigns / campaignsPerPage));
 
-  const fetchDashboardData = async (
-    isRefresh = false,
-  ): Promise<DashboardData> => {
-    if (isRefresh) setIsRefreshing(true);
+  const fetchDashboardData = useCallback(
+    async (
+      isRefresh = false,
+      page: number = currentPage,
+      perPage: number = campaignsPerPage,
+    ): Promise<DashboardData> => {
+      if (isRefresh) setIsRefreshing(true);
 
-    try {
-      // Use the proper environment configuration to determine data source
-      const { shouldUseMockData } = await import("@/lib/config");
+      try {
+        // Always fetch from the server API. The server will decide whether to
+        // use real Mailchimp data or mock data based on validated environment
+        // variables. Client-side code should not import server-only modules
+        // (like `@/lib/config`) because those run Zod validation at bundle
+        // evaluation time and can cause environment validation errors.
+        console.log("🌐 Fetching real data from Mailchimp API...");
 
-      if (shouldUseMockData) {
-        console.log(
-          "📊 Using mock data (check environment variables to switch to real data)",
-        );
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        // Build query parameters for pagination
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: perPage.toString(),
+        });
+
+        const response = await fetch(`/api/mailchimp/dashboard?${params}`);
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        // Fallback to mock data in case of error
         return MOCK_DATA;
+      } finally {
+        if (isRefresh) setIsRefreshing(false);
       }
-
-      console.log("🌐 Fetching real data from Mailchimp API...");
-      const response = await fetch("/api/mailchimp/dashboard");
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-      // Fallback to mock data in case of error
-      return MOCK_DATA;
-    } finally {
-      if (isRefresh) setIsRefreshing(false);
-    }
-  };
+    },
+    [currentPage, campaignsPerPage],
+  );
 
   const updateUrlParams = (newPage: number, newPerPage: number) => {
     const params = new URLSearchParams();
@@ -218,7 +223,7 @@ export function MailchimpDashboard() {
   };
 
   useEffect(() => {
-    fetchDashboardData()
+    fetchDashboardData(false, currentPage, campaignsPerPage)
       .then((dashboardData) => {
         setData(dashboardData);
         setError(null);
@@ -230,7 +235,7 @@ export function MailchimpDashboard() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [currentPage, campaignsPerPage, fetchDashboardData]);
 
   // Sync URL params with state on mount
   useEffect(() => {
@@ -244,7 +249,11 @@ export function MailchimpDashboard() {
 
   const handleRefresh = async () => {
     try {
-      const freshData = await fetchDashboardData(true);
+      const freshData = await fetchDashboardData(
+        true,
+        currentPage,
+        campaignsPerPage,
+      );
       setData(freshData);
       setError(null);
     } catch (err) {
@@ -302,12 +311,7 @@ export function MailchimpDashboard() {
           <TabsContent value="campaigns" className="space-y-6">
             {data?.campaigns && (
               <>
-                <CampaignsTable
-                  campaigns={data.campaigns.recentCampaigns.slice(
-                    (currentPage - 1) * campaignsPerPage,
-                    currentPage * campaignsPerPage,
-                  )}
-                />
+                <CampaignsTable campaigns={data.campaigns.recentCampaigns} />
 
                 {/* Campaigns per page selector and pagination */}
                 <div className="flex items-center justify-between">
