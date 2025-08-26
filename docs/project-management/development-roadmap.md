@@ -114,7 +114,30 @@
 
 **Status:** MVP Complete - All Future Development is Optional Enhancement
 
-### 🎯 Phase 5: Additional Integrations (Optional)
+### 🎯 Phase 5: Mailchimp Dashboard Enhancements (Optional)
+**Timeline:** As needed for user experience improvements
+**GitHub Issues:** [#3](https://github.com/a4og5n/another-dashboard/issues/3), [#4](https://github.com/a4og5n/another-dashboard/issues/4)
+
+#### Campaign Table Improvements:
+- [ ] **Pagination**: Navigate through campaigns in pages for better performance (#3)
+  - Display campaigns in configurable page sizes (10, 25, 50 per page)
+  - Add pagination controls with page numbers and navigation
+  - Maintain state when switching between dashboard tabs
+  - Mobile-responsive pagination design
+
+- [ ] **Date Range Filtering**: Search campaigns by date ranges (#4)
+  - Date range picker with start/end date selection
+  - Preset ranges (Last 7 days, 30 days, 3 months)
+  - Filter by send date, creation date, or custom ranges
+  - Combined with pagination for efficient data handling
+
+#### Technical Implementation Ready:
+- ✅ **Component Architecture**: CampaignsTable component ready for enhancement
+- ✅ **API Service Pattern**: BaseApiService supports parameter-based filtering
+- ✅ **TypeScript Safety**: Interfaces established for extending functionality
+- ✅ **UI Components**: shadcn/ui date picker and pagination components available
+
+### 🎯 Phase 6: Additional Integrations (Optional)
 **Timeline:** As needed for business requirements
 
 #### Potential Data Source Expansions:
@@ -130,13 +153,13 @@
 - ✅ **Type Safety**: TypeScript patterns established for new data sources
 - ✅ **Error Handling**: Comprehensive fallback and retry strategies proven
 
-### 🎯 Phase 6: Advanced Features (Optional)
+### 🎯 Phase 7: Advanced Features (Optional)
 **Timeline:** Based on user feedback and business needs
 
 #### User Experience Enhancements:
 - [ ] **Dashboard Customization**: User-configurable layouts and metrics
 - [ ] **Data Export**: CSV, PDF, Excel export functionality
-- [ ] **Advanced Filtering**: Date ranges, custom filters, saved views
+- [ ] **Advanced Filtering**: Custom filters, saved views, complex queries
 - [ ] **Alerting System**: Threshold-based notifications and alerts
 
 #### Multi-User Features:
@@ -145,7 +168,7 @@
 - [ ] **Team Collaboration**: Dashboard sharing and collaborative features
 - [ ] **Multi-Company**: Support for multiple client/company dashboards
 
-### 🎯 Phase 7: Enterprise Features (Optional)
+### 🎯 Phase 8: Enterprise Features (Optional)
 **Timeline:** For scaling and enterprise needs
 
 #### Advanced Analytics:
