@@ -1,6 +1,45 @@
 This document provides best practices and guidance for developing with this Next.js project structure. Follow these patterns for consistent and maintainable code.
 
-## 📁 Project Structure Guidelines
+## � Essential Project Documentation
+
+Before starting any development work, always review the key project documentation to understand context, goals, and current status:
+
+### Required Reading
+
+1. **`docs/PRD.md`** - Product Requirements Document
+   - Review the problem statement, solution overview, and key objectives
+   - Understand target users, personas, and use cases
+   - Check current MVP features and requirements
+   - Align all development with the defined success criteria
+
+2. **`docs/project-management/development-roadmap.md`** - Development Progress
+   - Review completed phases and current status
+   - Understand what features have been delivered
+   - Check current focus areas and next priorities
+   - Note any recent achievements or workflow improvements
+
+3. **`docs/project-management/task-tracking.md`** - Current Status
+   - Check the latest milestone achievements
+   - Review current priorities and task status
+   - Understand performance metrics and success indicators
+   - Identify next phase opportunities
+
+### Development Context
+
+- **Project Status**: MVP Complete with ongoing enhancements
+- **Current Phase**: Post-MVP feature development and workflow optimization
+- **Key Achievement**: 70x acceleration - 10-week roadmap completed in 1 day
+- **Architecture**: Next.js 15, React 19, TypeScript, shadcn/ui, Tailwind CSS
+- **Focus Areas**: Mailchimp dashboard, performance, accessibility, developer experience
+
+### Before Making Changes
+
+1. Read the relevant documentation sections
+2. Understand how your changes align with project objectives
+3. Check if similar features already exist
+4. Review the current development workflow and quality standards
+
+## �📁 Project Structure Guidelines
 
 ### `/src/app` - App Router Pages and Layouts
 
@@ -131,6 +170,15 @@ This document provides best practices and guidance for developing with this Next
 - Track user experience across different devices and network conditions
 - Set up alerts for performance regressions
 
+### Local Development Validation
+
+- **Pre-commit Hooks**: Husky automatically runs comprehensive validation before every commit
+- **Quality Checks**: Type checking, linting, formatting, unit tests, and accessibility tests
+- **Immediate Feedback**: Use `pnpm quick-check` for fast validation during development
+- **Full Validation**: Run `pnpm pre-commit` to execute all quality checks locally
+- **Build Testing**: Use `pnpm validate` for complete validation including build test
+- **Zero CI/CD Failures**: All quality issues caught locally before reaching CI/CD pipeline
+
 ### Security
 
 - Validate all inputs with Zod schemas
@@ -155,6 +203,13 @@ This document provides best practices and guidance for developing with this Next
 - \`pnpm type-check\`: Verify TypeScript types
 - \`pnpm format\`: Format code with Prettier
 - \`pnpm lint:fix\`: Fix ESLint issues
+
+### Local Validation
+
+- \`pnpm quick-check\`: Fast validation (type-check + lint)
+- \`pnpm pre-commit\`: Full validation (type-check, lint, format, tests, a11y)
+- \`pnpm validate\`: Complete validation including build test
+- \`pnpm format:check\`: Check code formatting without fixing
 
 ### Testing
 
@@ -238,8 +293,10 @@ When assigned a GitHub issue or task:
 - **Request reviews** from repository maintainers
 - **Include tests** if applicable
 - **Update documentation** if your changes affect usage
-- **Ensure CI passes** before requesting review
+- **Local validation first**: Run `pnpm pre-commit` before pushing to catch issues locally
+- **Ensure CI passes** before requesting review (should be clean if local validation passed)
 - **Use conventional commits** for better changelog generation
+- **Zero CI/CD failures**: Pre-commit hooks prevent most CI/CD issues
 
 ### Commit Message Format
 
