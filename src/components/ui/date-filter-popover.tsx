@@ -89,10 +89,6 @@ export function DateFilterPopover({
     setIsOpen(false);
   };
 
-  const handleManualSelection = (range: DateRange | undefined) => {
-    setPendingRange(range); // Just update pending state, don't execute yet
-  };
-
   const handleSubmit = () => {
     onDateRangeChange(pendingRange); // Execute the pending selection
     setIsOpen(false);
@@ -112,7 +108,7 @@ export function DateFilterPopover({
             hasActiveFilter && "text-blue-600 bg-blue-50 hover:bg-blue-100",
             className,
           )}
-          title="Filter by date range"
+          title="Filter by date range (start date, end date, or both)"
         >
           <CalendarIcon className="h-4 w-4" />
         </Button>
@@ -140,33 +136,56 @@ export function DateFilterPopover({
               </div>
             </div>
           </div>
-          {/* Calendar */}
-          <div className="flex flex-col">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={pendingRange?.from}
-              selected={pendingRange}
-              onSelect={handleManualSelection}
-              numberOfMonths={2}
-            />
-            {/* Submit button for manual selections */}
-            <div className="border-t p-3 flex gap-2 justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSubmit}
-                disabled={!pendingRange?.from}
-              >
-                Apply Filter
-              </Button>
+          {/* Two separate calendars - one for start date, one for end date */}
+          <div className="flex">
+            {/* Start Date Calendar */}
+            <div className="flex flex-col border-r">
+              <div className="px-3 py-2 border-b bg-muted/30">
+                <h4 className="text-sm font-medium text-center">Start Date</h4>
+              </div>
+              <Calendar
+                mode="single"
+                selected={pendingRange?.from}
+                onSelect={(date) =>
+                  setPendingRange({ from: date, to: pendingRange?.to })
+                }
+                defaultMonth={pendingRange?.from || new Date()}
+                initialFocus
+              />
             </div>
+            {/* End Date Calendar */}
+            <div className="flex flex-col">
+              <div className="px-3 py-2 border-b bg-muted/30">
+                <h4 className="text-sm font-medium text-center">End Date</h4>
+              </div>
+              <Calendar
+                mode="single"
+                selected={pendingRange?.to}
+                onSelect={(date) =>
+                  setPendingRange({ from: pendingRange?.from, to: date })
+                }
+                defaultMonth={
+                  pendingRange?.to ||
+                  (pendingRange?.from
+                    ? new Date(
+                        pendingRange.from.getFullYear(),
+                        pendingRange.from.getMonth() + 1,
+                        1,
+                      )
+                    : new Date())
+                }
+              />
+            </div>
+          </div>
+          {/* Apply button */}
+          <div className="border-t p-3 flex justify-center">
+            <Button
+              size="sm"
+              onClick={handleSubmit}
+              disabled={!pendingRange?.from && !pendingRange?.to}
+            >
+              Apply Filter
+            </Button>
           </div>
         </div>
       </PopoverContent>
