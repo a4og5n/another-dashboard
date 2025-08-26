@@ -63,29 +63,6 @@ export function CampaignsTable({
     });
   };
 
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Mail className="h-5 w-5" />
-              <span>Recent Campaigns</span>
-            </div>
-            <DateFilterPopover
-              dateRange={dateRange}
-              onDateRangeChange={onDateRangeChange || (() => {})}
-              onPresetSelect={onPresetSelect}
-            />
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TableSkeleton rows={6} columns={5} />
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -102,71 +79,77 @@ export function CampaignsTable({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Campaign</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Emails Sent</TableHead>
-              <TableHead className="text-right">Open Rate</TableHead>
-              <TableHead className="text-right">Click Rate</TableHead>
-              <TableHead className="text-right">Sent Date</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {campaigns.map((campaign) => (
-              <TableRow key={campaign.id}>
-                <TableCell className="font-medium max-w-xs">
-                  <div className="truncate" title={campaign.title}>
-                    {campaign.title}
-                  </div>
-                </TableCell>
-                <TableCell>{getStatusBadge(campaign.status)}</TableCell>
-                <TableCell className="text-right">
-                  {campaign.emailsSent.toLocaleString()}
-                </TableCell>
-                <TableCell className="text-right">
-                  <span
-                    className={
-                      campaign.openRate > 20
-                        ? "text-green-600"
-                        : "text-yellow-600"
-                    }
-                  >
-                    {campaign.openRate.toFixed(1)}%
-                  </span>
-                </TableCell>
-                <TableCell className="text-right">
-                  <span
-                    className={
-                      campaign.clickRate > 2
-                        ? "text-green-600"
-                        : "text-yellow-600"
-                    }
-                  >
-                    {campaign.clickRate.toFixed(1)}%
-                  </span>
-                </TableCell>
-                <TableCell className="text-right text-muted-foreground">
-                  {formatDate(campaign.sendTime)}
-                </TableCell>
-                <TableCell>
-                  <Button variant="ghost" size="sm">
-                    <ExternalLink className="h-4 w-4" />
-                    <span className="sr-only">View campaign</span>
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        {loading ? (
+          <TableSkeleton rows={6} columns={5} />
+        ) : (
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Campaign</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Emails Sent</TableHead>
+                  <TableHead className="text-right">Open Rate</TableHead>
+                  <TableHead className="text-right">Click Rate</TableHead>
+                  <TableHead className="text-right">Sent Date</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {campaigns.map((campaign) => (
+                  <TableRow key={campaign.id}>
+                    <TableCell className="font-medium max-w-xs">
+                      <div className="truncate" title={campaign.title}>
+                        {campaign.title}
+                      </div>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(campaign.status)}</TableCell>
+                    <TableCell className="text-right">
+                      {campaign.emailsSent.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span
+                        className={
+                          campaign.openRate > 20
+                            ? "text-green-600"
+                            : "text-yellow-600"
+                        }
+                      >
+                        {campaign.openRate.toFixed(1)}%
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span
+                        className={
+                          campaign.clickRate > 2
+                            ? "text-green-600"
+                            : "text-yellow-600"
+                        }
+                      >
+                        {campaign.clickRate.toFixed(1)}%
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {formatDate(campaign.sendTime)}
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">
+                        <ExternalLink className="h-4 w-4" />
+                        <span className="sr-only">View campaign</span>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
-        {campaigns.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            No campaigns found. Connect your Mailchimp account to view
-            campaigns.
-          </div>
+            {campaigns.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                No campaigns found. Connect your Mailchimp account to view
+                campaigns.
+              </div>
+            )}
+          </>
         )}
       </CardContent>
     </Card>

@@ -42,6 +42,7 @@ interface DashboardData extends FilteredCampaignsResponse {
 export function MailchimpDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [campaignsLoading, setCampaignsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -189,7 +190,15 @@ export function MailchimpDashboard() {
     let isCancelled = false; // Prevent race conditions with stale requests
 
     const loadData = async () => {
-      setLoading(true);
+      // Use main loading state only for initial load, campaigns loading for subsequent updates
+      const isInitialLoad = data === null;
+
+      if (isInitialLoad) {
+        setLoading(true);
+      } else {
+        setCampaignsLoading(true);
+      }
+
       try {
         const dashboardData = await fetchDashboardData(
           false,
@@ -241,6 +250,7 @@ export function MailchimpDashboard() {
       } finally {
         if (!isCancelled) {
           setLoading(false);
+          setCampaignsLoading(false);
         }
       }
     };
@@ -473,6 +483,7 @@ export function MailchimpDashboard() {
               <>
                 <CampaignsTable
                   campaigns={data.campaigns.recentCampaigns}
+                  loading={campaignsLoading}
                   dateRange={
                     dateFilter?.startDate || dateFilter?.endDate
                       ? {
