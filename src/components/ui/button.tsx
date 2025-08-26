@@ -47,10 +47,12 @@ function Button({
   }) {
   const Comp = asChild ? Slot : "button"
 
+  const isDisabled = props.disabled;
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      aria-disabled={isDisabled ? "true" : undefined}
       {...props}
     />
   )
