@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { ListSkeleton } from '@/components/ui/skeleton';
 import { Users, TrendingUp } from 'lucide-react';
 
 interface Audience {
@@ -34,21 +35,7 @@ export function AudiencesOverview({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="animate-pulse space-y-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="flex justify-between">
-                  <div className="h-4 bg-gray-200 rounded w-32"></div>
-                  <div className="h-4 bg-gray-200 rounded w-16"></div>
-                </div>
-                <div className="h-2 bg-gray-200 rounded"></div>
-                <div className="flex space-x-4">
-                  <div className="h-3 bg-gray-200 rounded w-16"></div>
-                  <div className="h-3 bg-gray-200 rounded w-16"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ListSkeleton items={4} />
         </CardContent>
       </Card>
     );

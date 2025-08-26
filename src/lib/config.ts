@@ -13,14 +13,17 @@ const envSchema = z.object({
   MAILCHIMP_API_KEY: z
     .string()
     .min(1, 'Mailchimp API key is required')
-    .regex(
-      /^[a-f0-9]{32}-[a-z]{2,4}\d+$/,
-      'Mailchimp API key must be in format: key-datacenter (e.g., abc123-us1)'
+    .refine(
+      (val) => val.includes('-') && val.length > 10,
+      'Mailchimp API key should contain a datacenter suffix (e.g., abc123-us1)'
     ),
   MAILCHIMP_SERVER_PREFIX: z
     .string()
     .min(1, 'Mailchimp server prefix is required')
-    .regex(/^[a-z]{2,4}\d+$/, 'Invalid Mailchimp server prefix format'),
+    .refine(
+      (val) => /^[a-z]{2,4}\d*$/.test(val),
+      'Mailchimp server prefix should be like: us1, us19, etc.'
+    ),
 
   // Google Analytics 4 (Future - Optional for now)
   GA4_SERVICE_ACCOUNT_KEY_PATH: z.string().optional(),
@@ -83,6 +86,16 @@ function parseEnv(): Env {
   if (!parsed.success) {
     console.error('❌ Invalid environment variables:');
     console.error(parsed.error.flatten().fieldErrors);
+    
+    // In development, provide more helpful error message
+    if (process.env.NODE_ENV === 'development') {
+      console.error('\n💡 Make sure you have created .env.local with:');
+      console.error('MAILCHIMP_API_KEY=your_api_key_here');
+      console.error('MAILCHIMP_SERVER_PREFIX=your_server_prefix_here');
+      console.error('\nExample: MAILCHIMP_API_KEY=abc123def456-us1');
+      console.error('Example: MAILCHIMP_SERVER_PREFIX=us1\n');
+    }
+    
     throw new Error('Invalid environment variables');
   }
 
@@ -122,7 +135,7 @@ export const getMailchimpBaseUrl = () => {
  * Development-only function to log environment status
  */
 export const logEnvStatus = () => {
-  if (!isDev) return;
+  if (!isDev || !env.DEBUG_API_CALLS) return;
   
   console.log('🔧 Environment Status:');
   console.log(`  - Mode: ${env.NODE_ENV}`);

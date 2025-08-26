@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DashboardLayout } from '@/components/layout';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { MetricCard, CampaignsTable, AudiencesOverview } from '@/components/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { ProgressiveLoading } from '@/components/ui/loading-state';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 
 interface DashboardData {
@@ -119,9 +120,14 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchDashboardData = async () => {
-    setLoading(true);
+  const fetchDashboardData = async (isRefresh = false) => {
+    if (isRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -144,6 +150,7 @@ export default function DashboardPage() {
       setError('Unable to connect to Mailchimp API. Using sample data.');
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -162,9 +169,12 @@ export default function DashboardPage() {
               Overview of your email marketing performance
             </p>
           </div>
-          <Button onClick={fetchDashboardData} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+          <Button 
+            onClick={() => fetchDashboardData(true)} 
+            disabled={loading || isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${(loading || isRefreshing) ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
         </div>
 
@@ -183,36 +193,45 @@ export default function DashboardPage() {
           </Card>
         )}
 
-        {/* Metrics Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <MetricCard
-            title="Total Campaigns"
-            value={data?.campaigns.totalCampaigns ?? 0}
-            loading={loading}
-          />
-          <MetricCard
-            title="Sent Campaigns"
-            value={data?.campaigns.sentCampaigns ?? 0}
-            loading={loading}
-          />
-          <MetricCard
-            title="Total Emails Sent"
-            value={data?.campaigns.totalEmailsSent.toLocaleString() ?? '0'}
-            loading={loading}
-          />
-          <MetricCard
-            title="Avg Open Rate"
-            value={`${data?.campaigns.avgOpenRate.toFixed(1) ?? '0.0'}%`}
-            trend={data && data.campaigns.avgOpenRate > 20 ? 'up' : 'neutral'}
-            loading={loading}
-          />
-          <MetricCard
-            title="Avg Click Rate"
-            value={`${data?.campaigns.avgClickRate.toFixed(1) ?? '0.0'}%`}
-            trend={data && data.campaigns.avgClickRate > 3 ? 'up' : 'neutral'}
-            loading={loading}
-          />
-        </div>
+        {/* Dashboard Content */}
+        <ProgressiveLoading
+          isLoading={loading}
+          hasError={false}
+          isEmpty={!data}
+          onRetry={() => fetchDashboardData()}
+          loadingTitle="Loading your dashboard"
+          loadingMessage="Fetching the latest data from your Mailchimp account..."
+        >
+          {/* Metrics Grid */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <MetricCard
+              title="Total Campaigns"
+              value={data?.campaigns.totalCampaigns ?? 0}
+              loading={isRefreshing}
+            />
+            <MetricCard
+              title="Sent Campaigns"
+              value={data?.campaigns.sentCampaigns ?? 0}
+              loading={isRefreshing}
+            />
+            <MetricCard
+              title="Total Emails Sent"
+              value={data?.campaigns.totalEmailsSent.toLocaleString() ?? '0'}
+              loading={isRefreshing}
+            />
+            <MetricCard
+              title="Avg Open Rate"
+              value={`${data?.campaigns.avgOpenRate.toFixed(1) ?? '0.0'}%`}
+              trend={data && data.campaigns.avgOpenRate > 20 ? 'up' : 'neutral'}
+              loading={isRefreshing}
+            />
+            <MetricCard
+              title="Avg Click Rate"
+              value={`${data?.campaigns.avgClickRate.toFixed(1) ?? '0.0'}%`}
+              trend={data && data.campaigns.avgClickRate > 3 ? 'up' : 'neutral'}
+              loading={isRefreshing}
+            />
+          </div>
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="campaigns" className="space-y-4">
@@ -225,7 +244,7 @@ export default function DashboardPage() {
           <TabsContent value="campaigns" className="space-y-4">
             <CampaignsTable
               campaigns={data?.campaigns.recentCampaigns ?? []}
-              loading={loading}
+              loading={isRefreshing}
             />
           </TabsContent>
 
@@ -235,7 +254,7 @@ export default function DashboardPage() {
                 audiences={data?.audiences.topLists ?? []}
                 totalSubscribers={data?.audiences.totalSubscribers ?? 0}
                 avgGrowthRate={data?.audiences.avgGrowthRate ?? 0}
-                loading={loading}
+                loading={isRefreshing}
               />
               
               {/* Additional audience metrics */}
@@ -261,13 +280,13 @@ export default function DashboardPage() {
                       title="List Open Rate"
                       value={`${data?.audiences.avgOpenRate.toFixed(1) ?? '0.0'}%`}
                       trend={data && data.audiences.avgOpenRate > 20 ? 'up' : 'neutral'}
-                      loading={loading}
+                      loading={isRefreshing}
                     />
                     <MetricCard
                       title="List Click Rate"
                       value={`${data?.audiences.avgClickRate.toFixed(1) ?? '0.0'}%`}
                       trend={data && data.audiences.avgClickRate > 3 ? 'up' : 'neutral'}
-                      loading={loading}
+                      loading={isRefreshing}
                     />
                   </div>
                 </CardContent>
@@ -275,6 +294,7 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
         </Tabs>
+        </ProgressiveLoading>
       </div>
     </DashboardLayout>
   );

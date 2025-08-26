@@ -223,6 +223,9 @@ export abstract class BaseApiService {
     if (!isDev || !env.DEBUG_API_CALLS) return;
     
     console.error(`❌ [${this.serviceName}] Error on attempt ${attempt} - ${url}:`, error.message);
+    if (error.cause) {
+      console.error('  Cause:', error.cause);
+    }
   }
 
   /**

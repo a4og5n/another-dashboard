@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface MetricCardProps {
@@ -47,12 +48,14 @@ export function MetricCard({
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-4 w-4 rounded-full" />
         </CardHeader>
         <CardContent>
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-24"></div>
+          <Skeleton className="h-8 w-20 mb-2" />
+          <div className="flex items-center space-x-2">
+            <Skeleton className="h-5 w-12 rounded-full" />
+            <Skeleton className="h-3 w-24" />
           </div>
         </CardContent>
       </Card>

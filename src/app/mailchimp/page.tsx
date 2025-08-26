@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DashboardLayout } from '@/components/layout';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { MetricCard, CampaignsTable, AudiencesOverview } from '@/components/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

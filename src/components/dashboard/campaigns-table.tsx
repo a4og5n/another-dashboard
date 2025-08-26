@@ -9,6 +9,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TableSkeleton } from '@/components/ui/skeleton';
 import { ExternalLink, Mail } from 'lucide-react';
 
 interface Campaign {
@@ -60,16 +61,7 @@ export function CampaignsTable({ campaigns, loading = false }: CampaignsTablePro
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="animate-pulse space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex space-x-4">
-                <div className="h-4 bg-gray-200 rounded flex-1"></div>
-                <div className="h-4 bg-gray-200 rounded w-20"></div>
-                <div className="h-4 bg-gray-200 rounded w-16"></div>
-                <div className="h-4 bg-gray-200 rounded w-16"></div>
-              </div>
-            ))}
-          </div>
+          <TableSkeleton rows={6} columns={5} />
         </CardContent>
       </Card>
     );
