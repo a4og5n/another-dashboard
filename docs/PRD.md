@@ -393,10 +393,69 @@ Eliminate manual data gathering and reporting by automating the collection, visu
 - [X]% uptime SLA
 
 #### 15. Integration Requirements
-- **Data Sources:** [List external APIs, databases, etc.]
-- **Authentication:** [SSO providers, OAuth, etc.]
-- **Analytics:** [GA4, custom analytics, etc.]
-- **Monitoring:** [Error tracking, performance monitoring]
+- **Data Sources:** External APIs for content, marketing, analytics, and revenue platforms
+- **Authentication:** API keys, OAuth 2.0, service accounts
+- **Analytics:** GA4, custom analytics, error tracking
+- **Monitoring:** Vercel Analytics, optional Sentry integration
+
+#### 16. API Integration Specifications
+
+##### 16.1 Mailchimp Marketing API
+**Purpose:** Email marketing campaign performance and audience insights
+
+**API Documentation:** https://mailchimp.com/developer/marketing/api/reports/
+**Base URL:** `https://[dc].api.mailchimp.com/3.0/`
+**Authentication:** API Key
+
+**Key Endpoints:**
+- `GET /reports` - Campaign reports overview
+- `GET /reports/{campaign_id}` - Detailed campaign performance
+- `GET /reports/{campaign_id}/email-activity` - Email activity tracking
+- `GET /reports/{campaign_id}/open-details` - Open rate details
+- `GET /reports/{campaign_id}/click-details` - Click tracking details
+- `GET /lists/{list_id}/members` - Audience member details
+- `GET /campaigns` - Campaign list and basic stats
+
+**Key Metrics:**
+- Campaign performance: open rates, click rates, bounce rates
+- Audience growth: subscribers, unsubscribes, engagement
+- Revenue tracking: e-commerce integration data
+- Geographic and demographic insights
+- A/B testing results
+
+**Environment Variables:**
+```
+MAILCHIMP_API_KEY="your-api-key-datacenter"
+MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
+```
+
+**Rate Limits:** 10 requests per second per API key
+**Data Retention:** Real-time API calls only, no local caching for MVP
+
+##### 16.2 Google Analytics 4 (Future Implementation)
+**Purpose:** Website traffic, user behavior, and conversion tracking
+**API Documentation:** https://developers.google.com/analytics/devguides/reporting/data/v1
+**Authentication:** Service Account JSON key
+
+##### 16.3 YouTube Analytics API (Future Implementation) 
+**Purpose:** Video performance, subscriber growth, revenue metrics
+**API Documentation:** https://developers.google.com/youtube/analytics
+**Authentication:** OAuth 2.0
+
+##### 16.4 Meta Graph API (Future Implementation)
+**Purpose:** Social media insights, page performance, audience engagement
+**API Documentation:** https://developers.facebook.com/docs/graph-api
+**Authentication:** App Access Token
+
+##### 16.5 WordPress REST API (Future Implementation)
+**Purpose:** Content performance, post analytics, SEO insights
+**API Documentation:** https://developer.wordpress.org/rest-api/
+**Authentication:** Application Passwords or JWT
+
+##### 16.6 Google Search Console API (Future Implementation)
+**Purpose:** Search performance, SEO insights, indexing status
+**API Documentation:** https://developers.google.com/webmaster-tools/search-console-api-original
+**Authentication:** Service Account JSON key
 
 ---
 

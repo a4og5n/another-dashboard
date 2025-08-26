@@ -5,13 +5,13 @@ import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export const metadata: Metadata = {
   title: {
-    default: "NextJS Project",
-    template: "%s | NextJS Project"
+    default: "Mailchimp Dashboard",
+    template: "%s | Mailchimp Dashboard"
   },
-  description: "A modern Next.js application with comprehensive tooling and best practices.",
-  keywords: ["nextjs", "react", "typescript", "tailwind", "pwa"],
-  authors: [{ name: "NextJS Developer" }],
-  creator: "NextJS Project",
+  description: "Professional dashboard for Mailchimp campaign and audience analytics with real-time insights.",
+  keywords: ["mailchimp", "dashboard", "analytics", "campaigns", "email marketing", "audience"],
+  authors: [{ name: "Dashboard Developer" }],
+  creator: "Mailchimp Dashboard",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   alternates: {
     canonical: "/",
@@ -20,14 +20,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    title: "NextJS Project",
-    description: "A modern Next.js application with comprehensive tooling and best practices.",
-    siteName: "NextJS Project",
+    title: "Mailchimp Dashboard",
+    description: "Professional dashboard for Mailchimp campaign and audience analytics with real-time insights.",
+    siteName: "Mailchimp Dashboard",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NextJS Project",
-    description: "A modern Next.js application with comprehensive tooling and best practices.",
+    title: "Mailchimp Dashboard",
+    description: "Professional dashboard for Mailchimp campaign and audience analytics with real-time insights.",
   },
   robots: {
     index: true,
@@ -44,17 +44,19 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "NextJS Project",
+    title: "Mailchimp Dashboard",
     startupImage: [
       "/icons/icon-192x192.png",
     ],
   },
   icons: {
     icon: [
-      { url: "/icons/icon-192x192.png" },
-      { url: "/icons/icon-512x512.png", sizes: "512x512" }
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" }
     ],
-    shortcut: ["/icons/icon-192x192.png"],
+    shortcut: ["/favicon-32x32.png"],
     apple: [
       { url: "/icons/icon-152x152.png" },
       { url: "/icons/icon-192x192.png", sizes: "192x192" }
