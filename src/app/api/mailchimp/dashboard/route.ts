@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
+import { CampaignFilters } from "@/types/campaign-filters";
 
 /**
  * Mailchimp Dashboard API
@@ -12,19 +13,34 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const page = parseInt(searchParams.get("page") || "1", 10);
-    const since = searchParams.get("since") || undefined;
     const campaignType = searchParams.get("type") || undefined;
+
+    // Date range parameters (presets are UI-only, not sent to API)
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+
+    const filters: CampaignFilters = {
+      limit,
+      page,
+      campaignType,
+    };
+
+    // Add date range filter if provided
+    if (startDate || endDate) {
+      filters.dateRange = {
+        startDate: startDate
+          ? new Date(startDate + "T00:00:00.000Z")
+          : undefined,
+        endDate: endDate ? new Date(endDate + "T23:59:59.999Z") : undefined,
+        // No preset needed - we only care about actual date ranges
+      };
+    }
 
     const mailchimp = getMailchimpService();
 
     // Fetch campaign and audience data in parallel
     const [campaignSummary, audienceSummary] = await Promise.all([
-      mailchimp.getCampaignSummary({
-        limit,
-        page,
-        sinceDate: since,
-        campaignType,
-      }),
+      mailchimp.getCampaignSummary(filters),
       mailchimp.getAudienceSummary(),
     ]);
 
@@ -52,6 +68,10 @@ export async function GET(request: NextRequest) {
     const dashboardData = {
       campaigns: campaignSummary.data,
       audiences: audienceSummary.data,
+      appliedFilters: {
+        dateRange: filters.dateRange,
+        hasActiveFilters: !!(filters.dateRange || filters.campaignType),
+      },
       metadata: {
         lastUpdated: new Date().toISOString(),
         rateLimit: campaignSummary.rateLimit || audienceSummary.rateLimit,

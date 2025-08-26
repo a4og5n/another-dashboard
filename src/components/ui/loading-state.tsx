@@ -29,9 +29,13 @@ export function LoadingState({
         setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
       }, 500);
       return () => clearInterval(interval);
+    } else {
+      // Reset dots when not loading to prevent stale state
+      setDots("");
     }
-    return; // Return for non-loading states
-  }, [type]);
+    // Return undefined for non-loading cases (no cleanup needed)
+    return undefined;
+  }, [type]); // Keep dependency on type for proper cleanup
 
   if (type === "loading") {
     return (
