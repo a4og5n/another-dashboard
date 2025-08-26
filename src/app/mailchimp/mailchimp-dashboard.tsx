@@ -170,15 +170,19 @@ export function MailchimpDashboard() {
     if (isRefresh) setIsRefreshing(true);
 
     try {
-      // Use mock data in development or when API is not available
-      const shouldUseMock = process.env.NODE_ENV === "development" || true;
+      // Use the proper environment configuration to determine data source
+      const { shouldUseMockData } = await import("@/lib/config");
 
-      if (shouldUseMock) {
+      if (shouldUseMockData) {
+        console.log(
+          "📊 Using mock data (check environment variables to switch to real data)",
+        );
         // Simulate API delay
         await new Promise((resolve) => setTimeout(resolve, 800));
         return MOCK_DATA;
       }
 
+      console.log("🌐 Fetching real data from Mailchimp API...");
       const response = await fetch("/api/mailchimp/dashboard");
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
