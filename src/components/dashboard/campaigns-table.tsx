@@ -10,7 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableSkeleton } from "@/components/ui/skeleton";
+import { DateFilterPopover } from "@/components/ui/date-filter-popover";
 import { ExternalLink, Mail } from "lucide-react";
+import { DateRange } from "react-day-picker";
 
 interface Campaign {
   id: string;
@@ -25,11 +27,18 @@ interface Campaign {
 interface CampaignsTableProps {
   campaigns: Campaign[];
   loading?: boolean;
+  // Date filtering props
+  dateRange?: DateRange;
+  onDateRangeChange?: (range: DateRange | undefined) => void;
+  onPresetSelect?: (range: DateRange | undefined) => void;
 }
 
 export function CampaignsTable({
   campaigns,
   loading = false,
+  dateRange,
+  onDateRangeChange,
+  onPresetSelect,
 }: CampaignsTableProps) {
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -58,9 +67,16 @@ export function CampaignsTable({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Mail className="h-5 w-5" />
-            <span>Recent Campaigns</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Mail className="h-5 w-5" />
+              <span>Recent Campaigns</span>
+            </div>
+            <DateFilterPopover
+              dateRange={dateRange}
+              onDateRangeChange={onDateRangeChange || (() => {})}
+              onPresetSelect={onPresetSelect}
+            />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -73,9 +89,16 @@ export function CampaignsTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Mail className="h-5 w-5" />
-          <span>Recent Campaigns</span>
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Mail className="h-5 w-5" />
+            <span>Recent Campaigns</span>
+          </div>
+          <DateFilterPopover
+            dateRange={dateRange}
+            onDateRangeChange={onDateRangeChange || (() => {})}
+            onPresetSelect={onPresetSelect}
+          />
         </CardTitle>
       </CardHeader>
       <CardContent>

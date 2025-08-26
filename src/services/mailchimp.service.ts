@@ -5,6 +5,8 @@
 
 import { BaseApiService, ApiResponse } from "./base-api.service";
 import { env } from "@/lib/config";
+import { CampaignFilters, DateFilter } from "@/types/campaign-filters";
+import { format } from "date-fns";
 
 /**
  * Mailchimp API Types
@@ -405,16 +407,43 @@ export class MailchimpService extends BaseApiService {
   }
 
   /**
+   * Convert DateFilter to Mailchimp API date parameters
+   */
+  private convertDateFilter(dateFilter?: DateFilter): {
+    since_send_time?: string;
+    before_send_time?: string;
+  } {
+    if (!dateFilter?.startDate && !dateFilter?.endDate) {
+      return {};
+    }
+
+    const result: { since_send_time?: string; before_send_time?: string } = {};
+
+    if (dateFilter.startDate) {
+      // Mailchimp expects ISO 8601 format
+      result.since_send_time = format(
+        dateFilter.startDate,
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+      );
+    }
+
+    if (dateFilter.endDate) {
+      // Add end of day to include all campaigns sent on the end date
+      const endOfDay = new Date(dateFilter.endDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      result.before_send_time = format(endOfDay, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+    }
+
+    return result;
+  }
+
+  /**
    * Get campaign performance summary for dashboard
    */
-  async getCampaignSummary(options?: {
-    limit?: number;
-    page?: number;
-    sinceDate?: string;
-    campaignType?: string;
-  }): Promise<
+  async getCampaignSummary(filters?: CampaignFilters): Promise<
     ApiResponse<{
       totalCampaigns: number;
+      filteredCount?: number;
       sentCampaigns: number;
       avgOpenRate: number;
       avgClickRate: number;
@@ -430,8 +459,8 @@ export class MailchimpService extends BaseApiService {
       }>;
     }>
   > {
-    const limit = options?.limit || 10;
-    const page = options?.page || 1;
+    const limit = filters?.limit || 10;
+    const page = filters?.page || 1;
     const offset = (page - 1) * limit;
 
     const params: MailchimpReportsParams = {
@@ -441,12 +470,20 @@ export class MailchimpService extends BaseApiService {
       sort_dir: "DESC",
     };
 
-    if (options?.sinceDate) {
-      params.since_send_time = options.sinceDate;
+    // Apply date filtering
+    if (filters?.dateRange) {
+      const dateParams = this.convertDateFilter(filters.dateRange);
+      if (dateParams.since_send_time) {
+        params.since_send_time = dateParams.since_send_time;
+      }
+      if (dateParams.before_send_time) {
+        params.before_send_time = dateParams.before_send_time;
+      }
     }
 
-    if (options?.campaignType) {
-      params.type = options.campaignType;
+    // Apply campaign type filtering
+    if (filters?.campaignType) {
+      params.type = filters.campaignType;
     }
 
     const reportsResponse = await this.getCampaignReports(params);
@@ -479,6 +516,10 @@ export class MailchimpService extends BaseApiService {
       success: true,
       data: {
         totalCampaigns: reportsResponse.data.total_items,
+        filteredCount:
+          filters?.dateRange || filters?.campaignType
+            ? reports.length
+            : undefined,
         sentCampaigns: sentReports.length,
         avgOpenRate: Math.round(avgOpenRate * 10000) / 100, // Convert to percentage with 2 decimals
         avgClickRate: Math.round(avgClickRate * 10000) / 100,

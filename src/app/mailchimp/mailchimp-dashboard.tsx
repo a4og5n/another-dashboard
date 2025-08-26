@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { CampaignsTable, AudiencesOverview } from "@/components/dashboard";
@@ -16,138 +16,40 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { RefreshCw, AlertCircle } from "lucide-react";
+import { RefreshCw, AlertCircle, ArrowLeft } from "lucide-react";
+import {
+  DateFilter,
+  FilteredCampaignsResponse,
+} from "@/types/campaign-filters";
+import { format } from "date-fns";
 
-interface DashboardData {
-  campaigns: {
-    totalCampaigns: number;
-    sentCampaigns: number;
-    avgOpenRate: number;
-    avgClickRate: number;
-    totalEmailsSent: number;
-    recentCampaigns: Array<{
-      id: string;
-      title: string;
-      status: string;
-      emailsSent: number;
-      openRate: number;
-      clickRate: number;
-      sendTime: string;
-    }>;
-  };
-  audiences: {
-    totalLists: number;
-    totalSubscribers: number;
-    avgGrowthRate: number;
-    avgOpenRate: number;
-    avgClickRate: number;
-    topLists: Array<{
-      id: string;
-      name: string;
-      memberCount: number;
-      growthRate: number;
-      openRate: number;
-      clickRate: number;
-    }>;
+// Helper function to format date as YYYY-MM-DD for URL parameters
+const formatDateForUrl = (date: Date): string => {
+  return format(date, "yyyy-MM-dd");
+};
+
+interface DashboardData extends FilteredCampaignsResponse {
+  metadata?: {
+    lastUpdated: string;
+    rateLimit?: {
+      limit?: number;
+      remaining?: number;
+      reset?: number;
+    };
   };
 }
-
-// Mock data for development and testing
-const MOCK_DATA: DashboardData = {
-  campaigns: {
-    totalCampaigns: 47,
-    sentCampaigns: 42,
-    avgOpenRate: 28.5,
-    avgClickRate: 4.2,
-    totalEmailsSent: 128450,
-    recentCampaigns: [
-      {
-        id: "1",
-        title: "Weekly Newsletter #45",
-        status: "sent",
-        emailsSent: 12450,
-        openRate: 32.1,
-        clickRate: 5.3,
-        sendTime: "2025-01-15T10:00:00Z",
-      },
-      {
-        id: "2",
-        title: "Product Launch Announcement",
-        status: "sent",
-        emailsSent: 8900,
-        openRate: 45.7,
-        clickRate: 8.9,
-        sendTime: "2025-01-10T14:30:00Z",
-      },
-      {
-        id: "3",
-        title: "Holiday Sale Reminder",
-        status: "sent",
-        emailsSent: 15600,
-        openRate: 28.4,
-        clickRate: 6.1,
-        sendTime: "2025-01-08T09:15:00Z",
-      },
-      {
-        id: "4",
-        title: "Customer Feedback Survey",
-        status: "draft",
-        emailsSent: 0,
-        openRate: 0,
-        clickRate: 0,
-        sendTime: "",
-      },
-      {
-        id: "5",
-        title: "Monthly Report - December",
-        status: "sent",
-        emailsSent: 11200,
-        openRate: 24.8,
-        clickRate: 3.2,
-        sendTime: "2025-01-01T08:00:00Z",
-      },
-    ],
-  },
-  audiences: {
-    totalLists: 8,
-    totalSubscribers: 24760,
-    avgGrowthRate: 2.3,
-    avgOpenRate: 31.2,
-    avgClickRate: 4.8,
-    topLists: [
-      {
-        id: "1",
-        name: "Newsletter Subscribers",
-        memberCount: 15420,
-        growthRate: 3.1,
-        openRate: 26.8,
-        clickRate: 3.7,
-      },
-      {
-        id: "2",
-        name: "Product Updates List",
-        memberCount: 6890,
-        growthRate: 1.8,
-        openRate: 31.2,
-        clickRate: 4.3,
-      },
-      {
-        id: "3",
-        name: "VIP Customers",
-        memberCount: 2450,
-        growthRate: 0.9,
-        openRate: 45.6,
-        clickRate: 8.1,
-      },
-    ],
-  },
-};
 
 export function MailchimpDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Date filtering state
+  const [dateFilter, setDateFilter] = useState<DateFilter | undefined>(
+    undefined,
+  );
+
   // Pagination state
   const campaignsPerPageOptions = [5, 10, 20, 50];
   const router = useRouter();
@@ -167,8 +69,9 @@ export function MailchimpDashboard() {
   const fetchDashboardData = useCallback(
     async (
       isRefresh = false,
-      page: number = currentPage,
-      perPage: number = campaignsPerPage,
+      page: number,
+      perPage: number,
+      dateRange?: DateFilter,
     ): Promise<DashboardData> => {
       if (isRefresh) setIsRefreshing(true);
 
@@ -178,40 +81,91 @@ export function MailchimpDashboard() {
         // variables. Client-side code should not import server-only modules
         // (like `@/lib/config`) because those run Zod validation at bundle
         // evaluation time and can cause environment validation errors.
-        console.log("🌐 Fetching real data from Mailchimp API...");
+        console.log("🌐 Fetching real data from Mailchimp API...", {
+          page,
+          perPage,
+          dateRange,
+        });
 
-        // Build query parameters for pagination
+        // Build query parameters for pagination and filtering
         const params = new URLSearchParams({
           page: page.toString(),
           limit: perPage.toString(),
         });
 
-        const response = await fetch(`/api/mailchimp/dashboard?${params}`);
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
+        // Add date range parameters if provided (only dates, not presets)
+        if (dateRange?.startDate) {
+          params.set("startDate", formatDateForUrl(dateRange.startDate));
         }
+        if (dateRange?.endDate) {
+          params.set("endDate", formatDateForUrl(dateRange.endDate));
+        }
+        // Note: Presets are UI shortcuts only, we only send actual dates to API
+
+        const response = await fetch(`/api/mailchimp/dashboard?${params}`);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({
+            error: "Unknown error",
+            details: "Failed to parse error response",
+          }));
+
+          // Create detailed error message based on response status
+          let errorMessage = `API Request Failed (${response.status})`;
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+          if (errorData.details) {
+            errorMessage += `: ${errorData.details}`;
+          }
+
+          // Throw an error with detailed information for proper error handling
+          const error = new Error(errorMessage) as Error & {
+            status?: number;
+            details?: string;
+          };
+          error.status = response.status;
+          error.details = errorData.details;
+          throw error;
+        }
+
         return await response.json();
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
-        // Fallback to mock data in case of error
-        return MOCK_DATA;
+        // Re-throw the error to be handled by the calling code
+        // Do NOT fall back to mock data - let proper error handling take over
+        throw error;
       } finally {
         if (isRefresh) setIsRefreshing(false);
       }
     },
-    [currentPage, campaignsPerPage],
+    [], // Remove dependencies to prevent recreation
   );
 
-  const updateUrlParams = (newPage: number, newPerPage: number) => {
+  const updateUrlParams = (
+    newPage: number,
+    newPerPage: number,
+    newDateFilter?: DateFilter,
+  ) => {
     const params = new URLSearchParams();
     params.set("page", newPage.toString());
     params.set("perPage", newPerPage.toString());
+
+    // Add date filter parameters to URL (only dates, not presets)
+    if (newDateFilter?.startDate) {
+      params.set("startDate", formatDateForUrl(newDateFilter.startDate));
+    }
+    if (newDateFilter?.endDate) {
+      params.set("endDate", formatDateForUrl(newDateFilter.endDate));
+    }
+    // Note: We don't include preset in URL as it's just a UI shortcut
+
     router.push(`/mailchimp?${params.toString()}`, { scroll: false });
   };
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    updateUrlParams(newPage, campaignsPerPage);
+    updateUrlParams(newPage, campaignsPerPage, dateFilter);
   };
 
   const handlePerPageChange = (newPerPage: string) => {
@@ -219,47 +173,210 @@ export function MailchimpDashboard() {
     setCampaignsPerPage(perPage);
     // Reset to page 1 when changing per page count
     setCurrentPage(1);
-    updateUrlParams(1, perPage);
+    updateUrlParams(1, perPage, dateFilter);
   };
 
-  useEffect(() => {
-    fetchDashboardData(false, currentPage, campaignsPerPage)
-      .then((dashboardData) => {
-        setData(dashboardData);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("Failed to load dashboard:", err);
-        setError("Failed to load dashboard data. Please try refreshing.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [currentPage, campaignsPerPage, fetchDashboardData]);
+  const handleDateFilterChange = (newDateFilter?: DateFilter) => {
+    setDateFilter(newDateFilter);
+    // Reset to page 1 when changing filters
+    setCurrentPage(1);
+    updateUrlParams(1, campaignsPerPage, newDateFilter);
+  };
 
-  // Sync URL params with state on mount
+  // Single useEffect to handle data fetching when relevant parameters change
+  // fetchDashboardData is intentionally stable (no deps) to prevent recreation
   useEffect(() => {
-    if (campaignsPerPageParam !== campaignsPerPage) {
-      setCampaignsPerPage(campaignsPerPageParam);
+    let isCancelled = false; // Prevent race conditions with stale requests
+
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const dashboardData = await fetchDashboardData(
+          false,
+          currentPage,
+          campaignsPerPage,
+          dateFilter,
+        );
+
+        // Only update state if this request hasn't been cancelled
+        if (!isCancelled) {
+          setData(dashboardData);
+          setError(null);
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error("Failed to load dashboard:", err);
+
+          // Set appropriate error message based on error type
+          let errorMessage = "Failed to load dashboard data. Please try again.";
+
+          if (err instanceof Error) {
+            // Use the detailed error message from fetchDashboardData
+            errorMessage = err.message;
+
+            // Check for specific error types and provide helpful guidance
+            if (err.message.includes("500")) {
+              errorMessage =
+                "Server error occurred. Please check your Mailchimp API configuration and try again.";
+            } else if (
+              err.message.includes("401") ||
+              err.message.includes("403")
+            ) {
+              errorMessage =
+                "Authentication failed. Please verify your Mailchimp API key is correct.";
+            } else if (err.message.includes("404")) {
+              errorMessage = "API endpoint not found. Please contact support.";
+            } else if (err.message.includes("429")) {
+              errorMessage =
+                "Rate limit exceeded. Please wait a moment and try again.";
+            } else if (err.message.includes("Network")) {
+              errorMessage =
+                "Network error. Please check your internet connection and try again.";
+            }
+          }
+
+          setError(errorMessage);
+          setData(null); // Clear any stale data
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    // Cleanup function to cancel stale requests
+    return () => {
+      isCancelled = true;
+    };
+    // fetchDashboardData is intentionally omitted from deps (stable with no dependencies)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, campaignsPerPage, dateFilter]);
+
+  // Use refs to track previous values to prevent infinite loops
+  const prevPageRef = useRef(pageParam);
+  const prevPerPageRef = useRef(campaignsPerPageParam);
+  const prevSearchParamsRef = useRef(searchParams.toString());
+
+  // Sync URL params with state when URL changes - prevent infinite loops
+  useEffect(() => {
+    const currentSearchParamsString = searchParams.toString();
+
+    // Only run if URL actually changed
+    if (
+      pageParam !== prevPageRef.current ||
+      campaignsPerPageParam !== prevPerPageRef.current ||
+      currentSearchParamsString !== prevSearchParamsRef.current
+    ) {
+      let hasChanges = false;
+
+      // Update state in a single batch to prevent multiple re-renders
+      if (campaignsPerPageParam !== campaignsPerPage) {
+        setCampaignsPerPage(campaignsPerPageParam);
+        hasChanges = true;
+      }
+      if (pageParam !== currentPage) {
+        setCurrentPage(pageParam);
+        hasChanges = true;
+      }
+
+      // Parse date filter from URL (only dates, ignore presets)
+      const startDateParam = searchParams.get("startDate");
+      const endDateParam = searchParams.get("endDate");
+
+      const currentStartDate = dateFilter?.startDate
+        ? formatDateForUrl(dateFilter.startDate)
+        : null;
+      const currentEndDate = dateFilter?.endDate
+        ? formatDateForUrl(dateFilter.endDate)
+        : null;
+
+      // Only update date filter if URL dates are different from current state
+      if (
+        startDateParam !== currentStartDate ||
+        endDateParam !== currentEndDate
+      ) {
+        if (startDateParam || endDateParam) {
+          const urlDateFilter: DateFilter = {
+            startDate: startDateParam
+              ? new Date(startDateParam + "T00:00:00.000Z")
+              : undefined,
+            endDate: endDateParam
+              ? new Date(endDateParam + "T23:59:59.999Z")
+              : undefined,
+            // No preset - it's not needed once we have actual dates
+          };
+          setDateFilter(urlDateFilter);
+        } else if (dateFilter) {
+          // Clear date filter if URL has no date parameters
+          setDateFilter(undefined);
+        }
+        hasChanges = true;
+      }
+
+      // Update refs to current values
+      prevPageRef.current = pageParam;
+      prevPerPageRef.current = campaignsPerPageParam;
+      prevSearchParamsRef.current = currentSearchParamsString;
+
+      // Log URL sync changes for debugging
+      if (hasChanges) {
+        console.log("URL sync updated state:", {
+          page: pageParam,
+          perPage: campaignsPerPageParam,
+          startDate: startDateParam,
+          endDate: endDateParam,
+        });
+      }
     }
-    if (pageParam !== currentPage) {
-      setCurrentPage(pageParam);
-    }
-  }, [campaignsPerPageParam, pageParam, campaignsPerPage, currentPage]);
+  }, [
+    campaignsPerPageParam,
+    pageParam,
+    searchParams,
+    campaignsPerPage,
+    currentPage,
+    dateFilter,
+  ]);
 
   const handleRefresh = async () => {
     try {
-      const freshData = await fetchDashboardData(
+      const refreshedData = await fetchDashboardData(
         true,
         currentPage,
         campaignsPerPage,
+        dateFilter,
       );
-      setData(freshData);
+      setData(refreshedData);
       setError(null);
     } catch (err) {
-      console.error("Refresh failed:", err);
-      setError("Failed to refresh data. Please try again.");
+      console.error("Failed to refresh dashboard:", err);
+
+      // Set appropriate error message for refresh failures
+      let errorMessage = "Failed to refresh data. Please try again.";
+
+      if (err instanceof Error) {
+        if (err.message.includes("500")) {
+          errorMessage =
+            "Server error during refresh. Please check your Mailchimp API configuration.";
+        } else if (err.message.includes("401") || err.message.includes("403")) {
+          errorMessage =
+            "Authentication failed during refresh. Please verify your Mailchimp API key.";
+        } else if (err.message.includes("429")) {
+          errorMessage =
+            "Rate limit exceeded. Please wait a moment before refreshing.";
+        } else {
+          errorMessage = `Refresh failed: ${err.message}`;
+        }
+      }
+
+      setError(errorMessage);
     }
+  };
+
+  const handleGoHome = () => {
+    router.push("/");
   };
 
   if (loading) {
@@ -271,6 +388,49 @@ export function MailchimpDashboard() {
             <div className="h-64 rounded-lg bg-gray-100" />
             <div className="h-96 rounded-lg bg-gray-100" />
           </ProgressiveLoading>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <div className="rounded-full bg-destructive/10 p-3 mb-4">
+                <RefreshCw className="h-8 w-8 text-destructive" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2 text-center">
+                Dashboard Error
+              </h3>
+              <p className="text-muted-foreground text-center max-w-sm mb-6">
+                {error}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <Button
+                  onClick={handleRefresh}
+                  variant="default"
+                  className="flex-1 gap-2"
+                  disabled={isRefreshing}
+                >
+                  <RefreshCw
+                    className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+                  />
+                  {isRefreshing ? "Retrying..." : "Try Again"}
+                </Button>
+                <Button
+                  onClick={handleGoHome}
+                  variant="outline"
+                  className="flex-1 gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Go Home
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </DashboardLayout>
     );
@@ -311,7 +471,39 @@ export function MailchimpDashboard() {
           <TabsContent value="campaigns" className="space-y-6">
             {data?.campaigns && (
               <>
-                <CampaignsTable campaigns={data.campaigns.recentCampaigns} />
+                <CampaignsTable
+                  campaigns={data.campaigns.recentCampaigns}
+                  dateRange={
+                    dateFilter?.startDate || dateFilter?.endDate
+                      ? {
+                          from: dateFilter.startDate,
+                          to: dateFilter.endDate,
+                        }
+                      : undefined
+                  }
+                  onDateRangeChange={(range) => {
+                    // Manual selection - only executed when submit button is pressed
+                    if (range?.from || range?.to) {
+                      handleDateFilterChange({
+                        startDate: range.from,
+                        endDate: range.to,
+                      });
+                    } else {
+                      handleDateFilterChange(undefined);
+                    }
+                  }}
+                  onPresetSelect={(range) => {
+                    // Preset selection - executed immediately
+                    if (range?.from || range?.to) {
+                      handleDateFilterChange({
+                        startDate: range.from,
+                        endDate: range.to,
+                      });
+                    } else {
+                      handleDateFilterChange(undefined);
+                    }
+                  }}
+                />
 
                 {/* Campaigns per page selector and pagination */}
                 <div className="flex items-center justify-between">
