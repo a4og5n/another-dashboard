@@ -35,15 +35,35 @@ Returns summarized campaign and audience data for the dashboard.
 
 ```
 {
-  campaigns: { ... },
-  audiences: { ... },
-  appliedFilters: {
-    dateRange: { startDate, endDate },
-    hasActiveFilters: boolean
+  "campaigns": [
+    {
+      "id": "string",
+      "title": "string",
+      "status": "string",
+      "emailsSent": 123,
+      "openRate": 0.45,
+      "clickRate": 0.12,
+      "sendTime": "2025-08-26T12:00:00Z"
+    }
+    // ... up to `limit` campaigns
+  ],
+  "audiences": { /* audience summary data */ },
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 57,
+    "totalPages": 6
   },
-  metadata: {
-    lastUpdated: string,
-    rateLimit: number
+  "appliedFilters": {
+    "dateRange": {
+      "startDate": "2025-08-01T00:00:00.000Z",
+      "endDate": "2025-08-26T23:59:59.999Z"
+    },
+    "hasActiveFilters": true
+  },
+  "metadata": {
+    "lastUpdated": "2025-08-26T14:00:00.000Z",
+    "rateLimit": 1000
   }
 }
 ```
@@ -56,6 +76,14 @@ Returns summarized campaign and audience data for the dashboard.
   details?: string
 }
 ```
+
+---
+
+## Notes
+
+- Pagination is applied only to campaign data.
+- Audience data is always returned in full.
+- All date filters must use ISO format (yyyy-mm-dd).
 
 ---
 
