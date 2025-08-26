@@ -9,11 +9,13 @@ Another Dashboard is a comprehensive business analytics platform built with Next
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 20+ 
+
+- Node.js 20+
 - pnpm 10+
 - Git
 
 ### Setup
+
 1. Fork the repository
 2. Clone your fork: `git clone https://github.com/YOUR-USERNAME/another-dashboard.git`
 3. Install dependencies: `pnpm install`
@@ -21,6 +23,7 @@ Another Dashboard is a comprehensive business analytics platform built with Next
 5. Open https://localhost:3000
 
 ### Project Structure
+
 ```
 src/
 ├── app/                 # Next.js App Router pages and layouts
@@ -38,12 +41,14 @@ src/
 ## 🛠️ Development Workflow
 
 ### Branch Strategy
+
 - `main` - Production branch (protected)
 - `feature/feature-name` - Feature development
 - `fix/bug-description` - Bug fixes
 - `chore/task-description` - Maintenance tasks
 
 ### Commit Messages
+
 We follow [Conventional Commits](https://conventionalcommits.org/):
 
 ```
@@ -55,6 +60,7 @@ type(scope): description
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -64,6 +70,7 @@ Types:
 - `chore`: Maintenance tasks
 
 Examples:
+
 ```
 feat(dashboard): add user analytics chart
 fix(auth): resolve token expiration handling
@@ -73,6 +80,7 @@ docs: update API integration guide
 ### Pull Request Process
 
 1. **Create a Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -84,6 +92,7 @@ docs: update API integration guide
    - Update documentation as needed
 
 3. **Test Your Changes**
+
    ```bash
    pnpm test          # Run tests
    pnpm lint          # Check code style
@@ -92,6 +101,7 @@ docs: update API integration guide
    ```
 
 4. **Commit and Push**
+
    ```bash
    git add .
    git commit -m "feat: add new dashboard component"
@@ -107,12 +117,14 @@ docs: update API integration guide
 ## 🧪 Testing Guidelines
 
 ### Test Structure
+
 - **Unit Tests**: Test individual functions and components
 - **Integration Tests**: Test component interactions
 - **Accessibility Tests**: Ensure WCAG 2.1 AA compliance
 - **Performance Tests**: Monitor Core Web Vitals
 
 ### Writing Tests
+
 ```typescript
 // Component test example
 import { render, screen } from '@testing-library/react'
@@ -126,6 +138,7 @@ test('renders button with text', () => {
 ```
 
 ### Accessibility Testing
+
 ```typescript
 import { axe, toHaveNoViolations } from 'jest-axe'
 
@@ -139,6 +152,7 @@ test('should not have accessibility violations', async () => {
 ## 🎨 Code Style Guidelines
 
 ### TypeScript
+
 - Use strict TypeScript configuration
 - Define explicit return types for functions
 - Use interfaces over types when possible
@@ -163,6 +177,7 @@ function getUser(id: any): any {
 ```
 
 ### React Components
+
 - Use functional components with hooks
 - Implement proper prop interfaces
 - Use descriptive component and prop names
@@ -193,6 +208,7 @@ export function Button({ children, variant = 'primary', ...props }: ButtonProps)
 ```
 
 ### CSS/Styling
+
 - Use Tailwind CSS for styling
 - Follow mobile-first responsive design
 - Maintain consistent spacing and colors
@@ -203,6 +219,7 @@ export function Button({ children, variant = 'primary', ...props }: ButtonProps)
 We strive for WCAG 2.1 AA compliance:
 
 ### Requirements
+
 - **Keyboard Navigation**: All interactive elements accessible via keyboard
 - **Screen Reader Support**: Proper semantic HTML and ARIA labels
 - **Color Contrast**: Minimum 4.5:1 ratio for normal text
@@ -210,11 +227,13 @@ We strive for WCAG 2.1 AA compliance:
 - **Alternative Text**: Descriptive alt text for images
 
 ### Testing
+
 ```bash
 pnpm test:a11y  # Run accessibility tests
 ```
 
 Use browser tools:
+
 - axe DevTools extension
 - Chrome Lighthouse
 - NVDA/VoiceOver screen readers
@@ -222,11 +241,13 @@ Use browser tools:
 ## ⚡ Performance Guidelines
 
 ### Core Web Vitals
+
 - **LCP (Largest Contentful Paint)**: < 2.5s
 - **INP (Interaction to Next Paint)**: < 200ms
 - **CLS (Cumulative Layout Shift)**: < 0.1
 
 ### Best Practices
+
 - Use Next.js Image component for images
 - Implement proper code splitting
 - Minimize bundle size
@@ -234,6 +255,7 @@ Use browser tools:
 - Optimize API calls with proper caching
 
 ### Monitoring
+
 ```bash
 pnpm build        # Check bundle analysis
 pnpm start        # Test production build
@@ -285,6 +307,7 @@ We expect all contributors to:
 ## 🙏 Recognition
 
 Contributors will be recognized in:
+
 - README.md contributors section
 - Release notes for significant contributions
 - GitHub contributor statistics

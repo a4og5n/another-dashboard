@@ -5,12 +5,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { TableSkeleton } from '@/components/ui/skeleton';
-import { ExternalLink, Mail } from 'lucide-react';
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { TableSkeleton } from "@/components/ui/skeleton";
+import { ExternalLink, Mail } from "lucide-react";
 
 interface Campaign {
   id: string;
@@ -27,16 +27,19 @@ interface CampaignsTableProps {
   loading?: boolean;
 }
 
-export function CampaignsTable({ campaigns, loading = false }: CampaignsTableProps) {
+export function CampaignsTable({
+  campaigns,
+  loading = false,
+}: CampaignsTableProps) {
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'sent':
+      case "sent":
         return <Badge variant="default">Sent</Badge>;
-      case 'sending':
+      case "sending":
         return <Badge variant="secondary">Sending</Badge>;
-      case 'schedule':
+      case "schedule":
         return <Badge variant="outline">Scheduled</Badge>;
-      case 'save':
+      case "save":
         return <Badge variant="secondary">Draft</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
@@ -44,10 +47,10 @@ export function CampaignsTable({ campaigns, loading = false }: CampaignsTablePro
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
@@ -101,12 +104,24 @@ export function CampaignsTable({ campaigns, loading = false }: CampaignsTablePro
                   {campaign.emailsSent.toLocaleString()}
                 </TableCell>
                 <TableCell className="text-right">
-                  <span className={campaign.openRate > 20 ? 'text-green-600' : 'text-yellow-600'}>
+                  <span
+                    className={
+                      campaign.openRate > 20
+                        ? "text-green-600"
+                        : "text-yellow-600"
+                    }
+                  >
                     {campaign.openRate.toFixed(1)}%
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
-                  <span className={campaign.clickRate > 2 ? 'text-green-600' : 'text-yellow-600'}>
+                  <span
+                    className={
+                      campaign.clickRate > 2
+                        ? "text-green-600"
+                        : "text-yellow-600"
+                    }
+                  >
                     {campaign.clickRate.toFixed(1)}%
                   </span>
                 </TableCell>
@@ -126,7 +141,8 @@ export function CampaignsTable({ campaigns, loading = false }: CampaignsTablePro
 
         {campaigns.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            No campaigns found. Connect your Mailchimp account to view campaigns.
+            No campaigns found. Connect your Mailchimp account to view
+            campaigns.
           </div>
         )}
       </CardContent>

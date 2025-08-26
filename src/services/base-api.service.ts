@@ -8,7 +8,7 @@
  * - Logging
  */
 
-import { env, isDev } from '@/lib/config';
+import { env, isDev } from "@/lib/config";
 
 /**
  * Standard API response wrapper
@@ -79,13 +79,13 @@ export abstract class BaseApiService {
    */
   protected async httpClient<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const url = `${this.config.baseUrl}${endpoint}`;
     const requestOptions: RequestInit = {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...this.config.headers,
         ...options.headers,
       },
@@ -95,12 +95,16 @@ export abstract class BaseApiService {
     let lastError: Error | null = null;
 
     // Retry logic
-    for (let attempt = 1; attempt <= (this.config.retryAttempts || 1); attempt++) {
+    for (
+      let attempt = 1;
+      attempt <= (this.config.retryAttempts || 1);
+      attempt++
+    ) {
       try {
         this.logRequest(url, requestOptions, attempt);
 
         const response = await fetch(url, requestOptions);
-        
+
         // Handle rate limiting
         this.handleRateLimit(response);
 
@@ -110,7 +114,7 @@ export abstract class BaseApiService {
         }
 
         const data = await response.json();
-        
+
         this.logResponse(url, response.status, data);
 
         return {
@@ -119,7 +123,6 @@ export abstract class BaseApiService {
           statusCode: response.status,
           rateLimit: this.rateLimit,
         };
-
       } catch (error) {
         lastError = error as Error;
         this.logError(url, error as Error, attempt);
@@ -130,7 +133,8 @@ export abstract class BaseApiService {
         }
 
         // Wait before retrying (exponential backoff)
-        const delay = (this.config.retryDelay || 1000) * Math.pow(2, attempt - 1);
+        const delay =
+          (this.config.retryDelay || 1000) * Math.pow(2, attempt - 1);
         await this.sleep(delay);
       }
     }
@@ -138,7 +142,7 @@ export abstract class BaseApiService {
     // All attempts failed
     return {
       success: false,
-      error: lastError?.message || 'Unknown error occurred',
+      error: lastError?.message || "Unknown error occurred",
       statusCode: 500,
     };
   }
@@ -146,7 +150,10 @@ export abstract class BaseApiService {
   /**
    * GET request helper
    */
-  protected async get<T>(endpoint: string, params?: Record<string, string | number | boolean | string[]>): Promise<ApiResponse<T>> {
+  protected async get<T>(
+    endpoint: string,
+    params?: Record<string, string | number | boolean | string[]>,
+  ): Promise<ApiResponse<T>> {
     let url = endpoint;
     if (params) {
       const searchParams = new URLSearchParams();
@@ -154,7 +161,7 @@ export abstract class BaseApiService {
         if (value !== undefined && value !== null) {
           if (Array.isArray(value)) {
             // Handle arrays by joining with commas
-            searchParams.append(key, value.join(','));
+            searchParams.append(key, value.join(","));
           } else {
             searchParams.append(key, String(value));
           }
@@ -163,15 +170,18 @@ export abstract class BaseApiService {
       url += `?${searchParams.toString()}`;
     }
 
-    return this.httpClient<T>(url, { method: 'GET' });
+    return this.httpClient<T>(url, { method: "GET" });
   }
 
   /**
    * POST request helper
    */
-  protected async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
+  protected async post<T>(
+    endpoint: string,
+    data?: unknown,
+  ): Promise<ApiResponse<T>> {
     return this.httpClient<T>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -179,9 +189,12 @@ export abstract class BaseApiService {
   /**
    * PUT request helper
    */
-  protected async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
+  protected async put<T>(
+    endpoint: string,
+    data?: unknown,
+  ): Promise<ApiResponse<T>> {
     return this.httpClient<T>(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -190,23 +203,29 @@ export abstract class BaseApiService {
    * DELETE request helper
    */
   protected async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.httpClient<T>(endpoint, { method: 'DELETE' });
+    return this.httpClient<T>(endpoint, { method: "DELETE" });
   }
 
   /**
    * Sleep utility for retry delays
    */
   protected sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
    * Logging utilities (development only)
    */
-  protected logRequest(url: string, options: RequestInit, attempt: number): void {
+  protected logRequest(
+    url: string,
+    options: RequestInit,
+    attempt: number,
+  ): void {
     if (!isDev || !env.DEBUG_API_CALLS) return;
-    
-    console.log(`🌐 [${this.serviceName}] ${options.method?.toUpperCase() || 'GET'} ${url}`);
+
+    console.log(
+      `🌐 [${this.serviceName}] ${options.method?.toUpperCase() || "GET"} ${url}`,
+    );
     if (attempt > 1) {
       console.log(`🔄 [${this.serviceName}] Retry attempt ${attempt}`);
     }
@@ -214,24 +233,29 @@ export abstract class BaseApiService {
 
   protected logResponse(url: string, status: number, data: unknown): void {
     if (!isDev || !env.DEBUG_API_CALLS) return;
-    
+
     console.log(`✅ [${this.serviceName}] ${status} - ${url}`);
     console.log(`📦 [${this.serviceName}] Response:`, data);
   }
 
   protected logError(url: string, error: Error, attempt: number): void {
     if (!isDev || !env.DEBUG_API_CALLS) return;
-    
-    console.error(`❌ [${this.serviceName}] Error on attempt ${attempt} - ${url}:`, error.message);
+
+    console.error(
+      `❌ [${this.serviceName}] Error on attempt ${attempt} - ${url}:`,
+      error.message,
+    );
     if (error.cause) {
-      console.error('  Cause:', error.cause);
+      console.error("  Cause:", error.cause);
     }
   }
 
   /**
    * Health check method - each service should implement
    */
-  abstract healthCheck(): Promise<ApiResponse<{ status: string; timestamp: string }>>;
+  abstract healthCheck(): Promise<
+    ApiResponse<{ status: string; timestamp: string }>
+  >;
 }
 
 /**
@@ -243,7 +267,7 @@ export class ApiServiceFactory {
 
   static getInstance<T extends BaseApiService>(
     serviceName: string,
-    factory: () => T
+    factory: () => T,
   ): T {
     if (!this.instances.has(serviceName)) {
       this.instances.set(serviceName, factory());

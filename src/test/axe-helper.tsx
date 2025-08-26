@@ -1,7 +1,7 @@
-import { ReactElement } from 'react';
-import { render, RenderResult } from '@testing-library/react';
-import { configureAxe, toHaveNoViolations } from 'jest-axe';
-import axe, { AxeResults } from 'axe-core';
+import { ReactElement } from "react";
+import { render, RenderResult } from "@testing-library/react";
+import { configureAxe, toHaveNoViolations } from "jest-axe";
+import axe, { AxeResults } from "axe-core";
 
 // Extend expect with jest-axe matchers
 expect.extend(toHaveNoViolations);
@@ -10,7 +10,7 @@ expect.extend(toHaveNoViolations);
 const axeConfig = configureAxe({
   rules: {
     // Disable color-contrast rule in tests (can be unreliable in jsdom)
-    'color-contrast': { enabled: false },
+    "color-contrast": { enabled: false },
   },
 });
 
@@ -22,14 +22,14 @@ const axeConfig = configureAxe({
  */
 export const renderWithA11y = async (
   ui: ReactElement,
-  options?: Parameters<typeof render>[1]
-): Promise<{ 
-  renderResult: RenderResult; 
-  axeResults: AxeResults 
+  options?: Parameters<typeof render>[1],
+): Promise<{
+  renderResult: RenderResult;
+  axeResults: AxeResults;
 }> => {
   const renderResult = render(ui, options);
   const axeResults = await axeConfig(renderResult.container);
-  
+
   // @ts-expect-error - Version conflict between jest-axe and axe-core types, will be resolved in future update
   return { renderResult, axeResults };
 };
@@ -48,7 +48,9 @@ export const runA11yTests = async (container: Element): Promise<AxeResults> => {
  * Custom hook to validate accessibility in tests
  * Usage: await expectNoA11yViolations(container);
  */
-export const expectNoA11yViolations = async (container: Element): Promise<void> => {
+export const expectNoA11yViolations = async (
+  container: Element,
+): Promise<void> => {
   const results = await runA11yTests(container);
   expect(results).toHaveNoViolations();
 };
@@ -59,14 +61,17 @@ export const expectNoA11yViolations = async (container: Element): Promise<void> 
  * @param rules - Array of specific axe rule IDs to test
  */
 export const testA11yRules = async (
-  container: Element, 
-  rules: string[]
+  container: Element,
+  rules: string[],
 ): Promise<AxeResults> => {
   return await axe.run(container, {
-    rules: rules.reduce((acc, rule) => ({
-      ...acc,
-      [rule]: { enabled: true }
-    }), {})
+    rules: rules.reduce(
+      (acc, rule) => ({
+        ...acc,
+        [rule]: { enabled: true },
+      }),
+      {},
+    ),
   });
 };
 
@@ -79,7 +84,7 @@ export const A11yTestPatterns = {
    */
   testKeyboardNavigation: async (element: Element) => {
     const focusableElements = element.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     return focusableElements.length > 0;
   },
@@ -89,10 +94,10 @@ export const A11yTestPatterns = {
    */
   testAriaAttributes: async (container: Element) => {
     return await testA11yRules(container, [
-      'aria-valid-attr',
-      'aria-valid-attr-value',
-      'aria-required-attr',
-      'aria-roles'
+      "aria-valid-attr",
+      "aria-valid-attr-value",
+      "aria-required-attr",
+      "aria-roles",
     ]);
   },
 
@@ -101,9 +106,9 @@ export const A11yTestPatterns = {
    */
   testSemanticHTML: async (container: Element) => {
     return await testA11yRules(container, [
-      'landmark-one-main',
-      'page-has-heading-one',
-      'heading-order'
+      "landmark-one-main",
+      "page-has-heading-one",
+      "heading-order",
     ]);
-  }
+  },
 };

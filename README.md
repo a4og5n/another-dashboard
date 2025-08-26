@@ -83,15 +83,13 @@ This template includes comprehensive accessibility testing tools:
 Add the A11yProvider to your root layout for development-time accessibility checking:
 
 ```tsx
-import { A11yProvider } from '@/components/accessibility/a11y-provider';
+import { A11yProvider } from "@/components/accessibility/a11y-provider";
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <A11yProvider enableInDevelopment>
-          {children}
-        </A11yProvider>
+        <A11yProvider enableInDevelopment>{children}</A11yProvider>
       </body>
     </html>
   );
@@ -103,9 +101,9 @@ export default function RootLayout({ children }) {
 Example accessibility test pattern:
 
 ```tsx
-import { expectNoA11yViolations, renderWithA11y } from '@/test/axe-helper';
+import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
 
-it('should be accessible', async () => {
+it("should be accessible", async () => {
   const { renderResult } = await renderWithA11y(<MyComponent />);
   await expectNoA11yViolations(renderResult.container);
 });
@@ -125,15 +123,15 @@ This template includes comprehensive Web Vitals tracking and performance monitor
 Add the WebVitalsReporter to your root layout:
 
 ```tsx
-import { WebVitalsReporter } from '@/components/performance/web-vitals-reporter';
+import { WebVitalsReporter } from "@/components/performance/web-vitals-reporter";
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <WebVitalsReporter 
+        <WebVitalsReporter
           googleAnalyticsId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}
-          logToConsole={process.env.NODE_ENV === 'development'}
+          logToConsole={process.env.NODE_ENV === "development"}
         />
         {children}
       </body>
@@ -147,12 +145,15 @@ export default function RootLayout({ children }) {
 Monitor performance in your components:
 
 ```tsx
-import { useWebVitals, usePageLoadPerformance } from '@/components/performance/use-performance';
+import {
+  useWebVitals,
+  usePageLoadPerformance,
+} from "@/components/performance/use-performance";
 
 function PerformanceDashboard() {
   const { metrics, loading } = useWebVitals();
   const { loadTime } = usePageLoadPerformance();
-  
+
   return (
     <div>
       <p>LCP: {metrics.lcp?.toFixed(2)}ms</p>
@@ -165,8 +166,9 @@ function PerformanceDashboard() {
 ### Example Tests
 
 Example tests are provided for:
+
 - UI components with a11y testing (`src/components/ui/button.test.tsx`)
-- Utility functions (`src/utils/format-date.test.ts`) 
+- Utility functions (`src/utils/format-date.test.ts`)
 - API integrations (`src/actions/example.test.ts`)
 
 Follow these patterns when creating new tests.

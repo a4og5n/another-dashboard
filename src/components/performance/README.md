@@ -5,9 +5,11 @@ This directory contains components and utilities for performance monitoring and 
 ## Components
 
 ### WebVitalsReporter
+
 A component that initializes Web Vitals tracking for your application.
 
 ### Hooks
+
 - `useWebVitals` - Get current Web Vitals metrics
 - `usePerformanceObserver` - Observe performance entries
 - `usePageLoadPerformance` - Track page load metrics
@@ -16,15 +18,16 @@ A component that initializes Web Vitals tracking for your application.
 ## Usage
 
 ### Basic Setup (Root Layout)
+
 ```tsx
-import { WebVitalsReporter } from '@/components/performance/web-vitals-reporter';
+import { WebVitalsReporter } from "@/components/performance/web-vitals-reporter";
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <WebVitalsReporter 
-          logToConsole={process.env.NODE_ENV === 'development'}
+        <WebVitalsReporter
+          logToConsole={process.env.NODE_ENV === "development"}
           googleAnalyticsId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}
         />
         {children}
@@ -35,6 +38,7 @@ export default function RootLayout({ children }) {
 ```
 
 ### With Multiple Analytics Providers
+
 ```tsx
 <WebVitalsReporter
   googleAnalyticsId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}
@@ -42,14 +46,18 @@ export default function RootLayout({ children }) {
   customEndpoint="/api/analytics"
   onMetric={(metric) => {
     // Custom handling
-    console.log('Custom metric:', metric);
+    console.log("Custom metric:", metric);
   }}
 />
 ```
 
 ### Using Hooks
+
 ```tsx
-import { useWebVitals, usePageLoadPerformance } from '@/components/performance/use-performance';
+import {
+  useWebVitals,
+  usePageLoadPerformance,
+} from "@/components/performance/use-performance";
 
 function PerformanceDashboard() {
   const { metrics, loading, refreshMetrics } = useWebVitals();
@@ -73,19 +81,25 @@ function PerformanceDashboard() {
 ## Analytics Integration
 
 ### Google Analytics 4
+
 Set `NEXT_PUBLIC_GA_MEASUREMENT_ID` in your environment variables:
+
 ```env
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
 
 ### Vercel Analytics
+
 Install `@vercel/analytics` and add the script to your layout:
+
 ```bash
 pnpm add @vercel/analytics
 ```
 
 ### Custom Analytics
+
 Provide a custom endpoint that accepts POST requests with Web Vitals data:
+
 ```tsx
 <WebVitalsReporter customEndpoint="/api/analytics/web-vitals" />
 ```
@@ -93,12 +107,13 @@ Provide a custom endpoint that accepts POST requests with Web Vitals data:
 ## Core Web Vitals Explained
 
 - **LCP (Largest Contentful Paint)**: Loading performance. Good < 2.5s
-- **FID (First Input Delay)**: Interactivity. Good < 100ms  
+- **FID (First Input Delay)**: Interactivity. Good < 100ms
 - **CLS (Cumulative Layout Shift)**: Visual stability. Good < 0.1
 
 ## Environment Variables
 
 Add these to your `.env.local`:
+
 ```env
 # Google Analytics
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX

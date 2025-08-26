@@ -15,7 +15,7 @@ This directory contains business logic services that use repositories to access 
 // Example service class
 export class ExampleService {
   // Implement methods for business operations
-  
+
   // For example:
   async processData(input: InputType): Promise<OutputType> {
     // Implement business logic here

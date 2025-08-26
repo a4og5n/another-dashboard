@@ -10,19 +10,19 @@ This folder contains translation files for different languages. To add a new lan
 
 ```tsx
 // In server components:
-import { getTranslations } from 'next-intl/server';
+import { getTranslations } from "next-intl/server";
 
 export default async function Page() {
-  const t = await getTranslations('home');
-  return <h1>{t('title')}</h1>;
+  const t = await getTranslations("home");
+  return <h1>{t("title")}</h1>;
 }
 
 // In client components:
-'use client';
-import { useTranslations } from 'next-intl';
+("use client");
+import { useTranslations } from "next-intl";
 
 export default function MyComponent() {
-  const t = useTranslations('common');
-  return <button>{t('welcome')}</button>;
+  const t = useTranslations("common");
+  return <button>{t("welcome")}</button>;
 }
 ```

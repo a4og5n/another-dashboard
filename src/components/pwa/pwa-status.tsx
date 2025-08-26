@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Smartphone, Monitor, Wifi, WifiOff } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Smartphone, Monitor, Wifi, WifiOff } from "lucide-react";
 
 interface PWAStatus {
   isInstalled: boolean;
   isStandalone: boolean;
   isOnline: boolean;
-  installSource: 'browser' | 'homescreen' | 'pwa' | 'unknown';
+  installSource: "browser" | "homescreen" | "pwa" | "unknown";
 }
 
 /**
  * PWA Status Component
- * 
+ *
  * Displays the current PWA status and connection information
  * Useful for debugging and user awareness
  */
@@ -21,52 +21,58 @@ export function PWAStatus() {
     isInstalled: false,
     isStandalone: false,
     isOnline: navigator.onLine,
-    installSource: 'unknown'
+    installSource: "unknown",
   });
 
   useEffect(() => {
     const updateStatus = () => {
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      const isStandalone = window.matchMedia(
+        "(display-mode: standalone)",
+      ).matches;
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isInStandaloneMode = (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+      const isInStandaloneMode =
+        (window.navigator as Navigator & { standalone?: boolean })
+          .standalone === true;
       const isInstalled = isStandalone || (isIOS && isInStandaloneMode);
-      
+
       // Detect install source
-      let installSource: PWAStatus['installSource'] = 'unknown';
+      let installSource: PWAStatus["installSource"] = "unknown";
       if (isStandalone) {
-        installSource = 'pwa';
+        installSource = "pwa";
       } else if (isInStandaloneMode) {
-        installSource = 'homescreen';
+        installSource = "homescreen";
       } else {
-        installSource = 'browser';
+        installSource = "browser";
       }
 
-      setStatus(prev => ({
+      setStatus((prev) => ({
         ...prev,
         isInstalled,
         isStandalone: isStandalone || isInStandaloneMode,
-        installSource
+        installSource,
       }));
     };
 
-    const handleOnline = () => setStatus(prev => ({ ...prev, isOnline: true }));
-    const handleOffline = () => setStatus(prev => ({ ...prev, isOnline: false }));
+    const handleOnline = () =>
+      setStatus((prev) => ({ ...prev, isOnline: true }));
+    const handleOffline = () =>
+      setStatus((prev) => ({ ...prev, isOnline: false }));
 
     // Initial status check
     updateStatus();
 
     // Listen for display mode changes
-    const mediaQuery = window.matchMedia('(display-mode: standalone)');
-    mediaQuery.addEventListener('change', updateStatus);
+    const mediaQuery = window.matchMedia("(display-mode: standalone)");
+    mediaQuery.addEventListener("change", updateStatus);
 
     // Listen for online/offline events
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      mediaQuery.removeEventListener('change', updateStatus);
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      mediaQuery.removeEventListener("change", updateStatus);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 

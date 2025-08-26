@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -10,14 +10,14 @@ interface ErrorProps {
 
 export default function Error({ error, reset }: ErrorProps) {
   const router = useRouter();
-  
+
   useEffect(() => {
     // Log error to an error reporting service
-    console.error('App error:', error);
+    console.error("App error:", error);
   }, [error]);
 
   const handleGoHome = () => {
-    router.push('/');
+    router.push("/");
   };
 
   return (
@@ -28,7 +28,8 @@ export default function Error({ error, reset }: ErrorProps) {
             Something went wrong
           </h1>
           <p className="text-muted-foreground">
-            An unexpected error occurred. We&apos;ve been notified and are working to fix it.
+            An unexpected error occurred. We&apos;ve been notified and are
+            working to fix it.
           </p>
         </div>
 
@@ -39,7 +40,7 @@ export default function Error({ error, reset }: ErrorProps) {
           >
             Try again
           </button>
-          
+
           <button
             onClick={handleGoHome}
             className="w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
@@ -48,7 +49,7 @@ export default function Error({ error, reset }: ErrorProps) {
           </button>
         </div>
 
-        {process.env.NODE_ENV === 'development' && (
+        {process.env.NODE_ENV === "development" && (
           <details className="mt-6 text-left">
             <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
               Error details (development only)

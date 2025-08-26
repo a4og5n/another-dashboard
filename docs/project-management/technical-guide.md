@@ -9,6 +9,7 @@
 ## 🏗️ Architecture Overview
 
 ### Technology Stack
+
 - **Frontend:** Next.js 15 + React 18 + TypeScript
 - **Styling:** Tailwind CSS + shadcn/ui components
 - **Testing:** Vitest + React Testing Library + jest-axe
@@ -16,6 +17,7 @@
 - **Package Manager:** pnpm
 
 ### Project Structure
+
 ```
 src/
 ├── app/                    # Next.js App Router
@@ -43,6 +45,7 @@ src/
 ### Step 1: Project Initialization
 
 #### 1.1 Create Next.js Project
+
 ```bash
 # Use the latest Next.js 15 with all recommended options
 npx create-next-app@latest another-dashboard \
@@ -57,6 +60,7 @@ cd another-dashboard
 ```
 
 #### 1.2 Install Core Dependencies
+
 ```bash
 # UI and styling
 npx shadcn-ui@latest init
@@ -76,6 +80,7 @@ pnpm add @tanstack/react-query  # For API state management
 ```
 
 #### 1.3 Configure Package.json Scripts
+
 ```json
 {
   "scripts": {
@@ -97,6 +102,7 @@ pnpm add @tanstack/react-query  # For API state management
 ### Step 2: Development Toolchain Setup
 
 #### 2.1 ESLint Configuration (.eslintrc.json)
+
 ```json
 {
   "extends": [
@@ -106,7 +112,10 @@ pnpm add @tanstack/react-query  # For API state management
   ],
   "rules": {
     "jsx-a11y/anchor-is-valid": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off"
   }
@@ -114,6 +123,7 @@ pnpm add @tanstack/react-query  # For API state management
 ```
 
 #### 2.2 Prettier Configuration (.prettierrc)
+
 ```json
 {
   "semi": true,
@@ -127,20 +137,21 @@ pnpm add @tanstack/react-query  # For API state management
 ```
 
 #### 2.3 Vitest Configuration (vitest.config.ts)
+
 ```typescript
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 });
@@ -149,6 +160,7 @@ export default defineConfig({
 ### Step 3: Basic UI Foundation
 
 #### 3.1 Install shadcn/ui Components
+
 ```bash
 # Essential components for dashboard
 npx shadcn-ui@latest add button card input select navigation-menu
@@ -157,6 +169,7 @@ npx shadcn-ui@latest add table tabs tooltip switch
 ```
 
 #### 3.2 Create Theme Provider (components/theme-provider.tsx)
+
 ```typescript
 'use client';
 
@@ -236,6 +249,7 @@ export const useTheme = () => {
 #### 3.3 Create Main Layout Structure
 
 **app/layout.tsx:**
+
 ```typescript
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -281,11 +295,12 @@ export default function RootLayout({
 ### Step 4: Type Definitions
 
 #### 4.1 Create Base Types (lib/types/index.ts)
+
 ```typescript
 // Base API response structure
 export interface ApiResponse<T = any> {
   data: T;
-  status: 'success' | 'error';
+  status: "success" | "error";
   message?: string;
   timestamp: string;
 }
@@ -296,15 +311,15 @@ export interface DashboardMetric {
   name: string;
   value: number | string;
   change?: number;
-  changeType?: 'increase' | 'decrease' | 'neutral';
-  format?: 'number' | 'currency' | 'percentage' | 'duration';
+  changeType?: "increase" | "decrease" | "neutral";
+  format?: "number" | "currency" | "percentage" | "duration";
 }
 
 // Time range for data filtering
 export interface TimeRange {
   start: Date;
   end: Date;
-  preset?: 'today' | '7days' | '30days' | '90days' | 'year' | 'custom';
+  preset?: "today" | "7days" | "30days" | "90days" | "year" | "custom";
 }
 
 // Chart data structure
@@ -316,6 +331,7 @@ export interface ChartDataPoint {
 ```
 
 #### 4.2 Google Analytics Types (lib/types/google-analytics.ts)
+
 ```typescript
 export interface GAMetrics {
   sessions: number;
@@ -345,17 +361,18 @@ export interface GAPageData {
 ### Step 5: API Service Implementation
 
 #### 5.1 Base API Client (lib/api/client.ts)
+
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 export class ApiError extends Error {
   constructor(
     message: string,
     public status?: number,
-    public code?: string
+    public code?: string,
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
@@ -378,9 +395,9 @@ export class ApiClient {
   async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    schema?: z.ZodSchema<T>
+    schema?: z.ZodSchema<T>,
   ): Promise<T> {
-    const url = this.config.baseURL 
+    const url = this.config.baseURL
       ? `${this.config.baseURL}${endpoint}`
       : endpoint;
 
@@ -391,7 +408,7 @@ export class ApiClient {
       const response = await fetch(url, {
         ...options,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...this.config.headers,
           ...options.headers,
         },
@@ -401,20 +418,20 @@ export class ApiClient {
       if (!response.ok) {
         throw new ApiError(
           `API request failed: ${response.statusText}`,
-          response.status
+          response.status,
         );
       }
 
       const data = await response.json();
-      
+
       if (schema) {
         return schema.parse(data);
       }
-      
+
       return data;
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        throw new ApiError('Request timeout', 408, 'TIMEOUT');
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new ApiError("Request timeout", 408, "TIMEOUT");
       }
       throw error;
     } finally {
@@ -429,6 +446,7 @@ export class ApiClient {
 ## 🎯 Implementation Priorities
 
 ### Week 1 Focus:
+
 1. ✅ Complete project initialization
 2. ✅ Set up all toolchain components
 3. ✅ Create basic layout structure
@@ -436,6 +454,7 @@ export class ApiClient {
 5. ✅ Test deployment pipeline
 
 ### Week 2 Focus:
+
 1. 🔄 Define all TypeScript interfaces
 2. 🔄 Build API service layer
 3. 🔄 Create navigation components
@@ -443,6 +462,7 @@ export class ApiClient {
 5. 🔄 Prepare for first API integration
 
 ### Decision Log:
+
 - **Chart Library:** Chose Recharts for better React integration
 - **State Management:** Using React Query for API state management
 - **Theme System:** Implemented with CSS variables and localStorage persistence
@@ -453,21 +473,25 @@ export class ApiClient {
 ## 🔍 Testing Strategy
 
 ### Unit Tests
+
 - All utility functions
 - Custom hooks
 - Component logic
 
-### Integration Tests  
+### Integration Tests
+
 - API service layer
 - Dashboard data flow
 - Navigation functionality
 
 ### Accessibility Tests
+
 - All interactive components
 - Keyboard navigation
 - Screen reader compatibility
 
 ### Performance Tests
+
 - Bundle size monitoring
 - Core Web Vitals tracking
 - API response time validation
@@ -477,6 +501,7 @@ export class ApiClient {
 ## 📚 Resources & References
 
 ### Documentation Links
+
 - [Next.js 15 Documentation](https://nextjs.org/docs)
 - [shadcn/ui Components](https://ui.shadcn.com/)
 - [Tailwind CSS](https://tailwindcss.com/docs)
@@ -484,6 +509,7 @@ export class ApiClient {
 - [React Query Documentation](https://tanstack.com/query/latest)
 
 ### API References
+
 - [Google Analytics Reporting API](https://developers.google.com/analytics/devguides/reporting/core/v4)
 - [YouTube Analytics API](https://developers.google.com/youtube/analytics)
 - [Meta Graph API](https://developers.facebook.com/docs/graph-api)

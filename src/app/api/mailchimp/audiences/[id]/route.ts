@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getMailchimpService } from '@/services';
+import { NextRequest, NextResponse } from "next/server";
+import { getMailchimpService } from "@/services";
 
 /**
  * Mailchimp Single Audience API
- * 
+ *
  * GET /api/mailchimp/audiences/[id] - Get specific audience/list
  */
 interface RouteContext {
@@ -20,11 +20,11 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
     if (!response.success) {
       const status = response.statusCode === 404 ? 404 : 500;
       return NextResponse.json(
-        { 
-          error: 'Audience not found', 
-          details: response.error 
+        {
+          error: "Audience not found",
+          details: response.error,
         },
-        { status }
+        { status },
       );
     }
 
@@ -36,16 +36,15 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
         rateLimit: response.rateLimit,
       },
     });
-
   } catch (error) {
-    console.error('Mailchimp audience API error:', error);
-    
+    console.error("Mailchimp audience API error:", error);
+
     return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
