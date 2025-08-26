@@ -11,7 +11,15 @@ export default defineConfig({
     include: ["**/*.test.{ts,tsx}"],
     coverage: {
       reporter: ["text", "json", "html"],
-      exclude: ["**/node_modules/**", "**/dist/**", "**/test/**"],
+      exclude: [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/test/**",
+        "**/*.d.ts",
+        "**/coverage/**",
+        "**/.next/**",
+        "**/public/**",
+      ],
     },
   },
   resolve: {
