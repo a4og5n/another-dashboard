@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
 import { CampaignFilters } from "@/types/campaign-filters";
-import {
-  BadRequestError,
-  NotFoundError,
-  MailchimpApiError,
-  InternalServerError,
-} from "@/types/api-errors";
 
 /**
  * Mailchimp Dashboard API
@@ -69,51 +63,15 @@ export async function GET(request: NextRequest) {
 
   const mailchimp = getMailchimpService();
 
+  // Fetch campaign and audience data in parallel
+  let campaignSummary, audienceSummary;
   try {
-    // Fetch campaign and audience data in parallel
-    const [campaignSummary, audienceSummary] = await Promise.all([
+    [campaignSummary, audienceSummary] = await Promise.all([
       mailchimp.getCampaignSummary(filters),
       mailchimp.getAudienceSummary(),
     ]);
-
-    if (!campaignSummary.success) {
-      throw new MailchimpApiError(
-        campaignSummary.error || "Failed to fetch campaign data",
-      );
-    }
-    if (!audienceSummary.success) {
-      throw new MailchimpApiError(
-        audienceSummary.error || "Failed to fetch audience data",
-      );
-    }
-
-    // Combine data for dashboard
-    const dashboardData = {
-      campaigns: campaignSummary.data,
-      audiences: audienceSummary.data,
-      appliedFilters: {
-        dateRange: filters.dateRange,
-        hasActiveFilters: !!(filters.dateRange || filters.campaignType),
-      },
-      metadata: {
-        lastUpdated: new Date().toISOString(),
-        rateLimit: campaignSummary.rateLimit || audienceSummary.rateLimit,
-      },
-    };
-
-    return NextResponse.json(dashboardData);
   } catch (error) {
-    if (
-      error instanceof BadRequestError ||
-      error instanceof NotFoundError ||
-      error instanceof MailchimpApiError ||
-      error instanceof InternalServerError
-    ) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.statusCode },
-      );
-    }
+    // Only catch truly unexpected errors (e.g., network failures)
     console.error("Mailchimp dashboard API error:", error);
     return NextResponse.json(
       {
@@ -123,4 +81,38 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
+
+  // Handle expected errors explicitly
+  if (!campaignSummary?.success) {
+    return NextResponse.json(
+      {
+        error: campaignSummary?.error || "Failed to fetch campaign data",
+      },
+      { status: 502 },
+    );
+  }
+  if (!audienceSummary?.success) {
+    return NextResponse.json(
+      {
+        error: audienceSummary?.error || "Failed to fetch audience data",
+      },
+      { status: 502 },
+    );
+  }
+
+  // Combine data for dashboard
+  const dashboardData = {
+    campaigns: campaignSummary.data,
+    audiences: audienceSummary.data,
+    appliedFilters: {
+      dateRange: filters.dateRange,
+      hasActiveFilters: !!(filters.dateRange || filters.campaignType),
+    },
+    metadata: {
+      lastUpdated: new Date().toISOString(),
+      rateLimit: campaignSummary.rateLimit || audienceSummary.rateLimit,
+    },
+  };
+
+  return NextResponse.json(dashboardData);
 }
