@@ -1,18 +1,16 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http } from 'msw';
 
 // This is an example of how to test server actions/API calls
 // You would typically import your server actions here
 
 const handlers = [
-  rest.get('https://api.example.com/data', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        message: 'Success',
-        data: [1, 2, 3]
-      })
-    );
+  http.get('https://api.example.com/data', () => {
+    return Response.json({
+      message: 'Success',
+      data: [1, 2, 3]
+    });
   }),
 ];
 
