@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
 import { CampaignFilters } from "@/types/campaign-filters";
+import { validateMailchimpDashboardQuery } from "@/actions/mailchimp-dashboard";
 
 /**
  * Mailchimp Dashboard API
@@ -9,55 +10,44 @@ import { CampaignFilters } from "@/types/campaign-filters";
  * GET /api/mailchimp/dashboard
  */
 export async function GET(request: NextRequest) {
+  // ...existing code...
+
+  // Centralized validation using searchParams
   const searchParams = request.nextUrl.searchParams;
-  const limit = parseInt(searchParams.get("limit") || "10", 10);
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const campaignType = searchParams.get("type") || undefined;
+  const parseResult = validateMailchimpDashboardQuery(searchParams);
 
-  // Validate parameters explicitly
-  if (isNaN(limit) || limit < 1 || limit > 100) {
-    return NextResponse.json(
-      { error: "Invalid 'limit' parameter" },
-      { status: 400 },
+  if (!parseResult.success) {
+    return new Response(
+      JSON.stringify({
+        error: "Invalid query parameters",
+        details: parseResult.error.issues,
+      }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
     );
   }
-  if (isNaN(page) || page < 1) {
-    return NextResponse.json(
-      { error: "Invalid 'page' parameter" },
-      { status: 400 },
-    );
-  }
-
-  // Date range parameters (presets are UI-only, not sent to API)
-  const startDate = searchParams.get("startDate");
-  const endDate = searchParams.get("endDate");
-
-  // Validate date format (ISO yyyy-mm-dd)
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  if (startDate && !dateRegex.test(startDate)) {
-    return NextResponse.json(
-      { error: "Invalid 'startDate' format. Use yyyy-mm-dd." },
-      { status: 400 },
-    );
-  }
-  if (endDate && !dateRegex.test(endDate)) {
-    return NextResponse.json(
-      { error: "Invalid 'endDate' format. Use yyyy-mm-dd." },
-      { status: 400 },
-    );
-  }
+  const {
+    page,
+    limit,
+    startDate: validStartDate,
+    endDate: validEndDate,
+    campaignType: validCampaignType,
+  } = parseResult.data;
 
   const filters: CampaignFilters = {
     limit,
     page,
-    campaignType,
+    campaignType: validCampaignType,
   };
 
   // Add date range filter if provided
-  if (startDate || endDate) {
+  if (validStartDate || validEndDate) {
     filters.dateRange = {
-      startDate: startDate ? new Date(startDate + "T00:00:00.000Z") : undefined,
-      endDate: endDate ? new Date(endDate + "T23:59:59.999Z") : undefined,
+      startDate: validStartDate
+        ? new Date(validStartDate + "T00:00:00.000Z")
+        : undefined,
+      endDate: validEndDate
+        ? new Date(validEndDate + "T23:59:59.999Z")
+        : undefined,
     };
   }
 
@@ -100,17 +90,25 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Combine data for dashboard
+  // Always return pagination metadata, even for error/mocked data
   const dashboardData = {
-    campaigns: campaignSummary.data,
-    audiences: audienceSummary.data,
+    campaigns: campaignSummary?.data?.recentCampaigns ?? [],
+    audiences: audienceSummary?.data ?? {},
+    pagination: {
+      page,
+      limit,
+      total: campaignSummary?.data?.totalCampaigns ?? 0,
+      totalPages: campaignSummary?.data?.totalCampaigns
+        ? Math.ceil(campaignSummary.data.totalCampaigns / limit)
+        : 1,
+    },
     appliedFilters: {
       dateRange: filters.dateRange,
       hasActiveFilters: !!(filters.dateRange || filters.campaignType),
     },
     metadata: {
       lastUpdated: new Date().toISOString(),
-      rateLimit: campaignSummary.rateLimit || audienceSummary.rateLimit,
+      rateLimit: campaignSummary?.rateLimit || audienceSummary?.rateLimit,
     },
   };
 
