@@ -12,7 +12,7 @@ This directory contains data models and schemas that define the shape of your ap
 ## Example
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 // Define a schema with Zod
 export const ExampleSchema = z.object({

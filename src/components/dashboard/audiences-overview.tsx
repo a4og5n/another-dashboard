@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { ListSkeleton } from '@/components/ui/skeleton';
-import { Users, TrendingUp } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { ListSkeleton } from "@/components/ui/skeleton";
+import { Users, TrendingUp } from "lucide-react";
 
 interface Audience {
   id: string;
@@ -41,7 +41,7 @@ export function AudiencesOverview({
     );
   }
 
-  const maxMembers = Math.max(...audiences.map(a => a.memberCount));
+  const maxMembers = Math.max(...audiences.map((a) => a.memberCount));
 
   return (
     <Card>
@@ -55,14 +55,22 @@ export function AudiencesOverview({
         {/* Summary Stats */}
         <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
           <div>
-            <div className="text-2xl font-bold">{totalSubscribers.toLocaleString()}</div>
-            <div className="text-sm text-muted-foreground">Total Subscribers</div>
+            <div className="text-2xl font-bold">
+              {totalSubscribers.toLocaleString()}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Total Subscribers
+            </div>
           </div>
           <div className="flex items-center space-x-2">
             <TrendingUp className="h-4 w-4 text-green-600" />
             <div>
-              <div className="text-2xl font-bold text-green-600">+{avgGrowthRate.toFixed(1)}%</div>
-              <div className="text-sm text-muted-foreground">Avg Growth Rate</div>
+              <div className="text-2xl font-bold text-green-600">
+                +{avgGrowthRate.toFixed(1)}%
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Avg Growth Rate
+              </div>
             </div>
           </div>
         </div>
@@ -79,12 +87,12 @@ export function AudiencesOverview({
                   {audience.memberCount.toLocaleString()}
                 </span>
               </div>
-              
-              <Progress 
-                value={(audience.memberCount / maxMembers) * 100} 
+
+              <Progress
+                value={(audience.memberCount / maxMembers) * 100}
                 className="h-2"
               />
-              
+
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Growth: +{audience.growthRate.toFixed(1)}%</span>
                 <span>Open: {audience.openRate.toFixed(1)}%</span>
@@ -96,7 +104,8 @@ export function AudiencesOverview({
 
         {audiences.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            No audiences found. Connect your Mailchimp account to view audience data.
+            No audiences found. Connect your Mailchimp account to view audience
+            data.
           </div>
         )}
       </CardContent>

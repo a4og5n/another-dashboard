@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { MailchimpDashboardSkeleton } from '@/components/ui/skeleton';
-import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { MailchimpDashboardSkeleton } from "@/components/ui/skeleton";
+import { RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface LoadingStateProps {
-  type: 'loading' | 'error' | 'empty' | 'network-error';
+  type: "loading" | "error" | "empty" | "network-error";
   title?: string;
   message?: string;
   onRetry?: () => void;
@@ -13,27 +13,27 @@ interface LoadingStateProps {
   showSkeleton?: boolean;
 }
 
-export function LoadingState({ 
-  type, 
-  title, 
-  message, 
-  onRetry, 
-  retryLabel = 'Try again',
-  showSkeleton = true 
+export function LoadingState({
+  type,
+  title,
+  message,
+  onRetry,
+  retryLabel = "Try again",
+  showSkeleton = true,
 }: LoadingStateProps) {
-  const [dots, setDots] = useState('');
+  const [dots, setDots] = useState("");
 
   useEffect(() => {
-    if (type === 'loading') {
+    if (type === "loading") {
       const interval = setInterval(() => {
-        setDots(prev => prev.length >= 3 ? '' : prev + '.');
+        setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
       }, 500);
       return () => clearInterval(interval);
     }
     return; // Return for non-loading states
   }, [type]);
 
-  if (type === 'loading') {
+  if (type === "loading") {
     return (
       <div className="space-y-6">
         {showSkeleton ? (
@@ -46,7 +46,8 @@ export function LoadingState({
                 {title || `Loading dashboard data${dots}`}
               </h3>
               <p className="text-muted-foreground text-center max-w-md">
-                {message || 'Fetching the latest data from your Mailchimp account...'}
+                {message ||
+                  "Fetching the latest data from your Mailchimp account..."}
               </p>
             </CardContent>
           </Card>
@@ -55,7 +56,7 @@ export function LoadingState({
     );
   }
 
-  if (type === 'error') {
+  if (type === "error") {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -63,10 +64,11 @@ export function LoadingState({
             <WifiOff className="h-8 w-8 text-destructive" />
           </div>
           <h3 className="text-lg font-semibold mb-2">
-            {title || 'Something went wrong'}
+            {title || "Something went wrong"}
           </h3>
           <p className="text-muted-foreground text-center max-w-md mb-4">
-            {message || 'We encountered an error while loading your dashboard data. Please try again.'}
+            {message ||
+              "We encountered an error while loading your dashboard data. Please try again."}
           </p>
           {onRetry && (
             <Button onClick={onRetry} variant="outline" className="gap-2">
@@ -79,7 +81,7 @@ export function LoadingState({
     );
   }
 
-  if (type === 'network-error') {
+  if (type === "network-error") {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -87,10 +89,11 @@ export function LoadingState({
             <Wifi className="h-8 w-8 text-orange-600 dark:text-orange-400" />
           </div>
           <h3 className="text-lg font-semibold mb-2">
-            {title || 'Connection issue'}
+            {title || "Connection issue"}
           </h3>
           <p className="text-muted-foreground text-center max-w-md mb-4">
-            {message || 'Unable to connect to Mailchimp API. Please check your internet connection and API configuration.'}
+            {message ||
+              "Unable to connect to Mailchimp API. Please check your internet connection and API configuration."}
           </p>
           {onRetry && (
             <Button onClick={onRetry} variant="outline" className="gap-2">
@@ -103,7 +106,7 @@ export function LoadingState({
     );
   }
 
-  if (type === 'empty') {
+  if (type === "empty") {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -111,10 +114,11 @@ export function LoadingState({
             <RefreshCw className="h-8 w-8 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-semibold mb-2">
-            {title || 'No data available'}
+            {title || "No data available"}
           </h3>
           <p className="text-muted-foreground text-center max-w-md">
-            {message || 'There\'s no data to display right now. Try refreshing or check your Mailchimp account.'}
+            {message ||
+              "There's no data to display right now. Try refreshing or check your Mailchimp account."}
           </p>
         </CardContent>
       </Card>
@@ -145,12 +149,12 @@ export function ProgressiveLoading({
   loadingTitle,
   loadingMessage,
   errorTitle,
-  errorMessage
+  errorMessage,
 }: ProgressiveLoadingProps) {
   if (isLoading) {
     return (
-      <LoadingState 
-        type="loading" 
+      <LoadingState
+        type="loading"
         title={loadingTitle}
         message={loadingMessage}
         showSkeleton={true}
@@ -160,8 +164,8 @@ export function ProgressiveLoading({
 
   if (hasError) {
     return (
-      <LoadingState 
-        type="error" 
+      <LoadingState
+        type="error"
         title={errorTitle}
         message={errorMessage}
         onRetry={onRetry}
@@ -171,7 +175,7 @@ export function ProgressiveLoading({
 
   if (isEmpty) {
     return (
-      <LoadingState 
+      <LoadingState
         type="empty"
         title="No data to display"
         message="Your dashboard will appear here once data is available."

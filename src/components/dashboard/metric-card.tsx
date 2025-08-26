@@ -1,14 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 interface MetricCardProps {
   title: string;
   value: string | number;
   change?: number;
   changeLabel?: string;
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
   description?: string;
   loading?: boolean;
 }
@@ -24,9 +24,9 @@ export function MetricCard({
 }: MetricCardProps) {
   const getTrendIcon = () => {
     switch (trend) {
-      case 'up':
+      case "up":
         return <TrendingUp className="h-4 w-4 text-green-600" />;
-      case 'down':
+      case "down":
         return <TrendingDown className="h-4 w-4 text-red-600" />;
       default:
         return <Minus className="h-4 w-4 text-gray-600" />;
@@ -35,12 +35,12 @@ export function MetricCard({
 
   const getTrendColor = () => {
     switch (trend) {
-      case 'up':
-        return 'text-green-600';
-      case 'down':
-        return 'text-red-600';
+      case "up":
+        return "text-green-600";
+      case "down":
+        return "text-red-600";
       default:
-        return 'text-gray-600';
+        return "text-gray-600";
     }
   };
 
@@ -74,7 +74,8 @@ export function MetricCard({
           <div className="flex items-center space-x-2 mt-2">
             {change !== undefined && (
               <Badge variant="outline" className={getTrendColor()}>
-                {change > 0 ? '+' : ''}{change}%
+                {change > 0 ? "+" : ""}
+                {change}%
               </Badge>
             )}
             {changeLabel && (

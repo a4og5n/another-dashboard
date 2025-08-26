@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import { CampaignsTable, AudiencesOverview } from '@/components/dashboard';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { ProgressiveLoading } from '@/components/ui/loading-state';
-import { Pagination } from '@/components/ui/pagination';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { RefreshCw, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { CampaignsTable, AudiencesOverview } from "@/components/dashboard";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { ProgressiveLoading } from "@/components/ui/loading-state";
+import { Pagination } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { RefreshCw, AlertCircle } from "lucide-react";
 
 interface DashboardData {
   campaigns: {
@@ -56,31 +62,31 @@ const mockData: DashboardData = {
     totalEmailsSent: 156780,
     recentCampaigns: [
       {
-        id: '1',
-        title: 'Weekly Newsletter - Product Updates',
-        status: 'sent',
+        id: "1",
+        title: "Weekly Newsletter - Product Updates",
+        status: "sent",
         emailsSent: 12450,
         openRate: 28.3,
         clickRate: 4.1,
-        sendTime: '2025-08-22T09:00:00Z',
+        sendTime: "2025-08-22T09:00:00Z",
       },
       {
-        id: '2',
-        title: 'Summer Sale - 30% Off Everything',
-        status: 'sent',
+        id: "2",
+        title: "Summer Sale - 30% Off Everything",
+        status: "sent",
         emailsSent: 18920,
         openRate: 31.7,
         clickRate: 5.8,
-        sendTime: '2025-08-20T14:30:00Z',
+        sendTime: "2025-08-20T14:30:00Z",
       },
       {
-        id: '3',
-        title: 'Customer Success Stories',
-        status: 'sent',
+        id: "3",
+        title: "Customer Success Stories",
+        status: "sent",
         emailsSent: 8340,
         openRate: 22.1,
         clickRate: 2.9,
-        sendTime: '2025-08-18T11:15:00Z',
+        sendTime: "2025-08-18T11:15:00Z",
       },
     ],
   },
@@ -92,24 +98,24 @@ const mockData: DashboardData = {
     avgClickRate: 3.2,
     topLists: [
       {
-        id: '1',
-        name: 'Newsletter Subscribers',
+        id: "1",
+        name: "Newsletter Subscribers",
         memberCount: 15420,
         growthRate: 3.1,
         openRate: 26.8,
         clickRate: 3.7,
       },
       {
-        id: '2',
-        name: 'Product Updates List',
+        id: "2",
+        name: "Product Updates List",
         memberCount: 6890,
         growthRate: 1.8,
         openRate: 31.2,
         clickRate: 4.3,
       },
       {
-        id: '3',
-        name: 'VIP Customers',
+        id: "3",
+        name: "VIP Customers",
         memberCount: 2450,
         growthRate: 0.9,
         openRate: 45.6,
@@ -128,14 +134,23 @@ export default function MailchimpPage() {
   const campaignsPerPageOptions = [5, 10, 20, 50];
   const router = useRouter();
   const searchParams = useSearchParams();
-  const campaignsPerPageParam = parseInt(searchParams.get('perPage') || '10', 10);
-  const [campaignsPerPage, setCampaignsPerPage] = useState(campaignsPerPageParam);
-  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const campaignsPerPageParam = parseInt(
+    searchParams.get("perPage") || "10",
+    10,
+  );
+  const [campaignsPerPage, setCampaignsPerPage] = useState(
+    campaignsPerPageParam,
+  );
+  const pageParam = parseInt(searchParams.get("page") || "1", 10);
   const [currentPage, setCurrentPage] = useState(pageParam);
   const totalCampaigns = data?.campaigns.totalCampaigns ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCampaigns / campaignsPerPage));
 
-  const fetchDashboardData = async (isRefresh = false, page = currentPage, perPage = campaignsPerPage) => {
+  const fetchDashboardData = async (
+    isRefresh = false,
+    page = currentPage,
+    perPage = campaignsPerPage,
+  ) => {
     if (isRefresh) {
       setIsRefreshing(true);
     } else {
@@ -144,23 +159,25 @@ export default function MailchimpPage() {
     setError(null);
 
     try {
-  const response = await fetch(`/api/mailchimp/dashboard?limit=${perPage}&page=${page}`);
-      
+      const response = await fetch(
+        `/api/mailchimp/dashboard?limit=${perPage}&page=${page}`,
+      );
+
       if (response.ok) {
         const dashboardData = await response.json();
         setData(dashboardData);
       } else {
         // If API fails (no API keys), use mock data
-        console.warn('API call failed, using mock data');
+        console.warn("API call failed, using mock data");
         setData(mockData);
         if (response.status === 500) {
-          setError('API keys not configured. Using sample data.');
+          setError("API keys not configured. Using sample data.");
         }
       }
     } catch (err) {
-      console.warn('API call failed, using mock data:', err);
+      console.warn("API call failed, using mock data:", err);
       setData(mockData);
-      setError('Unable to connect to Mailchimp API. Using sample data.');
+      setError("Unable to connect to Mailchimp API. Using sample data.");
     } finally {
       setLoading(false);
       setIsRefreshing(false);
@@ -177,11 +194,11 @@ export default function MailchimpPage() {
     setCurrentPage(page);
     const params = new URLSearchParams(searchParams.toString());
     if (page === 1) {
-      params.delete('page');
+      params.delete("page");
       const query = params.toString();
       router.replace(query ? `?${query}` : window.location.pathname);
     } else {
-      params.set('page', page.toString());
+      params.set("page", page.toString());
       router.replace(`?${params.toString()}`);
     }
   };
@@ -192,11 +209,11 @@ export default function MailchimpPage() {
     setCurrentPage(1);
     const params = new URLSearchParams(searchParams.toString());
     if (perPage === 10) {
-      params.delete('perPage');
+      params.delete("perPage");
     } else {
-      params.set('perPage', perPage.toString());
+      params.set("perPage", perPage.toString());
     }
-    params.delete('page');
+    params.delete("page");
     const query = params.toString();
     router.replace(query ? `?${query}` : window.location.pathname);
   };
@@ -207,17 +224,21 @@ export default function MailchimpPage() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Mailchimp Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Mailchimp Dashboard
+            </h1>
             <p className="text-muted-foreground">
               Overview of your email marketing performance
             </p>
           </div>
-          <Button 
-            onClick={() => fetchDashboardData(true)} 
+          <Button
+            onClick={() => fetchDashboardData(true)}
             disabled={loading || isRefreshing}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${(loading || isRefreshing) ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${loading || isRefreshing ? "animate-spin" : ""}`}
+            />
+            {isRefreshing ? "Refreshing..." : "Refresh"}
           </Button>
         </div>
 
@@ -229,7 +250,8 @@ export default function MailchimpPage() {
               <div>
                 <p className="text-sm font-medium text-yellow-800">{error}</p>
                 <p className="text-sm text-yellow-600 mt-1">
-                  To connect your Mailchimp account, add your API key to the environment variables.
+                  To connect your Mailchimp account, add your API key to the
+                  environment variables.
                 </p>
               </div>
             </CardContent>
@@ -250,7 +272,9 @@ export default function MailchimpPage() {
             <TabsList>
               <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
               <TabsTrigger value="audiences">Audiences</TabsTrigger>
-              <TabsTrigger value="analytics" disabled>Analytics</TabsTrigger>
+              <TabsTrigger value="analytics" disabled>
+                Analytics
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="campaigns" className="space-y-4">
@@ -262,17 +286,24 @@ export default function MailchimpPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">Show</span>
-                    <Select value={campaignsPerPage.toString()} onValueChange={handlePerPageChange}>
+                    <Select
+                      value={campaignsPerPage.toString()}
+                      onValueChange={handlePerPageChange}
+                    >
                       <SelectTrigger className="w-20">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {campaignsPerPageOptions.map(opt => (
-                          <SelectItem key={opt} value={opt.toString()}>{opt}</SelectItem>
+                        {campaignsPerPageOptions.map((opt) => (
+                          <SelectItem key={opt} value={opt.toString()}>
+                            {opt}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <span className="text-sm text-muted-foreground">campaigns per page</span>
+                    <span className="text-sm text-muted-foreground">
+                      campaigns per page
+                    </span>
                   </div>
                   <div className="flex justify-end w-full">
                     <Pagination

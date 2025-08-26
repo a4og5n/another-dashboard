@@ -1,7 +1,12 @@
 {
   "entryPoints": ["src/**/*.ts", "src/**/*.tsx"],
   "out": "docs",
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx"
+  ],
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeExternals": true,

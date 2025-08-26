@@ -1,10 +1,11 @@
 # PWA App Icons
 
-This directory contains the app icons for your Progressive Web App (PWA). 
+This directory contains the app icons for your Progressive Web App (PWA).
 
 ## Icon Requirements
 
 The following icon sizes are required for proper PWA support:
+
 - 72x72px - Android launcher icon (small)
 - 96x96px - Android launcher icon (medium)
 - 128x128px - Android launcher icon (large)
@@ -19,6 +20,7 @@ The following icon sizes are required for proper PWA support:
 You can generate all required sizes from the provided `icon.svg` file:
 
 ### Using ImageMagick
+
 ```bash
 # Install ImageMagick if not already installed
 brew install imagemagick  # macOS
@@ -36,22 +38,24 @@ magick icon.svg -resize 512x512 icon-512x512.png
 ```
 
 ### Using Sharp (Node.js)
+
 ```javascript
-const sharp = require('sharp');
-const fs = require('fs');
+const sharp = require("sharp");
+const fs = require("fs");
 
 const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
 
-sizes.forEach(size => {
-  sharp('icon.svg')
+sizes.forEach((size) => {
+  sharp("icon.svg")
     .resize(size, size)
     .png()
     .toFile(`icon-${size}x${size}.png`)
-    .then(info => console.log(`Generated ${size}x${size} icon`));
+    .then((info) => console.log(`Generated ${size}x${size} icon`));
 });
 ```
 
 ### Online Tools
+
 - [Favicon.io](https://favicon.io/) - Generate icons from text, image, or emoji
 - [RealFaviconGenerator](https://realfavicongenerator.net/) - Comprehensive favicon generator
 - [PWA Asset Generator](https://github.com/onderceylan/pwa-asset-generator) - CLI tool for PWA assets
@@ -59,6 +63,7 @@ sizes.forEach(size => {
 ## Customization
 
 Replace the `icon.svg` file with your own design, ensuring:
+
 - Square aspect ratio (1:1)
 - Minimum size of 512x512px
 - Simple design that works at small sizes
@@ -68,6 +73,7 @@ Replace the `icon.svg` file with your own design, ensuring:
 ## Maskable Icons
 
 For better Android integration, consider creating maskable icons:
+
 - Use a safe zone (inner 80% of the icon)
 - The outer 20% may be cropped on some devices
 - Test your icons with the [Maskable.app](https://maskable.app/) tool
@@ -75,6 +81,7 @@ For better Android integration, consider creating maskable icons:
 ## Screenshots
 
 Add app screenshots to `/public/screenshots/` for better app store presentation:
+
 - `desktop.png` - Desktop view (1280x720px recommended)
 - `mobile.png` - Mobile view (390x844px recommended)
 - Use actual screenshots of your application

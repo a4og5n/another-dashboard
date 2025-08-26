@@ -1,21 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Download, X } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Download, X } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 }
 
 /**
  * PWA Install Prompt Component
- * 
+ *
  * Displays a custom install prompt for PWA installation
  * Handles the beforeinstallprompt event and provides a user-friendly UI
  */
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
@@ -23,10 +24,14 @@ export function InstallPrompt() {
     // Check if app is already installed
     const checkInstallation = () => {
       // Check for standalone mode (iOS) or display mode (Android)
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      const isStandalone = window.matchMedia(
+        "(display-mode: standalone)",
+      ).matches;
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isInStandaloneMode = (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
-      
+      const isInStandaloneMode =
+        (window.navigator as Navigator & { standalone?: boolean })
+          .standalone === true;
+
       setIsInstalled(isStandalone || (isIOS && isInStandaloneMode));
     };
 
@@ -47,12 +52,15 @@ export function InstallPrompt() {
       setDeferredPrompt(null);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
@@ -62,14 +70,14 @@ export function InstallPrompt() {
     try {
       await deferredPrompt.prompt();
       const choiceResult = await deferredPrompt.userChoice;
-      
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the install prompt');
+
+      if (choiceResult.outcome === "accepted") {
+        console.log("User accepted the install prompt");
       } else {
-        console.log('User dismissed the install prompt');
+        console.log("User dismissed the install prompt");
       }
     } catch (error) {
-      console.error('Error showing install prompt:', error);
+      console.error("Error showing install prompt:", error);
     }
 
     setDeferredPrompt(null);
@@ -109,7 +117,7 @@ export function InstallPrompt() {
             <X className="w-4 h-4" />
           </button>
         </div>
-        
+
         <div className="flex gap-2 mt-3">
           <button
             onClick={handleInstallClick}

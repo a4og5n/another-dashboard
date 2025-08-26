@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getMailchimpService } from '@/services';
+import { NextRequest, NextResponse } from "next/server";
+import { getMailchimpService } from "@/services";
 
 /**
  * Mailchimp Single Campaign API
- * 
+ *
  * GET /api/mailchimp/campaigns/[id] - Get specific campaign
  * GET /api/mailchimp/campaigns/[id]?report=true - Get campaign report
  */
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
     const { id: campaignId } = await params;
     const searchParams = request.nextUrl.searchParams;
-    const getReport = searchParams.get('report') === 'true';
+    const getReport = searchParams.get("report") === "true";
 
     const mailchimp = getMailchimpService();
 
@@ -26,11 +26,11 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     if (!response.success) {
       const status = response.statusCode === 404 ? 404 : 500;
       return NextResponse.json(
-        { 
-          error: `Campaign ${getReport ? 'report' : 'data'} not found`, 
-          details: response.error 
+        {
+          error: `Campaign ${getReport ? "report" : "data"} not found`,
+          details: response.error,
         },
-        { status }
+        { status },
       );
     }
 
@@ -38,21 +38,20 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       ...response.data,
       metadata: {
         campaignId,
-        type: getReport ? 'report' : 'campaign',
+        type: getReport ? "report" : "campaign",
         lastUpdated: new Date().toISOString(),
         rateLimit: response.rateLimit,
       },
     });
-
   } catch (error) {
-    console.error('Mailchimp campaign API error:', error);
-    
+    console.error("Mailchimp campaign API error:", error);
+
     return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

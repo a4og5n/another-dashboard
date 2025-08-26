@@ -5,24 +5,25 @@ This directory contains components and utilities for accessibility (a11y) testin
 ## Components
 
 ### A11yProvider
+
 A provider component that enables accessibility testing in development mode using @axe-core/react.
 
 ### A11yTester
+
 A development-only component that runs accessibility tests and shows violations as alerts.
 
 ## Usage
 
 ### In Root Layout (Recommended)
+
 ```tsx
-import { A11yProvider } from '@/components/accessibility/a11y-provider';
+import { A11yProvider } from "@/components/accessibility/a11y-provider";
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <A11yProvider enableInDevelopment>
-          {children}
-        </A11yProvider>
+        <A11yProvider enableInDevelopment>{children}</A11yProvider>
       </body>
     </html>
   );
@@ -30,8 +31,9 @@ export default function RootLayout({ children }) {
 ```
 
 ### For Specific Components
+
 ```tsx
-import { A11yTester } from '@/components/accessibility/a11y-test-utils';
+import { A11yTester } from "@/components/accessibility/a11y-test-utils";
 
 export default function MyPage() {
   return (
@@ -43,12 +45,13 @@ export default function MyPage() {
 ```
 
 ### Using the Hook
+
 ```tsx
-import { useA11yTest } from '@/components/accessibility/a11y-test-utils';
+import { useA11yTest } from "@/components/accessibility/a11y-test-utils";
 
 function MyComponent() {
   const { results, isRunning } = useA11yTest();
-  
+
   return <div>Your component</div>;
 }
 ```
@@ -58,9 +61,9 @@ function MyComponent() {
 Use the accessibility test helper in your tests:
 
 ```tsx
-import { expectNoA11yViolations, renderWithA11y } from '@/test/axe-helper';
+import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
 
-it('should be accessible', async () => {
+it("should be accessible", async () => {
   const { renderResult } = await renderWithA11y(<MyComponent />);
   await expectNoA11yViolations(renderResult.container);
 });

@@ -1,9 +1,9 @@
-import { onCLS, onFCP, onINP, onLCP, onTTFB, Metric } from 'web-vitals';
+import { onCLS, onFCP, onINP, onLCP, onTTFB, Metric } from "web-vitals";
 
 export interface WebVitalsMetric {
   name: string;
   value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
+  rating: "good" | "needs-improvement" | "poor";
   id: string;
   timestamp?: number;
 }
@@ -12,7 +12,10 @@ export interface WebVitalsMetric {
  * Convert web-vitals Metric to our WebVitalsMetric format
  */
 function convertMetric(metric: Metric): WebVitalsMetric {
-  const getThreshold = (name: string, value: number): WebVitalsMetric['rating'] => {
+  const getThreshold = (
+    name: string,
+    value: number,
+  ): WebVitalsMetric["rating"] => {
     const thresholds = {
       CLS: { good: 0.1, poor: 0.25 },
       FCP: { good: 1800, poor: 3000 },
@@ -22,11 +25,11 @@ function convertMetric(metric: Metric): WebVitalsMetric {
     };
 
     const threshold = thresholds[name as keyof typeof thresholds];
-    if (!threshold) return 'good';
-    
-    if (value <= threshold.good) return 'good';
-    if (value <= threshold.poor) return 'needs-improvement';
-    return 'poor';
+    if (!threshold) return "good";
+
+    if (value <= threshold.good) return "good";
+    if (value <= threshold.poor) return "needs-improvement";
+    return "poor";
   };
 
   return {
@@ -41,8 +44,10 @@ function convertMetric(metric: Metric): WebVitalsMetric {
 /**
  * Observe and report Core Web Vitals
  */
-export function observePerformance(onMetric: (metric: WebVitalsMetric) => void) {
-  if (typeof window === 'undefined') return;
+export function observePerformance(
+  onMetric: (metric: WebVitalsMetric) => void,
+) {
+  if (typeof window === "undefined") return;
 
   const handleMetric = (metric: Metric) => {
     onMetric(convertMetric(metric));
@@ -61,9 +66,13 @@ export function observePerformance(onMetric: (metric: WebVitalsMetric) => void) 
  */
 export function sendToVercelAnalytics(metric: WebVitalsMetric) {
   // Use Vercel Analytics if available
-  if (typeof window !== 'undefined' && 'va' in window) {
-    const va = (window as Window & { va?: (event: string, properties: Record<string, unknown>) => void }).va;
-    va?.('Web Vitals', {
+  if (typeof window !== "undefined" && "va" in window) {
+    const va = (
+      window as Window & {
+        va?: (event: string, properties: Record<string, unknown>) => void;
+      }
+    ).va;
+    va?.("Web Vitals", {
       [metric.name]: metric.value,
       rating: metric.rating,
       id: metric.id,
@@ -91,8 +100,8 @@ export async function getCurrentWebVitals(): Promise<{
  */
 export function reportWebVitals(metric: WebVitalsMetric) {
   // Send to console in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Web Vitals:', metric);
+  if (process.env.NODE_ENV === "development") {
+    console.log("Web Vitals:", metric);
   }
 
   // Send to Vercel Analytics

@@ -1,6 +1,12 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-export function usePagination({ initialPage = 1, totalPages = 1 }: { initialPage?: number; totalPages: number }) {
+export function usePagination({
+  initialPage = 1,
+  totalPages = 1,
+}: {
+  initialPage?: number;
+  totalPages: number;
+}) {
   const [currentPage, setCurrentPage] = useState(initialPage);
 
   const goToPage = (page: number) => {

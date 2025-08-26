@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface SkeletonProps {
   className?: string;
@@ -50,7 +50,7 @@ function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
           <Skeleton key={index} className="h-4 w-24 flex-1" />
         ))}
       </div>
-      
+
       {/* Table Rows */}
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <div key={rowIndex} className="flex space-x-4 py-2">
@@ -71,7 +71,10 @@ function ListSkeleton({ items = 3 }: ListSkeletonProps) {
   return (
     <div className="space-y-4">
       {Array.from({ length: items }).map((_, index) => (
-        <div key={index} className="flex items-center space-x-4 p-4 border rounded-lg">
+        <div
+          key={index}
+          className="flex items-center space-x-4 p-4 border rounded-lg"
+        >
           <Skeleton className="h-8 w-8 rounded-full" />
           <div className="flex-1 space-y-2">
             <Skeleton className="h-4 w-32" />
@@ -92,9 +95,9 @@ interface DashboardSkeletonProps {
   showList?: boolean;
 }
 
-function DashboardSkeleton({ 
-  showTable = true, 
-  showList = true 
+function DashboardSkeleton({
+  showTable = true,
+  showList = true,
 }: DashboardSkeletonProps) {
   return (
     <div className="space-y-6">
@@ -106,7 +109,7 @@ function DashboardSkeleton({
         </div>
         <Skeleton className="h-10 w-24" />
       </div>
-      
+
       {/* Tabs Navigation */}
       <div className="space-y-4">
         <div className="flex space-x-1 p-1 bg-muted rounded-lg w-fit">
@@ -114,7 +117,7 @@ function DashboardSkeleton({
           <Skeleton className="h-8 w-20" />
           <Skeleton className="h-8 w-20" />
         </div>
-        
+
         {/* Tab Content */}
         {showTable && (
           <Card>
@@ -123,7 +126,7 @@ function DashboardSkeleton({
             </CardContent>
           </Card>
         )}
-        
+
         {showList && !showTable && (
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
@@ -135,7 +138,7 @@ function DashboardSkeleton({
                 <ListSkeleton items={4} />
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <Skeleton className="h-6 w-40" />
@@ -174,10 +177,12 @@ function DashboardSkeleton({
 }
 
 interface MailchimpDashboardSkeletonProps {
-  activeTab?: 'campaigns' | 'audiences';
+  activeTab?: "campaigns" | "audiences";
 }
 
-function MailchimpDashboardSkeleton({ activeTab = 'campaigns' }: MailchimpDashboardSkeletonProps) {
+function MailchimpDashboardSkeleton({
+  activeTab = "campaigns",
+}: MailchimpDashboardSkeletonProps) {
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -188,17 +193,22 @@ function MailchimpDashboardSkeleton({ activeTab = 'campaigns' }: MailchimpDashbo
         </div>
         <Skeleton className="h-10 w-24" /> {/* Refresh button */}
       </div>
-      
+
       {/* Tabs Navigation */}
       <div className="space-y-4">
         <div className="flex space-x-1 p-1 bg-muted rounded-lg w-fit">
-          <Skeleton className={`h-8 w-20 ${activeTab === 'campaigns' ? 'bg-background' : ''}`} />
-          <Skeleton className={`h-8 w-20 ${activeTab === 'audiences' ? 'bg-background' : ''}`} />
-          <Skeleton className="h-8 w-20 opacity-50" /> {/* Disabled Analytics tab */}
+          <Skeleton
+            className={`h-8 w-20 ${activeTab === "campaigns" ? "bg-background" : ""}`}
+          />
+          <Skeleton
+            className={`h-8 w-20 ${activeTab === "audiences" ? "bg-background" : ""}`}
+          />
+          <Skeleton className="h-8 w-20 opacity-50" />{" "}
+          {/* Disabled Analytics tab */}
         </div>
-        
+
         {/* Tab Content */}
-        {activeTab === 'campaigns' ? (
+        {activeTab === "campaigns" ? (
           <Card>
             <CardContent className="pt-6">
               <TableSkeleton rows={5} columns={6} />
@@ -215,7 +225,7 @@ function MailchimpDashboardSkeleton({ activeTab = 'campaigns' }: MailchimpDashbo
                 <ListSkeleton items={3} />
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <Skeleton className="h-6 w-40" />
@@ -242,11 +252,11 @@ function MailchimpDashboardSkeleton({ activeTab = 'campaigns' }: MailchimpDashbo
   );
 }
 
-export { 
-  Skeleton, 
-  MetricCardSkeleton, 
-  TableSkeleton, 
-  ListSkeleton, 
+export {
+  Skeleton,
+  MetricCardSkeleton,
+  TableSkeleton,
+  ListSkeleton,
   DashboardSkeleton,
-  MailchimpDashboardSkeleton
+  MailchimpDashboardSkeleton,
 };

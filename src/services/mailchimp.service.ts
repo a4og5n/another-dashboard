@@ -3,8 +3,8 @@
  * Handles campaign performance data, audience insights, and reporting metrics
  */
 
-import { BaseApiService, ApiResponse } from './base-api.service';
-import { env } from '@/lib/config';
+import { BaseApiService, ApiResponse } from "./base-api.service";
+import { env } from "@/lib/config";
 
 /**
  * Mailchimp API Types
@@ -16,7 +16,7 @@ export interface MailchimpCampaign {
   create_time: string;
   archive_url: string;
   long_archive_url: string;
-  status: 'save' | 'paused' | 'schedule' | 'sending' | 'sent';
+  status: "save" | "paused" | "schedule" | "sending" | "sent";
   emails_sent: number;
   send_time: string;
   content_type: string;
@@ -169,7 +169,7 @@ export interface MailchimpList {
   subscribe_url_short: string;
   subscribe_url_long: string;
   beamer_address: string;
-  visibility: 'pub' | 'prv';
+  visibility: "pub" | "prv";
   double_optin: boolean;
   has_welcome: boolean;
   marketing_permissions: boolean;
@@ -207,7 +207,7 @@ export interface MailchimpReportsParams {
   member_id?: string;
   list_id?: string;
   sort_field?: string;
-  sort_dir?: 'ASC' | 'DESC';
+  sort_dir?: "ASC" | "DESC";
 }
 
 /**
@@ -215,15 +215,15 @@ export interface MailchimpReportsParams {
  */
 export class MailchimpService extends BaseApiService {
   constructor() {
-    const baseUrl = env.MAILCHIMP_SERVER_PREFIX 
+    const baseUrl = env.MAILCHIMP_SERVER_PREFIX
       ? `https://${env.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0`
-      : 'https://us1.api.mailchimp.com/3.0'; // Default server
+      : "https://us1.api.mailchimp.com/3.0"; // Default server
 
-    super('Mailchimp', {
+    super("Mailchimp", {
       baseUrl,
       headers: {
-        'Authorization': `apikey ${env.MAILCHIMP_API_KEY}`,
-        'User-Agent': 'NextJS Dashboard/1.0',
+        Authorization: `apikey ${env.MAILCHIMP_API_KEY}`,
+        "User-Agent": "NextJS Dashboard/1.0",
       },
       timeout: 15000, // Mailchimp can be slow
       retryAttempts: 3,
@@ -239,8 +239,8 @@ export class MailchimpService extends BaseApiService {
 
   protected handleRateLimit(response: Response): void {
     // Mailchimp rate limiting headers
-    const remaining = response.headers.get('X-RateLimit-Remaining');
-    const resetTime = response.headers.get('X-RateLimit-Reset');
+    const remaining = response.headers.get("X-RateLimit-Remaining");
+    const resetTime = response.headers.get("X-RateLimit-Reset");
 
     if (remaining && resetTime) {
       this.rateLimit = {
@@ -252,7 +252,7 @@ export class MailchimpService extends BaseApiService {
 
     // If rate limited, wait until reset
     if (response.status === 429) {
-      const retryAfter = response.headers.get('Retry-After');
+      const retryAfter = response.headers.get("Retry-After");
       if (retryAfter) {
         const delay = parseInt(retryAfter, 10) * 1000;
         throw new Error(`Rate limited. Retry after ${delay}ms`);
@@ -263,14 +263,16 @@ export class MailchimpService extends BaseApiService {
   /**
    * Health check for Mailchimp API
    */
-  async healthCheck(): Promise<ApiResponse<{ status: string; timestamp: string }>> {
-    const response = await this.get('/ping');
-    
+  async healthCheck(): Promise<
+    ApiResponse<{ status: string; timestamp: string }>
+  > {
+    const response = await this.get("/ping");
+
     if (response.success) {
       return {
         success: true,
         data: {
-          status: 'healthy',
+          status: "healthy",
           timestamp: new Date().toISOString(),
         },
       };
@@ -278,7 +280,7 @@ export class MailchimpService extends BaseApiService {
 
     return {
       success: false,
-      error: 'Mailchimp API health check failed',
+      error: "Mailchimp API health check failed",
       statusCode: response.statusCode,
     };
   }
@@ -286,88 +288,113 @@ export class MailchimpService extends BaseApiService {
   /**
    * Get all campaigns
    */
-  async getCampaigns(params?: MailchimpReportsParams): Promise<ApiResponse<{
-    campaigns: MailchimpCampaign[];
-    total_items: number;
-  }>> {
+  async getCampaigns(params?: MailchimpReportsParams): Promise<
+    ApiResponse<{
+      campaigns: MailchimpCampaign[];
+      total_items: number;
+    }>
+  > {
     // Convert MailchimpReportsParams to base service format
-    const queryParams: Record<string, string | number | boolean | string[]> = {};
+    const queryParams: Record<string, string | number | boolean | string[]> =
+      {};
     if (params) {
       if (params.fields) queryParams.fields = params.fields;
-      if (params.exclude_fields) queryParams.exclude_fields = params.exclude_fields;
+      if (params.exclude_fields)
+        queryParams.exclude_fields = params.exclude_fields;
       if (params.count) queryParams.count = params.count;
       if (params.offset) queryParams.offset = params.offset;
       if (params.type) queryParams.type = params.type;
-      if (params.before_send_time) queryParams.before_send_time = params.before_send_time;
-      if (params.since_send_time) queryParams.since_send_time = params.since_send_time;
+      if (params.before_send_time)
+        queryParams.before_send_time = params.before_send_time;
+      if (params.since_send_time)
+        queryParams.since_send_time = params.since_send_time;
       if (params.folder_id) queryParams.folder_id = params.folder_id;
       if (params.member_id) queryParams.member_id = params.member_id;
       if (params.list_id) queryParams.list_id = params.list_id;
       if (params.sort_field) queryParams.sort_field = params.sort_field;
       if (params.sort_dir) queryParams.sort_dir = params.sort_dir;
     }
-    
-    return this.get('/campaigns', queryParams);
+
+    return this.get("/campaigns", queryParams);
   }
 
   /**
    * Get specific campaign by ID
    */
-  async getCampaign(campaignId: string): Promise<ApiResponse<MailchimpCampaign>> {
+  async getCampaign(
+    campaignId: string,
+  ): Promise<ApiResponse<MailchimpCampaign>> {
     return this.get(`/campaigns/${campaignId}`);
   }
 
   /**
    * Get campaign report (performance metrics)
    */
-  async getCampaignReport(campaignId: string): Promise<ApiResponse<MailchimpCampaignReport>> {
+  async getCampaignReport(
+    campaignId: string,
+  ): Promise<ApiResponse<MailchimpCampaignReport>> {
     return this.get(`/reports/${campaignId}`);
   }
 
   /**
    * Get all campaign reports
    */
-  async getCampaignReports(params?: MailchimpReportsParams): Promise<ApiResponse<{
-    reports: MailchimpCampaignReport[];
-    total_items: number;
-  }>> {
+  async getCampaignReports(params?: MailchimpReportsParams): Promise<
+    ApiResponse<{
+      reports: MailchimpCampaignReport[];
+      total_items: number;
+    }>
+  > {
     // Convert MailchimpReportsParams to base service format
-    const queryParams: Record<string, string | number | boolean | string[]> = {};
+    const queryParams: Record<string, string | number | boolean | string[]> =
+      {};
     if (params) {
       if (params.fields) queryParams.fields = params.fields;
-      if (params.exclude_fields) queryParams.exclude_fields = params.exclude_fields;
+      if (params.exclude_fields)
+        queryParams.exclude_fields = params.exclude_fields;
       if (params.count) queryParams.count = params.count;
       if (params.offset) queryParams.offset = params.offset;
       if (params.type) queryParams.type = params.type;
-      if (params.before_send_time) queryParams.before_send_time = params.before_send_time;
-      if (params.since_send_time) queryParams.since_send_time = params.since_send_time;
+      if (params.before_send_time)
+        queryParams.before_send_time = params.before_send_time;
+      if (params.since_send_time)
+        queryParams.since_send_time = params.since_send_time;
       if (params.folder_id) queryParams.folder_id = params.folder_id;
       if (params.member_id) queryParams.member_id = params.member_id;
       if (params.list_id) queryParams.list_id = params.list_id;
       if (params.sort_field) queryParams.sort_field = params.sort_field;
       if (params.sort_dir) queryParams.sort_dir = params.sort_dir;
     }
-    
-    return this.get('/reports', queryParams);
+
+    return this.get("/reports", queryParams);
   }
 
   /**
    * Get all lists (audiences)
    */
-  async getLists(params?: Pick<MailchimpReportsParams, 'fields' | 'exclude_fields' | 'count' | 'offset'>): Promise<ApiResponse<{
-    lists: MailchimpList[];
-    total_items: number;
-  }>> {
+  async getLists(
+    params?: Pick<
+      MailchimpReportsParams,
+      "fields" | "exclude_fields" | "count" | "offset"
+    >,
+  ): Promise<
+    ApiResponse<{
+      lists: MailchimpList[];
+      total_items: number;
+    }>
+  > {
     // Convert to base service format
-    const queryParams: Record<string, string | number | boolean | string[]> = {};
+    const queryParams: Record<string, string | number | boolean | string[]> =
+      {};
     if (params) {
       if (params.fields) queryParams.fields = params.fields;
-      if (params.exclude_fields) queryParams.exclude_fields = params.exclude_fields;
+      if (params.exclude_fields)
+        queryParams.exclude_fields = params.exclude_fields;
       if (params.count) queryParams.count = params.count;
       if (params.offset) queryParams.offset = params.offset;
     }
-    
-    return this.get('/lists', queryParams);
+
+    return this.get("/lists", queryParams);
   }
 
   /**
@@ -384,26 +411,28 @@ export class MailchimpService extends BaseApiService {
     limit?: number;
     sinceDate?: string;
     campaignType?: string;
-  }): Promise<ApiResponse<{
-    totalCampaigns: number;
-    sentCampaigns: number;
-    avgOpenRate: number;
-    avgClickRate: number;
-    totalEmailsSent: number;
-    recentCampaigns: Array<{
-      id: string;
-      title: string;
-      status: string;
-      emailsSent: number;
-      openRate: number;
-      clickRate: number;
-      sendTime: string;
-    }>;
-  }>> {
+  }): Promise<
+    ApiResponse<{
+      totalCampaigns: number;
+      sentCampaigns: number;
+      avgOpenRate: number;
+      avgClickRate: number;
+      totalEmailsSent: number;
+      recentCampaigns: Array<{
+        id: string;
+        title: string;
+        status: string;
+        emailsSent: number;
+        openRate: number;
+        clickRate: number;
+        sendTime: string;
+      }>;
+    }>
+  > {
     const params: MailchimpReportsParams = {
       count: options?.limit || 10,
-      sort_field: 'send_time',
-      sort_dir: 'DESC',
+      sort_field: "send_time",
+      sort_dir: "DESC",
     };
 
     if (options?.sinceDate) {
@@ -419,22 +448,26 @@ export class MailchimpService extends BaseApiService {
     if (!reportsResponse.success || !reportsResponse.data) {
       return {
         success: false,
-        error: reportsResponse.error || 'Failed to fetch campaign reports',
+        error: reportsResponse.error || "Failed to fetch campaign reports",
         statusCode: reportsResponse.statusCode,
       };
     }
 
     const reports = reportsResponse.data.reports;
-    const sentReports = reports.filter(r => r.emails_sent > 0);
+    const sentReports = reports.filter((r) => r.emails_sent > 0);
 
     // Calculate aggregated metrics
     const totalEmailsSent = reports.reduce((sum, r) => sum + r.emails_sent, 0);
-    const avgOpenRate = sentReports.length > 0 
-      ? sentReports.reduce((sum, r) => sum + r.opens.open_rate, 0) / sentReports.length 
-      : 0;
-    const avgClickRate = sentReports.length > 0 
-      ? sentReports.reduce((sum, r) => sum + r.clicks.click_rate, 0) / sentReports.length 
-      : 0;
+    const avgOpenRate =
+      sentReports.length > 0
+        ? sentReports.reduce((sum, r) => sum + r.opens.open_rate, 0) /
+          sentReports.length
+        : 0;
+    const avgClickRate =
+      sentReports.length > 0
+        ? sentReports.reduce((sum, r) => sum + r.clicks.click_rate, 0) /
+          sentReports.length
+        : 0;
 
     return {
       success: true,
@@ -444,15 +477,17 @@ export class MailchimpService extends BaseApiService {
         avgOpenRate: Math.round(avgOpenRate * 10000) / 100, // Convert to percentage with 2 decimals
         avgClickRate: Math.round(avgClickRate * 10000) / 100,
         totalEmailsSent,
-        recentCampaigns: reports.slice(0, options?.limit || 10).map(report => ({
-          id: report.id,
-          title: report.campaign_title,
-          status: 'sent', // Reports are only available for sent campaigns
-          emailsSent: report.emails_sent,
-          openRate: Math.round(report.opens.open_rate * 10000) / 100,
-          clickRate: Math.round(report.clicks.click_rate * 10000) / 100,
-          sendTime: report.send_time,
-        })),
+        recentCampaigns: reports
+          .slice(0, options?.limit || 10)
+          .map((report) => ({
+            id: report.id,
+            title: report.campaign_title,
+            status: "sent", // Reports are only available for sent campaigns
+            emailsSent: report.emails_sent,
+            openRate: Math.round(report.opens.open_rate * 10000) / 100,
+            clickRate: Math.round(report.clicks.click_rate * 10000) / 100,
+            sendTime: report.send_time,
+          })),
       },
       rateLimit: this.rateLimit,
     };
@@ -461,45 +496,55 @@ export class MailchimpService extends BaseApiService {
   /**
    * Get audience (list) summary for dashboard
    */
-  async getAudienceSummary(): Promise<ApiResponse<{
-    totalLists: number;
-    totalSubscribers: number;
-    avgGrowthRate: number;
-    avgOpenRate: number;
-    avgClickRate: number;
-    topLists: Array<{
-      id: string;
-      name: string;
-      memberCount: number;
-      growthRate: number;
-      openRate: number;
-      clickRate: number;
-    }>;
-  }>> {
+  async getAudienceSummary(): Promise<
+    ApiResponse<{
+      totalLists: number;
+      totalSubscribers: number;
+      avgGrowthRate: number;
+      avgOpenRate: number;
+      avgClickRate: number;
+      topLists: Array<{
+        id: string;
+        name: string;
+        memberCount: number;
+        growthRate: number;
+        openRate: number;
+        clickRate: number;
+      }>;
+    }>
+  > {
     const listsResponse = await this.getLists({ count: 50 }); // Get up to 50 lists
 
     if (!listsResponse.success || !listsResponse.data) {
       return {
         success: false,
-        error: listsResponse.error || 'Failed to fetch audience lists',
+        error: listsResponse.error || "Failed to fetch audience lists",
         statusCode: listsResponse.statusCode,
       };
     }
 
     const lists = listsResponse.data.lists;
-    const totalSubscribers = lists.reduce((sum, l) => sum + l.stats.member_count, 0);
-    const avgGrowthRate = lists.length > 0 
-      ? lists.reduce((sum, l) => sum + l.stats.avg_sub_rate, 0) / lists.length 
-      : 0;
-    const avgOpenRate = lists.length > 0 
-      ? lists.reduce((sum, l) => sum + l.stats.open_rate, 0) / lists.length 
-      : 0;
-    const avgClickRate = lists.length > 0 
-      ? lists.reduce((sum, l) => sum + l.stats.click_rate, 0) / lists.length 
-      : 0;
+    const totalSubscribers = lists.reduce(
+      (sum, l) => sum + l.stats.member_count,
+      0,
+    );
+    const avgGrowthRate =
+      lists.length > 0
+        ? lists.reduce((sum, l) => sum + l.stats.avg_sub_rate, 0) / lists.length
+        : 0;
+    const avgOpenRate =
+      lists.length > 0
+        ? lists.reduce((sum, l) => sum + l.stats.open_rate, 0) / lists.length
+        : 0;
+    const avgClickRate =
+      lists.length > 0
+        ? lists.reduce((sum, l) => sum + l.stats.click_rate, 0) / lists.length
+        : 0;
 
     // Sort lists by member count for top lists
-    const sortedLists = [...lists].sort((a, b) => b.stats.member_count - a.stats.member_count);
+    const sortedLists = [...lists].sort(
+      (a, b) => b.stats.member_count - a.stats.member_count,
+    );
 
     return {
       success: true,
@@ -509,7 +554,7 @@ export class MailchimpService extends BaseApiService {
         avgGrowthRate: Math.round(avgGrowthRate * 10000) / 100,
         avgOpenRate: Math.round(avgOpenRate * 10000) / 100,
         avgClickRate: Math.round(avgClickRate * 10000) / 100,
-        topLists: sortedLists.slice(0, 5).map(list => ({
+        topLists: sortedLists.slice(0, 5).map((list) => ({
           id: list.id,
           name: list.name,
           memberCount: list.stats.member_count,

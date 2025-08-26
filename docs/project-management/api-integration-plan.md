@@ -9,8 +9,9 @@
 ## 📋 Integration Overview
 
 ### Priority Order (Based on PRD Analysis)
+
 1. **Google Analytics 4** - Foundation web metrics (Week 3)
-2. **YouTube Analytics** - Video content performance (Week 4)  
+2. **YouTube Analytics** - Video content performance (Week 4)
 3. **Meta Graph API** - Social media insights (Week 5)
 4. **Mailchimp API** - Email marketing metrics (Week 6)
 5. **WordPress REST API** - Content management metrics (Week 8)
@@ -21,6 +22,7 @@
 ## 🎯 Google Analytics 4 Integration (Week 3)
 
 ### Prerequisites
+
 - [ ] Google Cloud Project with Analytics Reporting API enabled
 - [ ] Service Account with Analytics Read permissions
 - [ ] GA4 Property ID and measurement credentials
@@ -28,6 +30,7 @@
 ### Implementation Steps
 
 #### Day 1-2: Setup & Authentication
+
 ```typescript
 // lib/api/google-analytics.ts
 interface GA4Config {
@@ -60,6 +63,7 @@ export class GoogleAnalyticsService {
 ```
 
 #### Key Metrics to Track
+
 - **Overview Metrics:** Sessions, Page Views, Bounce Rate, Avg Session Duration
 - **User Metrics:** New Users, Returning Users, User Engagement
 - **Traffic Sources:** Organic Search, Direct, Referral, Social, Email
@@ -67,6 +71,7 @@ export class GoogleAnalyticsService {
 - **Conversion Tracking:** Goals, Events, E-commerce (if applicable)
 
 #### Day 3-5: Dashboard Components
+
 ```typescript
 // components/dashboard/google-analytics/overview-cards.tsx
 interface OverviewCardsProps {
@@ -74,7 +79,7 @@ interface OverviewCardsProps {
   isLoading: boolean;
 }
 
-// components/dashboard/google-analytics/traffic-sources-chart.tsx  
+// components/dashboard/google-analytics/traffic-sources-chart.tsx
 interface TrafficSourcesChartProps {
   data: GATrafficSource[];
   isLoading: boolean;
@@ -88,6 +93,7 @@ interface PagesTableProps {
 ```
 
 ### Testing Strategy
+
 - [ ] Mock API responses for development
 - [ ] Test error handling for API failures
 - [ ] Validate data transformation accuracy
@@ -98,17 +104,20 @@ interface PagesTableProps {
 ## 📺 YouTube Analytics Integration (Week 4)
 
 ### Prerequisites
+
 - [ ] YouTube Data API v3 enabled in Google Cloud
 - [ ] YouTube Analytics API access
 - [ ] Channel ID and authentication credentials
 
 ### Key Metrics to Track
+
 - **Overview:** Views, Watch Time, Subscribers, Revenue
 - **Video Performance:** Top Videos, Engagement Rate, Retention
 - **Audience:** Demographics, Geography, Device Types
 - **Revenue:** Ad Revenue, Channel Memberships, Super Chat
 
 ### Implementation Plan
+
 ```typescript
 // lib/api/youtube-analytics.ts
 export class YouTubeAnalyticsService {
@@ -131,17 +140,20 @@ export class YouTubeAnalyticsService {
 ## 📘 Meta Graph API Integration (Week 5)
 
 ### Prerequisites
+
 - [ ] Facebook Developer App created
 - [ ] Page Access Token with insights permissions
 - [ ] Page ID for the Facebook page to analyze
 
 ### Key Metrics to Track
+
 - **Page Insights:** Page Views, Post Reach, Page Likes, Engagement
 - **Post Performance:** Individual post metrics, engagement rates
 - **Audience:** Demographics, online times, location data
 - **Ad Performance:** If running Facebook ads
 
 ### Implementation Plan
+
 ```typescript
 // lib/api/meta-graph.ts
 export class MetaGraphService {
@@ -160,6 +172,7 @@ export class MetaGraphService {
 ```
 
 ### Rate Limits & Considerations
+
 - Facebook Graph API has strict rate limiting
 - Need to handle pagination for large datasets
 - Different metrics have different availability windows
@@ -169,17 +182,20 @@ export class MetaGraphService {
 ## 📧 Mailchimp API Integration (Week 6)
 
 ### Prerequisites
+
 - [ ] Mailchimp API Key with read permissions
 - [ ] List IDs for email lists to track
 - [ ] Campaign access permissions
 
 ### Key Metrics to Track
+
 - **List Growth:** Subscribers, Unsubscribes, Growth Rate
 - **Campaign Performance:** Open Rate, Click Rate, Bounce Rate
 - **Audience:** Subscriber demographics, engagement levels
 - **Automation:** Automation performance, conversion tracking
 
 ### Implementation Plan
+
 ```typescript
 // lib/api/mailchimp.ts
 export class MailchimpService {
@@ -202,17 +218,20 @@ export class MailchimpService {
 ## 📝 WordPress REST API Integration (Week 8)
 
 ### Prerequisites
+
 - [ ] WordPress site with REST API enabled
 - [ ] Authentication credentials (Application Password or JWT)
 - [ ] Plugin for advanced analytics (if needed)
 
 ### Key Metrics to Track
+
 - **Content Performance:** Post views, comments, engagement
 - **Site Activity:** New posts, updates, user activity
 - **SEO Metrics:** If using SEO plugins like Yoast
 - **User Engagement:** Comments, shares, time on site
 
 ### Implementation Plan
+
 ```typescript
 // lib/api/wordpress.ts
 export class WordPressService {
@@ -235,17 +254,20 @@ export class WordPressService {
 ## 🔍 Google Search Console Integration (Week 8)
 
 ### Prerequisites
+
 - [ ] Google Search Console property verified
 - [ ] Search Console API enabled
 - [ ] Service account with Search Console permissions
 
 ### Key Metrics to Track
+
 - **Search Performance:** Impressions, Clicks, CTR, Average Position
 - **Index Status:** Indexed pages, crawl errors, sitemap status
 - **Core Web Vitals:** LCP, FID, CLS performance data
 - **Mobile Usability:** Mobile-friendly issues
 
 ### Implementation Plan
+
 ```typescript
 // lib/api/search-console.ts
 export class SearchConsoleService {
@@ -268,13 +290,14 @@ export class SearchConsoleService {
 ## 🛠️ Common Implementation Patterns
 
 ### Error Handling Strategy
+
 ```typescript
 export enum ApiErrorCode {
-  RATE_LIMIT = 'RATE_LIMIT',
-  AUTH_FAILED = 'AUTH_FAILED',
-  NOT_FOUND = 'NOT_FOUND',
-  SERVER_ERROR = 'SERVER_ERROR',
-  NETWORK_ERROR = 'NETWORK_ERROR',
+  RATE_LIMIT = "RATE_LIMIT",
+  AUTH_FAILED = "AUTH_FAILED",
+  NOT_FOUND = "NOT_FOUND",
+  SERVER_ERROR = "SERVER_ERROR",
+  NETWORK_ERROR = "NETWORK_ERROR",
 }
 
 export class ApiError extends Error {
@@ -282,15 +305,16 @@ export class ApiError extends Error {
     message: string,
     public code: ApiErrorCode,
     public status?: number,
-    public retryAfter?: number
+    public retryAfter?: number,
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 ```
 
 ### Caching Strategy
+
 ```typescript
 // lib/cache/api-cache.ts
 interface CacheConfig {
@@ -300,11 +324,11 @@ interface CacheConfig {
 
 export class ApiCache {
   private cache = new Map<string, { data: any; timestamp: number }>();
-  
+
   get<T>(key: string, ttl: number): T | null {
     // Return cached data if still valid
   }
-  
+
   set<T>(key: string, data: T): void {
     // Store data with timestamp
   }
@@ -312,15 +336,20 @@ export class ApiCache {
 ```
 
 ### Rate Limiting
+
 ```typescript
 // lib/api/rate-limiter.ts
 export class RateLimiter {
   private requests = new Map<string, number[]>();
-  
-  async checkLimit(apiKey: string, maxRequests: number, windowMs: number): Promise<boolean> {
+
+  async checkLimit(
+    apiKey: string,
+    maxRequests: number,
+    windowMs: number,
+  ): Promise<boolean> {
     // Check if request is within rate limits
   }
-  
+
   async waitForSlot(apiKey: string): Promise<void> {
     // Wait until next request slot is available
   }
@@ -332,19 +361,26 @@ export class RateLimiter {
 ## 📊 Data Transformation & Normalization
 
 ### Common Data Structure
+
 ```typescript
 // lib/types/normalized-data.ts
 export interface NormalizedMetric {
-  source: 'ga4' | 'youtube' | 'meta' | 'mailchimp' | 'wordpress' | 'search-console';
-  category: 'traffic' | 'engagement' | 'conversion' | 'content' | 'revenue';
+  source:
+    | "ga4"
+    | "youtube"
+    | "meta"
+    | "mailchimp"
+    | "wordpress"
+    | "search-console";
+  category: "traffic" | "engagement" | "conversion" | "content" | "revenue";
   name: string;
   value: number;
-  unit: 'count' | 'percentage' | 'currency' | 'duration' | 'rate';
+  unit: "count" | "percentage" | "currency" | "duration" | "rate";
   period: TimeRange;
   change?: {
     value: number;
     percentage: number;
-    direction: 'up' | 'down' | 'neutral';
+    direction: "up" | "down" | "neutral";
   };
 }
 
@@ -353,7 +389,7 @@ export interface DashboardData {
   lastUpdated: Date;
   metrics: NormalizedMetric[];
   charts: ChartData[];
-  status: 'loading' | 'success' | 'error';
+  status: "loading" | "success" | "error";
   error?: ApiError;
 }
 ```
@@ -363,12 +399,14 @@ export interface DashboardData {
 ## 🔄 Integration Testing Plan
 
 ### API Testing Strategy
+
 1. **Unit Tests:** Test each service class independently
-2. **Integration Tests:** Test API connections with mock responses  
+2. **Integration Tests:** Test API connections with mock responses
 3. **E2E Tests:** Test full dashboard data flow
 4. **Error Handling Tests:** Test various failure scenarios
 
 ### Mock Data Strategy
+
 ```typescript
 // lib/api/mocks/google-analytics-mock.ts
 export const mockGAMetrics: GAMetrics = {
@@ -392,12 +430,14 @@ export const mockGAService = {
 ## ⚡ Performance Considerations
 
 ### API Optimization
+
 - **Caching:** Cache API responses for 5-15 minutes depending on data freshness needs
-- **Batching:** Batch multiple metric requests where APIs support it  
+- **Batching:** Batch multiple metric requests where APIs support it
 - **Parallel Requests:** Fetch data from multiple sources simultaneously
 - **Lazy Loading:** Load dashboard data as needed, not all at once
 
 ### Error Recovery
+
 - **Retry Logic:** Exponential backoff for transient failures
 - **Fallback Data:** Show cached data when APIs are unavailable
 - **Graceful Degradation:** Hide unavailable sections rather than breaking entire dashboard

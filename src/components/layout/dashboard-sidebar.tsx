@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   BarChart3,
   Home,
@@ -12,9 +12,9 @@ import {
   Youtube,
   TrendingUp,
   Database,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface NavigationItem {
   name: string;
@@ -26,47 +26,47 @@ interface NavigationItem {
 
 const navigation: NavigationItem[] = [
   {
-    name: 'Dashboard',
-    href: '/',
+    name: "Dashboard",
+    href: "/",
     icon: Home,
   },
   {
-    name: 'Mailchimp',
-    href: '/mailchimp',
+    name: "Mailchimp",
+    href: "/mailchimp",
     icon: Mail,
-    badge: 'Primary',
+    badge: "Primary",
   },
   {
-    name: 'Analytics',
-    href: '/analytics',
+    name: "Analytics",
+    href: "/analytics",
     icon: BarChart3,
     disabled: true,
   },
   {
-    name: 'YouTube',
-    href: '/youtube',
+    name: "YouTube",
+    href: "/youtube",
     icon: Youtube,
     disabled: true,
   },
   {
-    name: 'Social Media',
-    href: '/social',
+    name: "Social Media",
+    href: "/social",
     icon: TrendingUp,
     disabled: true,
   },
   {
-    name: 'Audiences',
-    href: '/audiences',
+    name: "Audiences",
+    href: "/audiences",
     icon: Users,
   },
   {
-    name: 'Data Sources',
-    href: '/sources',
+    name: "Data Sources",
+    href: "/sources",
     icon: Database,
   },
   {
-    name: 'Settings',
-    href: '/settings',
+    name: "Settings",
+    href: "/settings",
     icon: Settings,
   },
 ];
@@ -85,11 +85,11 @@ export function DashboardSidebar() {
             <div key={item.name} className="relative">
               <Button
                 asChild={!item.disabled}
-                variant={isActive ? 'secondary' : 'ghost'}
+                variant={isActive ? "secondary" : "ghost"}
                 className={cn(
-                  'w-full justify-start',
-                  item.disabled && 'opacity-50 cursor-not-allowed',
-                  isActive && 'bg-secondary'
+                  "w-full justify-start",
+                  item.disabled && "opacity-50 cursor-not-allowed",
+                  isActive && "bg-secondary",
                 )}
                 disabled={item.disabled}
               >
@@ -104,7 +104,10 @@ export function DashboardSidebar() {
                     )}
                   </div>
                 ) : (
-                  <Link href={item.href} className="flex items-center space-x-3 w-full">
+                  <Link
+                    href={item.href}
+                    className="flex items-center space-x-3 w-full"
+                  >
                     <Icon className="h-5 w-5" />
                     <span>{item.name}</span>
                     {item.badge && (

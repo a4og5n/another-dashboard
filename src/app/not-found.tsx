@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function NotFound() {
   const handleGoBack = () => {
     window.history.back();
   };
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center space-y-6 max-w-md mx-auto px-4">
@@ -27,7 +27,7 @@ export default function NotFound() {
           >
             Go back home
           </Link>
-          
+
           <button
             onClick={handleGoBack}
             className="w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
@@ -38,7 +38,7 @@ export default function NotFound() {
 
         <div className="pt-6 border-t border-border">
           <p className="text-sm text-muted-foreground">
-            If you believe this is an error, please{' '}
+            If you believe this is an error, please{" "}
             <Link href="/contact" className="text-primary hover:underline">
               contact us
             </Link>

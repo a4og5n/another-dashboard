@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Share2, Twitter, Facebook, Linkedin, Link, Copy } from 'lucide-react';
+import { useState } from "react";
+import { Share2, Twitter, Facebook, Linkedin, Link, Copy } from "lucide-react";
 
 interface SocialShareProps {
   url?: string;
@@ -14,27 +14,27 @@ interface SocialShareProps {
 
 /**
  * Social Share Component
- * 
+ *
  * Provides buttons for sharing content on various social media platforms
  * and copying the link to clipboard.
  */
 export function SocialShare({
-  url = typeof window !== 'undefined' ? window.location.href : '',
-  title = 'Check this out!',
-  description = '',
+  url = typeof window !== "undefined" ? window.location.href : "",
+  title = "Check this out!",
+  description = "",
   hashtags = [],
   via,
-  className = '',
+  className = "",
 }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
-  const hashtagString = hashtags.join(',');
+  const hashtagString = hashtags.join(",");
 
   const shareUrls = {
-    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}${via ? `&via=${via}` : ''}${hashtagString ? `&hashtags=${hashtagString}` : ''}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}${via ? `&via=${via}` : ""}${hashtagString ? `&hashtags=${hashtagString}` : ""}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
   };
@@ -45,12 +45,12 @@ export function SocialShare({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy link:', err);
+      console.error("Failed to copy link:", err);
     }
   };
 
   const handleShare = (platform: keyof typeof shareUrls) => {
-    window.open(shareUrls[platform], '_blank', 'noopener,noreferrer');
+    window.open(shareUrls[platform], "_blank", "noopener,noreferrer");
     setShowDropdown(false);
   };
 
@@ -64,7 +64,7 @@ export function SocialShare({
         });
         setShowDropdown(false);
       } catch (err) {
-        console.error('Error sharing:', err);
+        console.error("Error sharing:", err);
       }
     }
   };
@@ -87,12 +87,12 @@ export function SocialShare({
             className="fixed inset-0 z-10"
             onClick={() => setShowDropdown(false)}
           />
-          
+
           {/* Dropdown Menu */}
           <div className="absolute top-full left-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg z-20">
             <div className="py-2">
               {/* Native Share (if supported) */}
-              {'share' in navigator && (
+              {"share" in navigator && (
                 <button
                   onClick={handleNativeShare}
                   className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-3"
@@ -104,7 +104,7 @@ export function SocialShare({
 
               {/* Twitter */}
               <button
-                onClick={() => handleShare('twitter')}
+                onClick={() => handleShare("twitter")}
                 className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-3"
               >
                 <Twitter size={16} />
@@ -113,7 +113,7 @@ export function SocialShare({
 
               {/* Facebook */}
               <button
-                onClick={() => handleShare('facebook')}
+                onClick={() => handleShare("facebook")}
                 className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-3"
               >
                 <Facebook size={16} />
@@ -122,7 +122,7 @@ export function SocialShare({
 
               {/* LinkedIn */}
               <button
-                onClick={() => handleShare('linkedin')}
+                onClick={() => handleShare("linkedin")}
                 className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-3"
               >
                 <Linkedin size={16} />
@@ -136,8 +136,12 @@ export function SocialShare({
                 onClick={handleCopyLink}
                 className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-3"
               >
-                {copied ? <Copy size={16} className="text-green-600" /> : <Link size={16} />}
-                {copied ? 'Copied!' : 'Copy Link'}
+                {copied ? (
+                  <Copy size={16} className="text-green-600" />
+                ) : (
+                  <Link size={16} />
+                )}
+                {copied ? "Copied!" : "Copy Link"}
               </button>
             </div>
           </div>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button } from './button';
+import React from "react";
+import { Button } from "./button";
 
 export interface PaginationProps {
   currentPage: number;
@@ -7,7 +7,11 @@ export interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+export const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}) => {
   if (totalPages <= 1) return null;
 
   const handlePrev = () => {
@@ -19,13 +23,23 @@ export const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages,
 
   return (
     <div className="flex items-center gap-2 mt-4">
-      <Button variant="outline" size="sm" onClick={handlePrev} disabled={currentPage === 1}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handlePrev}
+        disabled={currentPage === 1}
+      >
         Previous
       </Button>
       <span className="px-2 text-sm">
         Page {currentPage} of {totalPages}
       </span>
-      <Button variant="outline" size="sm" onClick={handleNext} disabled={currentPage === totalPages}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleNext}
+        disabled={currentPage === totalPages}
+      >
         Next
       </Button>
     </div>
