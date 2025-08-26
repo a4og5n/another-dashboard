@@ -1,0 +1,2 @@
+echo "🔍 Running pre-commit validation..."
+pnpm pre-commit

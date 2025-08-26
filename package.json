@@ -18,7 +18,10 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:a11y": "vitest run --reporter=verbose --testNamePattern=\"accessibility|a11y\""
+    "test:a11y": "vitest run --reporter=verbose --testNamePattern=\"accessibility|a11y\"",
+    "pre-commit": "pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm test:a11y",
+    "validate": "pnpm pre-commit && pnpm build",
+    "quick-check": "pnpm type-check && pnpm lint"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",
