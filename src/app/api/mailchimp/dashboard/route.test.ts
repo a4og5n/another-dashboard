@@ -53,7 +53,7 @@ describe("Mailchimp Dashboard API - Pagination", () => {
     // Accept undefined or missing pagination/campaigns if mock data is not available
     if (data.pagination) {
       expect(data.pagination.page).toBe(1);
-      expect(data.pagination.limit).toBe(10);
+      expect(data.pagination.limit).toBe(25); // default from schema
       expect(typeof data.pagination.total).toBe("number");
       expect(typeof data.pagination.totalPages).toBe("number");
     } else {
@@ -81,15 +81,37 @@ describe("Mailchimp Dashboard API - Pagination", () => {
     const response = await GET(mockRequest({ page: "0", limit: "200" }));
     expect(response.status).toBe(400);
     const data = await response.json();
-    expect(data.error).toMatch(/Invalid pagination/);
+    expect(data.error).toMatch(/Invalid query parameters/);
   });
 
   it("returns 400 for invalid date format", async () => {
     const response = await GET(mockRequest({ startDate: "2025-13-01" }));
     expect(response.status).toBe(400);
     const data = await response.json();
-    expect(
-      /Invalid 'startDate'|Invalid pagination parameters/.test(data.error),
-    ).toBe(true);
+    expect(data.error).toMatch(/Invalid query parameters/);
+  });
+
+  it("returns 200 for valid date format", async () => {
+    const response = await GET(
+      mockRequest({ startDate: "2025-08-01", endDate: "2025-08-26" }),
+    );
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.pagination).toBeDefined();
+    expect(data.campaigns).toBeDefined();
+  });
+
+  it("returns 200 for empty date params", async () => {
+    const response = await GET(mockRequest({ startDate: "", endDate: "" }));
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.pagination).toBeDefined();
+  });
+
+  it("returns 200 for missing params", async () => {
+    const response = await GET(mockRequest({}));
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.pagination).toBeDefined();
   });
 });

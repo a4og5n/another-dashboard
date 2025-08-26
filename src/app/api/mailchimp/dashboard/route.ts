@@ -1,7 +1,7 @@
-import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
 import { CampaignFilters } from "@/types/campaign-filters";
+import { validateMailchimpDashboardQuery } from "@/actions/mailchimp-dashboard";
 
 /**
  * Mailchimp Dashboard API
@@ -10,70 +10,44 @@ import { CampaignFilters } from "@/types/campaign-filters";
  * GET /api/mailchimp/dashboard
  */
 export async function GET(request: NextRequest) {
-  // Pagination schema (limit = pageSize for consistency with service)
-  const paginationSchema = z.object({
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(100).default(10),
-  });
+  // ...existing code...
 
-  // Parse query params
+  // Centralized validation using searchParams
   const searchParams = request.nextUrl.searchParams;
-  const pageParam = searchParams.get("page");
-  const limitParam = searchParams.get("limit") || searchParams.get("pageSize");
-  const campaignType = searchParams.get("type") || undefined;
-  const startDate = searchParams.get("startDate");
-  const endDate = searchParams.get("endDate");
+  const parseResult = validateMailchimpDashboardQuery(searchParams);
 
-  // Validate date format (ISO yyyy-mm-dd) FIRST
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  if (
-    typeof startDate === "string" &&
-    startDate.length > 0 &&
-    !dateRegex.test(startDate)
-  ) {
-    return NextResponse.json(
-      { error: "Invalid 'startDate' format. Use yyyy-mm-dd." },
-      { status: 400 },
+  if (!parseResult.success) {
+    return new Response(
+      JSON.stringify({
+        error: "Invalid query parameters",
+        details: parseResult.error.issues,
+      }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
     );
   }
-  if (
-    typeof endDate === "string" &&
-    endDate.length > 0 &&
-    !dateRegex.test(endDate)
-  ) {
-    return NextResponse.json(
-      { error: "Invalid 'endDate' format. Use yyyy-mm-dd." },
-      { status: 400 },
-    );
-  }
-
-  // Validate pagination params
-  const result = paginationSchema.safeParse({
-    page: pageParam,
-    limit: limitParam,
-  });
-  if (!result.success) {
-    return NextResponse.json(
-      {
-        error: "Invalid pagination parameters",
-        details: result.error.issues,
-      },
-      { status: 400 },
-    );
-  }
-  const { page, limit } = result.data;
+  const {
+    page,
+    limit,
+    startDate: validStartDate,
+    endDate: validEndDate,
+    campaignType: validCampaignType,
+  } = parseResult.data;
 
   const filters: CampaignFilters = {
     limit,
     page,
-    campaignType,
+    campaignType: validCampaignType,
   };
 
   // Add date range filter if provided
-  if (startDate || endDate) {
+  if (validStartDate || validEndDate) {
     filters.dateRange = {
-      startDate: startDate ? new Date(startDate + "T00:00:00.000Z") : undefined,
-      endDate: endDate ? new Date(endDate + "T23:59:59.999Z") : undefined,
+      startDate: validStartDate
+        ? new Date(validStartDate + "T00:00:00.000Z")
+        : undefined,
+      endDate: validEndDate
+        ? new Date(validEndDate + "T23:59:59.999Z")
+        : undefined,
     };
   }
 
