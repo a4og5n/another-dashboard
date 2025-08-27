@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
 
   // Always return pagination metadata, even for error/mocked data
   const dashboardData = {
-    campaigns: campaignSummary?.data?.recentCampaigns ?? [],
+    campaigns: campaignSummary?.data ?? {},
     audiences: audienceSummary?.data ?? {},
     pagination: {
       page,
