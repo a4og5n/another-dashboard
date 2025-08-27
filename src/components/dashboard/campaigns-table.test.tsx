@@ -31,18 +31,27 @@ describe("CampaignsTable", () => {
     expect(screen.getByText("Spring Sale")).toBeInTheDocument();
   });
 
-  it("renders empty table for invalid campaigns data", () => {
+  it("renders improved empty state for invalid campaigns data", () => {
     render(<CampaignsTable campaigns={invalidCampaigns} />);
-    expect(screen.queryByText("Broken Data")).not.toBeInTheDocument();
+    expect(screen.getByText("No campaigns found")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
+    expect(
+      screen.getByRole("button", { name: /connect mailchimp/i }),
+    ).toBeInTheDocument();
   });
 
-  it("renders empty table if campaigns is undefined", () => {
+  it("renders improved empty state if campaigns is undefined", () => {
     render(<CampaignsTable campaigns={undefined} />);
-    expect(screen.queryByText("Spring Sale")).not.toBeInTheDocument();
+    expect(screen.getByText("No campaigns found")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
+    expect(
+      screen.getByRole("button", { name: /connect mailchimp/i }),
+    ).toBeInTheDocument();
   });
 
   it("renders loading skeleton when loading is true", () => {
     render(<CampaignsTable campaigns={validCampaigns} loading={true} />);
     expect(screen.getByTestId("table-skeleton")).toBeInTheDocument();
+    expect(screen.queryByText("No campaigns found")).not.toBeInTheDocument();
   });
 });

@@ -183,9 +183,30 @@ export function CampaignsTable({
             </Table>
 
             {safeCampaigns.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                No campaigns found. Connect your Mailchimp account to view
-                campaigns.
+              <div
+                className="flex flex-col items-center justify-center py-8 text-muted-foreground"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <Mail
+                  className="h-8 w-8 mb-2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <span className="font-semibold text-lg mb-2">
+                  No campaigns found
+                </span>
+                <span>
+                  Connect your Mailchimp account to view campaigns or adjust
+                  your filters.
+                </span>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  aria-label="Connect Mailchimp account"
+                >
+                  Connect Mailchimp
+                </Button>
               </div>
             )}
           </>
