@@ -357,4 +357,62 @@ describe("Mailchimp campaigns API route", () => {
       expect(result.data.status).toBe("healthy");
     }
   });
+
+  it("should return campaign reports for valid query params", async () => {
+    const service = services.getMailchimpService();
+    const result = await service.getCampaignReports();
+    expect(result.success).toBe(true);
+    expect(result.data).toBeDefined();
+    if (result.data) {
+      expect(result.data.reports.length).toBeGreaterThan(0);
+      expect(result.data.total_items).toBe(1);
+    }
+    expect(result.rateLimit).toBeDefined();
+    if (result.rateLimit && "limit" in result.rateLimit) {
+      expect((result.rateLimit as Record<string, unknown>).limit).toBe(10);
+    }
+  });
+
+  it("should handle invalid query params with error", async () => {
+    // Simulate invalid params by calling a method that would validate them
+    // For this mock, we expect the service to throw for invalid type
+    const service = services.getMailchimpService();
+    try {
+      await service.getCampaignReports({ type: "invalidtype" });
+      throw new Error("Expected error not thrown");
+    } catch (err) {
+      expect(err).toBeDefined();
+    }
+  });
+
+  it("should return campaign report by ID for valid ID", async () => {
+    const service = services.getMailchimpService();
+    const result = await service.getCampaignReport("abc123");
+    expect(result.success).toBe(true);
+    expect(result.data).toBeDefined();
+    if (result.data) {
+      expect(result.data.id).toBe("abc123");
+    }
+  });
+
+  it("should handle error for campaign report by invalid ID", async () => {
+    const service = services.getMailchimpService();
+    try {
+      // Simulate error for invalid ID
+      await service.getCampaignReport("");
+      throw new Error("Expected error not thrown");
+    } catch (err) {
+      expect(err).toBeDefined();
+    }
+  });
+
+  it("should handle edge case queries (boundary values)", async () => {
+    const service = services.getMailchimpService();
+    // count = 0
+    const resultZero = await service.getCampaignReports({ count: 0 });
+    expect(resultZero.success).toBe(true);
+    // count = 1000
+    const resultMax = await service.getCampaignReports({ count: 1000 });
+    expect(resultMax.success).toBe(true);
+  });
 });

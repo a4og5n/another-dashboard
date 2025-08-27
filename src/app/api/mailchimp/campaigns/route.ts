@@ -1,15 +1,4 @@
-/**
- * Mailchimp Campaigns API Route
- * Handles GET requests for Mailchimp campaign reports and details.
- *
- * - Validates query parameters using Zod schemas
- * - Centralizes error handling and response formatting
- * - Uses MailchimpService for external API calls
- *
- * @see src/schemas/mailchimp-campaigns.ts for validation schema
- * @see src/actions/mailchimp-campaigns.ts for validation and error handling
- * @see src/services/mailchimp.service.ts for Mailchimp API integration
- */
+// Mailchimp Campaigns API Route: Validates query params, centralizes error handling, and returns campaign reports/details. See src/schemas/mailchimp-campaigns.ts and src/actions/mailchimp-campaigns.ts for details.
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
 import {

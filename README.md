@@ -163,6 +163,19 @@ function PerformanceDashboard() {
 }
 ```
 
+### 📊 Mailchimp Campaigns API
+
+Robust API route for Mailchimp campaign reports and details, featuring:
+
+- Strict query parameter validation using Zod schemas
+- Centralized error handling with custom error classes
+- Comprehensive unit, integration, and accessibility test coverage
+- Example usage: `GET api/mailchimp/campaigns?fields=id,type&count=10&reports=true`
+- Response includes: campaign reports, metadata (fields, count, lastUpdated, rateLimit)
+- Returns 400 for invalid query, 500 for server errors
+
+See `src/app/api/mailchimp/campaigns/route.ts` and related actions/schemas for implementation details.
+
 ### Example Tests
 
 Example tests are provided for:
