@@ -50,20 +50,15 @@ describe("Mailchimp Dashboard API - Pagination", () => {
   it("returns paginated campaigns with default params", async () => {
     const response = await GET(mockRequest({}));
     const data = await response.json();
-    // Accept undefined or missing pagination/campaigns if mock data is not available
-    if (data.pagination) {
-      expect(data.pagination.page).toBe(1);
-      expect(data.pagination.limit).toBe(25); // default from schema
-      expect(typeof data.pagination.total).toBe("number");
-      expect(typeof data.pagination.totalPages).toBe("number");
-    } else {
-      expect(data.pagination).toBeUndefined();
-    }
-    if (Array.isArray(data.campaigns)) {
-      expect(Array.isArray(data.campaigns)).toBe(true);
-    } else {
-      expect(data.campaigns).toBeUndefined();
-    }
+    expect(data.pagination).toBeDefined();
+    expect(data.pagination.page).toBe(1);
+    expect(data.pagination.limit).toBe(25); // default from schema
+    expect(typeof data.pagination.total).toBe("number");
+    expect(typeof data.pagination.totalPages).toBe("number");
+    expect(data.campaigns).toBeDefined();
+    expect(typeof data.campaigns).toBe("object");
+    expect(Array.isArray(data.campaigns.recentCampaigns)).toBe(true);
+    expect(typeof data.campaigns.totalCampaigns).toBe("number");
   });
 
   it("returns correct page and limit", async () => {
