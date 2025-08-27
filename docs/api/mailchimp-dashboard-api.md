@@ -110,15 +110,79 @@ Example error response for invalid date:
 
 ---
 
-## Related Files
+# Mailchimp Campaigns API Documentation
 
-- `src/app/api/mailchimp/dashboard/route.ts`
-- `src/types/api-errors.ts`
-- `src/types/campaign-filters.ts`
+## Endpoint
+
+`GET /api/mailchimp/campaigns`
+
+Returns campaign reports and details. Supports filtering, pagination, and metadata in response.
+
+---
+
+## Query Parameters
+
+- `fields` (string, optional): Comma-separated list of fields to include in response
+- `exclude_fields` (string, optional): Comma-separated list of fields to exclude from response
+- `count` (string, optional): Number of records to return (0–1000)
+- `offset` (string, optional): Number of records to skip (>= 0)
+- `type` (string, optional): Campaign type (`regular`, `plaintext`, `absplit`, `rss`, `automation`, `variate`)
+- `before_send_time` (string, optional): ISO8601 date string, campaigns sent before this time
+- `since_send_time` (string, optional): ISO8601 date string, campaigns sent after this time
+- `reports` (string, optional): If `true`, returns campaign reports
+
+---
+
+## Validation & Error Handling
+
+- All parameters are validated using Zod schema ([src/schemas/mailchimp-campaigns.ts])
+- Returns HTTP 400 for invalid parameters with detailed error messages
+- Returns HTTP 500 for internal server errors
+- Uses custom error classes for clear error responses ([src/actions/mailchimp-campaigns.ts])
+
+Example error response:
+
+```json
+{
+  "error": "Invalid query parameters",
+  "details": [
+    { "path": ["count"], "message": "count must be between 0 and 1000" }
+  ]
+}
+```
+
+---
+
+## Response
+
+### Success (200)
+
+```json
+{
+  "reports": [ ... ],
+  "metadata": {
+    "fields": ["id", "type"],
+    "count": 10,
+    "lastUpdated": "2025-08-26T20:00:00Z",
+    "rateLimit": { ... }
+  }
+}
+```
+
+### Error (400, 500)
+
+```json
+{
+  "error": "string",
+  "details": "string | Array<{ path: string[], message: string }>"
+}
+```
 
 ---
 
 ## Notes
 
-- Follows Next.js App Router and project best practices for error handling and validation.
-- See PRD.md and copilot-instructions.md for architectural and quality requirements.
+- All validation and error handling follows project standards ([.github/copilot-instructions.md])
+- See [src/types/mailchimp-campaigns.ts] for TypeScript types
+- See [src/app/api/mailchimp/campaigns/route.ts] for implementation
+- See [README.md] and [docs/api-implementation-summary.md] for usage and integration details

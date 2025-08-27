@@ -1,4 +1,29 @@
-// Mailchimp Campaigns API Route: Validates query params, centralizes error handling, and returns campaign reports/details. See src/schemas/mailchimp-campaigns.ts and src/actions/mailchimp-campaigns.ts for details.
+/**
+ * Mailchimp Campaigns API Route
+ *
+ * Handles GET requests for Mailchimp campaign reports and details.
+ *
+ * - Validates query parameters using Zod schemas (see src/schemas/mailchimp-campaigns.ts)
+ * - Centralized error handling: returns 400 for validation errors, 500 for internal errors
+ * - Uses MailchimpService for external API calls
+ * - Response includes campaign data and metadata (query, lastUpdated, rateLimit)
+ *
+ * ## Usage Example
+ *   GET /api/mailchimp/campaigns?fields=id,type&count=10&reports=true
+ *
+ * ## Response Example
+ *   {
+ *     "reports": [ ... ],
+ *     "metadata": {
+ *       "fields": ["id", "type"],
+ *       "count": 10,
+ *       "lastUpdated": "2025-08-26T20:00:00Z",
+ *       "rateLimit": { ... }
+ *     }
+ *   }
+ *
+ * @see .github/copilot-instructions.md for documentation standards
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
 import {

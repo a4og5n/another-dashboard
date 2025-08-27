@@ -167,14 +167,52 @@ function PerformanceDashboard() {
 
 Robust API route for Mailchimp campaign reports and details, featuring:
 
-- Strict query parameter validation using Zod schemas
-- Centralized error handling with custom error classes
-- Comprehensive unit, integration, and accessibility test coverage
-- Example usage: `GET api/mailchimp/campaigns?fields=id,type&count=10&reports=true`
-- Response includes: campaign reports, metadata (fields, count, lastUpdated, rateLimit)
-- Returns 400 for invalid query, 500 for server errors
+- **Strict query parameter validation** using Zod schemas ([see](src/schemas/mailchimp-campaigns.ts))
+- **Centralized error handling** with custom error classes ([see](src/actions/mailchimp-campaigns.ts))
+- **Type-safe request handling** with TypeScript types ([see](src/types/mailchimp-campaigns.ts))
+- **Comprehensive unit, integration, and accessibility test coverage**
+- **Clear API usage examples**:
 
-See `src/app/api/mailchimp/campaigns/route.ts` and related actions/schemas for implementation details.
+  Example request:
+
+  ```http
+  GET /api/mailchimp/campaigns?fields=id,type&count=10&reports=true
+  ```
+
+  Example response:
+
+  ```json
+  {
+    "reports": [ ... ],
+    "metadata": {
+      "fields": ["id", "type"],
+      "count": 10,
+      "lastUpdated": "2025-08-26T20:00:00Z",
+      "rateLimit": { ... }
+    }
+  }
+  ```
+
+  Example error response:
+
+  ```json
+  {
+    "error": "Invalid query parameters",
+    "details": [
+      { "path": ["count"], "message": "count must be between 0 and 1000" }
+    ]
+  }
+  ```
+
+- **Returns 400 for invalid query, 500 for server errors**
+- **References:**
+  - [Zod schema](src/schemas/mailchimp-campaigns.ts)
+  - [TypeScript types](src/types/mailchimp-campaigns.ts)
+  - [Validation logic](src/actions/mailchimp-campaigns.ts)
+  - [API route](src/app/api/mailchimp/campaigns/route.ts)
+  - [Detailed docs](docs/api/mailchimp-dashboard-api.md)
+
+See `.github/copilot-instructions.md` for documentation standards.
 
 ### Example Tests
 

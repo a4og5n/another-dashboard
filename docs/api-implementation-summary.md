@@ -163,6 +163,65 @@ The service architecture is designed for easy extension:
 
 ---
 
+## 📬 Mailchimp Campaigns API Refactor Summary
+
+**Date:** August 26, 2025  
+**Status:** ✅ COMPLETE
+
+### Overview
+
+- API route `/api/mailchimp/campaigns` now features strict query parameter validation, centralized error handling, and type-safe request/response handling.
+- Validation uses Zod schemas ([src/schemas/mailchimp-campaigns.ts]) and custom error classes ([src/actions/mailchimp-campaigns.ts]).
+- TypeScript types ([src/types/mailchimp-campaigns.ts]) ensure type safety throughout.
+- All changes follow `.github/copilot-instructions.md` documentation and quality standards.
+
+### Validation Flow
+
+- Query parameters are validated using Zod schema before API logic executes.
+- Invalid parameters return HTTP 400 with detailed error messages and paths.
+- Valid parameters are parsed and transformed for downstream API calls.
+
+### Error Handling
+
+- Centralized error handling via custom `ValidationError` class.
+- API returns:
+  - 400 for validation errors
+  - 500 for internal server errors
+  - Error responses include `error` and `details` fields for clarity.
+
+### Response Structure
+
+- Success response includes campaign data and metadata:
+  - `reports`: Array of campaign reports
+  - `metadata`: Query params, lastUpdated timestamp, rateLimit info
+- Example:
+  ```json
+  {
+    "reports": [ ... ],
+    "metadata": {
+      "fields": ["id", "type"],
+      "count": 10,
+      "lastUpdated": "2025-08-26T20:00:00Z",
+      "rateLimit": { ... }
+    }
+  }
+  ```
+
+### Usage & Integration
+
+- See [README.md] and [docs/api/mailchimp-dashboard-api.md] for usage examples and details.
+- All implementation files are referenced for further review.
+
+### References
+
+- [src/app/api/mailchimp/campaigns/route.ts]
+- [src/actions/mailchimp-campaigns.ts]
+- [src/schemas/mailchimp-campaigns.ts]
+- [src/types/mailchimp-campaigns.ts]
+- [.github/copilot-instructions.md]
+
+---
+
 ## 📊 Implementation Metrics
 
 **Development Time:** 1 day (Aug 25, 2025)  

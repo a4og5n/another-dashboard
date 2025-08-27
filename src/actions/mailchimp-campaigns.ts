@@ -16,6 +16,12 @@
 import { mailchimpCampaignsQuerySchema } from "../schemas/mailchimp-campaigns";
 import { MailchimpCampaignsQuery } from "../types/mailchimp-campaigns";
 
+/**
+ * Custom error class for Mailchimp campaigns API validation errors
+ *
+ * @param message - Error message
+ * @param details - Optional error details (Zod error object)
+ */
 export class ValidationError extends Error {
   details: unknown;
   constructor(message: string, details?: unknown) {
@@ -30,6 +36,16 @@ export class ValidationError extends Error {
  * @param params - Query parameters from request
  * @returns Parsed and typed query object
  * @throws ValidationError if validation fails
+ */
+/**
+ * Validates Mailchimp campaigns API query parameters using Zod schema
+ *
+ * @param params - Query parameters from request (object)
+ * @returns Parsed and typed query object (MailchimpCampaignsQuery)
+ * @throws ValidationError if validation fails
+ *
+ * Example:
+ *   validateMailchimpCampaignsQuery({ count: "10", type: "regular" })
  */
 export function validateMailchimpCampaignsQuery(
   params: unknown,
