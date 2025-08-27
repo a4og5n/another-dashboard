@@ -1,5 +1,10 @@
+// Mailchimp Campaigns API Route: Validates query params, centralizes error handling, and returns campaign reports/details. See src/schemas/mailchimp-campaigns.ts and src/actions/mailchimp-campaigns.ts for details.
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
+import {
+  validateMailchimpCampaignsQuery,
+  ValidationError,
+} from "@/actions/mailchimp-campaigns";
 
 /**
  * Mailchimp Campaigns API
@@ -10,31 +15,34 @@ import { getMailchimpService } from "@/services";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
+    // Convert URLSearchParams to a plain object
+    const paramsObj: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      paramsObj[key] = value;
+    }
+
+    // Validate query params
+    let query;
+    try {
+      query = validateMailchimpCampaignsQuery(paramsObj);
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        return NextResponse.json(
+          {
+            error: "Invalid query parameters",
+            details: err.details,
+          },
+          { status: 400 },
+        );
+      }
+      throw err;
+    }
+
     const reports = searchParams.get("reports") === "true";
-    const count = parseInt(searchParams.get("count") || "25", 10);
-    const offset = parseInt(searchParams.get("offset") || "0", 10);
-    const type = searchParams.get("type") || undefined;
-    const since = searchParams.get("since") || undefined;
-    const sortField =
-      (searchParams.get("sort_field") as "send_time" | "create_time") ||
-      "send_time";
-    const sortDir =
-      (searchParams.get("sort_dir")?.toUpperCase() as "ASC" | "DESC") || "DESC";
-
     const mailchimp = getMailchimpService();
-
-    const params = {
-      count,
-      offset,
-      type,
-      since_send_time: since,
-      sort_field: sortField,
-      sort_dir: sortDir,
-    };
-
     const response = reports
-      ? await mailchimp.getCampaignReports(params)
-      : await mailchimp.getCampaigns(params);
+      ? await mailchimp.getCampaignReports(query)
+      : await mailchimp.getCampaigns(query);
 
     if (!response.success) {
       return NextResponse.json(
@@ -49,19 +57,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       ...response.data,
       metadata: {
-        count,
-        offset,
-        type,
-        since,
-        sortField,
-        sortDir,
+        ...query,
         lastUpdated: new Date().toISOString(),
         rateLimit: response.rateLimit,
       },
     });
   } catch (error) {
     console.error("Mailchimp campaigns API error:", error);
-
     return NextResponse.json(
       {
         error: "Internal server error",
