@@ -1,17 +1,21 @@
 /**
  * Zod schema for Mailchimp campaigns API query parameters
- * Strictly validates all supported parameters for GET /reports (list campaign reports)
  *
- * Parameters:
- *   - fields: Comma-separated list of fields to include in response
- *   - exclude_fields: Comma-separated list of fields to exclude from response
- *   - count: Number of records to return (max 1000)
- *   - offset: Number of records to skip
- *   - type: Type of campaign ("regular", "plaintext", "absplit", "rss", "automation", "variate")
- *   - before_send_time: ISO8601 date string, campaigns sent before this time
- *   - since_send_time: ISO8601 date string, campaigns sent after this time
+ * Strictly validates all supported parameters for GET /reports (list campaign reports):
+ *   - fields: Comma-separated list of fields to include in response (string, optional)
+ *   - exclude_fields: Comma-separated list of fields to exclude from response (string, optional)
+ *   - count: Number of records to return (string, optional, must be 0-1000)
+ *   - offset: Number of records to skip (string, optional, must be >= 0)
+ *   - type: Type of campaign (enum: "regular", "plaintext", "absplit", "rss", "automation", "variate", optional)
+ *   - before_send_time: ISO8601 date string, campaigns sent before this time (string, optional)
+ *   - since_send_time: ISO8601 date string, campaigns sent after this time (string, optional)
+ *
+ * Transforms and validates input for API usage. Throws on invalid input.
  *
  * Reference: https://mailchimp.com/developer/marketing/api/reports/list-campaign-reports/
+ *
+ * Example:
+ *   mailchimpCampaignsQuerySchema.parse({ count: "10", type: "regular" })
  */
 import { z } from "zod";
 

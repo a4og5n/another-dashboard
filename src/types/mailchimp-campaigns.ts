@@ -1,15 +1,18 @@
 /**
  * TypeScript type for Mailchimp campaigns API query parameters
+ *
  * Inferred from Zod schema in src/schemas/mailchimp-campaigns.ts
  *
  * Parameters:
- *   - fields: Comma-separated list of fields to include in response
- *   - exclude_fields: Comma-separated list of fields to exclude from response
- *   - count: Number of records to return (max 1000)
- *   - offset: Number of records to skip
- *   - type: Type of campaign ("regular", "plaintext", "absplit", "rss", "automation", "variate")
- *   - before_send_time: ISO8601 date string, campaigns sent before this time
- *   - since_send_time: ISO8601 date string, campaigns sent after this time
+ *   - fields?: string[]
+ *   - exclude_fields?: string[]
+ *   - count?: number
+ *   - offset?: number
+ *   - type?: "regular" | "plaintext" | "absplit" | "rss" | "automation" | "variate"
+ *   - before_send_time?: string
+ *   - since_send_time?: string
+ *
+ * Used for type-safe API validation and request handling.
  *
  * Reference: https://mailchimp.com/developer/marketing/api/reports/list-campaign-reports/
  */

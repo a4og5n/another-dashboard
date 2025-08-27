@@ -13,19 +13,20 @@ import { TableSkeleton } from "@/components/ui/skeleton";
 import { DateFilterPopover } from "@/components/ui/date-filter-popover";
 import { ExternalLink, Mail } from "lucide-react";
 import { DateRange } from "react-day-picker";
-
-interface Campaign {
-  id: string;
-  title: string;
-  status: string;
-  emailsSent: number;
-  openRate: number;
-  clickRate: number;
-  sendTime: string;
-}
+import { z } from "zod";
+import type { infer as zInfer } from "zod";
 
 interface CampaignsTableProps {
-  campaigns: Campaign[];
+  /**
+   * Campaigns data to display in the table.
+   * Validated with Zod schema for safety. Accepts any input, but only valid campaigns are rendered.
+   * If validation fails, the table will be empty and no runtime error will occur.
+   *
+   * @see CampaignSchema for validation
+   * @example
+   * <CampaignsTable campaigns={dataFromApi} />
+   */
+  campaigns: unknown;
   loading?: boolean;
   // Date filtering props
   dateRange?: DateRange;
@@ -40,6 +41,42 @@ export function CampaignsTable({
   onDateRangeChange,
   onPresetSelect,
 }: CampaignsTableProps) {
+  // Zod schema for a single campaign
+  /**
+   * Zod schema for a single campaign object
+   */
+  const CampaignSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    status: z.string(),
+    emailsSent: z.number(),
+    openRate: z.number(),
+    clickRate: z.number(),
+    sendTime: z.string(),
+  });
+
+  // Zod schema for campaigns array
+  /**
+   * Zod schema for an array of campaigns
+   */
+  const CampaignsArraySchema = z.array(CampaignSchema);
+
+  // Validate campaigns prop
+  /**
+   * Validated campaigns array. Only valid campaigns will be rendered.
+   * If validation fails, renders an empty table. This prevents runtime errors from invalid data.
+   *
+   * Validation is performed using Zod schemas for strict type safety.
+   */
+  let safeCampaigns: zInfer<typeof CampaignsArraySchema> = [];
+  try {
+    safeCampaigns = CampaignsArraySchema.parse(campaigns);
+  } catch {
+    // Optionally log error or show fallback UI
+    safeCampaigns = [];
+  }
+
+  // ...existing code...
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case "sent":
@@ -63,6 +100,8 @@ export function CampaignsTable({
     });
   };
 
+  // Defensive: Zod validation ensures campaigns is always an array
+
   return (
     <Card>
       <CardHeader>
@@ -80,7 +119,7 @@ export function CampaignsTable({
       </CardHeader>
       <CardContent>
         {loading ? (
-          <TableSkeleton rows={6} columns={5} />
+          <TableSkeleton rows={6} columns={5} data-testid="table-skeleton" />
         ) : (
           <>
             <Table>
@@ -96,7 +135,7 @@ export function CampaignsTable({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {campaigns.map((campaign) => (
+                {safeCampaigns.map((campaign) => (
                   <TableRow key={campaign.id}>
                     <TableCell className="font-medium max-w-xs">
                       <div className="truncate" title={campaign.title}>
@@ -143,10 +182,31 @@ export function CampaignsTable({
               </TableBody>
             </Table>
 
-            {campaigns.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                No campaigns found. Connect your Mailchimp account to view
-                campaigns.
+            {safeCampaigns.length === 0 && (
+              <div
+                className="flex flex-col items-center justify-center py-8 text-muted-foreground"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <Mail
+                  className="h-8 w-8 mb-2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <span className="font-semibold text-lg mb-2">
+                  No campaigns found
+                </span>
+                <span>
+                  Connect your Mailchimp account to view campaigns or adjust
+                  your filters.
+                </span>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  aria-label="Connect Mailchimp account"
+                >
+                  Connect Mailchimp
+                </Button>
               </div>
             )}
           </>

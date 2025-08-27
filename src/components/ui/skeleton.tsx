@@ -41,9 +41,13 @@ interface TableSkeletonProps {
   columns?: number;
 }
 
-function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
+function TableSkeleton({
+  rows = 5,
+  columns = 4,
+  ...props
+}: TableSkeletonProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" {...props}>
       {/* Table Header */}
       <div className="flex space-x-4 pb-2 border-b">
         {Array.from({ length: columns }).map((_, index) => (
