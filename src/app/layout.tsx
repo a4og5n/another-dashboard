@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { ErrorBoundary } from "@/components/error-boundary";
-import { InstallPrompt } from "@/components/pwa/install-prompt";
-
+import { DashboardShell } from "@/components/layout/dashboard-shell";
 export const metadata: Metadata = {
   title: {
     default: "Mailchimp Dashboard",
@@ -146,10 +144,7 @@ export default function RootLayout({
         <meta property="og:image" content="/icons/icon-512x512.png" />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <ErrorBoundary>
-          {children}
-          <InstallPrompt />
-        </ErrorBoundary>
+        <DashboardShell>{children}</DashboardShell>
       </body>
     </html>
   );

@@ -570,13 +570,13 @@ MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
 #### Layout
 
 - [ ] Modular dashboard layouts supporting future customization (widgets, panels)
-- [ ] Persistent navigation (main menu, breadcrumbs) for easy orientation
+      ✅ Persistent navigation (main menu, breadcrumbs) for easy orientation
 - [ ] Clear sectioning and whitespace to guide attention and reduce clutter
 - [ ] Support multi-dashboard views for users with access to multiple data sources
 - [ ] Responsive design (mobile-first approach)
 - [ ] Consistent navigation across all pages
 - [ ] Clear information hierarchy
-- [ ] Customizable dashboard layouts
+      ✅ Customizable dashboard layouts
 
 #### Visual Design
 
