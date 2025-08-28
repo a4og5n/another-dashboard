@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { DashboardShell } from "@/components/layout/dashboard-shell";
 export const metadata: Metadata = {
   title: {
     default: "Mailchimp Dashboard",
@@ -143,10 +144,7 @@ export default function RootLayout({
         <meta property="og:image" content="/icons/icon-512x512.png" />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <header className="sticky top-0 w-full z-[1000] h-16 bg-white border-b flex items-center px-6 shadow-md">
-          <span className="font-bold text-lg">Another Dashboard</span>
-        </header>
-        <main className="pt-16">{children}</main>
+        <DashboardShell>{children}</DashboardShell>
       </body>
     </html>
   );

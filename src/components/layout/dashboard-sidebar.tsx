@@ -71,19 +71,25 @@ const navigation: NavigationItem[] = [
   },
 ];
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ visible }: { visible: boolean }) {
   const pathname = usePathname();
-
   return (
-    <aside className="hidden md:flex w-64 flex-col border-r bg-background">
-      <nav className="flex-1 p-4 space-y-2">
+    <aside
+      id="dashboard-sidebar"
+      className={cn(
+        "w-64 h-screen flex flex-col border-r bg-background transition-transform duration-300 pt-16", // pt-16 matches header height
+        visible ? "md:flex" : "md:hidden -translate-x-full",
+        !visible ? "absolute z-[999] left-0 top-16 h-[calc(100vh-4rem)]" : "",
+      )}
+      aria-hidden={!visible}
+      tabIndex={visible ? 0 : -1}
+    >
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {navigation.map((item, idx) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
-
           // Add extra top margin to the first item (Mailchimp)
           const extraMargin = idx === 1 ? "mt-6" : "";
-
           return (
             <div key={item.name} className={cn("relative", extraMargin)}>
               <Button
@@ -125,13 +131,10 @@ export function DashboardSidebar() {
           );
         })}
       </nav>
-
-      {/* Footer */}
-      <div className="p-4 border-t">
-        <div className="text-xs text-muted-foreground">
-          <div>Another Dashboard v1.0</div>
-          <div className="mt-1">API Status: Connected</div>
-        </div>
+      {/* Footer fixed to bottom */}
+      <div className="p-4 border-t text-xs text-muted-foreground w-full sticky bottom-0 bg-background">
+        <div>Another Dashboard v1.0</div>
+        <div className="mt-1">API Status: Connected</div>
       </div>
     </aside>
   );
