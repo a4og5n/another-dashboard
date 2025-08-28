@@ -77,12 +77,15 @@ export function DashboardSidebar() {
   return (
     <aside className="hidden md:flex w-64 flex-col border-r bg-background">
       <nav className="flex-1 p-4 space-y-2">
-        {navigation.map((item) => {
+        {navigation.map((item, idx) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
 
+          // Add extra top margin to the first item (Mailchimp)
+          const extraMargin = idx === 1 ? "mt-6" : "";
+
           return (
-            <div key={item.name} className="relative">
+            <div key={item.name} className={cn("relative", extraMargin)}>
               <Button
                 asChild={!item.disabled}
                 variant={isActive ? "secondary" : "ghost"}
