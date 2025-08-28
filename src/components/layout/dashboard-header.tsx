@@ -25,10 +25,16 @@ export function DashboardHeader({
         </Button>
         {/* Logo and Title */}
         <div className="flex items-center space-x-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
+          <div
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm"
+            aria-label="Dashboard"
+            role="img"
+          >
             AD
           </div>
-          <h1 className="text-xl font-semibold">Another Dashboard</h1>
+          <h1 className="text-xl font-semibold hidden md:inline">
+            Another Dashboard
+          </h1>
         </div>
         {/* Spacer to maintain layout after search removal */}
         <div className="flex-1" />
