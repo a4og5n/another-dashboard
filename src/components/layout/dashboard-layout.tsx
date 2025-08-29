@@ -5,5 +5,5 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  return <main className="flex-1 p-6 pt-24 md:pt-24">{children}</main>;
+  return <main className="flex-1 p-6 pt-16 md:pt-16">{children}</main>;
 }
