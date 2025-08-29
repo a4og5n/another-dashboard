@@ -449,18 +449,8 @@ export function MailchimpDashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center mt-6">
           <h1 className="text-3xl font-bold">Mailchimp Dashboard</h1>
-          <Button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            variant="outline"
-          >
-            <RefreshCw
-              className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-            />
-            Refresh Data
-          </Button>
         </div>
 
         {error && (
