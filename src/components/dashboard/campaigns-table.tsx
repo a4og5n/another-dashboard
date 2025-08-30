@@ -13,7 +13,7 @@ import { TableSkeleton } from "@/components/ui/skeleton";
 import { DateFilterPopover } from "@/components/ui/date-filter-popover";
 import { Mail } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { CampaignsArraySchema } from "@/schemas/campaign";
+import { CampaignsArraySchema } from "@/schemas/mailchimp/campaign";
 import type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
 
 interface CampaignsTableProps {
