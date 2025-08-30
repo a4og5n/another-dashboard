@@ -1,4 +1,4 @@
-import { mailchimpDashboardPaginationSchema } from "@/schemas/mailchimp/mailchimp-dashboard-pagination";
+import { mailchimpDashboardPaginationSchema } from "@/schemas/mailchimp-dashboard-pagination";
 import { z } from "zod";
 
 /**
