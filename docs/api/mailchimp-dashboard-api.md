@@ -20,15 +20,43 @@ Returns summarized campaign and audience data for the dashboard.
 
 ## Validation & Error Handling
 
-- All parameters are validated explicitly.
-- Date parameters must be valid calendar dates in `yyyy-mm-dd` format (e.g., 2025-02-29 is valid, 2025-13-01 is invalid).
-- Returns error message "Invalid date format or value" for invalid dates.
-- Returns HTTP 400 for invalid parameters.
-- Returns HTTP 502 for Mailchimp API errors.
-- Returns HTTP 500 for unexpected errors.
-- Uses custom error classes for clear error responses.
+# Mailchimp Dashboard API Schema Modularization
 
----
+## Schema Folder Structure & Conventions
+
+All Mailchimp-related schemas are stored in `src/schemas/mailchimp/`.
+
+Each major API resource (campaigns, audiences, reports, members, templates) has its own schema file:
+
+- `campaign.schema.ts`
+- `audience.schema.ts`
+- `report.schema.ts`
+- `member.schema.ts`
+- `template.schema.ts`
+
+An `index.ts` re-exports all schemas for easy imports and enforces a single import point for Mailchimp validation logic.
+
+### Naming Conventions
+
+- Use PascalCase for Zod schema constants (e.g., `MailchimpCampaignSchema`).
+- Use ALL_CAPS for enums/constants (e.g., `MAILCHIMP_CAMPAIGN_STATUS`).
+
+### Rationale & Template for Other Data Sources
+
+This folder structure and naming convention is now the standard for all future data source integrations (Mailjet, Wordpress, etc.).
+Each new integration should:
+
+- Create a subfolder in `src/schemas/` (e.g., `mailjet/`, `wordpress/`)
+- Use atomic schema files per API resource
+- Re-export all schemas from an `index.ts`
+- Follow the same naming conventions for Zod schemas and enums
+
+### Benefits
+
+- Atomic, maintainable schema files
+- Strict validation and type safety
+- Easy extension for new resources and platforms
+- Consistent developer experience and onboarding
 
 ## Response
 

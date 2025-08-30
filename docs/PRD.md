@@ -268,6 +268,7 @@ _Roles are not mutually exclusive; users can be assigned multiple roles._
 1. **Multi-Platform Data Connections**
    - Connect to various content, marketing, analytics, and revenue platforms via their APIs.
    - No local database; data is retrieved live from each source.
+   - **Immediate Priority:** Modularize Mailchimp schemas in `src/schemas/mailchimp/` as a template for all future data sources (Mailjet, Wordpress, etc.).
 
 2. **Independent Dashboards**
    - Display a separate dashboard for each data source.
@@ -754,9 +755,10 @@ MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
 
 ---
 
-## Timeline & Milestones
+### Timeline & Milestones
 
-<!-- 📝 STAGE 8: Project planning -->
+- **August/September 2025:** Modularize Mailchimp schemas in `src/schemas/mailchimp/` and document conventions for other data sources. Use this as a template for future integrations.
+  [...existing content...]
 
 ### Development Phases
 
