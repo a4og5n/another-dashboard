@@ -73,6 +73,8 @@ Before starting any development work, always review the key project documentatio
 - Export types from index.ts files
 - Avoid using 'any' type
 - Implement strict type checking
+- **Do not define shared types inline in components or actions.**
+- **Enforce usage via lint rules, pre-commit scripts, and code review checklists.**
 
 ### `/src/schemas` - Zod Validation Schemas
 
@@ -81,6 +83,8 @@ Before starting any development work, always review the key project documentatio
 - Define clear error messages
 - Use strict type inference
 - Keep schemas focused and composable
+- **Do not define Zod schemas inline in components or actions.**
+- **Enforce usage via lint rules, pre-commit scripts, and code review checklists.**
 
 ### `/src/utils` - Helper Functions
 
@@ -99,6 +103,15 @@ Before starting any development work, always review the key project documentatio
 - Keep functions small and focused
 
 ## 🔧 Development Best Practices
+
+### Schema/Type Enforcement & Refactoring
+
+- Add ESLint rules or custom lint checks to flag inline Zod schemas and type definitions in component files.
+- Require imports from `schemas` and `types` folders for validation and shared types.
+- Extend pre-commit hooks to scan for inline schema/type definitions and warn or fail if found.
+- Use regex or AST-based scripts to detect Zod schema and interface declarations outside their designated folders.
+- Make schema/type usage a checklist item in PR reviews.
+- Add code comments in components reminding contributors to use centralized schemas/types.
 
 ### Type Safety
 
