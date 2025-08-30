@@ -24,47 +24,17 @@ Returns summarized campaign and audience data for the dashboard.
 
 ## Schema Folder Structure & Conventions
 
-All Mailchimp-related schemas are now stored in `src/schemas/mailchimp/`.
+All Mailchimp-related schemas are stored in `src/schemas/mailchimp/`.
 
 Each major API resource (campaigns, audiences, reports, members, templates) has its own schema file:
 
-- `mailchimp-campaigns.ts` (API query validation)
-- `mailchimp-dashboard-pagination.ts` (dashboard pagination validation)
-- `campaign.ts` (Mailchimp campaign object validation)
-- `audience.ts` (future)
-- `report.ts` (future)
-- `member.ts` (future)
-- `template.ts` (future)
+- `campaign.schema.ts`
+- `audience.schema.ts`
+- `report.schema.ts`
+- `member.schema.ts`
+- `template.schema.ts`
 
-An `index.ts` re-exports all schemas for easy imports and enforces a single import point for Mailchimp validation logic:
-
-```ts
-// Example usage
-import {
-  mailchimpCampaignsQuerySchema,
-  mailchimpDashboardPaginationSchema,
-  CampaignSchema,
-} from "@/schemas/mailchimp";
-```
-
-This structure is the template for all future data source integrations (Mailjet, Wordpress, etc.):
-
-- Create a subfolder in `src/schemas/` (e.g., `mailjet/`, `wordpress/`)
-- Use atomic schema files per API resource
-- Re-export all schemas from an `index.ts`
-- Follow the same naming conventions for Zod schemas and enums
-
-### Naming Conventions
-
-- Use PascalCase for Zod schema constants (e.g., `MailchimpCampaignSchema`).
-- Use ALL_CAPS for enums/constants (e.g., `MAILCHIMP_CAMPAIGN_STATUS`).
-
-### Benefits
-
-- Atomic, maintainable schema files
-- Strict validation and type safety
-- Easy extension for new resources and platforms
-- Consistent developer experience and onboarding
+An `index.ts` re-exports all schemas for easy imports and enforces a single import point for Mailchimp validation logic.
 
 ### Naming Conventions
 
