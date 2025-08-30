@@ -7,8 +7,6 @@ const validCampaigns = [
     title: "Spring Sale",
     status: "sent",
     emailsSent: 1000,
-    openRate: 25.5,
-    clickRate: 10.2,
     sendTime: "2025-03-15T10:00:00Z",
   },
 ];
@@ -19,8 +17,6 @@ const invalidCampaigns = [
     title: "Broken Data",
     status: "sent",
     emailsSent: "1000", // should be number
-    openRate: "25.5", // should be number
-    clickRate: 10.2,
     sendTime: "2025-03-15T10:00:00Z",
   },
 ];

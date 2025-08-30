@@ -10,10 +10,9 @@ export interface MailchimpDashboardPaginationParams {
 export interface MailchimpDashboardCampaign {
   id: string;
   title: string;
-  sentDate: string;
-  openRate: number;
-  clickRate: number;
-  bounceRate: number;
+  status: string;
+  emailsSent: number;
+  sendTime: string;
   // Add more fields as needed
 }
 

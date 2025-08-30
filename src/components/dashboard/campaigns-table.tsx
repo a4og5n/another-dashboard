@@ -11,10 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { DateFilterPopover } from "@/components/ui/date-filter-popover";
-import { ExternalLink, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { z } from "zod";
-import type { infer as zInfer } from "zod";
+import { CampaignsArraySchema } from "@/schemas/campaign";
+import type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
 
 interface CampaignsTableProps {
   /**
@@ -41,34 +41,14 @@ export function CampaignsTable({
   onDateRangeChange,
   onPresetSelect,
 }: CampaignsTableProps) {
-  // Zod schema for a single campaign
-  /**
-   * Zod schema for a single campaign object
-   */
-  const CampaignSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    status: z.string(),
-    emailsSent: z.number(),
-    openRate: z.number(),
-    clickRate: z.number(),
-    sendTime: z.string(),
-  });
-
-  // Zod schema for campaigns array
-  /**
-   * Zod schema for an array of campaigns
-   */
-  const CampaignsArraySchema = z.array(CampaignSchema);
-
   // Validate campaigns prop
   /**
    * Validated campaigns array. Only valid campaigns will be rendered.
    * If validation fails, renders an empty table. This prevents runtime errors from invalid data.
    *
-   * Validation is performed using Zod schemas for strict type safety.
+   * Validation is performed using centralized Zod schemas for strict type safety.
    */
-  let safeCampaigns: zInfer<typeof CampaignsArraySchema> = [];
+  let safeCampaigns: MailchimpDashboardCampaign[] = [];
   try {
     safeCampaigns = CampaignsArraySchema.parse(campaigns);
   } catch {
@@ -128,10 +108,8 @@ export function CampaignsTable({
                   <TableHead>Campaign</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Emails Sent</TableHead>
-                  <TableHead className="text-right">Open Rate</TableHead>
-                  <TableHead className="text-right">Click Rate</TableHead>
+                  {/* ...existing code... */}
                   <TableHead className="text-right">Sent Date</TableHead>
-                  <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -146,36 +124,9 @@ export function CampaignsTable({
                     <TableCell className="text-right">
                       {campaign.emailsSent.toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-right">
-                      <span
-                        className={
-                          campaign.openRate > 20
-                            ? "text-green-600"
-                            : "text-yellow-600"
-                        }
-                      >
-                        {campaign.openRate.toFixed(1)}%
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <span
-                        className={
-                          campaign.clickRate > 2
-                            ? "text-green-600"
-                            : "text-yellow-600"
-                        }
-                      >
-                        {campaign.clickRate.toFixed(1)}%
-                      </span>
-                    </TableCell>
+                    {/* ...existing code... */}
                     <TableCell className="text-right text-muted-foreground">
                       {formatDate(campaign.sendTime)}
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="sm">
-                        <ExternalLink className="h-4 w-4" />
-                        <span className="sr-only">View campaign</span>
-                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
