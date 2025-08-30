@@ -190,12 +190,22 @@ Before starting any development work, always review the key project documentatio
 
 ### Local Development Validation
 
-- **Pre-commit Hooks**: Husky automatically runs comprehensive validation before every commit
-- **Quality Checks**: Type checking, linting, formatting, unit tests, and accessibility tests
-- **Immediate Feedback**: Use `pnpm quick-check` for fast validation during development
-- **Full Validation**: Run `pnpm pre-commit` to execute all quality checks locally
-- **Build Testing**: Use `pnpm validate` for complete validation including build test
-- **Zero CI/CD Failures**: All quality issues caught locally before reaching CI/CD pipeline
+### Recommended Local Workflow
+
+To ensure all code meets project standards and to avoid formatting or validation errors blocking commits:
+
+1. **Run `pnpm pre-commit` before staging or committing changes.**
+   - This command runs formatting, linting, type-checking, and tests in the correct order.
+   - It will catch all issues early, including Prettier formatting errors.
+
+2. **Optionally, run `pnpm format:check` for a quick formatting check before staging changes.**
+
+3. **Husky pre-commit hooks** are set up to run these checks automatically before every commit.
+   - If any issues are found, the commit will be blocked until resolved.
+   - No need to manually order validation steps.
+
+**Summary:**
+Always run `pnpm pre-commit` before `git add` or `git commit` to catch all formatting, lint, type, and test errors. Husky hooks automate this process for you.
 
 ### Security
 
