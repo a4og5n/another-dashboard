@@ -29,8 +29,13 @@ Before starting any development work, always review the key project documentatio
 - **Project Status**: MVP Complete with ongoing enhancements
 - **Current Phase**: Post-MVP feature development and workflow optimization
 - **Key Achievement**: 70x acceleration - 10-week roadmap completed in 1 day
-- **Architecture**: Next.js 15, React 19, TypeScript, shadcn/ui, Tailwind CSS
-- **Focus Areas**: Mailchimp dashboard, performance, accessibility, developer experience
+
+### Scripts and Node.js Module Type
+
+- All scripts in `/scripts` must use ES module syntax (`import`/`export`).
+- The project sets `"type": "module"` in `package.json` to eliminate Node.js warnings and ensure modern compatibility.
+- Refactor any CommonJS scripts to ES modules if added in the future.
+- Validate scripts locally after any changes to ensure zero runtime warnings.
 
 ### Before Making Changes
 
