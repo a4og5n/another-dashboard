@@ -1,5 +1,7 @@
 # Contributor Checklist
+
 - [ ] I used ES module syntax (`import`/`export`) and did not use `require()` imports in any TypeScript code.
+
 # Contributor Checklist
 
 - [ ] I ran `pnpm pre-commit` and/or `pnpm format:check` before submitting this PR to ensure all formatting, lint, type, and test checks pass.

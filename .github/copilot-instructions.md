@@ -32,12 +32,12 @@ Before starting any development work, always review the key project documentatio
 
 ### Scripts and Node.js Module Type
 
- - All scripts in `/scripts` must use ES module syntax (`import`/`export`).
- - The project sets `"type": "module"` in `package.json` to eliminate Node.js warnings and ensure modern compatibility.
- - Refactor any CommonJS scripts to ES modules if added in the future.
- - **`require()` imports are forbidden in all TypeScript code. This is enforced via ESLint (`@typescript-eslint/no-require-imports: error`).**
- - Linting is run in pre-commit and CI workflows, blocking commits and PRs if violations are found.
- - Validate scripts locally after any changes to ensure zero runtime warnings.
+- All scripts in `/scripts` must use ES module syntax (`import`/`export`).
+- The project sets `"type": "module"` in `package.json` to eliminate Node.js warnings and ensure modern compatibility.
+- Refactor any CommonJS scripts to ES modules if added in the future.
+- **`require()` imports are forbidden in all TypeScript code. This is enforced via ESLint (`@typescript-eslint/no-require-imports: error`).**
+- Linting is run in pre-commit and CI workflows, blocking commits and PRs if violations are found.
+- Validate scripts locally after any changes to ensure zero runtime warnings.
 
 ### Before Making Changes
 
