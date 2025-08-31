@@ -20,7 +20,4 @@ export const mailchimpDashboardPaginationSchema = z.object({
     })
     .default(25),
 });
-
-export type MailchimpDashboardPaginationParams = z.infer<
-  typeof mailchimpDashboardPaginationSchema
->;
+// Type definition moved to '@/types/mailchimp/dashboard-pagination'

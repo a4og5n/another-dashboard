@@ -19,14 +19,15 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/actions/*": ["./src/actions/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/schemas/*": ["./src/schemas/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/dal/*": ["./src/dal/*"]
+  "@/*": ["./src/*"],
+  "@/components/*": ["./src/components/*"],
+  "@/actions/*": ["./src/actions/*"],
+  "@/types/*": ["./src/types/*"],
+  "@/schemas/*": ["./src/schemas/*"],
+  "@schemas/mailchimp/*": ["./src/schemas/mailchimp/*"],
+  "@/utils/*": ["./src/utils/*"],
+  "@/lib/*": ["./src/lib/*"],
+  "@/dal/*": ["./src/dal/*"]
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true,

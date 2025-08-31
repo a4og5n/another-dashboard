@@ -17,7 +17,7 @@
  * Reference: https://mailchimp.com/developer/marketing/api/reports/list-campaign-reports/
  */
 import { z } from "zod";
-import { mailchimpCampaignsQuerySchema } from "../schemas/mailchimp-campaigns";
+import { mailchimpCampaignsQuerySchema } from "@/schemas/mailchimp-campaigns";
 
 export type MailchimpCampaignsQuery = z.infer<
   typeof mailchimpCampaignsQuerySchema
