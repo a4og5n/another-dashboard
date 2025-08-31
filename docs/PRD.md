@@ -17,6 +17,25 @@ src/types/
    ├── ...                     # Other feature or domain-specific types
 ```
 
+
+
+
+**Error Response Schema Strategy:**
+
+- Always compare all fields of the error response to the shared error schema.
+- If the fields are an exact match, use the shared schema.
+- If there are additional or different fields, extend the shared schema with `.extend({ ... })`.
+- If the error response structure is fundamentally different, create a custom schema for that API.
+
+**API Naming Consistency for Schemas:**
+
+- Always use the same object/property names as the API when defining Zod schemas and TypeScript types. This ensures clarity, maintainability, and easier mapping between API responses and your codebase.
+
+**Enum Pattern for Zod Schemas:**
+
+- Always define enum values as a constant array (e.g., `export const VISIBILITY = ["pub", "prv"] as const;`) and use that constant in `z.enum(VISIBILITY)`.
+- This pattern ensures maintainability, type safety, and reusability for both Zod and TypeScript.
+
 **Guidelines:**
 
 - Organize by feature/integration (e.g., `mailchimp/`, `user/`, `dashboard/`).

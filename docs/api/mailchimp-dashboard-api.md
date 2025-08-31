@@ -1,3 +1,33 @@
+## Mailchimp Audience Schemas
+
+All Mailchimp Audience schemas are defined in `src/schemas/mailchimp` and exported via `index.ts` using path aliases.
+
+- **MailchimpAudienceSchema**: Validates Mailchimp Audience objects. [API Reference](https://mailchimp.com/developer/marketing/api/audiences/get-a-list-of-audiences/)
+- **MailchimpAudienceQuerySchema**: Validates query parameters for audience API requests.
+- **MailchimpAudienceResponseSchema**: Validates the success response from the audience API.
+- **mailchimpAudienceErrorResponseSchema**: Extends the shared error schema for audience-specific errors.
+
+### Usage Example
+
+```typescript
+import { MailchimpAudienceSchema } from "@/schemas/mailchimp";
+
+const result = MailchimpAudienceSchema.safeParse(audienceData);
+if (!result.success) {
+  // Handle validation errors
+}
+```
+
+### Error Response Strategy
+
+- Compare all error response fields to the shared schema.
+- Use the shared schema if fields match exactly.
+- Extend the shared schema if there are additional/different fields.
+- Create a custom schema if the structure is fundamentally different.
+
+### Path Aliases
+
+All imports/exports use path aliases as defined in `tsconfig.json` for maintainability and clarity.
 # Mailchimp Dashboard API Documentation
 
 ## Endpoint

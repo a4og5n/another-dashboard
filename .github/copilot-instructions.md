@@ -81,6 +81,25 @@ Before starting any development work, always review the key project documentatio
 - **Do not define shared types inline in components or actions.**
 - **Enforce usage via lint rules, pre-commit scripts, and code review checklists.**
 
+
+
+
+### Error Response Schema Strategy
+
+- **Always compare all fields of the error response to the shared error schema.**
+- If the fields are an exact match, use the shared schema.
+- If there are additional or different fields, extend the shared schema with `.extend({ ... })`.
+- If the error response structure is fundamentally different, create a custom schema for that API.
+
+### API Naming Consistency for Schemas
+
+- **Always use the same object/property names as the API** when defining Zod schemas and TypeScript types. This ensures clarity, maintainability, and easier mapping between API responses and your codebase.
+
+### Enum Pattern for Zod Schemas
+
+- **Preferred pattern:** Define enum values as a constant array (e.g., `export const VISIBILITY = ["pub", "prv"] as const;`) and use that constant in `z.enum(VISIBILITY)`.
+- This improves maintainability, enables reuse, and ensures type safety for both Zod and TypeScript.
+
 ### `/src/schemas` - Zod Validation Schemas
 
 - Create reusable validation schemas
