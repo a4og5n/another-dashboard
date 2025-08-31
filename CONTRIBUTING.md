@@ -97,27 +97,27 @@ docs: update API integration guide
 
    We use pre-commit hooks to automatically run quality checks before commits:
 
-  ```bash
-  # Quick validation (recommended during development)
-  pnpm quick-check   # Type checking + linting
+```bash
+# Quick validation (recommended during development)
+pnpm quick-check   # Type checking + linting
 
-  # Full pre-commit validation (runs automatically on git commit)
-  pnpm pre-commit    # All checks: format, lint, type-check, tests, a11y (Prettier runs first)
+# Full pre-commit validation (runs automatically on git commit)
+pnpm pre-commit    # All checks: format, lint, type-check, tests, a11y (Prettier runs first)
 
-  # Complete validation including build
-  pnpm validate      # Pre-commit + build test
-  ```
+# Complete validation including build
+pnpm validate      # Pre-commit + build test
+```
 
-   **Manual Testing Commands:**
+**Manual Testing Commands:**
 
-   ```bash
-   pnpm test          # Run unit tests
-   pnpm test:a11y     # Run accessibility tests
-   pnpm lint          # Check code style
-   pnpm type-check    # Verify TypeScript
-   pnpm format:check  # Check code formatting
-   pnpm build         # Test production build
-   ```
+```bash
+pnpm test          # Run unit tests
+pnpm test:a11y     # Run accessibility tests
+pnpm lint          # Check code style
+pnpm type-check    # Verify TypeScript
+pnpm format:check  # Check code formatting
+pnpm build         # Test production build
+```
 
 4. **Commit and Push**
 
