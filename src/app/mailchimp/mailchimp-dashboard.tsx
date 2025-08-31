@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { mailchimpDashboardPaginationSchema } from "@/schemas/mailchimp-dashboard-pagination";
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -75,9 +75,9 @@ export function MailchimpDashboard() {
     startDate: searchParams.get("startDate") ?? undefined,
     endDate: searchParams.get("endDate") ?? undefined,
   });
-  const dateFilter =
-    dateFilterResult.success &&
-    (dateFilterResult.data.startDate || dateFilterResult.data.endDate)
+  const dateFilter = useMemo(() => {
+    return dateFilterResult.success &&
+      (dateFilterResult.data.startDate || dateFilterResult.data.endDate)
       ? {
           startDate: dateFilterResult.data.startDate
             ? new Date(dateFilterResult.data.startDate + "T00:00:00.000Z")
@@ -87,6 +87,7 @@ export function MailchimpDashboard() {
             : undefined,
         }
       : undefined;
+  }, [dateFilterResult]);
 
   const totalCampaigns = data?.campaigns.totalCampaigns ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCampaigns / campaignsPerPage));
@@ -261,7 +262,7 @@ export function MailchimpDashboard() {
     return () => {
       isCancelled = true;
     };
-  }, [currentPage, campaignsPerPage, dateFilter]);
+  }, [currentPage, campaignsPerPage, dateFilter, fetchDashboardData]);
 
   const handleRefresh = async () => {
     try {
