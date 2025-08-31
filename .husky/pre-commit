@@ -1,2 +1,5 @@
 echo "🔍 Running pre-commit validation..."
-pnpm pre-commit
+echo "📝 Formatting and linting staged files..."
+pnpm lint-staged
+echo "🧪 Running full validation suite..."
+pnpm check:no-secrets-logged && pnpm type-check && pnpm test && pnpm test:a11y
