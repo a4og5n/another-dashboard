@@ -56,7 +56,6 @@ export function CampaignsTable({
     safeCampaigns = [];
   }
 
-  // ...existing code...
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case "sent":
