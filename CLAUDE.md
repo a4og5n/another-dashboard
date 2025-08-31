@@ -47,6 +47,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Current Phase**: Post-MVP feature development and workflow optimization
 - **Key Achievement**: 70x acceleration - 10-week roadmap completed in 1 day
 
+### Environment Requirements
+
+- **Node.js**: v24.7.0 (Latest LTS)
+- **pnpm**: v10.15.0 (managed via Homebrew)
+  - **Installation**: `brew install pnpm`
+  - **Updates**: `brew upgrade pnpm` (prevents auto-update conflicts)
+  - **Location**: `/usr/local/bin/pnpm`
+  - **Note**: Using Homebrew prevents "Auto-update failed" messages
+
 ### Core Framework & Libraries
 
 - **Next.js 15** with App Router architecture
