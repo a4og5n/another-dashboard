@@ -1,6 +1,10 @@
 // Export all DAL modules for easier imports
 
-// Uncomment and modify as you add implementations
-// export * from './models';
-// export * from './repositories';
-// export * from './services';
+// Models
+export * from "./models/audience.model";
+
+// Repositories
+export * from "./repositories/audience.repository";
+
+// Services
+export * from "./services/audience.service";
