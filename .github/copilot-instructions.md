@@ -1,8 +1,11 @@
-This document provides best practices and guidance for developing with this Next.js project structure. Follow these patterns for consistent and maintainable code.
+This document provides best practices and guidance for developing with this
+Next.js project structure. Follow these patterns for consistent and maintainable
+code.
 
-## � Essential Project Documentation
+## Essential Project Documentation
 
-Before starting any development work, always review the key project documentation to understand context, goals, and current status:
+Before starting any development work, always review the key project
+documentation to understand context, goals, and current status:
 
 ### Required Reading
 
@@ -33,8 +36,13 @@ Before starting any development work, always review the key project documentatio
 ### Scripts and Node.js Module Type
 
 - All scripts in `/scripts` must use ES module syntax (`import`/`export`).
-- The project sets `"type": "module"` in `package.json` to eliminate Node.js warnings and ensure modern compatibility.
+- The project sets `"type": "module"` in `package.json` to eliminate Node.js
+  warnings and ensure modern compatibility.
 - Refactor any CommonJS scripts to ES modules if added in the future.
+- **`require()` imports are forbidden in all TypeScript code. This is enforced
+  via ESLint (`@typescript-eslint/no-require-imports: error`).**
+- Linting is run in pre-commit and CI workflows, blocking commits and PRs if
+  violations are found.
 - Validate scripts locally after any changes to ensure zero runtime warnings.
 
 ### Before Making Changes
@@ -44,14 +52,15 @@ Before starting any development work, always review the key project documentatio
 3. Check if similar features already exist
 4. Review the current development workflow and quality standards
 
-## �📁 Project Structure Guidelines
+## 📁 Project Structure Guidelines
 
 ### `/src/app` - App Router Pages and Layouts
 
 - Use the App Router pattern for routing
 - Keep page components lean, focus on layout and data fetching
 - Place layout components in `app/_components` for route-specific UI
-- Follow the route segment config patterns for metadata, loading states, and error handling
+- Follow the route segment config patterns for metadata, loading states, and
+  error handling
 - Use Server Components by default, mark with 'use client' only when needed
 
 ### `/src/components` - Reusable UI Components
@@ -76,26 +85,39 @@ Before starting any development work, always review the key project documentatio
 - Define shared interfaces and types
 - Use descriptive naming conventions
 - Export types from index.ts files
+- Export types from index.ts files (including all nested subfolders)
 - Avoid using 'any' type
 - Implement strict type checking
 - **Do not define shared types inline in components or actions.**
-- **Enforce usage via lint rules, pre-commit scripts, and code review checklists.**
+- **Enforce usage via lint rules, pre-commit scripts, and code review
+  checklists.**
+- **All index.ts files in `src/types`, `src/schemas`, and `src/utils` (including
+  nested subfolders) must use path aliases for all exports. Relative paths
+  (e.g., `./...`) are not allowed.**
 
 ### Error Response Schema Strategy
 
-- **Always compare all fields of the error response to the shared error schema.**
+- **Always compare all fields of the error response to the shared error
+  schema.**
 - If the fields are an exact match, use the shared schema.
-- If there are additional or different fields, extend the shared schema with `.extend({ ... })`.
-- If the error response structure is fundamentally different, create a custom schema for that API.
+- If there are additional or different fields, extend the shared schema with
+  `.extend({ ... })`.
+- If the error response structure is fundamentally different, create a custom
+  schema for that API.
 
 ### API Naming Consistency for Schemas
 
-- **Always use the same object/property names as the API** when defining Zod schemas and TypeScript types. This ensures clarity, maintainability, and easier mapping between API responses and your codebase.
+- **Always use the same object/property names as the API** when defining Zod
+  schemas and TypeScript types. This ensures clarity, maintainability, and
+  easier mapping between API responses and your codebase.
 
 ### Enum Pattern for Zod Schemas
 
-- **Preferred pattern:** Define enum values as a constant array (e.g., `export const VISIBILITY = ["pub", "prv"] as const;`) and use that constant in `z.enum(VISIBILITY)`.
-- This improves maintainability, enables reuse, and ensures type safety for both Zod and TypeScript.
+- **Preferred pattern:** Define enum values as a constant array (e.g.,
+  `export const VISIBILITY = ["pub", "prv"] as const;`) and use that constant in
+  `z.enum(VISIBILITY)`.
+- This improves maintainability, enables reuse, and ensures type safety for both
+  Zod and TypeScript.
 
 ### `/src/schemas` - Zod Validation Schemas
 
@@ -105,7 +127,8 @@ Before starting any development work, always review the key project documentatio
 - Use strict type inference
 - Keep schemas focused and composable
 - **Do not define Zod schemas inline in components or actions.**
-- **Enforce usage via lint rules, pre-commit scripts, and code review checklists.**
+- **Enforce usage via lint rules, pre-commit scripts, and code review
+  checklists.**
 
 ### `/src/utils` - Helper Functions
 
@@ -127,12 +150,20 @@ Before starting any development work, always review the key project documentatio
 
 ### Schema/Type Enforcement & Refactoring
 
-- Add ESLint rules or custom lint checks to flag inline Zod schemas and type definitions in component files.
-- Require imports from `schemas` and `types` folders for validation and shared types.
-- Extend pre-commit hooks to scan for inline schema/type definitions and warn or fail if found.
-- Use regex or AST-based scripts to detect Zod schema and interface declarations outside their designated folders.
+- Add ESLint rules or custom lint checks to flag inline Zod schemas and type
+  definitions in component files.
+- Require imports from `schemas` and `types` folders for validation and shared
+  types.
+- Extend pre-commit hooks to scan for inline schema/type definitions and warn or
+  fail if found.
+- Use regex or AST-based scripts to detect Zod schema and interface declarations
+  outside their designated folders.
 - Make schema/type usage a checklist item in PR reviews.
-- Add code comments in components reminding contributors to use centralized schemas/types.
+- Add code comments in components reminding contributors to use centralized
+  schemas/types.
+- **Enforcement tests must recursively scan all index.ts files in `src/types`,
+  `src/schemas`, and `src/utils` (including nested subfolders) to ensure all
+  exports use path aliases.**
 
 ### Type Safety
 
@@ -196,8 +227,10 @@ Before starting any development work, always review the key project documentatio
 ### Performance Monitoring
 
 - Track Core Web Vitals (LCP, FID, CLS) using the WebVitalsReporter component
-- Monitor performance metrics with multiple analytics providers (GA4, Vercel, custom)
-- Use performance hooks (useWebVitals, usePageLoadPerformance) for component-level monitoring
+- Monitor performance metrics with multiple analytics providers (GA4, Vercel,
+  custom)
+- Use performance hooks (useWebVitals, usePageLoadPerformance) for
+  component-level monitoring
 - Implement performance budgets and set thresholds for key metrics
 - Monitor bundle size and optimize for performance
 - Use the Performance Observer API for custom metrics
@@ -208,20 +241,32 @@ Before starting any development work, always review the key project documentatio
 
 ### Recommended Local Workflow
 
-To ensure all code meets project standards and to avoid formatting or validation errors blocking commits:
+To ensure all code meets project standards and to avoid formatting or validation
+errors blocking commits:
 
 1. **Run `pnpm pre-commit` before staging or committing changes.**
-   - This command runs formatting, linting, type-checking, and tests in the correct order.
+   - This command runs formatting, linting, type-checking, and tests in the
+     correct order.
    - It will catch all issues early, including Prettier formatting errors.
+   - Husky pre-commit hooks are set up to run these checks automatically before
+     every commit. If any issues are found, the commit will be blocked until
+     resolved.
+   - No need to manually order validation steps—Husky enforces this for you.
 
-2. **Optionally, run `pnpm format:check` for a quick formatting check before staging changes.**
+2. **Optionally, run `pnpm format:check` for a quick formatting check before
+   staging changes.**
 
-3. **Husky pre-commit hooks** are set up to run these checks automatically before every commit.
-   - If any issues are found, the commit will be blocked until resolved.
-   - No need to manually order validation steps.
+**Summary:** Always run `pnpm pre-commit` before `git add` or `git commit` to
+catch all formatting, lint, type, and test errors. Husky hooks automate this
+process and block commits with formatting errors.
 
-**Summary:**
-Always run `pnpm pre-commit` before `git add` or `git commit` to catch all formatting, lint, type, and test errors. Husky hooks automate this process for you.
+**Formatting enforcement:**
+
+- Formatting is enforced locally via Husky pre-commit hooks and in CI via the
+  `pnpm format:check` job.
+- Contributors should run `pnpm pre-commit` and/or `pnpm format:check` before
+  staging or committing changes.
+- PRs and merges will be blocked if formatting is incorrect.
 
 ### Security
 
@@ -274,23 +319,20 @@ Always run `pnpm pre-commit` before `git add` or `git commit` to catch all forma
 - \`pnpm start\`: Start production server
 - \`pnpm clean\`: Clean build directories
 
-## � GitHub Workflow and Branch Management
+## GitHub Workflow and Branch Management
 
-When working with GitHub tasks and issues assigned to this repository, follow these workflow guidelines:
+When working with GitHub tasks and issues assigned to this repository, follow
+these workflow guidelines:
 
 ### Branch Strategy
 
 Always create and use feature/fix branches when working on assigned tasks:
 
-1. **Feature branches**: For new functionality or enhancements
-   \`\`\`bash
-   git checkout -b feature/description-of-feature
-   \`\`\`
+1. **Feature branches**: For new functionality or enhancements \`\`\`bash git
+   checkout -b feature/description-of-feature \`\`\`
 
-2. **Fix branches**: For bug fixes or hotfixes
-   \`\`\`bash
-   git checkout -b fix/description-of-fix
-   \`\`\`
+2. **Fix branches**: For bug fixes or hotfixes \`\`\`bash git checkout -b
+   fix/description-of-fix \`\`\`
 
 3. **Branch naming conventions**:
    - Use lowercase with hyphens
@@ -301,28 +343,19 @@ Always create and use feature/fix branches when working on assigned tasks:
 
 When assigned a GitHub issue or task:
 
-1. **Create a branch** from the default branch (main):
-   \`\`\`bash
-   git checkout main
-   git pull origin main
-   git checkout -b feature/issue-description
-   \`\`\`
+1. **Create a branch** from the default branch (main): \`\`\`bash git checkout
+   main git pull origin main git checkout -b feature/issue-description \`\`\`
 
 2. **Make your changes** following the contributing guidelines
 
-3. **Commit with meaningful messages**:
-   \`\`\`bash
-   git add .
-   git commit -m "feat: add user authentication system
+3. **Commit with meaningful messages**: \`\`\`bash git add . git commit -m
+   "feat: add user authentication system
    - Implement login/logout functionality
    - Add JWT token handling
    - Create user session management
-   - Closes #issue-number"
-     \`\`\`
+   - Closes #issue-number" \`\`\`
 
-4. **Push the branch**:
-   \`\`\`bash
-   git push origin feature/issue-description
+4. **Push the branch**: \`\`\`bash git push origin feature/issue-description
    \`\`\`
 
 5. **Create a Pull Request** with:
@@ -337,21 +370,20 @@ When assigned a GitHub issue or task:
 - **Request reviews** from repository maintainers
 - **Include tests** if applicable
 - **Update documentation** if your changes affect usage
-- **Local validation first**: Run `pnpm pre-commit` before pushing to catch issues locally
-- **Ensure CI passes** before requesting review (should be clean if local validation passed)
+- **Local validation first**: Run `pnpm pre-commit` before pushing to catch
+  issues locally
+- **Ensure CI passes** before requesting review (should be clean if local
+  validation passed)
 - **Use conventional commits** for better changelog generation
 - **Zero CI/CD failures**: Pre-commit hooks prevent most CI/CD issues
 
 ### Commit Message Format
 
-Follow conventional commits format:
-\`\`\`
-type(scope): description
+Follow conventional commits format: \`\`\` type(scope): description
 
 [optional body]
 
-[optional footer]
-\`\`\`
+[optional footer] \`\`\`
 
 Types: \`feat\`, \`fix\`, \`docs\`, \`style\`, \`refactor\`, \`test\`, \`chore\`
 
@@ -361,7 +393,7 @@ Examples:
 - \`fix: resolve mobile navigation overflow\`
 - \`docs: update API documentation\`
 
-## �📝 Pull Request Guidelines
+## 📝 Pull Request Guidelines
 
 1. Follow the existing code style
 2. Update documentation as needed
@@ -369,3 +401,5 @@ Examples:
 4. Use semantic commit messages
 5. Keep PRs focused and atomic
 6. Update the changelog if required
+7. **Reviewers must confirm that all index.ts files (including nested) use path
+   aliases for exports.**

@@ -1,2 +1,2 @@
-export * from "./common";
-export * from "./dashboard-pagination";
+export * from "@/types/mailchimp/common";
+export * from "@/types/mailchimp/dashboard-pagination";

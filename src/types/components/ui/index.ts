@@ -1,1 +1,1 @@
-export * from "./pagination";
+export * from "@/types/components/ui/pagination";

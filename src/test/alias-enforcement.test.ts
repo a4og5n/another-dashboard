@@ -52,4 +52,21 @@ describe("Path Alias Enforcement", () => {
       });
     });
   });
+  describe("Path alias enforcement in index.ts files", () => {
+    const filesToCheck = [
+      "src/types/components/index.ts",
+      "src/types/components/ui/index.ts",
+      "src/types/mailchimp/index.ts",
+    ];
+
+    filesToCheck.forEach((file) => {
+      it(`should not use relative path exports in ${file}`, () => {
+        const content = fs.readFileSync(file, "utf8");
+        const matches = content.match(
+          /export\s+\*\s+from\s+['\"](\.[^'\"]+)['\"]/g,
+        );
+        expect(matches).toBeNull();
+      });
+    });
+  });
 });

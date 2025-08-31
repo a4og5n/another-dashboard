@@ -35,6 +35,7 @@ const eslintConfig = [
           message: "Do not log secrets, API keys, or sensitive config.",
         },
       ],
+      "@typescript-eslint/no-require-imports": "error",
     },
   },
 ];
