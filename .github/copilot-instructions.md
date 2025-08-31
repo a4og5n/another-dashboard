@@ -76,10 +76,12 @@ Before starting any development work, always review the key project documentatio
 - Define shared interfaces and types
 - Use descriptive naming conventions
 - Export types from index.ts files
+ - Export types from index.ts files (including all nested subfolders)
 - Avoid using 'any' type
 - Implement strict type checking
 - **Do not define shared types inline in components or actions.**
 - **Enforce usage via lint rules, pre-commit scripts, and code review checklists.**
+ - **All index.ts files in `src/types`, `src/schemas`, and `src/utils` (including nested subfolders) must use path aliases for all exports. Relative paths (e.g., `./...`) are not allowed.**
 
 ### Error Response Schema Strategy
 
@@ -133,6 +135,7 @@ Before starting any development work, always review the key project documentatio
 - Use regex or AST-based scripts to detect Zod schema and interface declarations outside their designated folders.
 - Make schema/type usage a checklist item in PR reviews.
 - Add code comments in components reminding contributors to use centralized schemas/types.
+ - **Enforcement tests must recursively scan all index.ts files in `src/types`, `src/schemas`, and `src/utils` (including nested subfolders) to ensure all exports use path aliases.**
 
 ### Type Safety
 
@@ -369,3 +372,4 @@ Examples:
 4. Use semantic commit messages
 5. Keep PRs focused and atomic
 6. Update the changelog if required
+7. **Reviewers must confirm that all index.ts files (including nested) use path aliases for exports.**
