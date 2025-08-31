@@ -21,7 +21,7 @@
     "test:coverage": "vitest run --coverage",
     "test:a11y": "vitest run --reporter=verbose --testNamePattern=\"accessibility|a11y\"",
     "check:no-secrets-logged": "node ./scripts/check-no-secrets-logged.js",
-  "pre-commit": "pnpm format && pnpm check:no-secrets-logged && pnpm lint && pnpm type-check && pnpm test && pnpm test:a11y",
+    "pre-commit": "pnpm format && pnpm check:no-secrets-logged && pnpm lint && pnpm type-check && pnpm test && pnpm test:a11y",
     "validate": "pnpm pre-commit && pnpm build",
     "quick-check": "pnpm type-check && pnpm lint"
   },

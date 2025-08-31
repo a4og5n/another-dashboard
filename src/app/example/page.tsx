@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { generateMetadata, generateOGImageUrl } from "../_components/metadata";
+import {
+  generateMetadata,
+  generateOGImageUrl,
+} from "@/app/_components/metadata";
 
 // Generate metadata with Open Graph and Twitter Cards
 export const metadata: Metadata = generateMetadata({
@@ -51,7 +54,7 @@ export default function ExamplePage() {
 
         <h2>Usage Example</h2>
         <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
-          <code>{`import { generateMetadata, generateOGImageUrl } from '../_components/metadata';
+          <code>{`import { generateMetadata, generateOGImageUrl } from '@/app/_components/metadata';
 
 export const metadata = generateMetadata({
   title: 'My Page Title',

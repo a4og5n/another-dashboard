@@ -13,8 +13,8 @@
  * Uses strict Zod schema from src/schemas/mailchimp-campaigns.ts
  * Throws ValidationError on failure
  */
-import { mailchimpCampaignsQuerySchema } from "../schemas/mailchimp-campaigns";
-import { MailchimpCampaignsQuery } from "../types/mailchimp-campaigns";
+import { mailchimpCampaignsQuerySchema } from "@/schemas/mailchimp-campaigns";
+import { MailchimpCampaignsQuery } from "@/types/mailchimp-campaigns";
 
 /**
  * Custom error class for Mailchimp campaigns API validation errors
