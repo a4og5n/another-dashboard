@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { generateMetadata, generateOGImageUrl } from "@/app/_components/metadata";
+import {
+  generateMetadata,
+  generateOGImageUrl,
+} from "@/app/_components/metadata";
 
 // Generate metadata with Open Graph and Twitter Cards
 export const metadata: Metadata = generateMetadata({

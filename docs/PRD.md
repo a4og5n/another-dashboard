@@ -18,6 +18,7 @@ src/types/
 ```
 
 **Guidelines:**
+
 - Organize by feature/integration (e.g., `mailchimp/`, `user/`, `dashboard/`).
 - Use an `index.ts` in each subfolder for re-exports.
 - Store only TypeScript type/interface definitions here—no logic or schemas.
@@ -25,6 +26,7 @@ src/types/
 - Avoid inline type definitions in components or actions; always import from `types`.
 
 This structure supports scalability, maintainability, and clear separation of concerns.
+
 # Product Requirements Document (PRD)
 
 ## Another Dashboard
@@ -394,12 +396,13 @@ _Roles are not mutually exclusive; users can be assigned multiple roles._
 **Code Quality:** ESLint (linting), Prettier (formatting), Husky (git hooks)
 **Import Path Aliases:**
 **Export Path Aliases:**
- - Apply the same path alias strategy to exports of shared, deeply nested, or frequently imported modules.
- - Ensure that all exports from these modules use aliases for consistency and maintainability.
- - This applies to both import and export statements throughout the codebase.
-**Deployment Preview:** Vercel Preview Deployments for PRs and branches
-**Environment Management:** dotenv (local development), Vercel Environment Variables (cloud deployment)
-**Mobile/Responsive Testing:** BrowserStack or Percy for cross-device and visual regression testing
+
+- Apply the same path alias strategy to exports of shared, deeply nested, or frequently imported modules.
+- Ensure that all exports from these modules use aliases for consistency and maintainability.
+- This applies to both import and export statements throughout the codebase.
+  **Deployment Preview:** Vercel Preview Deployments for PRs and branches
+  **Environment Management:** dotenv (local development), Vercel Environment Variables (cloud deployment)
+  **Mobile/Responsive Testing:** BrowserStack or Percy for cross-device and visual regression testing
 
 ### Architecture Requirements
 
