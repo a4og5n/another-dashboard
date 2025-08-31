@@ -32,10 +32,12 @@ Before starting any development work, always review the key project documentatio
 
 ### Scripts and Node.js Module Type
 
-- All scripts in `/scripts` must use ES module syntax (`import`/`export`).
-- The project sets `"type": "module"` in `package.json` to eliminate Node.js warnings and ensure modern compatibility.
-- Refactor any CommonJS scripts to ES modules if added in the future.
-- Validate scripts locally after any changes to ensure zero runtime warnings.
+ - All scripts in `/scripts` must use ES module syntax (`import`/`export`).
+ - The project sets `"type": "module"` in `package.json` to eliminate Node.js warnings and ensure modern compatibility.
+ - Refactor any CommonJS scripts to ES modules if added in the future.
+ - **`require()` imports are forbidden in all TypeScript code. This is enforced via ESLint (`@typescript-eslint/no-require-imports: error`).**
+ - Linting is run in pre-commit and CI workflows, blocking commits and PRs if violations are found.
+ - Validate scripts locally after any changes to ensure zero runtime warnings.
 
 ### Before Making Changes
 
@@ -76,12 +78,12 @@ Before starting any development work, always review the key project documentatio
 - Define shared interfaces and types
 - Use descriptive naming conventions
 - Export types from index.ts files
- - Export types from index.ts files (including all nested subfolders)
+- Export types from index.ts files (including all nested subfolders)
 - Avoid using 'any' type
 - Implement strict type checking
 - **Do not define shared types inline in components or actions.**
 - **Enforce usage via lint rules, pre-commit scripts, and code review checklists.**
- - **All index.ts files in `src/types`, `src/schemas`, and `src/utils` (including nested subfolders) must use path aliases for all exports. Relative paths (e.g., `./...`) are not allowed.**
+- **All index.ts files in `src/types`, `src/schemas`, and `src/utils` (including nested subfolders) must use path aliases for all exports. Relative paths (e.g., `./...`) are not allowed.**
 
 ### Error Response Schema Strategy
 
@@ -135,7 +137,7 @@ Before starting any development work, always review the key project documentatio
 - Use regex or AST-based scripts to detect Zod schema and interface declarations outside their designated folders.
 - Make schema/type usage a checklist item in PR reviews.
 - Add code comments in components reminding contributors to use centralized schemas/types.
- - **Enforcement tests must recursively scan all index.ts files in `src/types`, `src/schemas`, and `src/utils` (including nested subfolders) to ensure all exports use path aliases.**
+- **Enforcement tests must recursively scan all index.ts files in `src/types`, `src/schemas`, and `src/utils` (including nested subfolders) to ensure all exports use path aliases.**
 
 ### Type Safety
 
@@ -225,6 +227,7 @@ To ensure all code meets project standards and to avoid formatting or validation
 Always run `pnpm pre-commit` before `git add` or `git commit` to catch all formatting, lint, type, and test errors. Husky hooks automate this process and block commits with formatting errors.
 
 **Formatting enforcement:**
+
 - Formatting is enforced locally via Husky pre-commit hooks and in CI via the `pnpm format:check` job.
 - Contributors should run `pnpm pre-commit` and/or `pnpm format:check` before staging or committing changes.
 - PRs and merges will be blocked if formatting is incorrect.
