@@ -81,9 +81,6 @@ Before starting any development work, always review the key project documentatio
 - **Do not define shared types inline in components or actions.**
 - **Enforce usage via lint rules, pre-commit scripts, and code review checklists.**
 
-
-
-
 ### Error Response Schema Strategy
 
 - **Always compare all fields of the error response to the shared error schema.**

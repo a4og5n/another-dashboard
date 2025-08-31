@@ -28,6 +28,7 @@ if (!result.success) {
 ### Path Aliases
 
 All imports/exports use path aliases as defined in `tsconfig.json` for maintainability and clarity.
+
 # Mailchimp Dashboard API Documentation
 
 ## Endpoint

@@ -55,21 +55,25 @@ describe("MailchimpAudienceQuerySchema", () => {
 
 describe("MailchimpAudienceResponseSchema", () => {
   it("validates a correct response", () => {
-    expect(() => MailchimpAudienceResponseSchema.parse({
-      audiences: [validAudience],
-      total_items: 1,
-    })).not.toThrow();
+    expect(() =>
+      MailchimpAudienceResponseSchema.parse({
+        audiences: [validAudience],
+        total_items: 1,
+      }),
+    ).not.toThrow();
   });
 });
 
 describe("mailchimpAudienceErrorResponseSchema", () => {
   it("validates a correct error response", () => {
-    expect(() => mailchimpAudienceErrorResponseSchema.parse({
-      type: "error",
-      title: "Invalid Audience",
-      status: 400,
-      detail: "Audience not found.",
-      audience_id: "abc123",
-    })).not.toThrow();
+    expect(() =>
+      mailchimpAudienceErrorResponseSchema.parse({
+        type: "error",
+        title: "Invalid Audience",
+        status: 400,
+        detail: "Audience not found.",
+        audience_id: "abc123",
+      }),
+    ).not.toThrow();
   });
 });

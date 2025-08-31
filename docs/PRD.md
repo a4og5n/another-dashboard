@@ -17,9 +17,6 @@ src/types/
    ├── ...                     # Other feature or domain-specific types
 ```
 
-
-
-
 **Error Response Schema Strategy:**
 
 - Always compare all fields of the error response to the shared error schema.
