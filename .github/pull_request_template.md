@@ -1,3 +1,5 @@
+# Contributor Checklist
+- [ ] I ran `pnpm pre-commit` and/or `pnpm format:check` before submitting this PR to ensure all formatting, lint, type, and test checks pass.
 # Pull Request
 
 ## 📋 Description

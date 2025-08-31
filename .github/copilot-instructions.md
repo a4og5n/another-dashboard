@@ -216,15 +216,18 @@ To ensure all code meets project standards and to avoid formatting or validation
 1. **Run `pnpm pre-commit` before staging or committing changes.**
    - This command runs formatting, linting, type-checking, and tests in the correct order.
    - It will catch all issues early, including Prettier formatting errors.
+   - Husky pre-commit hooks are set up to run these checks automatically before every commit. If any issues are found, the commit will be blocked until resolved.
+   - No need to manually order validation steps—Husky enforces this for you.
 
 2. **Optionally, run `pnpm format:check` for a quick formatting check before staging changes.**
 
-3. **Husky pre-commit hooks** are set up to run these checks automatically before every commit.
-   - If any issues are found, the commit will be blocked until resolved.
-   - No need to manually order validation steps.
-
 **Summary:**
-Always run `pnpm pre-commit` before `git add` or `git commit` to catch all formatting, lint, type, and test errors. Husky hooks automate this process for you.
+Always run `pnpm pre-commit` before `git add` or `git commit` to catch all formatting, lint, type, and test errors. Husky hooks automate this process and block commits with formatting errors.
+
+**Formatting enforcement:**
+- Formatting is enforced locally via Husky pre-commit hooks and in CI via the `pnpm format:check` job.
+- Contributors should run `pnpm pre-commit` and/or `pnpm format:check` before staging or committing changes.
+- PRs and merges will be blocked if formatting is incorrect.
 
 ### Security
 
