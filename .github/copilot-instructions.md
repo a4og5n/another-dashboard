@@ -1,6 +1,6 @@
 This document provides best practices and guidance for developing with this Next.js project structure. Follow these patterns for consistent and maintainable code.
 
-## � Essential Project Documentation
+## Essential Project Documentation
 
 Before starting any development work, always review the key project documentation to understand context, goals, and current status:
 
@@ -46,7 +46,7 @@ Before starting any development work, always review the key project documentatio
 3. Check if similar features already exist
 4. Review the current development workflow and quality standards
 
-## �📁 Project Structure Guidelines
+## 📁 Project Structure Guidelines
 
 ### `/src/app` - App Router Pages and Layouts
 
@@ -283,7 +283,7 @@ Always run `pnpm pre-commit` before `git add` or `git commit` to catch all forma
 - \`pnpm start\`: Start production server
 - \`pnpm clean\`: Clean build directories
 
-## � GitHub Workflow and Branch Management
+## GitHub Workflow and Branch Management
 
 When working with GitHub tasks and issues assigned to this repository, follow these workflow guidelines:
 
@@ -370,7 +370,7 @@ Examples:
 - \`fix: resolve mobile navigation overflow\`
 - \`docs: update API documentation\`
 
-## �📝 Pull Request Guidelines
+## 📝 Pull Request Guidelines
 
 1. Follow the existing code style
 2. Update documentation as needed
