@@ -1,12 +1,9 @@
 import type { z } from "zod";
 import type { MailchimpAudienceSchema } from "@/schemas/mailchimp/audience.schema";
-import type { AudienceFormData } from "@/schemas/mailchimp/audience-form.schema";
 import type {
   AudienceModel,
   AudienceQueryFilters,
   AudienceStats,
-  CreateAudienceModel,
-  UpdateAudienceModel,
 } from "@/dal/models/audience.model";
 
 /**
@@ -78,19 +75,6 @@ export interface UpdateMailchimpAudienceParams
 }
 
 /**
- * Form data interface for audience creation/editing
- * Re-exported from schema for consistency
- */
-export type { AudienceFormData };
-
-/**
- * Form errors interface for audience form validation
- */
-export interface AudienceFormErrors {
-  [key: string]: string;
-}
-
-/**
  * Growth data interface for audience statistics
  */
 export interface AudienceGrowthData {
@@ -148,30 +132,5 @@ export interface AudienceListProps {
 export interface AudienceStatsProps {
   stats: AudienceStats;
   loading?: boolean;
-  className?: string;
-}
-
-/**
- * Props for AudienceForm component
- */
-export interface AudienceFormProps {
-  audience?: Partial<CreateAudienceModel>;
-  mode: "create" | "edit";
-  loading?: boolean;
-  onSubmit: (data: CreateAudienceModel | UpdateAudienceModel) => void;
-  onCancel: () => void;
-  className?: string;
-}
-
-/**
- * Props for AudienceDetails component
- */
-export interface AudienceDetailsProps {
-  audience: AudienceModel;
-  growthData?: AudienceGrowthData[];
-  loading?: boolean;
-  onEdit?: (id: string) => void;
-  onArchive?: (id: string) => void;
-  onRefresh?: (id: string) => void;
   className?: string;
 }

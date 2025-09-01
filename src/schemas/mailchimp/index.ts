@@ -2,7 +2,6 @@ export * from "@/schemas/mailchimp/campaign.schema";
 export * from "@/schemas/mailchimp/campaign-query.schema";
 export * from "@/schemas/mailchimp/campaign-list-response.schema";
 export * from "@/schemas/mailchimp/audience.schema";
-export * from "@/schemas/mailchimp/audience-form.schema";
 export * from "@/schemas/mailchimp/audience-query.schema";
 export * from "@/schemas/mailchimp/audience-response.schema";
 export * from "@/schemas/mailchimp/audience-error-response.schema";
