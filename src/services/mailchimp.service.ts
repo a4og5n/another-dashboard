@@ -142,59 +142,68 @@ export interface MailchimpCampaignReport {
 }
 
 export interface MailchimpList {
+  // Core documented fields
   id: string;
-  web_id: number;
   name: string;
+
   contact: {
     company: string;
     address1: string;
-    address2: string;
+    address2?: string;
     city: string;
     state: string;
     zip: string;
     country: string;
-    phone: string;
+    phone?: string;
   };
+
   permission_reminder: string;
   use_archive_bar: boolean;
+  email_type_option: boolean;
+  visibility: "pub" | "prv";
+  date_created: string;
+  list_rating: number;
+
   campaign_defaults: {
     from_name: string;
     from_email: string;
     subject: string;
     language: string;
   };
-  notify_on_subscribe: string;
-  notify_on_unsubscribe: string;
-  date_created: string;
-  list_rating: number;
-  email_type_option: boolean;
-  subscribe_url_short: string;
-  subscribe_url_long: string;
-  beamer_address: string;
-  visibility: "pub" | "prv";
-  double_optin: boolean;
-  has_welcome: boolean;
-  marketing_permissions: boolean;
-  modules: string[];
+
+  notify_on_subscribe?: string;
+  notify_on_unsubscribe?: string;
+  modules?: string[];
+
   stats: {
     member_count: number;
-    total_contacts: number;
     unsubscribe_count: number;
     cleaned_count: number;
-    member_count_since_send: number;
-    unsubscribe_count_since_send: number;
-    cleaned_count_since_send: number;
-    campaign_count: number;
-    campaign_last_sent: string;
-    merge_field_count: number;
-    avg_sub_rate: number;
-    avg_unsub_rate: number;
-    target_sub_rate: number;
-    open_rate: number;
-    click_rate: number;
-    last_sub_date: string;
-    last_unsub_date: string;
+    total_contacts?: number;
+    member_count_since_send?: number;
+    unsubscribe_count_since_send?: number;
+    cleaned_count_since_send?: number;
+    campaign_count?: number;
+    campaign_last_sent?: string;
+    merge_field_count?: number;
+    avg_sub_rate?: number;
+    avg_unsub_rate?: number;
+    target_sub_rate?: number;
+    open_rate?: number;
+    click_rate?: number;
+    last_sub_date?: string;
+    last_unsub_date?: string;
   };
+
+  // Questionable fields - keeping as optional for backward compatibility
+  // These are not used in current mapping and may not exist in real API
+  web_id?: number;
+  subscribe_url_short?: string;
+  subscribe_url_long?: string;
+  beamer_address?: string;
+  double_optin?: boolean;
+  has_welcome?: boolean;
+  marketing_permissions?: boolean;
 }
 
 export interface MailchimpReportsParams {
@@ -575,15 +584,18 @@ export class MailchimpService extends BaseApiService {
     );
     const avgGrowthRate =
       lists.length > 0
-        ? lists.reduce((sum, l) => sum + l.stats.avg_sub_rate, 0) / lists.length
+        ? lists.reduce((sum, l) => sum + (l.stats.avg_sub_rate || 0), 0) /
+          lists.length
         : 0;
     const avgOpenRate =
       lists.length > 0
-        ? lists.reduce((sum, l) => sum + l.stats.open_rate, 0) / lists.length
+        ? lists.reduce((sum, l) => sum + (l.stats.open_rate || 0), 0) /
+          lists.length
         : 0;
     const avgClickRate =
       lists.length > 0
-        ? lists.reduce((sum, l) => sum + l.stats.click_rate, 0) / lists.length
+        ? lists.reduce((sum, l) => sum + (l.stats.click_rate || 0), 0) /
+          lists.length
         : 0;
 
     // Sort lists by member count for top lists
@@ -603,9 +615,9 @@ export class MailchimpService extends BaseApiService {
           id: list.id,
           name: list.name,
           memberCount: list.stats.member_count,
-          growthRate: Math.round(list.stats.avg_sub_rate * 10000) / 100,
-          openRate: Math.round(list.stats.open_rate * 10000) / 100,
-          clickRate: Math.round(list.stats.click_rate * 10000) / 100,
+          growthRate: Math.round((list.stats.avg_sub_rate || 0) * 10000) / 100,
+          openRate: Math.round((list.stats.open_rate || 0) * 10000) / 100,
+          clickRate: Math.round((list.stats.click_rate || 0) * 10000) / 100,
         })),
       },
       rateLimit: this.rateLimit,
