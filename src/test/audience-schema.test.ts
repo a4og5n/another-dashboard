@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   MailchimpAudienceSchema,
   MailchimpAudienceQuerySchema,
+  MailchimpAudienceQueryInternalSchema,
+  transformQueryParams,
   MailchimpAudienceResponseSchema,
   mailchimpAudienceErrorResponseSchema,
 } from "@/schemas/mailchimp";
@@ -48,8 +50,109 @@ describe("MailchimpAudienceSchema", () => {
 });
 
 describe("MailchimpAudienceQuerySchema", () => {
-  it("defaults offset to 0", () => {
-    expect(MailchimpAudienceQuerySchema.parse({})).toHaveProperty("offset", 0);
+  it("applies default values correctly", () => {
+    const result = MailchimpAudienceQuerySchema.parse({});
+    expect(result).toMatchObject({
+      count: 10,
+      offset: 0,
+      sort_field: "date_created",
+      sort_dir: "DESC",
+    });
+  });
+
+  it("validates and coerces count parameter", () => {
+    const result = MailchimpAudienceQuerySchema.parse({ count: "25" });
+    expect(result.count).toBe(25);
+  });
+
+  it("validates email parameter", () => {
+    const validQuery = { email: "test@example.com" };
+    expect(() => MailchimpAudienceQuerySchema.parse(validQuery)).not.toThrow();
+  });
+
+  it("rejects invalid email", () => {
+    const invalidQuery = { email: "invalid-email" };
+    expect(() => MailchimpAudienceQuerySchema.parse(invalidQuery)).toThrow();
+  });
+
+  it("validates date parameters", () => {
+    const validQuery = {
+      before_date_created: "2023-12-31T23:59:59Z",
+      since_date_created: "2023-01-01T00:00:00Z",
+    };
+    expect(() => MailchimpAudienceQuerySchema.parse(validQuery)).not.toThrow();
+  });
+
+  it("validates sort parameters", () => {
+    const validQuery = {
+      sort_field: "member_count",
+      sort_dir: "ASC",
+    };
+    const result = MailchimpAudienceQuerySchema.parse(validQuery);
+    expect(result.sort_field).toBe("member_count");
+    expect(result.sort_dir).toBe("ASC");
+  });
+
+  it("handles comma-separated fields", () => {
+    const query = {
+      fields: "id,name,stats.member_count",
+      exclude_fields: "contact,campaign_defaults",
+    };
+    expect(() => MailchimpAudienceQuerySchema.parse(query)).not.toThrow();
+  });
+});
+
+describe("MailchimpAudienceQueryInternalSchema", () => {
+  it("accepts array fields for internal use", () => {
+    const query = {
+      fields: ["id", "name", "stats.member_count"],
+      exclude_fields: ["contact", "campaign_defaults"],
+    };
+    expect(() =>
+      MailchimpAudienceQueryInternalSchema.parse(query),
+    ).not.toThrow();
+  });
+});
+
+describe("transformQueryParams", () => {
+  it("transforms comma-separated fields to arrays", () => {
+    const input = {
+      fields: "id,name,stats.member_count",
+      exclude_fields: "contact,campaign_defaults",
+      count: 20,
+      offset: 0,
+      sort_field: "date_created",
+      sort_dir: "DESC",
+    } as const;
+
+    const result = transformQueryParams(input);
+    expect(result.fields).toEqual(["id", "name", "stats.member_count"]);
+    expect(result.exclude_fields).toEqual(["contact", "campaign_defaults"]);
+  });
+
+  it("handles undefined fields", () => {
+    const input = {
+      count: 10,
+      offset: 0,
+      sort_field: "date_created",
+      sort_dir: "DESC",
+    } as const;
+    const result = transformQueryParams(input);
+    expect(result.fields).toBeUndefined();
+    expect(result.exclude_fields).toBeUndefined();
+  });
+
+  it("trims whitespace from field names", () => {
+    const input = {
+      fields: " id , name , stats.member_count ",
+      count: 10,
+      offset: 0,
+      sort_field: "date_created",
+      sort_dir: "DESC",
+    } as const;
+
+    const result = transformQueryParams(input);
+    expect(result.fields).toEqual(["id", "name", "stats.member_count"]);
   });
 });
 
