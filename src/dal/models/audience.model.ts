@@ -9,13 +9,11 @@
 
 // Re-export types and schemas from their proper locations
 export type {
-  AudienceModel,
   AudienceQueryFilters,
   AudienceStats,
 } from "@/types/mailchimp/audience";
 
 export {
-  AudienceModelSchema,
   AudienceQueryFiltersSchema,
   AudienceStatsSchema,
   AudienceModelValidators,

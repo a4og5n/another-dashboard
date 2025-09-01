@@ -7,7 +7,19 @@ import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { AudienceListProps } from "@/types/mailchimp/audience";
+import type { MailchimpList } from "@/services";
+
+interface AudienceListProps {
+  audiences: MailchimpList[];
+  totalCount: number;
+  loading?: boolean;
+  error?: string | null;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+  className?: string;
+}
 
 export function AudienceList({
   audiences,
@@ -88,7 +100,11 @@ export function AudienceList({
             {/* Grid View */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {audiences.map((audience) => (
-                <AudienceCard key={audience.id} audience={audience} />
+                <AudienceCard
+                  key={audience.id}
+                  audience={audience}
+                  className=""
+                />
               ))}
             </div>
 

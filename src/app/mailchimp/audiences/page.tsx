@@ -15,7 +15,6 @@ import { AudienceStats } from "@/components/mailchimp/audiences/AudienceStats";
 import { getMailchimpService, type MailchimpList } from "@/services";
 import type {
   AudienceQueryFilters,
-  AudienceModel,
   AudienceStats as AudienceStatsType,
 } from "@/dal/models/audience.model";
 
@@ -64,7 +63,7 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
   if (syncStatus) currentFilters.sync_status = syncStatus;
 
   // Fetch data from API routes on server side
-  let audiences: AudienceModel[] = [];
+  let audiences: MailchimpList[] = [];
   let totalCount = 0;
   let stats: AudienceStatsType | null = null;
   let error: string | null = null;
@@ -86,63 +85,23 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
     } else if (response.data) {
       const audienceData = response.data;
 
-      // Map Mailchimp API response to our format
+      // Use Mailchimp API response directly
       if (audienceData.lists) {
-        audiences = audienceData.lists.map(
-          (list: MailchimpList): AudienceModel => ({
-            id: list.id,
-            name: list.name,
-            date_created: list.date_created,
-            created_at: list.date_created,
-            updated_at: list.date_created, // Mailchimp doesn't provide updated_at
-            visibility: list.visibility,
-            stats: {
-              member_count: list.stats?.member_count || 0,
-              unsubscribe_count: list.stats?.unsubscribe_count || 0,
-              cleaned_count: list.stats?.cleaned_count || 0,
-              member_count_since_send: list.stats?.member_count_since_send,
-              unsubscribe_count_since_send:
-                list.stats?.unsubscribe_count_since_send,
-              cleaned_count_since_send: list.stats?.cleaned_count_since_send,
-              campaign_count: list.stats?.campaign_count,
-              campaign_last_sent: list.stats?.campaign_last_sent,
-              merge_field_count: list.stats?.merge_field_count,
-              avg_sub_rate: list.stats?.avg_sub_rate,
-              avg_unsub_rate: list.stats?.avg_unsub_rate,
-              target_sub_rate: list.stats?.target_sub_rate,
-              open_rate: list.stats?.open_rate,
-              click_rate: list.stats?.click_rate,
-              last_sub_date: list.stats?.last_sub_date,
-              last_unsub_date: list.stats?.last_unsub_date,
-            },
-            sync_status: "completed" as const,
-            is_deleted: false,
-            contact: list.contact,
-            permission_reminder: list.permission_reminder,
-            use_archive_bar: list.use_archive_bar,
-            campaign_defaults: list.campaign_defaults,
-            notify_on_subscribe: list.notify_on_subscribe,
-            notify_on_unsubscribe: list.notify_on_unsubscribe,
-            email_type_option: list.email_type_option,
-            list_rating: list.list_rating,
-            marketing_permissions: list.marketing_permissions ? [] : undefined,
-            modules: list.modules,
-          }),
-        );
+        audiences = audienceData.lists;
         totalCount = audienceData.total_items || audiences.length;
       }
 
       // Generate basic stats from the audience data
       const totalMembers = audiences.reduce(
-        (sum: number, audience: AudienceModel) =>
-          sum + audience.stats.member_count,
+        (sum: number, audience: MailchimpList) =>
+          sum + (audience.stats?.member_count || 0),
         0,
       );
       stats = {
         total_audiences: totalCount,
         total_members: totalMembers,
         audiences_by_visibility: audiences.reduce(
-          (counts: { pub: number; prv: number }, audience: AudienceModel) => {
+          (counts: { pub: number; prv: number }, audience: MailchimpList) => {
             counts[audience.visibility] =
               (counts[audience.visibility] || 0) + 1;
             return counts;

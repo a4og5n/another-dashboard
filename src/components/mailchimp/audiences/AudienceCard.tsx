@@ -3,48 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { AudienceModel } from "@/dal/models/audience.model";
-import type { AudienceCardProps } from "@/types/mailchimp/audience";
+import type { MailchimpList } from "@/services";
 
-export function AudienceCard({
-  audience,
-  className,
-}: Pick<AudienceCardProps, "audience" | "className">) {
+interface AudienceCardProps {
+  audience: MailchimpList;
+  className?: string;
+}
+
+export function AudienceCard({ audience, className }: AudienceCardProps) {
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
     return num.toString();
   };
 
-  const getStatusBadge = (status: AudienceModel["sync_status"]) => {
-    switch (status) {
-      case "completed":
-        return (
-          <Badge
-            variant="default"
-            className="bg-green-100 text-green-800 border-green-200"
-          >
-            Synced
-          </Badge>
-        );
-      case "syncing":
-        return (
-          <Badge
-            variant="secondary"
-            className="bg-blue-100 text-blue-800 border-blue-200"
-          >
-            Syncing
-          </Badge>
-        );
-      case "failed":
-        return <Badge variant="destructive">Failed</Badge>;
-      case "pending":
-      default:
-        return <Badge variant="outline">Pending</Badge>;
-    }
-  };
-
-  const getVisibilityBadge = (visibility: AudienceModel["visibility"]) => {
+  const getVisibilityBadge = (visibility: "pub" | "prv") => {
     return visibility === "pub" ? (
       <Badge variant="outline" className="text-xs">
         Public
@@ -57,17 +30,17 @@ export function AudienceCard({
   };
 
   const getGrowthIndicator = () => {
-    const engagementRate = audience.cached_stats?.engagement_rate;
-    if (engagementRate === undefined) return null;
+    const openRate = audience.stats?.open_rate;
+    if (openRate === undefined) return null;
 
-    const isPositive = engagementRate > 0.5;
+    const isPositive = openRate > 20; // 20% open rate as threshold
     const Icon = isPositive ? TrendingUp : TrendingDown;
     const colorClass = isPositive ? "text-green-600" : "text-red-600";
 
     return (
       <div className={cn("flex items-center text-sm", colorClass)}>
         <Icon className="h-4 w-4 mr-1" />
-        <span>{(engagementRate * 100).toFixed(1)}%</span>
+        <span>{openRate.toFixed(1)}%</span>
       </div>
     );
   };
@@ -94,7 +67,6 @@ export function AudienceCard({
               {audience.name}
             </h3>
             <div className="flex items-center gap-2 mt-1">
-              {getStatusBadge(audience.sync_status)}
               {getVisibilityBadge(audience.visibility)}
             </div>
           </div>
@@ -111,7 +83,7 @@ export function AudienceCard({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-2xl font-bold">
-                {formatNumber(audience.stats.member_count)}
+                {formatNumber(audience.stats?.member_count || 0)}
               </span>
               {getGrowthIndicator()}
             </div>
