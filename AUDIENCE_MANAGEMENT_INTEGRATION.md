@@ -1,5 +1,11 @@
 # Audience Management Integration - Complete Pattern Documentation
 
+> **⚠️ DEPRECATED - MVP Version**  
+> This document describes the full database-integrated architecture that was planned for post-MVP.  
+> **For MVP**: The application works directly with Mailchimp API data with no local database.  
+> The DAL (Data Access Layer) described in this document has been removed from the codebase.  
+> See [PRD.md](docs/PRD.md) for MVP scope: "No local database; data is retrieved live from each source"
+
 This document outlines the complete end-to-end pattern for the Mailchimp Audience Management feature, demonstrating the integration of all architectural layers.
 
 ## Architecture Overview

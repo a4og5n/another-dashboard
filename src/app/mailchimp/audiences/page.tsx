@@ -13,10 +13,7 @@ import {
 import { ClientAudienceList } from "@/components/mailchimp/audiences/ClientAudienceList";
 import { AudienceStats } from "@/components/mailchimp/audiences/AudienceStats";
 import { getMailchimpService, type MailchimpList } from "@/services";
-import type {
-  AudienceQueryFilters,
-  AudienceStats as AudienceStatsType,
-} from "@/dal/models/audience.model";
+import type { AudienceStats as AudienceStatsType } from "@/schemas/mailchimp/audience.schema";
 
 interface AudiencesPageProps {
   searchParams: Promise<{
@@ -37,30 +34,6 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
   // Parse URL params
   const currentPage = parseInt(params.page || "1");
   const pageSize = parseInt(params.limit || "20");
-  const sortBy =
-    (params.sort as "created_at" | "updated_at" | "name" | "member_count") ||
-    "created_at";
-  const sortOrder = (params.order as "asc" | "desc") || "desc";
-  const visibility = params.visibility as "pub" | "prv" | null;
-  const syncStatus = params.sync_status as
-    | "pending"
-    | "syncing"
-    | "completed"
-    | "failed"
-    | null;
-  const search = params.search;
-
-  // Build current filters from URL params
-  const currentFilters: Partial<AudienceQueryFilters> = {
-    sort_by: sortBy,
-    sort_order: sortOrder,
-    offset: (currentPage - 1) * pageSize,
-    limit: pageSize,
-  };
-
-  if (search) currentFilters.name_contains = search;
-  if (visibility) currentFilters.visibility = visibility;
-  if (syncStatus) currentFilters.sync_status = syncStatus;
 
   // Fetch data from API routes on server side
   let audiences: MailchimpList[] = [];

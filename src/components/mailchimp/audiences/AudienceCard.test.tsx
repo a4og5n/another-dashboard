@@ -2,14 +2,12 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
 import { AudienceCard } from "./AudienceCard";
-import type { AudienceModel } from "@/dal/models/audience.model";
+import type { MailchimpList } from "@/services";
 
-const mockAudience: AudienceModel = {
+const mockAudience: MailchimpList = {
   id: "list123",
   name: "Newsletter Subscribers",
   date_created: "2025-01-01T00:00:00Z",
-  created_at: "2025-01-01T00:00:00Z",
-  updated_at: "2025-01-15T10:30:00Z",
   visibility: "pub",
   stats: {
     member_count: 1250,
@@ -21,8 +19,6 @@ const mockAudience: AudienceModel = {
     open_rate: 0.28,
     click_rate: 0.12,
   },
-  sync_status: "completed",
-  is_deleted: false,
   contact: {
     company: "Test Company",
     address1: "123 Main St",
@@ -43,11 +39,6 @@ const mockAudience: AudienceModel = {
   notify_on_unsubscribe: "admin@example.com",
   email_type_option: true,
   list_rating: 4,
-  cached_stats: {
-    last_updated: "2025-01-15T10:30:00Z",
-    member_count: 1250,
-    engagement_rate: 0.35,
-  },
 };
 
 describe("AudienceCard", () => {
@@ -65,10 +56,9 @@ describe("AudienceCard", () => {
       expect(screen.getByText("Total Members")).toBeInTheDocument();
     });
 
-    it("shows status and visibility badges", () => {
+    it("shows visibility badge", () => {
       render(<AudienceCard audience={mockAudience} />);
 
-      expect(screen.getByText("Synced")).toBeInTheDocument(); // Status badge
       expect(screen.getByText("Public")).toBeInTheDocument(); // Visibility badge
     });
 
@@ -90,46 +80,6 @@ describe("AudienceCard", () => {
       expect(card).toHaveClass("hover:shadow-md");
       expect(card).toHaveClass("transition-shadow");
       expect(card).toHaveClass("duration-200");
-    });
-  });
-
-  describe("Status Badges", () => {
-    it("displays 'Synced' badge for completed status", () => {
-      render(
-        <AudienceCard
-          audience={{ ...mockAudience, sync_status: "completed" }}
-        />,
-      );
-
-      const badge = screen.getByText("Synced");
-      expect(badge).toBeInTheDocument();
-    });
-
-    it("displays 'Syncing' badge for syncing status", () => {
-      render(
-        <AudienceCard audience={{ ...mockAudience, sync_status: "syncing" }} />,
-      );
-
-      const badge = screen.getByText("Syncing");
-      expect(badge).toBeInTheDocument();
-    });
-
-    it("displays 'Failed' badge for failed status", () => {
-      render(
-        <AudienceCard audience={{ ...mockAudience, sync_status: "failed" }} />,
-      );
-
-      const badge = screen.getByText("Failed");
-      expect(badge).toBeInTheDocument();
-    });
-
-    it("displays 'Pending' badge for pending status", () => {
-      render(
-        <AudienceCard audience={{ ...mockAudience, sync_status: "pending" }} />,
-      );
-
-      const badge = screen.getByText("Pending");
-      expect(badge).toBeInTheDocument();
     });
   });
 
@@ -389,15 +339,40 @@ describe("AudienceCard", () => {
 
   describe("Edge Cases", () => {
     it("handles audience with minimal data", () => {
-      const minimalAudience = {
+      const minimalAudience: MailchimpList = {
         id: "minimal",
         name: "Minimal Audience",
+        date_created: "2025-01-01T00:00:00Z",
         visibility: "pub" as const,
-        sync_status: "completed" as const,
         stats: {
           member_count: 0,
+          unsubscribe_count: 0,
+          cleaned_count: 0,
+          campaign_count: 0,
+          avg_sub_rate: 0,
+          avg_unsub_rate: 0,
+          open_rate: 0,
+          click_rate: 0,
         },
-      } as AudienceModel;
+        contact: {
+          company: "Test",
+          address1: "123 Main",
+          city: "Test City",
+          state: "TS",
+          zip: "12345",
+          country: "US",
+        },
+        permission_reminder: "You subscribed",
+        use_archive_bar: true,
+        campaign_defaults: {
+          from_name: "Test",
+          from_email: "test@example.com",
+          subject: "Test",
+          language: "en",
+        },
+        email_type_option: true,
+        list_rating: 3,
+      };
 
       expect(() => {
         render(<AudienceCard audience={minimalAudience} />);
@@ -405,36 +380,6 @@ describe("AudienceCard", () => {
 
       expect(screen.getByText("Minimal Audience")).toBeInTheDocument();
       expect(screen.getByText("0")).toBeInTheDocument();
-    });
-
-    it("handles missing cached stats", () => {
-      const noCachedStatsAudience = {
-        ...mockAudience,
-        cached_stats: undefined,
-      };
-
-      render(<AudienceCard audience={noCachedStatsAudience} />);
-
-      expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
-      expect(screen.getByText("1.3K")).toBeInTheDocument();
-    });
-
-    it("handles all sync status values", () => {
-      const statuses: AudienceModel["sync_status"][] = [
-        "pending",
-        "syncing",
-        "completed",
-        "failed",
-      ];
-
-      statuses.forEach((status) => {
-        const { unmount } = render(
-          <AudienceCard audience={{ ...mockAudience, sync_status: status }} />,
-        );
-        // Each status should render without error
-        expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
-        unmount(); // Clean up between renders to avoid multiple elements
-      });
     });
   });
 });

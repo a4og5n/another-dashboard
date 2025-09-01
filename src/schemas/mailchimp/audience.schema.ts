@@ -83,6 +83,11 @@ export const AudienceStatsSchema = z.object({
 });
 
 /**
+ * TypeScript type exports
+ */
+export type AudienceStats = z.infer<typeof AudienceStatsSchema>;
+
+/**
  * Validation helper functions
  */
 export const AudienceModelValidators = {
