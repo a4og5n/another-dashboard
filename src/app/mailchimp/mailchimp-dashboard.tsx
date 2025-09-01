@@ -389,6 +389,21 @@ export function MailchimpDashboard() {
           </TabsContent>
 
           <TabsContent value="audiences" className="space-y-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold">Audience Overview</h2>
+                <p className="text-muted-foreground">
+                  Quick overview of your top audiences
+                </p>
+              </div>
+              <button
+                onClick={() => router.push("/mailchimp/audiences")}
+                className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Manage Audiences
+              </button>
+            </div>
+
             {data?.audiences && (
               <AudiencesOverview
                 audiences={data.audiences.topLists}

@@ -1,5 +1,10 @@
 import type { z } from "zod";
 import type { MailchimpAudienceSchema } from "@/schemas/mailchimp/audience.schema";
+import type {
+  AudienceModel,
+  AudienceQueryFilters,
+  AudienceStats,
+} from "@/dal/models/audience.model";
 
 /**
  * TypeScript types for Mailchimp Audience objects
@@ -67,4 +72,65 @@ export interface CreateMailchimpAudienceParams {
 export interface UpdateMailchimpAudienceParams
   extends Partial<CreateMailchimpAudienceParams> {
   id: string;
+}
+
+/**
+ * Growth data interface for audience statistics
+ */
+export interface AudienceGrowthData {
+  date: string;
+  member_count: number;
+}
+
+/**
+ * Component Props Interfaces
+ */
+
+/**
+ * Props for AudienceCard component
+ */
+export interface AudienceCardProps {
+  audience: AudienceModel;
+  onEdit?: (id: string) => void;
+  onArchive?: (id: string) => void;
+  onViewStats?: (id: string) => void;
+  className?: string;
+}
+
+/**
+ * Props for AudienceList component
+ */
+export interface AudienceListProps {
+  audiences: AudienceModel[];
+  totalCount: number;
+  loading?: boolean;
+  error?: string | null;
+
+  // Pagination
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+
+  // Filtering and sorting
+  filters: Partial<AudienceQueryFilters>;
+  onFiltersChange: (filters: Partial<AudienceQueryFilters>) => void;
+
+  // Actions
+  onCreateAudience?: () => void;
+  onEditAudience?: (id: string) => void;
+  onArchiveAudience?: (id: string) => void;
+  onViewStats?: (id: string) => void;
+
+  // Display options
+  className?: string;
+}
+
+/**
+ * Props for AudienceStats component
+ */
+export interface AudienceStatsProps {
+  stats: AudienceStats;
+  loading?: boolean;
+  className?: string;
 }
