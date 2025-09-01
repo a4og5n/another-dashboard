@@ -43,6 +43,48 @@ src/types/
 
 This structure supports scalability, maintainability, and clear separation of concerns.
 
+### Development Workflow Guidelines
+
+**Git Branch Strategy:**
+
+**Direct-to-Main Commits (Acceptable):**
+
+- Documentation-only changes (PRD updates, README changes, comment additions)
+- Small typos or formatting fixes
+- Configuration changes that don't affect application functionality
+- Emergency hotfixes (with immediate follow-up review)
+
+**Branch + Pull Request (Required):**
+
+- Any code changes that affect application functionality
+- New features or components
+- Bug fixes that modify application logic
+- Schema or type changes
+- Dependency updates
+- Changes that could potentially break the build or tests
+- Refactoring efforts
+
+**Branch Naming Convention:**
+
+- Feature branches: `feature/description-of-feature`
+- Bug fixes: `fix/description-of-bug`
+- Documentation: `docs/description-of-change`
+- Configuration: `config/description-of-change`
+
+**Pull Request Requirements:**
+
+- All PRs must pass automated tests and pre-commit hooks
+- PRs should include clear description of changes and their purpose
+- PRs should be reviewed before merging for code changes
+- Preview deployments should be validated before merging
+
+**Quality Gates:**
+
+- Pre-commit hooks enforce code formatting, linting, and basic validation
+- All tests must pass before commits are accepted
+- TypeScript compilation must succeed
+- No secrets or sensitive information should be committed
+
 # Product Requirements Document (PRD)
 
 ## Another Dashboard
@@ -543,6 +585,13 @@ MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
 
 **Rate Limits:** 10 requests per second per API key
 **Data Retention:** Real-time API calls only, no local caching for MVP
+
+**Intentionally Excluded Endpoints:**
+
+- `GET /lists/{list_id}` - Single audience detail
+  - **Rationale:** Returns identical data to the list audiences endpoint (`GET /lists`)
+  - **Decision:** Not implemented to maintain MVP focus and avoid redundant complexity
+  - **Future Consideration:** If individual audience detail pages become necessary, prioritize endpoints that provide actual additional value (member management, campaign history, growth analytics)
 
 ##### 16.2 Google Analytics 4 (Future Implementation)
 

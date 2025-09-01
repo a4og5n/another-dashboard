@@ -17,9 +17,12 @@ export type MailchimpAudienceContact = MailchimpAudience["contact"];
 export type MailchimpAudienceCampaignDefaults =
   MailchimpAudience["campaign_defaults"];
 export type MailchimpAudienceStats = MailchimpAudience["stats"];
-export type MailchimpAudienceMarketingPermission = NonNullable<
-  MailchimpAudience["marketing_permissions"]
->[0];
+// Marketing permissions structure is unknown, using generic type
+export type MailchimpAudienceMarketingPermission = {
+  marketing_permission_id: string;
+  text: string;
+  enabled: boolean;
+};
 
 /**
  * Query parameters for fetching audiences
