@@ -544,6 +544,13 @@ MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
 **Rate Limits:** 10 requests per second per API key
 **Data Retention:** Real-time API calls only, no local caching for MVP
 
+**Intentionally Excluded Endpoints:**
+
+- `GET /lists/{list_id}` - Single audience detail
+  - **Rationale:** Returns identical data to the list audiences endpoint (`GET /lists`)
+  - **Decision:** Not implemented to maintain MVP focus and avoid redundant complexity
+  - **Future Consideration:** If individual audience detail pages become necessary, prioritize endpoints that provide actual additional value (member management, campaign history, growth analytics)
+
 ##### 16.2 Google Analytics 4 (Future Implementation)
 
 **Purpose:** Website traffic, user behavior, and conversion tracking
