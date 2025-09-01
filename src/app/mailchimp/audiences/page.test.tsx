@@ -129,19 +129,10 @@ const mockAudiences: AudienceModel[] = [
 const mockStats: AudienceStatsType = {
   total_audiences: 2,
   total_members: 2100, // 1250 + 850
-  avg_member_count: 1050,
-  avg_engagement_rate: 0,
-  audiences_by_status: {
-    pending: 0,
-    syncing: 1,
-    completed: 1,
-    failed: 0,
-  },
   audiences_by_visibility: {
     pub: 1,
     prv: 1,
   },
-  last_updated: new Date().toISOString(),
 };
 
 // Create a static page component that renders the structure we expect

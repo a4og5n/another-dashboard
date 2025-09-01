@@ -363,17 +363,6 @@ export class InMemoryAudienceRepository implements IAudienceRepository {
         (sum, audience) => sum + audience.stats.member_count,
         0,
       );
-      const engagementRates = audiences
-        .map((audience) => audience.cached_stats?.engagement_rate)
-        .filter((rate): rate is number => rate !== undefined);
-
-      const statusCounts = audiences.reduce(
-        (counts, audience) => {
-          counts[audience.sync_status]++;
-          return counts;
-        },
-        { pending: 0, syncing: 0, completed: 0, failed: 0 },
-      );
 
       const visibilityCounts = audiences.reduce(
         (counts, audience) => {
@@ -386,16 +375,7 @@ export class InMemoryAudienceRepository implements IAudienceRepository {
       const stats: AudienceStats = {
         total_audiences: audiences.length,
         total_members: totalMembers,
-        avg_member_count:
-          audiences.length > 0 ? totalMembers / audiences.length : 0,
-        avg_engagement_rate:
-          engagementRates.length > 0
-            ? engagementRates.reduce((sum, rate) => sum + rate, 0) /
-              engagementRates.length
-            : 0,
-        audiences_by_status: statusCounts,
         audiences_by_visibility: visibilityCounts,
-        last_updated: new Date().toISOString(),
       };
 
       return {

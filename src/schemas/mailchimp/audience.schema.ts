@@ -194,23 +194,15 @@ export const AudienceQueryFiltersSchema = z.object({
 
 /**
  * Schema for audience aggregate statistics
+ * Simplified to match data actually available from Mailchimp API
  */
 export const AudienceStatsSchema = z.object({
   total_audiences: z.number().int().min(0),
   total_members: z.number().int().min(0),
-  avg_member_count: z.number().min(0),
-  avg_engagement_rate: z.number().min(0).max(1),
-  audiences_by_status: z.object({
-    pending: z.number().int().min(0),
-    syncing: z.number().int().min(0),
-    completed: z.number().int().min(0),
-    failed: z.number().int().min(0),
-  }),
   audiences_by_visibility: z.object({
     pub: z.number().int().min(0),
     prv: z.number().int().min(0),
   }),
-  last_updated: z.string(),
 });
 
 /**
