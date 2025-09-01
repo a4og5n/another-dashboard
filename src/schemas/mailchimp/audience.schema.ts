@@ -162,26 +162,6 @@ export const AudienceModelSchema = MailchimpAudienceSchema.extend({
 });
 
 /**
- * Schema for creating a new audience record in the database
- */
-export const CreateAudienceModelSchema = AudienceModelSchema.omit({
-  created_at: true,
-  updated_at: true,
-}).extend({
-  // Required fields for creation
-  id: z.string().min(1, "Audience ID is required"),
-  name: z.string().min(1, "Audience name is required"),
-});
-
-/**
- * Schema for updating audience records in the database
- */
-export const UpdateAudienceModelSchema = AudienceModelSchema.partial().extend({
-  id: z.string().min(1, "Audience ID is required"),
-  updated_at: z.string().optional(),
-});
-
-/**
  * Schema for audience query filters in the database
  */
 export const AudienceQueryFiltersSchema = z.object({
@@ -244,28 +224,6 @@ export const AudienceModelValidators = {
     const result = AudienceModelSchema.safeParse(data);
     if (!result.success) {
       throw new Error(`Invalid audience model: ${result.error.message}`);
-    }
-    return result.data;
-  },
-
-  /**
-   * Validates create audience data
-   */
-  validateCreate: (data: unknown) => {
-    const result = CreateAudienceModelSchema.safeParse(data);
-    if (!result.success) {
-      throw new Error(`Invalid create audience data: ${result.error.message}`);
-    }
-    return result.data;
-  },
-
-  /**
-   * Validates update audience data
-   */
-  validateUpdate: (data: unknown) => {
-    const result = UpdateAudienceModelSchema.safeParse(data);
-    if (!result.success) {
-      throw new Error(`Invalid update audience data: ${result.error.message}`);
     }
     return result.data;
   },

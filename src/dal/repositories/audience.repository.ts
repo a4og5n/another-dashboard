@@ -7,8 +7,6 @@
 
 import type {
   AudienceModel,
-  CreateAudienceModel,
-  UpdateAudienceModel,
   AudienceQueryFilters,
   AudienceStats,
 } from "@/dal/models/audience.model";
@@ -51,20 +49,6 @@ export interface IAudienceRepository {
       "offset" | "limit" | "sort_by" | "sort_order"
     >,
   ): Promise<RepositoryResult<number>>;
-
-  // Write operations
-  create(
-    audience: CreateAudienceModel,
-  ): Promise<RepositoryResult<AudienceModel>>;
-  update(
-    id: string,
-    updates: UpdateAudienceModel,
-  ): Promise<RepositoryResult<AudienceModel>>;
-  upsert(
-    audience: CreateAudienceModel,
-  ): Promise<RepositoryResult<AudienceModel>>;
-  delete(id: string): Promise<RepositoryResult<boolean>>;
-  bulkDelete(ids: string[]): Promise<RepositoryResult<number>>;
 
   // Sync operations
   markForSync(id: string): Promise<RepositoryResult<boolean>>;
@@ -282,142 +266,6 @@ export class InMemoryAudienceRepository implements IAudienceRepository {
       return {
         success: true,
         data: result.data.total_count,
-        timestamp: new Date().toISOString(),
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      };
-    }
-  }
-
-  async create(
-    audience: CreateAudienceModel,
-  ): Promise<RepositoryResult<AudienceModel>> {
-    try {
-      if (this.audiences.has(audience.id)) {
-        return {
-          success: false,
-          error: `Audience with ID ${audience.id} already exists`,
-          timestamp: new Date().toISOString(),
-        };
-      }
-
-      const now = new Date().toISOString();
-      const newAudience: AudienceModel = {
-        ...audience,
-        created_at: now,
-        updated_at: now,
-        sync_status: audience.sync_status || "pending",
-        is_deleted: false,
-      };
-
-      this.audiences.set(audience.id, newAudience);
-
-      return {
-        success: true,
-        data: newAudience,
-        timestamp: now,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      };
-    }
-  }
-
-  async update(
-    id: string,
-    updates: UpdateAudienceModel,
-  ): Promise<RepositoryResult<AudienceModel>> {
-    try {
-      const existing = this.audiences.get(id);
-      if (!existing) {
-        return {
-          success: false,
-          error: `Audience with ID ${id} not found`,
-          timestamp: new Date().toISOString(),
-        };
-      }
-
-      const now = new Date().toISOString();
-      const updatedAudience: AudienceModel = {
-        ...existing,
-        ...updates,
-        updated_at: now,
-      };
-
-      this.audiences.set(id, updatedAudience);
-
-      return {
-        success: true,
-        data: updatedAudience,
-        timestamp: now,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      };
-    }
-  }
-
-  async upsert(
-    audience: CreateAudienceModel,
-  ): Promise<RepositoryResult<AudienceModel>> {
-    try {
-      const existing = this.audiences.get(audience.id);
-
-      if (existing) {
-        // Update existing
-        return await this.update(audience.id, audience);
-      } else {
-        // Create new
-        return await this.create(audience);
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      };
-    }
-  }
-
-  async delete(id: string): Promise<RepositoryResult<boolean>> {
-    try {
-      const deleted = this.audiences.delete(id);
-      return {
-        success: true,
-        data: deleted,
-        timestamp: new Date().toISOString(),
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      };
-    }
-  }
-
-  async bulkDelete(ids: string[]): Promise<RepositoryResult<number>> {
-    try {
-      let deletedCount = 0;
-      for (const id of ids) {
-        if (this.audiences.delete(id)) {
-          deletedCount++;
-        }
-      }
-
-      return {
-        success: true,
-        data: deletedCount,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
