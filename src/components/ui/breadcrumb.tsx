@@ -7,9 +7,10 @@ const Breadcrumb = React.forwardRef<
   React.ComponentPropsWithoutRef<"nav"> & {
     separator?: React.ComponentType<{ className?: string }>;
   }
->(({ separator, ...props }, ref) => (
-  <nav ref={ref} aria-label="breadcrumb" {...props} />
-));
+>(({ separator: _separator, ...props }, ref) => {
+  void _separator; // Mark as used to satisfy linter
+  return <nav ref={ref} aria-label="breadcrumb" {...props} />;
+});
 Breadcrumb.displayName = "Breadcrumb";
 
 const BreadcrumbList = React.forwardRef<
@@ -52,10 +53,7 @@ const BreadcrumbLink = React.forwardRef<
   return (
     <a
       ref={ref}
-      className={cn(
-        "transition-colors hover:text-foreground",
-        className,
-      )}
+      className={cn("transition-colors hover:text-foreground", className)}
       {...props}
     >
       {children}
