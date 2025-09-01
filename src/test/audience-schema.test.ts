@@ -57,10 +57,50 @@ describe("MailchimpAudienceResponseSchema", () => {
   it("validates a correct response", () => {
     expect(() =>
       MailchimpAudienceResponseSchema.parse({
-        audiences: [validAudience],
+        lists: [validAudience],
         total_items: 1,
+        constraints: {
+          may_create: true,
+          max_instances: 100,
+          current_total_instances: 5,
+        },
       }),
     ).not.toThrow();
+  });
+
+  it("validates response with optional _links", () => {
+    expect(() =>
+      MailchimpAudienceResponseSchema.parse({
+        lists: [validAudience],
+        total_items: 1,
+        constraints: {
+          may_create: false,
+          max_instances: 50,
+          current_total_instances: 50,
+        },
+        _links: [
+          {
+            rel: "self",
+            href: "https://us1.api.mailchimp.com/3.0/lists",
+            method: "GET",
+          },
+        ],
+      }),
+    ).not.toThrow();
+  });
+
+  it("fails validation with old 'audiences' property", () => {
+    expect(() =>
+      MailchimpAudienceResponseSchema.parse({
+        audiences: [validAudience], // Wrong property name
+        total_items: 1,
+        constraints: {
+          may_create: true,
+          max_instances: 100,
+          current_total_instances: 5,
+        },
+      }),
+    ).toThrow();
   });
 });
 
