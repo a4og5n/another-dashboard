@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { mailchimpDashboardPaginationSchema } from "@/schemas/mailchimp-dashboard-pagination";
-import { z } from "zod";
+import { DateFilterSchema } from "@/schemas/mailchimp/dashboard.schema";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { DashboardError } from "@/components/dashboard/shared/dashboard-error";
@@ -56,22 +56,8 @@ export function MailchimpDashboard() {
     : 10;
   const currentPage = paginationResult.success ? paginationResult.data.page : 1;
 
-  // Zod schema for date filter params
-  const dateFilterSchema = z.object({
-    startDate: z
-      .string()
-      .optional()
-      .refine((val) => !val || !isNaN(Date.parse(val)), {
-        message: "Invalid startDate",
-      }),
-    endDate: z
-      .string()
-      .optional()
-      .refine((val) => !val || !isNaN(Date.parse(val)), {
-        message: "Invalid endDate",
-      }),
-  });
-  const dateFilterResult = dateFilterSchema.safeParse({
+  // Validate date filter params using centralized schema
+  const dateFilterResult = DateFilterSchema.safeParse({
     startDate: searchParams.get("startDate") ?? undefined,
     endDate: searchParams.get("endDate") ?? undefined,
   });
