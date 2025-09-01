@@ -16,9 +16,12 @@ const ALIAS_FOLDERS = [
   "src/types",
   "src/utils",
   "src/components",
+  "src/dal",
 ];
 const RELATIVE_PATH_REGEX = /from ['"](\.\.\/)+/;
 const EXPORT_RELATIVE_PATH_REGEX = /export .*from ['"](\.\.\/)+/;
+const SAME_DIR_RELATIVE_REGEX = /from ['"]\.\//;
+const SAME_DIR_EXPORT_REGEX = /export .*from ['"]\.\//;
 
 function getAllFiles(dir: string, ext: string[] = [".ts", ".tsx"]): string[] {
   let results: string[] = [];
@@ -57,6 +60,7 @@ describe("Path Alias Enforcement", () => {
       "src/types/components/index.ts",
       "src/types/components/ui/index.ts",
       "src/types/mailchimp/index.ts",
+      "src/dal/index.ts",
     ];
 
     filesToCheck.forEach((file) => {
@@ -66,6 +70,34 @@ describe("Path Alias Enforcement", () => {
           /export\s+\*\s+from\s+['\"](\.[^'\"]+)['\"]/g,
         );
         expect(matches).toBeNull();
+      });
+    });
+  });
+
+  describe("DAL folder specific enforcement", () => {
+    it("should not use same-directory relative imports in src/dal", () => {
+      const files = getAllFiles(path.resolve("src/dal"));
+      files.forEach((file) => {
+        const content = fs.readFileSync(file, "utf8");
+        const matches = content.match(SAME_DIR_RELATIVE_REGEX);
+        if (matches) {
+          throw new Error(
+            `Found same-directory relative import in ${file}: ${matches[0]}`,
+          );
+        }
+      });
+    });
+
+    it("should not use same-directory relative exports in src/dal", () => {
+      const files = getAllFiles(path.resolve("src/dal"));
+      files.forEach((file) => {
+        const content = fs.readFileSync(file, "utf8");
+        const matches = content.match(SAME_DIR_EXPORT_REGEX);
+        if (matches) {
+          throw new Error(
+            `Found same-directory relative export in ${file}: ${matches[0]}`,
+          );
+        }
       });
     });
   });
