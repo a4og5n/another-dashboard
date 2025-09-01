@@ -99,7 +99,7 @@ function checkFileForSchemaViolations(filePath: string): string[] {
   }
   
   // Check for each Zod pattern
-  ZOD_SCHEMA_PATTERNS.forEach((pattern, index) => {
+  ZOD_SCHEMA_PATTERNS.forEach((pattern) => {
     const matches = content.match(pattern);
     if (matches) {
       violations.push(`Found Zod schema pattern: ${pattern.source}`);
