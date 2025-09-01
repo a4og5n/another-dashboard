@@ -4,20 +4,7 @@
  */
 import { z } from "zod";
 import { mailchimpDashboardPaginationSchema } from "@/schemas/mailchimp-dashboard-pagination";
-
-/**
- * Date validation helper for YYYY-MM-DD format
- */
-const validDate = (val: string) => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
-  const [year, month, day] = val.split("-").map(Number);
-  if (month < 1 || month > 12) return false;
-  if (day < 1) return false;
-  // Days in month, accounting for leap years
-  const daysInMonth = new Date(year, month, 0).getDate();
-  if (day > daysInMonth) return false;
-  return true;
-};
+import { validDate } from "@/utils/mailchimp/query-params";
 
 /**
  * Schema for Mailchimp dashboard query parameters

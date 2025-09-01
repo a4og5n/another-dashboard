@@ -3,11 +3,11 @@ import {
   MailchimpAudienceSchema,
   MailchimpAudienceQuerySchema,
   MailchimpAudienceQueryInternalSchema,
-  transformQueryParams,
   MailchimpAudienceSuccessSchema,
   MailchimpAudienceSimplified,
   mailchimpAudienceErrorResponseSchema,
 } from "@/schemas/mailchimp";
+import { transformQueryParams } from "@/utils/mailchimp/query-params";
 
 // Realistic audience object based on actual Mailchimp API responses
 // Includes comprehensive stats and optional fields that real API returns

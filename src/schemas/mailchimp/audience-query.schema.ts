@@ -35,21 +35,3 @@ export const MailchimpAudienceQueryInternalSchema =
     fields: z.array(z.string()).optional(),
     exclude_fields: z.array(z.string()).optional(),
   }).strict(); // Also reject unknown properties in internal schema
-
-/**
- * Transform function to convert API query params to internal format
- * Only transforms supported parameters (fields, exclude_fields, count, offset)
- */
-export function transformQueryParams(
-  params: z.infer<typeof MailchimpAudienceQuerySchema>,
-) {
-  return {
-    ...params,
-    fields: params.fields
-      ? params.fields.split(",").map((f) => f.trim())
-      : undefined,
-    exclude_fields: params.exclude_fields
-      ? params.exclude_fields.split(",").map((f) => f.trim())
-      : undefined,
-  };
-}
