@@ -156,7 +156,11 @@ export function validateUpdateAudienceParams(
  *   validateAudienceId("abc123")
  */
 export function validateAudienceId(id: unknown): string {
-  const result = z.string().min(1, "Audience ID is required").safeParse(id);
+  const result = z
+    .string()
+    .trim()
+    .min(1, "Audience ID is required")
+    .safeParse(id);
   if (!result.success) {
     throw new ValidationError("Invalid audience ID", result.error);
   }

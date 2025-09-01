@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
+import {
+  MailchimpAudienceQuerySchema,
+  transformQueryParams,
+} from "@/schemas/mailchimp";
+import { ValidationError } from "@/actions/mailchimp-audiences";
 
 /**
  * Mailchimp Audiences (Lists) API
@@ -9,21 +14,38 @@ import { getMailchimpService } from "@/services";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const count = parseInt(searchParams.get("count") || "25", 10);
-    const offset = parseInt(searchParams.get("offset") || "0", 10);
-    const fields = searchParams.get("fields") || undefined;
-    const excludeFields = searchParams.get("exclude_fields") || undefined;
+
+    // Extract query parameters as plain object
+    const queryParams = {
+      fields: searchParams.get("fields") || undefined,
+      exclude_fields: searchParams.get("exclude_fields") || undefined,
+      count: searchParams.get("count") || undefined,
+      offset: searchParams.get("offset") || undefined,
+      before_date_created: searchParams.get("before_date_created") || undefined,
+      since_date_created: searchParams.get("since_date_created") || undefined,
+      before_campaign_last_sent:
+        searchParams.get("before_campaign_last_sent") || undefined,
+      since_campaign_last_sent:
+        searchParams.get("since_campaign_last_sent") || undefined,
+      email: searchParams.get("email") || undefined,
+      sort_field: searchParams.get("sort_field") || undefined,
+      sort_dir: searchParams.get("sort_dir") || undefined,
+    };
+
+    // Remove undefined values to let schema apply defaults
+    const cleanedParams = Object.fromEntries(
+      Object.entries(queryParams).filter(([, value]) => value !== undefined),
+    );
+
+    // Validate query parameters using centralized schema
+    const validatedQuery = MailchimpAudienceQuerySchema.parse(cleanedParams);
+
+    // Transform comma-separated fields to arrays for service layer
+    const serviceParams = transformQueryParams(validatedQuery);
 
     const mailchimp = getMailchimpService();
 
-    const params = {
-      count,
-      offset,
-      fields: fields ? fields.split(",") : undefined,
-      exclude_fields: excludeFields ? excludeFields.split(",") : undefined,
-    };
-
-    const response = await mailchimp.getLists(params);
+    const response = await mailchimp.getLists(serviceParams);
 
     if (!response.success) {
       return NextResponse.json(
@@ -38,16 +60,42 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       ...response.data,
       metadata: {
-        count,
-        offset,
-        fields,
-        excludeFields,
+        query: validatedQuery,
         lastUpdated: new Date().toISOString(),
         rateLimit: response.rateLimit,
       },
     });
   } catch (error) {
     console.error("Mailchimp audiences API error:", error);
+
+    // Handle validation errors with clear messages
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        {
+          error: "Invalid query parameters",
+          details: error.message,
+          validation_errors: error.details,
+        },
+        { status: 400 },
+      );
+    }
+
+    // Handle Zod validation errors
+    if (
+      error &&
+      typeof error === "object" &&
+      "name" in error &&
+      error.name === "ZodError"
+    ) {
+      return NextResponse.json(
+        {
+          error: "Invalid query parameters",
+          details: "Query parameters failed validation",
+          validation_errors: error,
+        },
+        { status: 400 },
+      );
+    }
 
     return NextResponse.json(
       {
