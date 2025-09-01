@@ -97,21 +97,21 @@ export function DashboardSidebar({ visible }: { visible: boolean }) {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>(() => {
     // Auto-expand Mailchimp if we're on a Mailchimp page
-    return pathname.startsWith('/mailchimp') ? ['Mailchimp'] : [];
+    return pathname.startsWith("/mailchimp") ? ["Mailchimp"] : [];
   });
 
   const toggleExpanded = (itemName: string) => {
-    setExpandedItems(prev => 
-      prev.includes(itemName) 
-        ? prev.filter(name => name !== itemName)
-        : [...prev, itemName]
+    setExpandedItems((prev) =>
+      prev.includes(itemName)
+        ? prev.filter((name) => name !== itemName)
+        : [...prev, itemName],
     );
   };
 
   const isItemActive = (item: NavigationItem): boolean => {
     if (item.href && pathname === item.href) return true;
     if (item.children) {
-      return item.children.some(child => child.href === pathname);
+      return item.children.some((child) => child.href === pathname);
     }
     return false;
   };
@@ -134,7 +134,9 @@ export function DashboardSidebar({ visible }: { visible: boolean }) {
             isActive && "bg-secondary",
           )}
           disabled={item.disabled}
-          onClick={item.expandable ? () => toggleExpanded(item.name) : undefined}
+          onClick={
+            item.expandable ? () => toggleExpanded(item.name) : undefined
+          }
         >
           {item.disabled ? (
             <div className="flex items-center space-x-3">
@@ -183,7 +185,7 @@ export function DashboardSidebar({ visible }: { visible: boolean }) {
             {item.children.map((child) => {
               const childIsActive = pathname === child.href;
               const ChildIcon = child.icon;
-              
+
               return (
                 <Button
                   key={child.name}
