@@ -11,6 +11,7 @@
 
 import { z } from "zod";
 import { MailchimpAudienceSchema } from "@/schemas/mailchimp/audience.schema";
+import { MailchimpAudienceQueryInternalSchema } from "@/schemas/mailchimp/audience-query.schema";
 import type {
   MailchimpAudiencesQuery,
   CreateMailchimpAudienceParams,
@@ -29,22 +30,7 @@ export class ValidationError extends Error {
   }
 }
 
-/**
- * Zod schema for audience query parameters
- */
-const audiencesQuerySchema = z.object({
-  fields: z.array(z.string()).optional(),
-  exclude_fields: z.array(z.string()).optional(),
-  count: z.coerce.number().int().min(1).max(1000).default(10),
-  offset: z.coerce.number().int().min(0).default(0),
-  before_date_created: z.string().datetime().optional(),
-  since_date_created: z.string().datetime().optional(),
-  before_campaign_last_sent: z.string().datetime().optional(),
-  since_campaign_last_sent: z.string().datetime().optional(),
-  email: z.string().email().optional(),
-  sort_field: z.enum(["date_created", "member_count"]).default("date_created"),
-  sort_dir: z.enum(["ASC", "DESC"]).default("DESC"),
-});
+// Query schema moved to centralized location: @/schemas/mailchimp/audience-query.schema
 
 /**
  * Zod schema for creating audience parameters
@@ -95,7 +81,7 @@ const updateAudienceSchema = createAudienceSchema.partial().extend({
 export function validateMailchimpAudiencesQuery(
   params: unknown,
 ): MailchimpAudiencesQuery {
-  const result = audiencesQuerySchema.safeParse(params);
+  const result = MailchimpAudienceQueryInternalSchema.safeParse(params);
   if (!result.success) {
     throw new ValidationError(
       "Invalid Mailchimp audiences query parameters",
