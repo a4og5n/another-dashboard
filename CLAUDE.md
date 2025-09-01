@@ -204,3 +204,36 @@ Before starting any development work, always review:
 - Use the centralized environment validation in `src/lib/config.ts`
 - All API endpoints must use Zod schemas for input validation
 - Follow accessibility guidelines with automated testing
+
+### Architectural Enforcement
+
+The codebase includes automated tests to enforce architectural patterns and prevent common issues:
+
+#### DAL Models Architecture (enforced by `dal-models-enforcement.test.ts`):
+
+- **No type definitions in DAL models**: Types must be defined in `/src/types`, not in DAL model files
+- **No Zod schema definitions in DAL models**: Schemas must be defined in `/src/schemas`
+- **Only imports and re-exports**: DAL model files should only contain imports and re-exports from proper locations
+- **Proper import patterns**: Types must import from `@/types/*`, schemas from `@/schemas/*`
+
+#### Deprecated Declarations Detection (enforced by `deprecated-declarations.test.ts`):
+
+- **No deprecated Zod methods**: Prevents usage of `z.string().datetime()` (use `z.string()` instead)
+- **No deprecated React patterns**: Warns about `React.FC` usage (prefer regular function components)
+- **No deprecated lifecycle methods**: Prevents usage of deprecated React lifecycle methods
+- **No deprecated Node.js APIs**: Prevents usage of deprecated Node.js APIs
+
+#### How to Run Architectural Tests:
+
+```bash
+# Run DAL models enforcement
+pnpm test src/test/architectural-enforcement/dal-models-enforcement.test.ts
+
+# Run deprecated declarations detection
+pnpm test src/test/architectural-enforcement/deprecated-declarations.test.ts
+
+# Run all architectural enforcement tests
+pnpm test src/test/architectural-enforcement/
+```
+
+These tests run automatically as part of the full test suite (`pnpm test`) and will fail CI if violations are found.

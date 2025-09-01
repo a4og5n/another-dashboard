@@ -1,10 +1,12 @@
 import type { z } from "zod";
-import type { MailchimpAudienceSchema } from "@/schemas/mailchimp/audience.schema";
 import type {
-  AudienceModel,
-  AudienceQueryFilters,
-  AudienceStats,
-} from "@/dal/models/audience.model";
+  MailchimpAudienceSchema,
+  AudienceModelSchema,
+  CreateAudienceModelSchema,
+  UpdateAudienceModelSchema,
+  AudienceQueryFiltersSchema,
+  AudienceStatsSchema,
+} from "@/schemas/mailchimp/audience.schema";
 
 /**
  * TypeScript types for Mailchimp Audience objects
@@ -12,6 +14,32 @@ import type {
  */
 
 export type MailchimpAudience = z.infer<typeof MailchimpAudienceSchema>;
+
+/**
+ * Database model schema for persisting Mailchimp Audience data
+ * Extends the API schema with additional fields for database operations
+ */
+export type AudienceModel = z.infer<typeof AudienceModelSchema>;
+
+/**
+ * TypeScript type for creating audience records
+ */
+export type CreateAudienceModel = z.infer<typeof CreateAudienceModelSchema>;
+
+/**
+ * TypeScript type for updating audience records
+ */
+export type UpdateAudienceModel = z.infer<typeof UpdateAudienceModelSchema>;
+
+/**
+ * TypeScript type for audience query filters
+ */
+export type AudienceQueryFilters = z.infer<typeof AudienceQueryFiltersSchema>;
+
+/**
+ * TypeScript type for audience statistics
+ */
+export type AudienceStats = z.infer<typeof AudienceStatsSchema>;
 
 export type MailchimpAudienceContact = MailchimpAudience["contact"];
 export type MailchimpAudienceCampaignDefaults =
