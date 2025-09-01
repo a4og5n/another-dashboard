@@ -15,26 +15,13 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
 
-    // Extract query parameters as plain object
-    const queryParams = {
-      fields: searchParams.get("fields") || undefined,
-      exclude_fields: searchParams.get("exclude_fields") || undefined,
-      count: searchParams.get("count") || undefined,
-      offset: searchParams.get("offset") || undefined,
-      before_date_created: searchParams.get("before_date_created") || undefined,
-      since_date_created: searchParams.get("since_date_created") || undefined,
-      before_campaign_last_sent:
-        searchParams.get("before_campaign_last_sent") || undefined,
-      since_campaign_last_sent:
-        searchParams.get("since_campaign_last_sent") || undefined,
-      email: searchParams.get("email") || undefined,
-      sort_field: searchParams.get("sort_field") || undefined,
-      sort_dir: searchParams.get("sort_dir") || undefined,
-    };
+    // Convert all search params to object for validation
+    // This allows the schema to reject unsupported parameters (Issues #95, #96)
+    const allParams = Object.fromEntries(searchParams.entries());
 
-    // Remove undefined values to let schema apply defaults
+    // Only pass non-empty values for validation
     const cleanedParams = Object.fromEntries(
-      Object.entries(queryParams).filter(([, value]) => value !== undefined),
+      Object.entries(allParams).filter(([, value]) => value !== ""),
     );
 
     // Validate query parameters using centralized schema

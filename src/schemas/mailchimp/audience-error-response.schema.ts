@@ -1,12 +1,11 @@
-import { z } from "zod";
 import { mailchimpErrorResponseSchema } from "@/schemas/mailchimp/common/error-response.schema";
 
 /**
  * Mailchimp Audience Error Response Schema
- * Extends the shared Mailchimp error response schema for audience-specific errors.
+ * Uses the shared Mailchimp error response schema without extensions.
+ * Follows PRD guideline: "Always use the same object/property names as the API"
+ *
+ * Issue #94: Removed undocumented audience_id field to match official API structure
  */
 export const mailchimpAudienceErrorResponseSchema =
-  mailchimpErrorResponseSchema.extend({
-    audience_id: z.string().optional(), // Example of an audience-specific error field
-    // Add other audience-specific error fields as needed
-  });
+  mailchimpErrorResponseSchema;

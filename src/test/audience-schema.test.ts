@@ -4,7 +4,8 @@ import {
   MailchimpAudienceQuerySchema,
   MailchimpAudienceQueryInternalSchema,
   transformQueryParams,
-  MailchimpAudienceResponseSchema,
+  MailchimpAudienceSuccessSchema,
+  MailchimpAudienceSimplified,
   mailchimpAudienceErrorResponseSchema,
 } from "@/schemas/mailchimp";
 
@@ -217,8 +218,6 @@ describe("MailchimpAudienceQuerySchema", () => {
     expect(result).toMatchObject({
       count: 10,
       offset: 0,
-      sort_field: "date_created",
-      sort_dir: "DESC",
     });
   });
 
@@ -227,32 +226,26 @@ describe("MailchimpAudienceQuerySchema", () => {
     expect(result.count).toBe(25);
   });
 
-  it("validates email parameter", () => {
-    const validQuery = { email: "test@example.com" };
+  it("only accepts supported parameters", () => {
+    const validQuery = {
+      fields: "id,name,stats.member_count",
+      exclude_fields: "contact,campaign_defaults",
+      count: 25,
+      offset: 10,
+    };
     expect(() => MailchimpAudienceQuerySchema.parse(validQuery)).not.toThrow();
   });
 
-  it("rejects invalid email", () => {
-    const invalidQuery = { email: "invalid-email" };
+  it("rejects unsupported parameters", () => {
+    const invalidQuery = {
+      count: 10,
+      offset: 0,
+      email: "test@example.com", // Unsupported parameter
+      sort_field: "date_created", // Unsupported parameter
+      before_date_created: "2023-12-31T23:59:59Z", // Unsupported parameter
+    };
+    // This should fail because the schema doesn't accept these parameters
     expect(() => MailchimpAudienceQuerySchema.parse(invalidQuery)).toThrow();
-  });
-
-  it("validates date parameters", () => {
-    const validQuery = {
-      before_date_created: "2023-12-31T23:59:59Z",
-      since_date_created: "2023-01-01T00:00:00Z",
-    };
-    expect(() => MailchimpAudienceQuerySchema.parse(validQuery)).not.toThrow();
-  });
-
-  it("validates sort parameters", () => {
-    const validQuery = {
-      sort_field: "member_count",
-      sort_dir: "ASC",
-    };
-    const result = MailchimpAudienceQuerySchema.parse(validQuery);
-    expect(result.sort_field).toBe("member_count");
-    expect(result.sort_dir).toBe("ASC");
   });
 
   it("handles comma-separated fields", () => {
@@ -283,8 +276,6 @@ describe("transformQueryParams", () => {
       exclude_fields: "contact,campaign_defaults",
       count: 20,
       offset: 0,
-      sort_field: "date_created",
-      sort_dir: "DESC",
     } as const;
 
     const result = transformQueryParams(input);
@@ -296,8 +287,6 @@ describe("transformQueryParams", () => {
     const input = {
       count: 10,
       offset: 0,
-      sort_field: "date_created",
-      sort_dir: "DESC",
     } as const;
     const result = transformQueryParams(input);
     expect(result.fields).toBeUndefined();
@@ -309,8 +298,6 @@ describe("transformQueryParams", () => {
       fields: " id , name , stats.member_count ",
       count: 10,
       offset: 0,
-      sort_field: "date_created",
-      sort_dir: "DESC",
     } as const;
 
     const result = transformQueryParams(input);
@@ -318,93 +305,72 @@ describe("transformQueryParams", () => {
   });
 });
 
-describe("MailchimpAudienceResponseSchema", () => {
-  it("validates a realistic response with multiple audiences", () => {
+describe("MailchimpAudienceSuccessSchema", () => {
+  it("validates a simplified response with multiple audiences", () => {
     expect(() =>
-      MailchimpAudienceResponseSchema.parse({
-        lists: [realisticAudience, minimalAudience],
+      MailchimpAudienceSuccessSchema.parse({
+        audiences: [
+          {
+            id: "f4b8c2a1e9",
+            name: "Newsletter Subscribers",
+            stats: { total_contacts: 12847 },
+          },
+          {
+            id: "min123",
+            name: "Minimal Test List",
+            stats: { total_contacts: 0 },
+          },
+        ],
         total_items: 2,
-        constraints: {
-          may_create: true,
-          max_instances: 100,
-          current_total_instances: 12,
-        },
       }),
     ).not.toThrow();
   });
 
-  it("validates response with comprehensive _links metadata", () => {
+  it("validates simplified audience object", () => {
+    const simplifiedAudience = {
+      id: "test123",
+      name: "Test Audience",
+      stats: { total_contacts: 100 },
+    };
     expect(() =>
-      MailchimpAudienceResponseSchema.parse({
-        lists: [realisticAudience],
-        total_items: 1,
-        constraints: {
-          may_create: false,
-          max_instances: 50,
-          current_total_instances: 50,
-        },
-        _links: [
-          {
-            rel: "self",
-            href: "https://us12.api.mailchimp.com/3.0/lists?count=10&offset=0",
-            method: "GET",
-          },
-          {
-            rel: "next",
-            href: "https://us12.api.mailchimp.com/3.0/lists?count=10&offset=10",
-            method: "GET",
-          },
-        ],
-      }),
+      MailchimpAudienceSimplified.parse(simplifiedAudience),
     ).not.toThrow();
   });
 
   it("validates empty response", () => {
     expect(() =>
-      MailchimpAudienceResponseSchema.parse({
-        lists: [],
+      MailchimpAudienceSuccessSchema.parse({
+        audiences: [],
         total_items: 0,
-        constraints: {
-          may_create: true,
-          max_instances: 100,
-          current_total_instances: 0,
-        },
       }),
     ).not.toThrow();
   });
 
-  it("fails validation with old 'audiences' property", () => {
+  it("fails validation with old 'lists' property", () => {
     expect(() =>
-      MailchimpAudienceResponseSchema.parse({
-        audiences: [realisticAudience], // Wrong property name
+      MailchimpAudienceSuccessSchema.parse({
+        lists: [{ id: "test", name: "Test", stats: { total_contacts: 100 } }], // Wrong property name
         total_items: 1,
-        constraints: {
-          may_create: true,
-          max_instances: 100,
-          current_total_instances: 5,
-        },
       }),
     ).toThrow();
   });
 
   it("throws on missing required response fields", () => {
     expect(() =>
-      MailchimpAudienceResponseSchema.parse({
-        lists: [realisticAudience],
-        // missing total_items and constraints
+      MailchimpAudienceSuccessSchema.parse({
+        audiences: [
+          { id: "test", name: "Test", stats: { total_contacts: 100 } },
+        ],
+        // missing total_items
       }),
     ).toThrow();
   });
 
-  it("throws on invalid constraints structure", () => {
+  it("throws on missing stats.total_contacts in audience", () => {
     expect(() =>
-      MailchimpAudienceResponseSchema.parse({
-        lists: [realisticAudience],
+      MailchimpAudienceSuccessSchema.parse({
+        audiences: [{ id: "test", name: "Test", stats: {} }], // missing total_contacts
         total_items: 1,
-        constraints: {
-          // missing required constraint fields
-          may_create: true,
-        },
       }),
     ).toThrow();
   });
@@ -418,7 +384,7 @@ describe("mailchimpAudienceErrorResponseSchema", () => {
         title: "Resource Not Found",
         status: 404,
         detail: "The requested resource could not be found.",
-        audience_id: "f4b8c2a1e9",
+        instance: "/3.0/lists/f4b8c2a1e9",
       }),
     ).not.toThrow();
   });
@@ -429,7 +395,7 @@ describe("mailchimpAudienceErrorResponseSchema", () => {
       title: "Invalid Resource",
       status: 400,
       detail: "Your request parameters didn't validate.",
-      audience_id: "invalid_id",
+      instance: "/3.0/lists",
     };
     expect(() =>
       mailchimpAudienceErrorResponseSchema.parse(badRequestError),
@@ -441,7 +407,7 @@ describe("mailchimpAudienceErrorResponseSchema", () => {
       status: 401,
       detail:
         "Your API key may be invalid, or you've attempted to access the wrong datacenter.",
-      audience_id: "f4b8c2a1e9",
+      instance: "/3.0/lists/f4b8c2a1e9",
     };
     expect(() =>
       mailchimpAudienceErrorResponseSchema.parse(unauthorizedError),
