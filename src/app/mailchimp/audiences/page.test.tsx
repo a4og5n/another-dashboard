@@ -38,18 +38,14 @@ vi.mock("@/components/dashboard/shared/dashboard-error", () => ({
 // Import the components we want to test
 import { AudienceStats } from "@/components/mailchimp/audiences/AudienceStats";
 import { ClientAudienceList } from "@/components/mailchimp/audiences/ClientAudienceList";
-import type {
-  AudienceModel,
-  AudienceStats as AudienceStatsType,
-} from "@/dal/models/audience.model";
+import type { MailchimpList } from "@/services";
+import type { AudienceStats as AudienceStatsType } from "@/schemas/mailchimp/audience.schema";
 
-const mockAudiences: AudienceModel[] = [
+const mockAudiences: MailchimpList[] = [
   {
     id: "list1",
     name: "Newsletter Subscribers",
     date_created: "2025-01-01T00:00:00Z",
-    created_at: "2025-01-01T00:00:00Z",
-    updated_at: "2025-01-15T10:30:00Z",
     visibility: "pub",
     stats: {
       member_count: 1250,
@@ -61,8 +57,6 @@ const mockAudiences: AudienceModel[] = [
       open_rate: 0.28,
       click_rate: 0.12,
     },
-    sync_status: "completed",
-    is_deleted: false,
     contact: {
       company: "Test Company",
       address1: "123 Main St",
@@ -88,8 +82,6 @@ const mockAudiences: AudienceModel[] = [
     id: "list2",
     name: "Product Updates",
     date_created: "2025-01-02T00:00:00Z",
-    created_at: "2025-01-02T00:00:00Z",
-    updated_at: "2025-01-15T10:30:00Z",
     visibility: "prv",
     stats: {
       member_count: 850,
@@ -101,8 +93,6 @@ const mockAudiences: AudienceModel[] = [
       open_rate: 0.32,
       click_rate: 0.15,
     },
-    sync_status: "syncing",
-    is_deleted: false,
     contact: {
       company: "Test Company",
       address1: "123 Main St",
@@ -267,12 +257,10 @@ describe("Audiences Page Integration", () => {
       // Should show essential info only
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
       expect(screen.getByText("1.3K")).toBeInTheDocument(); // Formatted member count
-      expect(screen.getByText("Synced")).toBeInTheDocument(); // Status badge (completed -> Synced)
       expect(screen.getByText("Public")).toBeInTheDocument(); // Visibility badge
 
       expect(screen.getByText("Product Updates")).toBeInTheDocument();
       expect(screen.getByText("850")).toBeInTheDocument(); // Member count
-      expect(screen.getByText("Syncing")).toBeInTheDocument(); // Status badge
       expect(screen.getByText("Private")).toBeInTheDocument(); // Visibility badge
     });
 
@@ -312,14 +300,6 @@ describe("Audiences Page Integration", () => {
       });
       expect(totalAudiences).toBeInTheDocument(); // total_audiences
       expect(screen.getByText("2.1K")).toBeInTheDocument(); // total_members (1250 + 850)
-    });
-
-    it("handles sync status display correctly", () => {
-      render(<MockAudiencePage />);
-
-      // Should show proper status badges
-      expect(screen.getByText("Synced")).toBeInTheDocument(); // completed status
-      expect(screen.getByText("Syncing")).toBeInTheDocument(); // syncing status
     });
   });
 

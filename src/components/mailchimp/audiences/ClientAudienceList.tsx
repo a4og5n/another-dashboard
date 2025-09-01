@@ -2,17 +2,13 @@
 
 import { useCallback } from "react";
 import { AudienceList } from "./AudienceList";
-import type {
-  AudienceModel,
-  AudienceQueryFilters,
-} from "@/dal/models/audience.model";
+import type { MailchimpList } from "@/services";
 
 interface ClientAudienceListProps {
-  audiences: AudienceModel[];
+  audiences: MailchimpList[];
   totalCount: number;
   currentPage: number;
   pageSize: number;
-  filters: Partial<AudienceQueryFilters>;
 }
 
 export function ClientAudienceList({
@@ -42,6 +38,7 @@ export function ClientAudienceList({
       pageSize={pageSize}
       onPageChange={handlePageChange}
       onPageSizeChange={handlePageSizeChange}
+      className=""
     />
   );
 }

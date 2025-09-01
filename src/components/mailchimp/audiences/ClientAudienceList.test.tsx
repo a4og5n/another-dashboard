@@ -2,15 +2,13 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
 import { ClientAudienceList } from "./ClientAudienceList";
-import type { AudienceModel } from "@/dal/models/audience.model";
+import type { MailchimpList } from "@/services";
 
-const mockAudiences: AudienceModel[] = [
+const mockAudiences: MailchimpList[] = [
   {
     id: "list1",
     name: "Newsletter Subscribers",
     date_created: "2025-01-01T00:00:00Z",
-    created_at: "2025-01-01T00:00:00Z",
-    updated_at: "2025-01-15T10:30:00Z",
     visibility: "pub",
     stats: {
       member_count: 1250,
@@ -22,8 +20,6 @@ const mockAudiences: AudienceModel[] = [
       open_rate: 0.28,
       click_rate: 0.12,
     },
-    sync_status: "completed",
-    is_deleted: false,
     contact: {
       company: "Test Company",
       address1: "123 Main St",
@@ -49,8 +45,6 @@ const mockAudiences: AudienceModel[] = [
     id: "list2",
     name: "Product Updates",
     date_created: "2025-01-02T00:00:00Z",
-    created_at: "2025-01-02T00:00:00Z",
-    updated_at: "2025-01-15T10:30:00Z",
     visibility: "prv",
     stats: {
       member_count: 850,
@@ -62,8 +56,6 @@ const mockAudiences: AudienceModel[] = [
       open_rate: 0.32,
       click_rate: 0.15,
     },
-    sync_status: "syncing",
-    is_deleted: false,
     contact: {
       company: "Test Company",
       address1: "123 Main St",
@@ -260,8 +252,7 @@ describe("ClientAudienceList", () => {
     it("shows proper status badges", () => {
       render(<ClientAudienceList {...defaultProps} />);
 
-      expect(screen.getByText("Synced")).toBeInTheDocument(); // list1 status
-      expect(screen.getByText("Syncing")).toBeInTheDocument(); // list2 status
+      // Status badges have been removed for MVP (no database sync)
     });
 
     it("shows proper visibility badges", () => {

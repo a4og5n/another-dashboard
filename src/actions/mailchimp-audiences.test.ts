@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   validateMailchimpAudiencesQuery,
   validateAudienceId,
-  validateAudienceObject,
   ValidationError,
 } from "./mailchimp-audiences";
 
@@ -81,62 +80,6 @@ describe("Mailchimp Audiences Actions", () => {
       expect(() => validateAudienceId(123)).toThrow(ValidationError);
       expect(() => validateAudienceId(null)).toThrow(ValidationError);
       expect(() => validateAudienceId(undefined)).toThrow(ValidationError);
-    });
-  });
-
-  describe("validateAudienceObject", () => {
-    const validAudience = {
-      id: "abc123",
-      name: "Test Audience",
-      contact: {
-        company: "Test Company",
-        address1: "123 Test St",
-        city: "Test City",
-        state: "Test State",
-        zip: "12345",
-        country: "US",
-      },
-      permission_reminder: "You signed up for our newsletter",
-      use_archive_bar: true,
-      campaign_defaults: {
-        from_name: "Test Sender",
-        from_email: "test@example.com",
-        subject: "Test Subject",
-        language: "en",
-      },
-      email_type_option: false,
-      visibility: "pub" as const,
-      stats: {
-        member_count: 100,
-        unsubscribe_count: 5,
-        cleaned_count: 2,
-      },
-      list_rating: 4,
-      date_created: "2023-01-01T00:00:00Z",
-    };
-
-    it("should validate valid audience object", () => {
-      const result = validateAudienceObject(validAudience);
-      expect(result).toMatchObject(validAudience);
-    });
-
-    it("should throw ValidationError for invalid audience object", () => {
-      const { id: _id, ...invalidAudience } = validAudience;
-
-      expect(() => validateAudienceObject(invalidAudience)).toThrow(
-        ValidationError,
-      );
-    });
-
-    it("should throw ValidationError for invalid list_rating", () => {
-      const invalidAudience = {
-        ...validAudience,
-        list_rating: 6, // max is 5
-      };
-
-      expect(() => validateAudienceObject(invalidAudience)).toThrow(
-        ValidationError,
-      );
     });
   });
 

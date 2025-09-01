@@ -46,6 +46,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Status**: MVP Complete with ongoing enhancements
 - **Current Phase**: Post-MVP feature development and workflow optimization
 - **Key Achievement**: 70x acceleration - 10-week roadmap completed in 1 day
+- **MVP Architecture**: No database - read-only mode with live API data only
+- **Data Strategy**: Direct API integration without local persistence or DAL layer
 
 ### Environment Requirements
 
@@ -67,7 +69,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Project Structure & Import Strategy
 
-- **Path aliases configured**: `@/*`, `@/components/*`, `@/actions/*`, `@/types/*`, `@/schemas/*`, `@/utils/*`, `@/lib/*`, `@/dal/*`
+- **Path aliases configured**: `@/*`, `@/components/*`, `@/actions/*`, `@/types/*`, `@/schemas/*`, `@/utils/*`, `@/lib/*`
 - **Centralized exports**: All folders use index.ts files with path aliases (no relative imports)
 - **Type enforcement**: Shared types must be defined in `/src/types` (no inline definitions)
 - **Schema enforcement**: Zod schemas must be defined in `/src/schemas` (no inline definitions)
@@ -85,7 +87,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `src/hooks/` - Custom React hooks for pagination and real-time data
 - `src/test/` - Testing setup, utilities, helpers, and architectural enforcement tests
 - `src/translations/` - Internationalization files (en.json, es.json) for next-intl
-- `src/dal/` - Data Access Layer structure for future database integration
 
 ### Configuration Files
 
@@ -146,7 +147,6 @@ Before starting any development work, always review:
 - **Service pattern**: Use singleton pattern for API services with health check capabilities (`src/services/`)
 - **Component organization**: Group by feature with proper index.ts exports (ui/, dashboard/, layout/, accessibility/, performance/, pwa/, social/)
 - **Internationalization**: Use next-intl with JSON files in `src/translations/`
-- **Data Access Layer**: Follow DAL pattern for future database integration
 
 ### Schema & API Patterns
 
@@ -209,13 +209,6 @@ Before starting any development work, always review:
 
 The codebase includes automated tests to enforce architectural patterns and prevent common issues:
 
-#### DAL Models Architecture (enforced by `dal-models-enforcement.test.ts`):
-
-- **No type definitions in DAL models**: Types must be defined in `/src/types`, not in DAL model files
-- **No Zod schema definitions in DAL models**: Schemas must be defined in `/src/schemas`
-- **Only imports and re-exports**: DAL model files should only contain imports and re-exports from proper locations
-- **Proper import patterns**: Types must import from `@/types/*`, schemas from `@/schemas/*`
-
 #### Deprecated Declarations Detection (enforced by `deprecated-declarations.test.ts`):
 
 - **No deprecated Zod methods**: Prevents usage of `z.string().datetime()` (use `z.string()` instead)
@@ -226,9 +219,6 @@ The codebase includes automated tests to enforce architectural patterns and prev
 #### How to Run Architectural Tests:
 
 ```bash
-# Run DAL models enforcement
-pnpm test src/test/architectural-enforcement/dal-models-enforcement.test.ts
-
 # Run deprecated declarations detection
 pnpm test src/test/architectural-enforcement/deprecated-declarations.test.ts
 

@@ -10,7 +10,6 @@
  */
 
 import { z } from "zod";
-import { MailchimpAudienceSchema } from "@/schemas/mailchimp/audience.schema";
 import { MailchimpAudienceQueryInternalSchema } from "@/schemas/mailchimp/audience-query.schema";
 import type { MailchimpAudiencesQuery } from "@/types/mailchimp/audience";
 
@@ -69,23 +68,6 @@ export function validateAudienceId(id: unknown): string {
     .safeParse(id);
   if (!result.success) {
     throw new ValidationError("Invalid audience ID", result.error);
-  }
-  return result.data;
-}
-
-/**
- * Validates a full audience object against the schema
- *
- * @param audience - Audience object to validate
- * @returns Validated audience object
- * @throws ValidationError if validation fails
- *
- * Useful for validating API responses or ensuring data integrity
- */
-export function validateAudienceObject(audience: unknown) {
-  const result = MailchimpAudienceSchema.safeParse(audience);
-  if (!result.success) {
-    throw new ValidationError("Invalid audience object", result.error);
   }
   return result.data;
 }
