@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
-import {
-  MailchimpAudienceQuerySchema,
-  transformQueryParams,
-} from "@/schemas/mailchimp";
+import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp";
+import { transformQueryParams } from "@/utils/mailchimp/query-params";
 import { ValidationError } from "@/actions/mailchimp-audiences";
 
 /**
