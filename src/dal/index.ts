@@ -1,10 +1,10 @@
 // Export all DAL modules for easier imports
 
 // Models
-export * from "./models/audience.model";
+export * from "@/dal/models/audience.model";
 
 // Repositories
-export * from "./repositories/audience.repository";
+export * from "@/dal/repositories/audience.repository";
 
 // Services
-export * from "./services/audience.service";
+export * from "@/dal/services/audience.service";

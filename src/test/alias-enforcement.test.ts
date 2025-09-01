@@ -52,11 +52,32 @@ describe("Path Alias Enforcement", () => {
       });
     });
   });
+  describe("DAL folder alias enforcement", () => {
+    const dalFolder = "src/dal";
+    const dalRelativeImportRegex = /from ['"](\.\.?\/)+/;
+    const dalRelativeExportRegex = /export .*from ['"](\.\.?\/)+/;
+    
+    it(`should not use any relative import paths in ${dalFolder}`, () => {
+      const files = getAllFiles(path.resolve(dalFolder));
+      files.forEach((file) => {
+        const content = fs.readFileSync(file, "utf8");
+        expect(content).not.toMatch(dalRelativeImportRegex);
+      });
+    });
+    it(`should not use any relative export paths in ${dalFolder}`, () => {
+      const files = getAllFiles(path.resolve(dalFolder));
+      files.forEach((file) => {
+        const content = fs.readFileSync(file, "utf8");
+        expect(content).not.toMatch(dalRelativeExportRegex);
+      });
+    });
+  });
   describe("Path alias enforcement in index.ts files", () => {
     const filesToCheck = [
       "src/types/components/index.ts",
       "src/types/components/ui/index.ts",
       "src/types/mailchimp/index.ts",
+      "src/dal/index.ts",
     ];
 
     filesToCheck.forEach((file) => {
