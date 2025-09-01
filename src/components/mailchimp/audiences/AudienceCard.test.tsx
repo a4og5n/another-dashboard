@@ -151,10 +151,9 @@ describe("AudienceCard", () => {
     it("shows positive growth indicator for high engagement", () => {
       const highEngagementAudience = {
         ...mockAudience,
-        cached_stats: {
-          last_updated: "2025-01-15T10:30:00Z",
-          member_count: 1250,
-          engagement_rate: 0.75,
+        stats: {
+          ...mockAudience.stats,
+          open_rate: 75.0, // High open rate (>20% threshold)
         },
       };
 
@@ -166,22 +165,24 @@ describe("AudienceCard", () => {
     it("shows negative growth indicator for low engagement", () => {
       const lowEngagementAudience = {
         ...mockAudience,
-        cached_stats: {
-          last_updated: "2025-01-15T10:30:00Z",
-          member_count: 1250,
-          engagement_rate: 0.25,
+        stats: {
+          ...mockAudience.stats,
+          open_rate: 15.0, // Low open rate (<20% threshold)
         },
       };
 
       render(<AudienceCard audience={lowEngagementAudience} />);
 
-      expect(screen.getByText("25.0%")).toBeInTheDocument();
+      expect(screen.getByText("15.0%")).toBeInTheDocument();
     });
 
     it("handles missing engagement rate gracefully", () => {
       const noEngagementAudience = {
         ...mockAudience,
-        cached_stats: undefined,
+        stats: {
+          ...mockAudience.stats,
+          open_rate: undefined,
+        },
       };
 
       render(<AudienceCard audience={noEngagementAudience} />);
