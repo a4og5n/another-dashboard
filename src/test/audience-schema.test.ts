@@ -8,10 +8,98 @@ import {
   mailchimpAudienceErrorResponseSchema,
 } from "@/schemas/mailchimp";
 
-// Example valid audience object
-const validAudience = {
-  id: "abc123",
-  name: "Test Audience",
+// Realistic audience object based on actual Mailchimp API responses
+// Includes comprehensive stats and optional fields that real API returns
+const realisticAudience = {
+  // Core identifiers (always present)
+  id: "f4b8c2a1e9",
+  name: "Newsletter Subscribers - Marketing Campaign 2025",
+
+  // Contact information (required)
+  contact: {
+    company: "Acme Digital Marketing Inc.",
+    address1: "1234 Business Ave Suite 200",
+    address2: "Floor 2",
+    city: "San Francisco",
+    state: "CA",
+    zip: "94105",
+    country: "US",
+    phone: "+1-555-123-4567",
+  },
+
+  // List settings (documented fields)
+  permission_reminder:
+    "You are receiving this email because you subscribed to our newsletter at acmedigital.com on 2024-03-15.",
+  use_archive_bar: true,
+  email_type_option: true,
+  visibility: "pub",
+
+  // Campaign defaults (always present)
+  campaign_defaults: {
+    from_name: "Acme Digital Team",
+    from_email: "newsletter@acmedigital.com",
+    subject: "Weekly Marketing Insights",
+    language: "en",
+  },
+
+  // Notifications (often empty strings, not emails)
+  notify_on_subscribe: "",
+  notify_on_unsubscribe: "",
+
+  // Timestamps (ISO format)
+  date_created: "2024-03-15T14:30:22+00:00",
+
+  // Rating (0-5 scale)
+  list_rating: 4,
+
+  // Comprehensive stats object (realistic values)
+  stats: {
+    // Core stats (always present)
+    member_count: 12847,
+    total_contacts: 15234, // Includes unsubscribed
+    unsubscribe_count: 1891,
+    cleaned_count: 496,
+
+    // Campaign-related stats (may be present)
+    member_count_since_send: 12847,
+    unsubscribe_count_since_send: 23,
+    cleaned_count_since_send: 7,
+    campaign_count: 47,
+    campaign_last_sent: "2025-01-28T09:15:00+00:00",
+
+    // Engagement metrics (optional but commonly present)
+    merge_field_count: 8,
+    avg_sub_rate: 0.0234,
+    avg_unsub_rate: 0.0089,
+    target_sub_rate: 0.025,
+    open_rate: 0.2847,
+    click_rate: 0.0456,
+
+    // Activity timestamps (when available)
+    last_sub_date: "2025-01-30T16:22:45+00:00",
+    last_unsub_date: "2025-01-29T11:08:12+00:00",
+  },
+
+  // Optional arrays (may be present)
+  modules: ["signup_forms", "campaigns", "automation"],
+
+  // Marketing permissions (generic structure)
+  marketing_permissions: true,
+
+  // Questionable fields that may appear in real responses
+  web_id: 1234567,
+  subscribe_url_short: "https://eepurl.com/abc123",
+  subscribe_url_long:
+    "https://acmedigital.us12.list-manage.com/subscribe?u=abc123&id=def456",
+  beamer_address: "def456.12847.list@acmedigital.com",
+  double_optin: true,
+  has_welcome: true,
+};
+
+// Minimal audience object for testing required fields only
+const minimalAudience = {
+  id: "min123",
+  name: "Minimal Test List",
   contact: {
     company: "Test Co",
     address1: "123 Main St",
@@ -20,32 +108,106 @@ const validAudience = {
     zip: "12345",
     country: "US",
   },
-  permission_reminder: "You are receiving this email because you signed up.",
-  use_archive_bar: true,
+  permission_reminder: "You subscribed to our list.",
+  use_archive_bar: false,
+  email_type_option: false,
+  visibility: "prv" as const,
   campaign_defaults: {
-    from_name: "Sender",
-    from_email: "sender@example.com",
-    subject: "Welcome",
+    from_name: "Test Sender",
+    from_email: "test@example.com",
+    subject: "Test Subject",
     language: "en",
   },
-  email_type_option: true,
-  visibility: "pub",
+  date_created: "2024-01-01T00:00:00+00:00",
+  list_rating: 0,
   stats: {
-    member_count: 100,
-    unsubscribe_count: 5,
-    cleaned_count: 2,
+    member_count: 0,
+    unsubscribe_count: 0,
+    cleaned_count: 0,
   },
-  list_rating: 3,
-  date_created: "2025-08-30T00:00:00Z",
 };
 
 describe("MailchimpAudienceSchema", () => {
-  it("validates a correct audience object", () => {
-    expect(() => MailchimpAudienceSchema.parse(validAudience)).not.toThrow();
+  it("validates a realistic audience object with all fields", () => {
+    expect(() =>
+      MailchimpAudienceSchema.parse(realisticAudience),
+    ).not.toThrow();
+  });
+
+  it("validates a minimal audience object with only required fields", () => {
+    expect(() => MailchimpAudienceSchema.parse(minimalAudience)).not.toThrow();
   });
 
   it("throws on missing required fields", () => {
     expect(() => MailchimpAudienceSchema.parse({})).toThrow();
+  });
+
+  it("throws on missing required contact fields", () => {
+    const invalidAudience = {
+      ...minimalAudience,
+      contact: { company: "Test" }, // Missing required address fields
+    };
+    expect(() => MailchimpAudienceSchema.parse(invalidAudience)).toThrow();
+  });
+
+  it("throws on invalid email in campaign_defaults", () => {
+    const invalidAudience = {
+      ...minimalAudience,
+      campaign_defaults: {
+        ...minimalAudience.campaign_defaults,
+        from_email: "invalid-email",
+      },
+    };
+    expect(() => MailchimpAudienceSchema.parse(invalidAudience)).toThrow();
+  });
+
+  it("throws on invalid visibility enum", () => {
+    const invalidAudience = {
+      ...minimalAudience,
+      visibility: "invalid",
+    };
+    expect(() => MailchimpAudienceSchema.parse(invalidAudience)).toThrow();
+  });
+
+  it("throws on invalid list_rating range", () => {
+    const invalidAudience = {
+      ...minimalAudience,
+      list_rating: 10, // Max is 5
+    };
+    expect(() => MailchimpAudienceSchema.parse(invalidAudience)).toThrow();
+  });
+
+  it("accepts optional fields when present", () => {
+    const audienceWithOptionals = {
+      ...minimalAudience,
+      web_id: 123456,
+      subscribe_url_short: "https://eepurl.com/test",
+      modules: ["signup_forms"],
+      stats: {
+        ...minimalAudience.stats,
+        total_contacts: 50,
+        avg_sub_rate: 0.02,
+        open_rate: 0.25,
+        campaign_last_sent: "2024-12-01T10:00:00+00:00",
+      },
+    };
+    expect(() =>
+      MailchimpAudienceSchema.parse(audienceWithOptionals),
+    ).not.toThrow();
+  });
+
+  it("accepts optional contact fields", () => {
+    const audienceWithOptionalContact = {
+      ...minimalAudience,
+      contact: {
+        ...minimalAudience.contact,
+        address2: "Suite 100",
+        phone: "+1-555-123-4567",
+      },
+    };
+    expect(() =>
+      MailchimpAudienceSchema.parse(audienceWithOptionalContact),
+    ).not.toThrow();
   });
 });
 
@@ -157,24 +319,24 @@ describe("transformQueryParams", () => {
 });
 
 describe("MailchimpAudienceResponseSchema", () => {
-  it("validates a correct response", () => {
+  it("validates a realistic response with multiple audiences", () => {
     expect(() =>
       MailchimpAudienceResponseSchema.parse({
-        lists: [validAudience],
-        total_items: 1,
+        lists: [realisticAudience, minimalAudience],
+        total_items: 2,
         constraints: {
           may_create: true,
           max_instances: 100,
-          current_total_instances: 5,
+          current_total_instances: 12,
         },
       }),
     ).not.toThrow();
   });
 
-  it("validates response with optional _links", () => {
+  it("validates response with comprehensive _links metadata", () => {
     expect(() =>
       MailchimpAudienceResponseSchema.parse({
-        lists: [validAudience],
+        lists: [realisticAudience],
         total_items: 1,
         constraints: {
           may_create: false,
@@ -184,7 +346,12 @@ describe("MailchimpAudienceResponseSchema", () => {
         _links: [
           {
             rel: "self",
-            href: "https://us1.api.mailchimp.com/3.0/lists",
+            href: "https://us12.api.mailchimp.com/3.0/lists?count=10&offset=0",
+            method: "GET",
+          },
+          {
+            rel: "next",
+            href: "https://us12.api.mailchimp.com/3.0/lists?count=10&offset=10",
             method: "GET",
           },
         ],
@@ -192,10 +359,24 @@ describe("MailchimpAudienceResponseSchema", () => {
     ).not.toThrow();
   });
 
+  it("validates empty response", () => {
+    expect(() =>
+      MailchimpAudienceResponseSchema.parse({
+        lists: [],
+        total_items: 0,
+        constraints: {
+          may_create: true,
+          max_instances: 100,
+          current_total_instances: 0,
+        },
+      }),
+    ).not.toThrow();
+  });
+
   it("fails validation with old 'audiences' property", () => {
     expect(() =>
       MailchimpAudienceResponseSchema.parse({
-        audiences: [validAudience], // Wrong property name
+        audiences: [realisticAudience], // Wrong property name
         total_items: 1,
         constraints: {
           may_create: true,
@@ -205,18 +386,74 @@ describe("MailchimpAudienceResponseSchema", () => {
       }),
     ).toThrow();
   });
+
+  it("throws on missing required response fields", () => {
+    expect(() =>
+      MailchimpAudienceResponseSchema.parse({
+        lists: [realisticAudience],
+        // missing total_items and constraints
+      }),
+    ).toThrow();
+  });
+
+  it("throws on invalid constraints structure", () => {
+    expect(() =>
+      MailchimpAudienceResponseSchema.parse({
+        lists: [realisticAudience],
+        total_items: 1,
+        constraints: {
+          // missing required constraint fields
+          may_create: true,
+        },
+      }),
+    ).toThrow();
+  });
 });
 
 describe("mailchimpAudienceErrorResponseSchema", () => {
-  it("validates a correct error response", () => {
+  it("validates a realistic error response", () => {
+    expect(() =>
+      mailchimpAudienceErrorResponseSchema.parse({
+        type: "https://mailchimp.com/developer/marketing/docs/errors/",
+        title: "Resource Not Found",
+        status: 404,
+        detail: "The requested resource could not be found.",
+        audience_id: "f4b8c2a1e9",
+      }),
+    ).not.toThrow();
+  });
+
+  it("validates error response with different status codes", () => {
+    const badRequestError = {
+      type: "https://mailchimp.com/developer/marketing/docs/errors/",
+      title: "Invalid Resource",
+      status: 400,
+      detail: "Your request parameters didn't validate.",
+      audience_id: "invalid_id",
+    };
+    expect(() =>
+      mailchimpAudienceErrorResponseSchema.parse(badRequestError),
+    ).not.toThrow();
+
+    const unauthorizedError = {
+      type: "https://mailchimp.com/developer/marketing/docs/errors/",
+      title: "API Key Invalid",
+      status: 401,
+      detail:
+        "Your API key may be invalid, or you've attempted to access the wrong datacenter.",
+      audience_id: "f4b8c2a1e9",
+    };
+    expect(() =>
+      mailchimpAudienceErrorResponseSchema.parse(unauthorizedError),
+    ).not.toThrow();
+  });
+
+  it("throws on missing required error fields", () => {
     expect(() =>
       mailchimpAudienceErrorResponseSchema.parse({
         type: "error",
-        title: "Invalid Audience",
-        status: 400,
-        detail: "Audience not found.",
-        audience_id: "abc123",
+        // missing title, status, detail
       }),
-    ).not.toThrow();
+    ).toThrow();
   });
 });
