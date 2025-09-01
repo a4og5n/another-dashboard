@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
 import { AudienceStats } from "./AudienceStats";
-import type { AudienceStats as AudienceStatsType } from "@/schemas/mailchimp/audience.schema";
+import type { AudienceStats as AudienceStatsType } from "@/types/mailchimp/audience";
 
 const mockStats: AudienceStatsType = {
   total_audiences: 3,

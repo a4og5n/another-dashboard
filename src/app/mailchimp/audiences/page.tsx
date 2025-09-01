@@ -13,7 +13,7 @@ import {
 import { ClientAudienceList } from "@/components/mailchimp/audiences/ClientAudienceList";
 import { AudienceStats } from "@/components/mailchimp/audiences/AudienceStats";
 import { getMailchimpService, type MailchimpList } from "@/services";
-import type { AudienceStats as AudienceStatsType } from "@/schemas/mailchimp/audience.schema";
+import type { AudienceStats as AudienceStatsType } from "@/types/mailchimp/audience";
 
 interface AudiencesPageProps {
   searchParams: Promise<{

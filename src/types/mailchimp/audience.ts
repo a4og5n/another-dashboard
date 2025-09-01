@@ -1,13 +1,5 @@
 import type { z } from "zod";
-import type {
-  AudienceQueryFiltersSchema,
-  AudienceStatsSchema,
-} from "@/schemas/mailchimp/audience.schema";
-
-/**
- * TypeScript type for audience query filters
- */
-export type AudienceQueryFilters = z.infer<typeof AudienceQueryFiltersSchema>;
+import type { AudienceStatsSchema } from "@/schemas/mailchimp/audience.schema";
 
 /**
  * TypeScript type for audience statistics
