@@ -141,15 +141,6 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
       stats = {
         total_audiences: totalCount,
         total_members: totalMembers,
-        avg_member_count:
-          audiences.length > 0 ? totalMembers / audiences.length : 0,
-        avg_engagement_rate: 0, // We don't have this data from the basic API
-        audiences_by_status: {
-          pending: 0,
-          syncing: 0,
-          completed: audiences.length,
-          failed: 0,
-        },
         audiences_by_visibility: audiences.reduce(
           (counts: { pub: number; prv: number }, audience: AudienceModel) => {
             counts[audience.visibility] =
@@ -158,7 +149,6 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
           },
           { pub: 0, prv: 0 },
         ),
-        last_updated: new Date().toISOString(),
       };
     }
   } catch (err) {

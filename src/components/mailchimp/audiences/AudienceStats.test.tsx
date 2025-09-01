@@ -7,19 +7,10 @@ import type { AudienceStats as AudienceStatsType } from "@/dal/models/audience.m
 const mockStats: AudienceStatsType = {
   total_audiences: 3,
   total_members: 5250,
-  avg_member_count: 1750,
-  avg_engagement_rate: 0.25,
-  audiences_by_status: {
-    pending: 0,
-    syncing: 1,
-    completed: 2,
-    failed: 0,
-  },
   audiences_by_visibility: {
     pub: 2,
     prv: 1,
   },
-  last_updated: "2025-01-15T10:30:00Z",
 };
 
 describe("AudienceStats", () => {
