@@ -10,17 +10,9 @@
  */
 
 import { z } from "zod";
-import {
-  MailchimpAudienceSchema,
-  CreateMailchimpAudienceSchema,
-  UpdateMailchimpAudienceSchema,
-} from "@/schemas/mailchimp/audience.schema";
+import { MailchimpAudienceSchema } from "@/schemas/mailchimp/audience.schema";
 import { MailchimpAudienceQueryInternalSchema } from "@/schemas/mailchimp/audience-query.schema";
-import type {
-  MailchimpAudiencesQuery,
-  CreateMailchimpAudienceParams,
-  UpdateMailchimpAudienceParams,
-} from "@/types/mailchimp/audience";
+import type { MailchimpAudiencesQuery } from "@/types/mailchimp/audience";
 
 /**
  * Custom error class for Mailchimp audience API validation errors
@@ -53,60 +45,6 @@ export function validateMailchimpAudiencesQuery(
   if (!result.success) {
     throw new ValidationError(
       "Invalid Mailchimp audiences query parameters",
-      result.error,
-    );
-  }
-  return result.data;
-}
-
-/**
- * Validates parameters for creating a new Mailchimp audience
- *
- * @param params - Create audience parameters
- * @returns Parsed and typed create parameters
- * @throws ValidationError if validation fails
- *
- * Example:
- *   validateCreateAudienceParams({
- *     name: "Newsletter Subscribers",
- *     contact: { company: "ACME", address1: "123 Main St", ... },
- *     permission_reminder: "You signed up for our newsletter",
- *     campaign_defaults: { from_name: "ACME", from_email: "newsletter@acme.com", ... }
- *   })
- */
-export function validateCreateAudienceParams(
-  params: unknown,
-): CreateMailchimpAudienceParams {
-  const result = CreateMailchimpAudienceSchema.safeParse(params);
-  if (!result.success) {
-    throw new ValidationError(
-      "Invalid create audience parameters",
-      result.error,
-    );
-  }
-  return result.data;
-}
-
-/**
- * Validates parameters for updating a Mailchimp audience
- *
- * @param params - Update audience parameters (must include id)
- * @returns Parsed and typed update parameters
- * @throws ValidationError if validation fails
- *
- * Example:
- *   validateUpdateAudienceParams({
- *     id: "abc123",
- *     name: "Updated Newsletter Name"
- *   })
- */
-export function validateUpdateAudienceParams(
-  params: unknown,
-): UpdateMailchimpAudienceParams {
-  const result = UpdateMailchimpAudienceSchema.safeParse(params);
-  if (!result.success) {
-    throw new ValidationError(
-      "Invalid update audience parameters",
       result.error,
     );
   }

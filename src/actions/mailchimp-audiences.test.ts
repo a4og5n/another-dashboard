@@ -1,8 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
   validateMailchimpAudiencesQuery,
-  validateCreateAudienceParams,
-  validateUpdateAudienceParams,
   validateAudienceId,
   validateAudienceObject,
   ValidationError,
@@ -66,113 +64,6 @@ describe("Mailchimp Audiences Actions", () => {
       expect(() => validateMailchimpAudiencesQuery(invalidQuery)).toThrow(
         ValidationError,
       );
-    });
-  });
-
-  describe("validateCreateAudienceParams", () => {
-    const validCreateParams = {
-      name: "Test Audience",
-      contact: {
-        company: "Test Company",
-        address1: "123 Test St",
-        city: "Test City",
-        state: "Test State",
-        zip: "12345",
-        country: "US",
-      },
-      permission_reminder: "You signed up for our newsletter",
-      campaign_defaults: {
-        from_name: "Test Sender",
-        from_email: "test@example.com",
-        subject: "Test Subject",
-        language: "en",
-      },
-      email_type_option: true,
-    };
-
-    it("should validate valid create parameters", () => {
-      const result = validateCreateAudienceParams(validCreateParams);
-
-      expect(result).toMatchObject(validCreateParams);
-      expect(result.use_archive_bar).toBe(true); // default value
-      expect(result.visibility).toBe("pub"); // default value
-    });
-
-    it("should throw ValidationError for missing required fields", () => {
-      const { name: _name, ...invalidParams } = validCreateParams;
-
-      expect(() => validateCreateAudienceParams(invalidParams)).toThrow(
-        ValidationError,
-      );
-    });
-
-    it("should throw ValidationError for invalid email in campaign_defaults", () => {
-      const invalidParams = {
-        ...validCreateParams,
-        campaign_defaults: {
-          ...validCreateParams.campaign_defaults,
-          from_email: "invalid-email",
-        },
-      };
-
-      expect(() => validateCreateAudienceParams(invalidParams)).toThrow(
-        ValidationError,
-      );
-    });
-
-    it("should validate optional fields", () => {
-      const paramsWithOptionals = {
-        ...validCreateParams,
-        notify_on_subscribe: "admin@example.com",
-        notify_on_unsubscribe: "admin@example.com",
-        use_archive_bar: false,
-        visibility: "prv" as const,
-      };
-
-      const result = validateCreateAudienceParams(paramsWithOptionals);
-
-      expect(result.notify_on_subscribe).toBe("admin@example.com");
-      expect(result.notify_on_unsubscribe).toBe("admin@example.com");
-      expect(result.use_archive_bar).toBe(false);
-      expect(result.visibility).toBe("prv");
-    });
-  });
-
-  describe("validateUpdateAudienceParams", () => {
-    it("should validate valid update parameters", () => {
-      const validUpdateParams = {
-        id: "abc123",
-        name: "Updated Audience Name",
-      };
-
-      const result = validateUpdateAudienceParams(validUpdateParams);
-
-      expect(result).toMatchObject(validUpdateParams);
-      expect(result.id).toBe("abc123");
-      expect(result.name).toBe("Updated Audience Name");
-    });
-
-    it("should throw ValidationError for missing id", () => {
-      const invalidParams = { name: "Test" };
-
-      expect(() => validateUpdateAudienceParams(invalidParams)).toThrow(
-        ValidationError,
-      );
-    });
-
-    it("should allow partial updates", () => {
-      const partialUpdate = {
-        id: "abc123",
-        name: "New Name",
-        email_type_option: false,
-      };
-
-      const result = validateUpdateAudienceParams(partialUpdate);
-
-      expect(result).toMatchObject(partialUpdate);
-      expect(result.id).toBe("abc123");
-      expect(result.name).toBe("New Name");
-      expect(result.email_type_option).toBe(false);
     });
   });
 
