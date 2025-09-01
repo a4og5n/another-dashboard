@@ -151,7 +151,7 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
           failed: 0,
         },
         audiences_by_visibility: audiences.reduce(
-          (counts: Record<string, number>, audience: AudienceModel) => {
+          (counts: { pub: number; prv: number }, audience: AudienceModel) => {
             counts[audience.visibility] =
               (counts[audience.visibility] || 0) + 1;
             return counts;
