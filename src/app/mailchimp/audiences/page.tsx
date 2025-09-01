@@ -222,7 +222,6 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
           totalCount={totalCount}
           currentPage={currentPage}
           pageSize={pageSize}
-          filters={currentFilters}
         />
       </div>
     </DashboardLayout>

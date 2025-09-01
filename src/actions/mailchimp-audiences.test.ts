@@ -93,7 +93,7 @@ describe("Mailchimp Audiences Actions", () => {
     });
 
     it("should throw ValidationError for missing required fields", () => {
-      const { name, ...invalidParams } = validCreateParams;
+      const { name: _name, ...invalidParams } = validCreateParams;
 
       expect(() => validateCreateAudienceParams(invalidParams)).toThrow(
         ValidationError,
@@ -224,7 +224,7 @@ describe("Mailchimp Audiences Actions", () => {
     });
 
     it("should throw ValidationError for invalid audience object", () => {
-      const { id, ...invalidAudience } = validAudience;
+      const { id: _id, ...invalidAudience } = validAudience;
 
       expect(() => validateAudienceObject(invalidAudience)).toThrow(
         ValidationError,

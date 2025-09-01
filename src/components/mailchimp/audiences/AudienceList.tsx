@@ -1,14 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/Input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { AudienceCard } from "./AudienceCard";
 import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
@@ -16,7 +7,6 @@ import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { AudienceQueryFilters } from "@/dal/models/audience.model";
 import type { AudienceListProps } from "@/types/mailchimp/audience";
 
 export function AudienceList({
@@ -28,14 +18,19 @@ export function AudienceList({
   pageSize,
   onPageChange,
   onPageSizeChange,
-  filters,
-  onFiltersChange,
-  onCreateAudience,
-  onEditAudience,
-  onArchiveAudience,
-  onViewStats,
   className,
-}: AudienceListProps) {
+}: Pick<
+  AudienceListProps,
+  | "audiences"
+  | "totalCount"
+  | "loading"
+  | "error"
+  | "currentPage"
+  | "pageSize"
+  | "onPageChange"
+  | "onPageSizeChange"
+  | "className"
+>) {
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
@@ -75,13 +70,6 @@ export function AudienceList({
               Error Loading Audiences
             </h3>
             <p className="text-muted-foreground mb-4 max-w-md">{error}</p>
-            <Button
-              variant="outline"
-              onClick={() => window.location.reload()}
-              aria-label="Retry loading audiences"
-            >
-              Try Again
-            </Button>
           </div>
         ) : audiences.length === 0 ? (
           <div
