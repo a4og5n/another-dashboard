@@ -39,7 +39,7 @@ vi.mock("@/components/dashboard/shared/dashboard-error", () => ({
 import { AudienceStats } from "@/components/mailchimp/audiences/AudienceStats";
 import { ClientAudienceList } from "@/components/mailchimp/audiences/ClientAudienceList";
 import type { MailchimpList } from "@/services";
-import type { AudienceStats as AudienceStatsType } from "@/schemas/mailchimp/audience.schema";
+import type { AudienceStats as AudienceStatsType } from "@/types/mailchimp/audience";
 
 const mockAudiences: MailchimpList[] = [
   {
