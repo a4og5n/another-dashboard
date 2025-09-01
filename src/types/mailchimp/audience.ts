@@ -55,29 +55,6 @@ export interface MailchimpAudiencesResponse {
 }
 
 /**
- * Parameters for creating a new audience
- */
-export interface CreateMailchimpAudienceParams {
-  name: string;
-  contact: MailchimpAudienceContact;
-  permission_reminder: string;
-  campaign_defaults: MailchimpAudienceCampaignDefaults;
-  email_type_option: boolean;
-  use_archive_bar?: boolean;
-  notify_on_subscribe?: string;
-  notify_on_unsubscribe?: string;
-  visibility?: "pub" | "prv";
-}
-
-/**
- * Parameters for updating an existing audience
- */
-export interface UpdateMailchimpAudienceParams
-  extends Partial<CreateMailchimpAudienceParams> {
-  id: string;
-}
-
-/**
  * Growth data interface for audience statistics
  */
 export interface AudienceGrowthData {
