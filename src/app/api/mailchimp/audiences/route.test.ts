@@ -38,8 +38,6 @@ describe("Mailchimp Audiences API Route", () => {
       expect(data.metadata.query).toMatchObject({
         count: 10, // Schema default
         offset: 0,
-        sort_field: "date_created",
-        sort_dir: "DESC",
       });
     });
 
@@ -54,20 +52,9 @@ describe("Mailchimp Audiences API Route", () => {
       expect(data.metadata.query.count).toBe(25);
     });
 
-    it("should validate email parameter", async () => {
+    it("should reject unsupported email parameter", async () => {
       const request = new NextRequest(
         "http://localhost/api/mailchimp/audiences?email=test@example.com",
-      );
-      const response = await GET(request);
-      const data = await response.json();
-
-      expect(response.status).toBe(200);
-      expect(data.metadata.query.email).toBe("test@example.com");
-    });
-
-    it("should reject invalid email parameter", async () => {
-      const request = new NextRequest(
-        "http://localhost/api/mailchimp/audiences?email=invalid-email",
       );
       const response = await GET(request);
       const data = await response.json();
@@ -99,51 +86,28 @@ describe("Mailchimp Audiences API Route", () => {
       expect(data.error).toBe("Invalid query parameters");
     });
 
-    it("should validate date parameters", async () => {
+    it("should reject unsupported date parameters", async () => {
       const request = new NextRequest(
         "http://localhost/api/mailchimp/audiences?since_date_created=2024-01-01T00:00:00Z",
       );
       const response = await GET(request);
       const data = await response.json();
 
-      expect(response.status).toBe(200);
-      expect(data.metadata.query.since_date_created).toBe(
-        "2024-01-01T00:00:00Z",
-      );
-    });
-
-    it("should reject invalid date parameters", async () => {
-      const request = new NextRequest(
-        "http://localhost/api/mailchimp/audiences?since_date_created=invalid-date",
-      );
-      const response = await GET(request);
-      const data = await response.json();
-
       expect(response.status).toBe(400);
       expect(data.error).toBe("Invalid query parameters");
+      expect(data.validation_errors).toBeDefined();
     });
 
-    it("should validate sort parameters", async () => {
+    it("should reject unsupported sort parameters", async () => {
       const request = new NextRequest(
         "http://localhost/api/mailchimp/audiences?sort_field=member_count&sort_dir=ASC",
       );
       const response = await GET(request);
       const data = await response.json();
 
-      expect(response.status).toBe(200);
-      expect(data.metadata.query.sort_field).toBe("member_count");
-      expect(data.metadata.query.sort_dir).toBe("ASC");
-    });
-
-    it("should reject invalid sort field", async () => {
-      const request = new NextRequest(
-        "http://localhost/api/mailchimp/audiences?sort_field=invalid_field",
-      );
-      const response = await GET(request);
-      const data = await response.json();
-
       expect(response.status).toBe(400);
       expect(data.error).toBe("Invalid query parameters");
+      expect(data.validation_errors).toBeDefined();
     });
 
     it("should handle comma-separated fields parameter", async () => {
@@ -151,9 +115,24 @@ describe("Mailchimp Audiences API Route", () => {
         "http://localhost/api/mailchimp/audiences?fields=id,name,stats.member_count",
       );
       const response = await GET(request);
+      const data = await response.json();
 
       expect(response.status).toBe(200);
+      expect(data.metadata.query.fields).toBe("id,name,stats.member_count");
       // The fields should be transformed to array format for service layer
+    });
+
+    it("should handle exclude_fields parameter", async () => {
+      const request = new NextRequest(
+        "http://localhost/api/mailchimp/audiences?exclude_fields=contact,campaign_defaults",
+      );
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.metadata.query.exclude_fields).toBe(
+        "contact,campaign_defaults",
+      );
     });
   });
 });

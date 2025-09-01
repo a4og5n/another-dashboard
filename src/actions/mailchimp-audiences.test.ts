@@ -14,8 +14,8 @@ describe("Mailchimp Audiences Actions", () => {
       const validQuery = {
         count: "10",
         offset: "0",
-        sort_field: "member_count",
-        sort_dir: "DESC",
+        fields: ["id", "name", "stats.member_count"],
+        exclude_fields: ["contact"],
       };
 
       const result = validateMailchimpAudiencesQuery(validQuery);
@@ -23,8 +23,8 @@ describe("Mailchimp Audiences Actions", () => {
       expect(result).toEqual({
         count: 10,
         offset: 0,
-        sort_field: "member_count",
-        sort_dir: "DESC",
+        fields: ["id", "name", "stats.member_count"],
+        exclude_fields: ["contact"],
       });
     });
 
@@ -34,24 +34,30 @@ describe("Mailchimp Audiences Actions", () => {
       expect(result).toEqual({
         count: 10,
         offset: 0,
-        sort_field: "date_created",
-        sort_dir: "DESC",
       });
     });
 
-    it("should validate email parameter", () => {
-      const validQuery = { email: "test@example.com" };
-      const result = validateMailchimpAudiencesQuery(validQuery);
-
-      expect(result.email).toBe("test@example.com");
-    });
-
-    it("should throw ValidationError for invalid email", () => {
-      const invalidQuery = { email: "invalid-email" };
+    it("should reject unsupported parameters", () => {
+      const invalidQuery = {
+        count: "10",
+        email: "test@example.com", // Unsupported parameter
+        sort_field: "member_count", // Unsupported parameter
+      };
 
       expect(() => validateMailchimpAudiencesQuery(invalidQuery)).toThrow(
         ValidationError,
       );
+    });
+
+    it("should validate supported fields parameters", () => {
+      const validQuery = {
+        fields: ["id", "name", "stats.member_count"],
+        exclude_fields: ["contact", "campaign_defaults"],
+      };
+      const result = validateMailchimpAudiencesQuery(validQuery);
+
+      expect(result.fields).toEqual(["id", "name", "stats.member_count"]);
+      expect(result.exclude_fields).toEqual(["contact", "campaign_defaults"]);
     });
 
     it("should throw ValidationError for invalid count", () => {
