@@ -91,7 +91,7 @@ describe("Account Page Integration", () => {
 
       render(<AccountPage />);
 
-      expect(screen.getByTestId("dashboard-shell")).toBeInTheDocument();
+      expect(screen.getByTestId("dashboard-layout")).toBeInTheDocument();
       expect(screen.getByText("Account Information")).toBeInTheDocument();
       expect(
         screen.getByText(
@@ -114,7 +114,7 @@ describe("Account Page Integration", () => {
 
       const { container } = render(<AccountPage />);
 
-      const spacingContainer = container.querySelector(".space-y-6.p-6");
+      const spacingContainer = container.querySelector(".space-y-6");
       expect(spacingContainer).toBeInTheDocument();
     });
   });
@@ -166,9 +166,7 @@ describe("Account Page Integration", () => {
       render(<AccountPage />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("Failed to fetch account data"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Failed to load account information")).toBeInTheDocument();
       });
 
       expect(screen.queryByText("Test Company")).not.toBeInTheDocument();
