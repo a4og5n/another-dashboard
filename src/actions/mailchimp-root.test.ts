@@ -7,7 +7,6 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getApiRoot, checkApiRootHealth } from "./mailchimp-root";
-import { MailchimpService } from "@/services/mailchimp.service";
 import type {
   MailchimpRoot,
   MailchimpRootErrorResponse,
@@ -159,7 +158,9 @@ describe("Mailchimp API Root Server Actions", () => {
     });
 
     it("should handle service instantiation errors", async () => {
-      mockGetApiRoot.mockRejectedValue(new Error("Service initialization failed"));
+      mockGetApiRoot.mockRejectedValue(
+        new Error("Service initialization failed"),
+      );
 
       const result = await getApiRoot();
 
