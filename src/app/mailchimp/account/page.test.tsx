@@ -166,7 +166,9 @@ describe("Account Page Integration", () => {
       render(<AccountPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("Failed to load account information")).toBeInTheDocument();
+        expect(
+          screen.getByText("Failed to load account information"),
+        ).toBeInTheDocument();
       });
 
       expect(screen.queryByText("Test Company")).not.toBeInTheDocument();
