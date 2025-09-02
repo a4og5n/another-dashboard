@@ -7,6 +7,7 @@ import { BaseApiService, ApiResponse } from "./base-api.service";
 import { env } from "@/lib/config";
 import { CampaignFilters, DateFilter } from "@/types/campaign-filters";
 import { format } from "date-fns";
+import type { MailchimpRoot, MailchimpRootQuery } from "@/types/mailchimp";
 
 /**
  * Mailchimp API Types
@@ -413,6 +414,24 @@ export class MailchimpService extends BaseApiService {
    */
   async getList(listId: string): Promise<ApiResponse<MailchimpList>> {
     return this.get(`/lists/${listId}`);
+  }
+
+  /**
+   * Get API Root - account information and API links
+   */
+  async getApiRoot(
+    params?: MailchimpRootQuery,
+  ): Promise<ApiResponse<MailchimpRoot>> {
+    // Convert to base service format
+    const queryParams: Record<string, string | number | boolean | string[]> =
+      {};
+    if (params) {
+      if (params.fields) queryParams.fields = params.fields;
+      if (params.exclude_fields)
+        queryParams.exclude_fields = params.exclude_fields;
+    }
+
+    return this.get("/", queryParams);
   }
 
   /**
