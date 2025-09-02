@@ -10,7 +10,7 @@
 import { Suspense } from "react";
 import { AccountOverview } from "@/components/mailchimp/account";
 import { getApiRoot } from "@/actions/mailchimp-root";
-import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -114,8 +114,8 @@ function AccountDataSkeleton() {
 
 export default function AccountPage() {
   return (
-    <DashboardShell>
-      <div className="space-y-6 p-6">
+    <DashboardLayout>
+      <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Account Information
@@ -129,7 +129,7 @@ export default function AccountPage() {
           <AccountData />
         </Suspense>
       </div>
-    </DashboardShell>
+    </DashboardLayout>
   );
 }
 

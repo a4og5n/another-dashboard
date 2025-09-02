@@ -60,8 +60,8 @@ export const HTTP_METHODS = [
 export const RootLinkSchema = z.object({
   rel: z.string(),
   href: z.string(),
-  targetSchema: z.string(),
-  schema: z.string(),
+  targetSchema: z.string().optional(),
+  schema: z.string().optional(),
   method: z.enum(HTTP_METHODS),
 });
 
@@ -99,5 +99,5 @@ export const MailchimpRootSuccessSchema = z.object({
   // Object fields
   contact: RootContactSchema,
   industry_stats: RootIndustryStatsSchema,
-  _links: RootLinkSchema,
+  _links: z.array(RootLinkSchema),
 });
