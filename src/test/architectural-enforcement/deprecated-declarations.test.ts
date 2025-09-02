@@ -37,7 +37,7 @@ async function walkDir(dir: string, pattern: RegExp): Promise<string[]> {
         }
       }
     }
-  } catch (error) {
+  } catch {
     // Directory doesn't exist or can't be read, skip it
   }
 
@@ -135,7 +135,7 @@ describe("Deprecated Declarations Detection", () => {
         for (const { pattern, message, severity } of deprecatedPatterns) {
           const matches = line.match(pattern);
           if (matches) {
-            matches.forEach((_match) => {
+            matches.forEach(() => {
               fileViolations.push(
                 `Line ${lineNumber}: "${line.trim()}". ${message} (${severity.toUpperCase()})`,
               );
@@ -225,7 +225,7 @@ describe("Deprecated Declarations Detection", () => {
         for (const { pattern, message } of deprecatedNodePatterns) {
           const matches = line.match(pattern);
           if (matches) {
-            matches.forEach((_match) => {
+            matches.forEach(() => {
               fileViolations.push(
                 `Line ${lineNumber}: "${line.trim()}". ${message}`,
               );

@@ -560,6 +560,7 @@ _Roles are not mutually exclusive; users can be assigned multiple roles._
 
 **Key Endpoints:**
 
+- `GET /` - API Root: Account information and links to all other resources
 - `GET /reports` - Campaign reports overview
 - `GET /reports/{campaign_id}` - Detailed campaign performance
 - `GET /reports/{campaign_id}/email-activity` - Email activity tracking
@@ -570,6 +571,7 @@ _Roles are not mutually exclusive; users can be assigned multiple roles._
 
 **Key Metrics:**
 
+- Account information: user details, pricing plan, contact information
 - Campaign performance: open rates, click rates, bounce rates
 - Audience growth: subscribers, unsubscribes, engagement
 - Revenue tracking: e-commerce integration data
@@ -857,8 +859,141 @@ MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
 
 ### Timeline & Milestones
 
+#### Mailchimp API Root Implementation Plan
+
+**Overview:** Implement the Mailchimp API Root endpoint (`GET /`) to display account information and provide navigation to all other API resources.
+
+**Section 1: Schema Layer (30 minutes)**
+
+1. Create `src/schemas/mailchimp/root-error-response.schema.ts`
+   - Reuse `@/schemas/mailchimp/common/error-response.schema`
+   - Export: `mailchimpRootErrorResponseSchema = mailchimpErrorResponseSchema`
+2. Create `src/schemas/mailchimp/root-query.schema.ts`
+   - `MailchimpRootQuerySchema` - Query parameters object with:
+     - `fields` (optional string): Comma-separated list of fields to return, supports dot notation for sub-objects
+     - `exclude_fields` (optional string): Comma-separated list of fields to exclude, supports dot notation for sub-objects
+   - `MailchimpRootQueryInternalSchema` - Extended version with arrays for service layer
+3. Create `src/schemas/mailchimp/root-success.schema.ts`
+   - `RootContactSchema` - Contact object: company, addr1, addr2, city, state, zip, country (all strings)
+   - `RootIndustryStatsSchema` - Industry stats object: open_rate, bounce_rate, click_rate (all numbers)
+   - `RootLinkSchema` - Links object: rel, href, targetSchema, schema (strings), method (enum: GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD)
+   - `PRICING_PLAN_TYPES` - Enum constant: `["monthly", "pay_as_you_go", "forever_free"]`
+   - `HTTP_METHODS` - Enum constant: `["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]`
+   - `MailchimpRootSuccessSchema` - Main response schema:
+     - Strings: account_id, login_id, account_name, email, first_name, last_name, username, avatar_url, role, first_payment, account_timezone, account_industry, last_login
+     - member_since: string (ISO 8601 format)
+     - pricing_plan_type: enum (PRICING_PLAN_TYPES)
+     - pro_enabled: boolean
+     - total_subscribers: integer
+     - contact: RootContactSchema object
+     - industry_stats: RootIndustryStatsSchema object
+     - \_links: RootLinkSchema object
+4. Update `src/schemas/mailchimp/index.ts` with new exports
+5. Follow established patterns from existing audience schemas
+
+**Section 2: Types Layer (15 minutes)**
+
+1. Create `src/types/mailchimp/root.ts`
+   - Import schemas from Section 1 files
+   - Export TypeScript types inferred from Zod schemas:
+     - `export type RootContact = z.infer<typeof RootContactSchema>`
+     - `export type RootIndustryStats = z.infer<typeof RootIndustryStatsSchema>`
+     - `export type RootLink = z.infer<typeof RootLinkSchema>`
+     - `export type MailchimpRoot = z.infer<typeof MailchimpRootSuccessSchema>`
+     - `export type MailchimpRootQuery = z.infer<typeof MailchimpRootQuerySchema>`
+     - `export type MailchimpRootQueryInternal = z.infer<typeof MailchimpRootQueryInternalSchema>`
+     - `export type MailchimpRootErrorResponse = z.infer<typeof mailchimpRootErrorResponseSchema>`
+2. Update `src/types/mailchimp/index.ts` with new export: `export * from "@/types/mailchimp/root"`
+3. Follow established naming patterns from existing audience types
+
+**Section 3: Actions Layer (45 minutes)**
+
+1. Add API Root method to existing `src/services/mailchimp.service.ts`
+   - Add `getApiRoot(params?: MailchimpRootQueryInternal)` method
+   - Follow existing service patterns (parameter conversion, error handling)
+   - Return `ApiResponse<MailchimpRoot>` type
+   - Handle query parameters: fields, exclude_fields
+2. Create `src/actions/mailchimp-root.ts`
+   - Import validation patterns from existing `mailchimp-audiences.ts`
+   - Export `ValidationError` class (reuse from audiences)
+   - Create `validateMailchimpRootQuery()` function using `MailchimpRootQueryInternalSchema`
+   - Create server action `getMailchimpApiRoot()` that:
+     - Validates input parameters
+     - Calls mailchimp service `getApiRoot()` method
+     - Returns typed response with error handling
+3. Follow established patterns from existing actions and services
+
+**Section 4: UI Components Layer (60 minutes)**
+
+1. Create `src/components/dashboard/account-overview.tsx`
+   - Main card component following patterns from `audiences-overview.tsx`
+   - Props interface: `AccountOverviewProps` with MailchimpRoot data and loading state
+   - Card layout with header (User icon + "Account Overview")
+   - Content sections: Account info, plan details, contact info, industry stats
+   - Loading state using existing skeleton patterns
+   - Error handling and empty states
+   - **Import using path aliases**: `import type { MailchimpRoot } from "@/types/mailchimp"`
+2. Create individual metric components (follow `metric-card.tsx` patterns):
+   - Account info section: name, email, role, member since
+   - Plan information section: pricing plan, total subscribers, pro status
+   - Contact details section: company, address information
+   - Industry stats section: open rate, bounce rate, click rate with trend indicators
+3. Update `src/components/dashboard/index.ts` with new exports using path aliases:
+   - `export { AccountOverview } from "@/components/dashboard/account-overview"`
+4. Use existing shadcn/ui components: Card, CardContent, CardHeader, CardTitle, Badge, Skeleton
+5. Use Lucide React icons: User, Building, BarChart3, Calendar for visual consistency
+6. **Follow path alias patterns**: All imports use `@/` aliases, no relative imports
+
+**Section 5: Navigation & Routing (30 minutes)**
+
+1. Create `src/app/mailchimp/account/page.tsx`
+   - App Router page following patterns from existing `/mailchimp/page.tsx`
+   - Use Suspense wrapper for loading states
+   - Create companion `account-overview-dashboard.tsx` component (client component pattern)
+   - Server-side data fetching using `getMailchimpApiRoot()` action from Section 3
+   - Error boundaries using existing `DashboardError` and `DashboardLayout` components
+2. Update `src/components/layout/dashboard-sidebar.tsx` navigation:
+   - Add "Account" item to Mailchimp children array
+   - Use `User` icon from lucide-react
+   - Add route: `href: "/mailchimp/account"`
+   - Position after "Audiences", before "Campaigns"
+3. Follow established patterns:
+   - Client/server component separation
+   - Error handling with `DashboardError`
+   - Layout consistency with `DashboardLayout`
+   - Path alias imports throughout
+
+**Section 6: Testing Layer (45 minutes)**
+
+1. Schema validation tests: `src/test/root-schema.test.ts`
+   - Test `MailchimpRootSuccessSchema` with valid API Root response data
+   - Test validation failures for missing required fields
+   - Test enum validation for `pricing_plan_type` and HTTP methods
+   - Test nested object schemas: `RootContactSchema`, `RootIndustryStatsSchema`, `RootLinkSchema`
+   - Follow patterns from existing `campaigns-schema.test.ts`
+2. Action validation tests: `src/actions/mailchimp-root.test.ts`
+   - Test `validateMailchimpRootQuery()` function with valid/invalid parameters
+   - Test `ValidationError` creation and error details
+   - Test `getMailchimpApiRoot()` action success/failure scenarios
+   - Follow patterns from existing `mailchimp-audiences.test.ts`
+3. Component tests: `src/components/dashboard/account-overview.test.tsx`
+   - Test component renders with valid account data
+   - Test loading skeleton states
+   - Test error states and empty states
+   - Test accessibility (roles, aria attributes)
+   - Use `@/test/test-utils` for rendering
+   - Follow patterns from existing `campaigns-table.test.tsx`
+4. Follow established testing patterns:
+   - Use Vitest framework
+   - Import from `@/test/test-utils` for component tests
+   - Use `describe`/`it`/`expect` structure
+   - Test both success and error scenarios
+   - Include accessibility testing
+
+**Total Estimated Time:** 3.5 hours
+**Dependencies:** Existing Mailchimp service, shared error schemas, UI component library
+
 - **August/September 2025:** Modularize Mailchimp schemas in `src/schemas/mailchimp/` and document conventions for other data sources. Use this as a template for future integrations.
-  [...existing content...]
 
 ### Development Phases
 

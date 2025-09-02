@@ -158,7 +158,7 @@ describe("Schema Folder Enforcement", () => {
             results.push(filePath);
           }
         });
-      } catch (error) {
+      } catch {
         // Skip if directory doesn't exist
       }
       return results;
