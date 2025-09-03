@@ -36,7 +36,7 @@ describe("Reports Schema Tests", () => {
 
       const result = ReportListQuerySchema.safeParse(validQuery);
       expect(result.success).toBe(true);
-      if (result.success) {
+      if (result.success && result.data) {
         expect(result.data.count).toBe(20);
         expect(result.data.type).toBe("regular");
       }
@@ -94,7 +94,7 @@ describe("Reports Schema Tests", () => {
 
       const result = ReportListQueryInternalSchema.safeParse(internalQuery);
       expect(result.success).toBe(true);
-      if (result.success) {
+      if (result.success && result.data) {
         expect(result.data.count).toBe(25);
         expect(result.data.fields).toEqual(["campaign_title", "type"]);
       }

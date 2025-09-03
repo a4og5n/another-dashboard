@@ -76,13 +76,24 @@ describe("ReportsOverview Component", () => {
         open_rate: 0.25,
         click_rate: 0.08,
         bounce_rate: 0.02,
-        unsubscribe_rate: 0.005,
+        unopen_rate: 0.7,
+        unsub_rate: 0.005,
+        abuse_rate: 0.001,
       },
       list_stats: {
         sub_rate: 0.1,
         unsub_rate: 0.005,
         open_rate: 0.28,
         click_rate: 0.09,
+      },
+      share_report: {
+        share_url: "https://example.com/share/123",
+        share_password: "password123",
+      },
+      ecommerce: {
+        total_orders: 25,
+        total_spent: 1250.5,
+        total_revenue: 1250.5,
       },
       delivery_status: {
         enabled: true,
@@ -137,13 +148,24 @@ describe("ReportsOverview Component", () => {
         open_rate: 0.22,
         click_rate: 0.06,
         bounce_rate: 0.015,
-        unsubscribe_rate: 0.003,
+        unopen_rate: 0.78,
+        unsub_rate: 0.003,
+        abuse_rate: 0.001,
       },
       list_stats: {
         sub_rate: 0.05,
         unsub_rate: 0.003,
         open_rate: 0.25,
         click_rate: 0.08,
+      },
+      share_report: {
+        share_url: "https://example.com/share/456",
+        share_password: "test123",
+      },
+      ecommerce: {
+        total_orders: 15,
+        total_spent: 750.0,
+        total_revenue: 750.0,
       },
       delivery_status: {
         enabled: true,
