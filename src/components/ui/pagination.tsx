@@ -7,8 +7,6 @@ export const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
 }) => {
-  if (totalPages <= 1) return null;
-
   const handlePrev = () => {
     if (currentPage > 1) onPageChange(currentPage - 1);
   };
@@ -22,7 +20,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         variant="outline"
         size="sm"
         onClick={handlePrev}
-        disabled={currentPage === 1}
+        disabled={currentPage === 1 || totalPages <= 1}
       >
         Previous
       </Button>
@@ -33,7 +31,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         variant="outline"
         size="sm"
         onClick={handleNext}
-        disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages || totalPages <= 1}
       >
         Next
       </Button>

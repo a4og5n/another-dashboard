@@ -12,3 +12,7 @@ export * from "@/schemas/mailchimp/report.schema";
 export * from "@/schemas/mailchimp/member.schema";
 export * from "@/schemas/mailchimp/template.schema";
 export * from "@/schemas/mailchimp/common/error-response.schema";
+export * from "@/schemas/mailchimp/common/link.schema";
+export * from "@/schemas/mailchimp/report-list-query.schema";
+export * from "@/schemas/mailchimp/report-list-success.schema";
+export * from "@/schemas/mailchimp/report-list-error-response.schema";

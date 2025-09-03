@@ -4,11 +4,13 @@
  * and links to all other resources available in the API
  *
  * Issue #118: API Root response structure validation
+ * Issue #126: DRY refactoring - now uses common link schema
  * Endpoint: GET /
  * Documentation: https://mailchimp.com/developer/marketing/api/root/
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
+import { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
  * Schema for account contact information
@@ -40,30 +42,6 @@ export const PRICING_PLAN_TYPES = [
   "pay_as_you_go",
   "forever_free",
 ] as const;
-
-/**
- * HTTP methods enum values for API links
- */
-export const HTTP_METHODS = [
-  "GET",
-  "POST",
-  "PUT",
-  "PATCH",
-  "DELETE",
-  "OPTIONS",
-  "HEAD",
-] as const;
-
-/**
- * Schema for API links (_links array items)
- */
-export const RootLinkSchema = z.object({
-  rel: z.string(),
-  href: z.string(),
-  targetSchema: z.string().optional(),
-  schema: z.string().optional(),
-  method: z.enum(HTTP_METHODS),
-});
 
 /**
  * Main API Root response schema
@@ -99,5 +77,5 @@ export const MailchimpRootSuccessSchema = z.object({
   // Object fields
   contact: RootContactSchema,
   industry_stats: RootIndustryStatsSchema,
-  _links: z.array(RootLinkSchema),
+  _links: z.array(MailchimpLinkSchema),
 });

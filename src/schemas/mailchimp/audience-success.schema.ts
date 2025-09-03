@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
  * Simplified Mailchimp Audience Success Response Schema
@@ -8,6 +9,7 @@ import { z } from "zod";
  * - Changed 'lists' property to 'audiences' for consistency with domain naming
  * - Simplified to only essential, documented properties
  * - Follows PRD guideline: "Always use the same object/property names as the API"
+ * Issue #126: Enhanced with _links support using common link schema
  *
  * Based on: https://mailchimp.com/developer/marketing/api/lists/
  */
@@ -22,6 +24,7 @@ export const MailchimpAudienceSimplified = z.object({
   stats: z.object({
     total_contacts: z.number(),
   }),
+  _links: z.array(MailchimpLinkSchema),
 });
 
 /**
@@ -34,4 +37,7 @@ export const MailchimpAudienceSuccessSchema = z.object({
 
   // Pagination metadata
   total_items: z.number(),
+
+  // API links for navigation
+  _links: z.array(MailchimpLinkSchema),
 });

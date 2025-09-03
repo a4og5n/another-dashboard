@@ -1,10 +1,23 @@
 import type { z } from "zod";
 import type { AudienceStatsSchema } from "@/schemas/mailchimp/audience.schema";
+import type {
+  MailchimpAudienceSimplified,
+  MailchimpAudienceSuccessSchema,
+} from "@/schemas/mailchimp/audience-success.schema";
 
 /**
  * TypeScript type for audience statistics
  */
 export type AudienceStats = z.infer<typeof AudienceStatsSchema>;
+
+/**
+ * Enhanced audience types with _links support
+ * Issue #127: Updated for enhanced schemas with _links
+ */
+export type MailchimpAudience = z.infer<typeof MailchimpAudienceSimplified>;
+export type MailchimpAudienceSuccess = z.infer<
+  typeof MailchimpAudienceSuccessSchema
+>;
 
 /**
  * Query parameters for fetching audiences

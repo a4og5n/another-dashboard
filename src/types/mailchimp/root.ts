@@ -9,9 +9,9 @@ import type { z } from "zod";
 import type {
   RootContactSchema,
   RootIndustryStatsSchema,
-  RootLinkSchema,
   MailchimpRootSuccessSchema,
 } from "@/schemas/mailchimp/root-success.schema";
+import type { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
 import type {
   MailchimpRootQuerySchema,
   MailchimpRootQueryInternalSchema,
@@ -21,7 +21,7 @@ import type { mailchimpRootErrorResponseSchema } from "@/schemas/mailchimp/root-
 // Nested object types
 export type RootContact = z.infer<typeof RootContactSchema>;
 export type RootIndustryStats = z.infer<typeof RootIndustryStatsSchema>;
-export type RootLink = z.infer<typeof RootLinkSchema>;
+export type RootLink = z.infer<typeof MailchimpLinkSchema>;
 
 // Main API response type
 export type MailchimpRoot = z.infer<typeof MailchimpRootSuccessSchema>;
