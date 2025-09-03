@@ -18,12 +18,14 @@ vi.mock("next/link", () => ({
     children,
     href,
     className,
+    title,
   }: {
     children: React.ReactNode;
     href: string;
     className?: string;
+    title?: string;
   }) => (
-    <a href={href} className={className}>
+    <a href={href} className={className} title={title}>
       {children}
     </a>
   ),
@@ -391,14 +393,14 @@ describe("ReportsOverview Component", () => {
     it("should display current per page value", () => {
       render(<ReportsOverview {...defaultProps} perPage={20} />);
 
-      expect(screen.getByDisplayValue("20")).toBeInTheDocument();
+      expect(screen.getByText("20")).toBeInTheDocument();
     });
 
     it("should have per page selector with proper attributes", () => {
       render(<ReportsOverview {...defaultProps} />);
 
       expect(screen.getByRole("combobox")).toBeInTheDocument();
-      expect(screen.getByDisplayValue("10")).toBeInTheDocument();
+      expect(screen.getByText("10")).toBeInTheDocument();
     });
   });
 
@@ -487,7 +489,7 @@ describe("ReportsOverview Component", () => {
 
       render(<ReportsOverview {...defaultProps} reports={edgeCaseReports} />);
 
-      expect(screen.getByText("0")).toBeInTheDocument();
+      expect(screen.getAllByText("0")).toHaveLength(3);
     });
   });
 
