@@ -43,7 +43,6 @@ export const PRICING_PLAN_TYPES = [
   "forever_free",
 ] as const;
 
-
 /**
  * Main API Root response schema
  */

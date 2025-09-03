@@ -15,7 +15,7 @@ import { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
  */
 export const CAMPAIGN_REPORT_TYPES = [
   "regular",
-  "plain-text", 
+  "plain-text",
   "ab_split",
   "rss",
   "automation",
@@ -28,7 +28,7 @@ export const CAMPAIGN_REPORT_TYPES = [
  */
 export const DELIVERY_STATUS_TYPES = [
   "delivering",
-  "delivered", 
+  "delivered",
   "canceling",
   "canceled",
 ] as const;
@@ -43,7 +43,7 @@ export const ReportBouncesSchema = z.object({
 });
 
 /**
- * Schema for forwards data in reports  
+ * Schema for forwards data in reports
  */
 export const ReportForwardsSchema = z.object({
   forwards_count: z.number().min(0),
@@ -133,27 +133,31 @@ export const ReportAbSplitSchema = z.object({
 /**
  * Schema for timewarp data in reports
  */
-export const ReportTimewarpSchema = z.array(z.object({
-  gmt_offset: z.number(),
-  opens: z.number().min(0),
-  last_open: z.string(), // ISO 8601 format
-  unique_opens: z.number().min(0),
-  clicks: z.number().min(0),
-  last_click: z.string(), // ISO 8601 format
-  unique_clicks: z.number().min(0),
-  bounces: z.number().min(0),
-}));
+export const ReportTimewarpSchema = z.array(
+  z.object({
+    gmt_offset: z.number(),
+    opens: z.number().min(0),
+    last_open: z.string(), // ISO 8601 format
+    unique_opens: z.number().min(0),
+    clicks: z.number().min(0),
+    last_click: z.string(), // ISO 8601 format
+    unique_clicks: z.number().min(0),
+    bounces: z.number().min(0),
+  }),
+);
 
 /**
  * Schema for timeseries data in reports
  */
-export const ReportTimeseriesSchema = z.array(z.object({
-  timestamp: z.string(), // ISO 8601 format
-  emails_sent: z.number().min(0),
-  unique_opens: z.number().min(0),
-  proxy_excluded_unique_opens: z.number().min(0),
-  recipients_clicks: z.number().min(0),
-}));
+export const ReportTimeseriesSchema = z.array(
+  z.object({
+    timestamp: z.string(), // ISO 8601 format
+    emails_sent: z.number().min(0),
+    unique_opens: z.number().min(0),
+    proxy_excluded_unique_opens: z.number().min(0),
+    recipients_clicks: z.number().min(0),
+  }),
+);
 
 /**
  * Schema for share report data

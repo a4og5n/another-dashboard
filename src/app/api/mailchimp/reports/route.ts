@@ -1,7 +1,7 @@
 /**
  * Mailchimp Reports API Route
  * Handles fetching campaign reports with pagination and filtering
- * 
+ *
  * Issue #127: Reports API endpoint following App Router patterns
  * Based on dashboard API route with proper error handling
  */
@@ -12,10 +12,12 @@ import { getMailchimpService } from "@/services";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     // Parse and validate query parameters
     const queryParams = {
-      count: parseInt(searchParams.get("limit") || searchParams.get("perPage") || "20"),
+      count: parseInt(
+        searchParams.get("limit") || searchParams.get("perPage") || "20",
+      ),
       offset: parseInt(searchParams.get("offset") || "0"),
       type: searchParams.get("type") || undefined,
       before_send_time: searchParams.get("before_send_time") || undefined,
@@ -32,11 +34,11 @@ export async function GET(request: NextRequest) {
 
     if (!response.success) {
       return NextResponse.json(
-        { 
+        {
           error: response.error || "Failed to fetch campaign reports",
-          details: "Mailchimp service error"
+          details: "Mailchimp service error",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -45,16 +47,15 @@ export async function GET(request: NextRequest) {
       reports: response.data?.reports || [],
       total_items: response.data?.total_items || 0,
     });
-
   } catch (error) {
     console.error("Reports API error:", error);
-    
+
     return NextResponse.json(
-      { 
+      {
         error: "Internal server error",
-        details: error instanceof Error ? error.message : "Unknown error"
+        details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

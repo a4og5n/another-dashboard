@@ -268,25 +268,30 @@ Update index.ts to export the new schemas using path aliases.
 **MANDATORY SCHEMA-UI VALIDATION WORKFLOW:**
 
 1. **Schema Validation Step**:
+
    ```bash
    # Run schema tests FIRST - must be 100% passing
    pnpm test src/test/schemas/reports-schema.test.ts
    ```
 
 2. **Type Generation Verification**:
+
    ```typescript
    // In component files, ONLY use z.infer types:
    type ReportProps = z.infer<typeof CampaignReportSchema>;
    type QueryParams = z.infer<typeof ReportListQueryInternalSchema>;
-   
+
    // NEVER create manual interfaces that duplicate schema fields
    ```
 
 3. **Mock Data Generation Pattern**:
+
    ```typescript
    // Test utilities must generate schema-valid data:
    const createValidReport = (): CampaignReport => {
-     const mockData = { /* ... */ };
+     const mockData = {
+       /* ... */
+     };
      return CampaignReportSchema.parse(mockData); // Validates against schema
    };
    ```
@@ -295,8 +300,8 @@ Update index.ts to export the new schemas using path aliases.
    ```typescript
    // Component props must match schema exactly:
    interface ReportsOverviewProps {
-     reports: z.infer<typeof ReportListSuccessSchema>['reports'];
-     totalItems: z.infer<typeof ReportListSuccessSchema>['total_items'];
+     reports: z.infer<typeof ReportListSuccessSchema>["reports"];
+     totalItems: z.infer<typeof ReportListSuccessSchema>["total_items"];
      // Use schema field names exactly - no camelCase conversion
    }
    ```
@@ -304,24 +309,29 @@ Update index.ts to export the new schemas using path aliases.
 **COMMON SCHEMA-UI MISMATCH PATTERNS TO AVOID:**
 
 ❌ **Field Name Mismatches**:
-- Schema: `total_items` → UI Component: `totalItems` 
+
+- Schema: `total_items` → UI Component: `totalItems`
 - Schema: `campaign_title` → UI Component: `campaignTitle`
 
 ❌ **Type Definition Mismatches**:
+
 - Schema has 5 fields → Manual type has 4 fields
 - Schema uses enum → Manual type uses string literal union
 
 ❌ **Test Data Mismatches**:
+
 - Mock data created manually → Doesn't match schema validation rules
 - Test expects `getByDisplayValue()` → shadcn/ui Select doesn't expose displayValue
 
 ✅ **Correct Patterns**:
+
 - Use exact schema field names in UI components
 - Generate all types with `z.infer<typeof SchemaName>`
 - Validate all mock data with actual schema `.parse()` calls
 - Test shadcn/ui components using proper selectors (`getByRole`, `getByText`)
 
 **SCHEMA-UI INTEGRATION CHECKLIST:**
+
 - [ ] Schema tests pass 100% before UI development
 - [ ] Component interfaces use only `z.infer` types
 - [ ] Mock data passes schema validation
@@ -386,11 +396,12 @@ Update index.ts to export the new schemas using path aliases.
 ### Section 6: Testing Layer
 
 **CRITICAL SCHEMA-UI CONSISTENCY RULES:**
+
 1. **Schema-First Testing**: Create comprehensive schema tests BEFORE implementing UI components
 2. **UI Schema Alignment**: Ensure UI components consume exactly what schemas produce - no manual type definitions
 3. **Test Data Validation**: All test data must pass actual schema validation before being used in component tests
 
-1. **Schema Tests (`src/test/schemas/reports-schema.test.ts`):**
+4. **Schema Tests (`src/test/schemas/reports-schema.test.ts`):**
    - **⚠️ CRITICAL**: Create schema tests FIRST to validate all schema definitions
    - **Schema-to-Test-Data**: Use actual schema validation to generate valid test data
    - **Test all schemas**:
@@ -402,7 +413,7 @@ Update index.ts to export the new schemas using path aliases.
    - **Enum validation**: Test all enum values defined in schemas
    - **Edge cases**: Boundary values, empty arrays, null/undefined handling
 
-2. **Action Tests (`src/actions/mailchimp-reports.test.ts`):**
+5. **Action Tests (`src/actions/mailchimp-reports.test.ts`):**
    - **Schema integration**: Use validated schemas for mock data generation
    - **Test validation functions**:
      - `validateMailchimpReportsQuery()` - Test schema defaults (count: 10, offset: 0)
@@ -410,7 +421,7 @@ Update index.ts to export the new schemas using path aliases.
    - **Service integration**: Mock service responses using schema-valid data
    - **Edge cases**: Invalid parameters must match schema validation errors
 
-3. **Component Tests (`src/components/dashboard/reports-overview.test.tsx`):**
+6. **Component Tests (`src/components/dashboard/reports-overview.test.tsx`):**
    - **⚠️ SCHEMA-UI MISMATCH PREVENTION**:
      - Use ONLY schema-validated mock data for component tests
      - Generate test props using `z.infer<typeof SchemaName>` types
@@ -425,18 +436,19 @@ Update index.ts to export the new schemas using path aliases.
      - Data tables: Validate column headers match schema property names
    - **Loading and error states**: Use schema-compliant mock data
 
-4. **Page Tests (`src/app/mailchimp/reports/page.test.tsx`):**
+7. **Page Tests (`src/app/mailchimp/reports/page.test.tsx`):**
    - **Server component focus**: Test data fetching and parameter handling
    - **Schema compliance**: All mock service responses must pass schema validation
    - **URL parameter handling**: Test searchParams parsing with schema defaults
 
-5. **Schema-UI Integration Validation:**
+8. **Schema-UI Integration Validation:**
    - **Pre-component testing**: Run schema tests and verify ALL pass before component development
    - **Component prop validation**: Ensure component interfaces match `z.infer<typeof Schema>` types
    - **Mock data generation**: Create test utilities that generate schema-valid mock data
    - **Field mapping validation**: Verify UI displays exact schema field names (no manual mapping)
 
 **ARCHITECTURAL ENFORCEMENT:**
+
 - **Schema-driven development**: UI components must consume schema types via z.infer, never manual interfaces
 - **Test data integrity**: All test data must pass actual schema `.parse()` calls
 - **UI-Schema coupling**: Any schema changes must trigger corresponding UI component updates
@@ -486,12 +498,14 @@ Update index.ts to export the new schemas using path aliases.
 **Problem Identified**: Schema definitions and UI implementation often diverge, causing test failures and runtime issues.
 
 **Root Causes**:
+
 1. **Manual type definitions** instead of using `z.infer<typeof Schema>`
 2. **Field name inconsistencies** between schemas and UI components
 3. **Test data generation** not validated against actual schemas
 4. **Component testing patterns** not adapted to shadcn/ui component structure
 
 **Solutions Applied**:
+
 1. **Schema-First Development**: All schemas tested and validated before UI development
 2. **Type Generation**: Strict use of `z.infer` pattern for all type definitions
 3. **Mock Data Validation**: All test data must pass schema `.parse()` validation
@@ -500,6 +514,7 @@ Update index.ts to export the new schemas using path aliases.
 ### Architectural Enforcement Recommendations
 
 **For Future Features**:
+
 1. **Mandatory Schema Testing**: Schema tests must be 100% passing before proceeding to UI layer
 2. **Component Interface Validation**: Use schema-derived types only, no manual interfaces
 3. **Test Data Integrity**: Create utilities that generate schema-valid test data
@@ -508,11 +523,13 @@ Update index.ts to export the new schemas using path aliases.
 ### Testing Pattern Library
 
 **shadcn/ui Component Testing**:
+
 - `Select` components: Use `getByRole("combobox")` and `getByText()`, not `getByDisplayValue()`
 - `Button` components: Test by role and accessibility attributes
 - `Table` components: Validate data matches schema field names exactly
 
 **Schema Validation Testing**:
+
 - Test all enum values defined in schemas
 - Validate required vs optional field handling
 - Test boundary conditions and edge cases

@@ -25,7 +25,7 @@ import Link from "next/link";
 import type { ReportsOverviewProps } from "@/types/mailchimp/reports";
 
 interface ReportsTableProps {
-  reports: ReportsOverviewProps['reports'];
+  reports: ReportsOverviewProps["reports"];
   loading?: boolean;
   error?: string | null;
   currentPage?: number;
@@ -75,7 +75,11 @@ export function ReportsOverview({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <TableSkeleton rows={perPage} columns={8} data-testid="table-skeleton" />
+          <TableSkeleton
+            rows={perPage}
+            columns={8}
+            data-testid="table-skeleton"
+          />
         </CardContent>
       </Card>
     );
@@ -91,7 +95,6 @@ export function ReportsOverview({
       </Card>
     );
   }
-
 
   return (
     <div className="space-y-6">
@@ -118,9 +121,7 @@ export function ReportsOverview({
               <span className="font-semibold text-lg mb-2">
                 No campaign reports found
               </span>
-              <span>
-                Send some campaigns to see performance reports here.
-              </span>
+              <span>Send some campaigns to see performance reports here.</span>
             </div>
           ) : (
             <>
@@ -141,9 +142,9 @@ export function ReportsOverview({
                   {reports.map((report) => (
                     <TableRow key={report.id}>
                       <TableCell className="font-medium max-w-xs">
-                        <Link 
+                        <Link
                           href={`/mailchimp/campaigns/${report.id}`}
-                          className="truncate hover:underline" 
+                          className="truncate hover:underline"
                           title={report.campaign_title}
                         >
                           {report.campaign_title}
@@ -155,9 +156,9 @@ export function ReportsOverview({
                         </Badge>
                       </TableCell>
                       <TableCell className="max-w-xs">
-                        <Link 
+                        <Link
                           href={`/mailchimp/audiences/${report.list_id}`}
-                          className="truncate hover:underline" 
+                          className="truncate hover:underline"
                           title={report.list_name}
                         >
                           {report.list_name}

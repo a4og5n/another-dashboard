@@ -14,7 +14,7 @@ import { z } from "zod";
  */
 export const REPORT_TYPES = [
   "regular",
-  "plaintext", 
+  "plaintext",
   "absplit",
   "rss",
   "variate",
@@ -23,25 +23,29 @@ export const REPORT_TYPES = [
 /**
  * Query parameters schema for reports list endpoint
  */
-export const ReportListQuerySchema = z.object({
-  fields: z.string().optional(),
-  exclude_fields: z.string().optional(),
-  count: z.number().min(1).max(1000).default(10).optional(),
-  offset: z.number().min(0).default(0).optional(),
-  type: z.enum(REPORT_TYPES).optional(),
-  before_send_time: z.string().optional(), // ISO 8601 format
-  since_send_time: z.string().optional(),  // ISO 8601 format
-}).optional();
+export const ReportListQuerySchema = z
+  .object({
+    fields: z.string().optional(),
+    exclude_fields: z.string().optional(),
+    count: z.number().min(1).max(1000).default(10).optional(),
+    offset: z.number().min(0).default(0).optional(),
+    type: z.enum(REPORT_TYPES).optional(),
+    before_send_time: z.string().optional(), // ISO 8601 format
+    since_send_time: z.string().optional(), // ISO 8601 format
+  })
+  .optional();
 
 /**
  * Internal query schema with arrays for service layer processing
  */
-export const ReportListQueryInternalSchema = z.object({
-  fields: z.array(z.string()).optional(),
-  exclude_fields: z.array(z.string()).optional(),
-  count: z.number().min(1).max(1000).default(10).optional(),
-  offset: z.number().min(0).default(0).optional(),
-  type: z.enum(REPORT_TYPES).optional(),
-  before_send_time: z.string().optional(),
-  since_send_time: z.string().optional(),
-}).optional();
+export const ReportListQueryInternalSchema = z
+  .object({
+    fields: z.array(z.string()).optional(),
+    exclude_fields: z.array(z.string()).optional(),
+    count: z.number().min(1).max(1000).default(10).optional(),
+    offset: z.number().min(0).default(0).optional(),
+    type: z.enum(REPORT_TYPES).optional(),
+    before_send_time: z.string().optional(),
+    since_send_time: z.string().optional(),
+  })
+  .optional();

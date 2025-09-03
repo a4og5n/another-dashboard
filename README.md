@@ -168,21 +168,27 @@ function PerformanceDashboard() {
 Comprehensive Mailchimp API integration with campaigns, audiences, and reports functionality:
 
 #### 📧 Campaigns API
+
 Robust API route for Mailchimp campaign reports and details, featuring:
+
 - **Strict query parameter validation** using Zod schemas
 - **Centralized error handling** with custom error classes
 - **Type-safe request handling** with TypeScript types
 - **Comprehensive test coverage**
 
 #### 📈 Reports API (NEW)
+
 Complete campaign reports endpoint with detailed analytics and metrics:
+
 - **Server action integration** for reports data fetching ([see](src/actions/mailchimp-reports.ts))
 - **Comprehensive schema validation** with nested object support ([see](src/schemas/mailchimp/report-list-success.schema.ts))
 - **Table-based UI** with server-side pagination at `/mailchimp/reports`
 - **Full campaign analytics** including opens, clicks, bounces, and deliverability metrics
 
 #### 👥 Audiences API
+
 Audience management and segmentation functionality:
+
 - **Audience listing** with filtering and pagination
 - **Member statistics** and engagement metrics
 - **Type-safe audience data handling**
@@ -190,25 +196,27 @@ Audience management and segmentation functionality:
 #### Usage Examples
 
 **Reports Server Action:**
+
 ```typescript
-import { getMailchimpReports } from '@/actions/mailchimp-reports';
+import { getMailchimpReports } from "@/actions/mailchimp-reports";
 
 // Get paginated campaign reports
 const result = await getMailchimpReports({
   count: 10,
   offset: 0,
-  type: "regular"
+  type: "regular",
 });
 
 if (result.success) {
   console.log(`Found ${result.data.total_items} reports`);
-  result.data.reports.forEach(report => {
+  result.data.reports.forEach((report) => {
     console.log(`${report.campaign_title}: ${report.emails_sent} sent`);
   });
 }
 ```
 
 **Error Response Format:**
+
 ```json
 {
   "success": false,
@@ -217,6 +225,7 @@ if (result.success) {
 ```
 
 #### Architecture & References
+
 - **Reports:** [Schema](src/schemas/mailchimp/report-list-success.schema.ts) | [Types](src/types/mailchimp/reports.ts) | [Actions](src/actions/mailchimp-reports.ts) | [UI](src/components/dashboard/reports-overview.tsx)
 - **Campaigns:** [Schema](src/schemas/mailchimp-campaigns.ts) | [Types](src/types/mailchimp-campaigns.ts) | [Actions](src/actions/mailchimp-campaigns.ts)
 - **Service Layer:** [Mailchimp Service](src/services/mailchimp.service.ts) with singleton pattern and health checks

@@ -79,7 +79,8 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
     }
   } catch (err) {
     console.error("Failed to fetch campaign reports:", err);
-    error = err instanceof Error ? err.message : "Failed to load campaign reports";
+    error =
+      err instanceof Error ? err.message : "Failed to load campaign reports";
   }
 
   // Handle error state

@@ -18,19 +18,20 @@ Server action for retrieving paginated campaign reports with comprehensive analy
 
 ```typescript
 interface ReportListQueryInternal {
-  fields?: string[];        // Array of field names to include in response
+  fields?: string[]; // Array of field names to include in response
   exclude_fields?: string[]; // Array of field names to exclude from response
-  count?: number;           // Number of reports to return (default: 10, max: 1000)
-  offset?: number;          // Number of reports to skip (default: 0)
+  count?: number; // Number of reports to return (default: 10, max: 1000)
+  offset?: number; // Number of reports to skip (default: 0)
   type?: "regular" | "plaintext" | "absplit" | "rss" | "variate"; // Campaign type filter
   before_send_time?: string; // ISO 8601 date - reports sent before this time
-  since_send_time?: string;  // ISO 8601 date - reports sent after this time
+  since_send_time?: string; // ISO 8601 date - reports sent after this time
 }
 ```
 
 #### Response Format
 
 **Success Response:**
+
 ```typescript
 {
   success: true;
@@ -43,6 +44,7 @@ interface ReportListQueryInternal {
 ```
 
 **Error Response:**
+
 ```typescript
 {
   success: false;
@@ -58,7 +60,14 @@ Each report contains comprehensive analytics data:
 interface CampaignReport {
   id: string;
   campaign_title: string;
-  type: "regular" | "plain-text" | "ab_split" | "rss" | "automation" | "variate" | "auto";
+  type:
+    | "regular"
+    | "plain-text"
+    | "ab_split"
+    | "rss"
+    | "automation"
+    | "variate"
+    | "auto";
   list_id: string;
   list_is_active: boolean;
   list_name: string;
@@ -149,14 +158,14 @@ interface CampaignReport {
 ### Basic Usage
 
 ```typescript
-import { getMailchimpReports } from '@/actions/mailchimp-reports';
+import { getMailchimpReports } from "@/actions/mailchimp-reports";
 
 // Get first 10 reports
 const result = await getMailchimpReports({});
 
 if (result.success) {
   console.log(`Found ${result.data.total_items} total reports`);
-  result.data.reports.forEach(report => {
+  result.data.reports.forEach((report) => {
     console.log(`${report.campaign_title}: ${report.emails_sent} emails sent`);
   });
 }
@@ -168,7 +177,7 @@ if (result.success) {
 // Get reports 11-20
 const paginatedResult = await getMailchimpReports({
   count: 10,
-  offset: 10
+  offset: 10,
 });
 ```
 
@@ -178,7 +187,7 @@ const paginatedResult = await getMailchimpReports({
 // Get only regular campaigns
 const regularReports = await getMailchimpReports({
   type: "regular",
-  count: 25
+  count: 25,
 });
 ```
 
@@ -188,7 +197,7 @@ const regularReports = await getMailchimpReports({
 // Get reports from last 30 days
 const recentReports = await getMailchimpReports({
   since_send_time: "2023-11-01T00:00:00Z",
-  before_send_time: "2023-12-01T00:00:00Z"
+  before_send_time: "2023-12-01T00:00:00Z",
 });
 ```
 
@@ -235,15 +244,17 @@ interface SearchParams {
 **Location:** `src/schemas/mailchimp/report-list-query.schema.ts`
 
 ```typescript
-export const ReportListQueryInternalSchema = z.object({
-  fields: z.array(z.string()).optional(),
-  exclude_fields: z.array(z.string()).optional(),
-  count: z.number().min(1).max(1000).default(10).optional(),
-  offset: z.number().min(0).default(0).optional(),
-  type: z.enum(REPORT_TYPES).optional(),
-  before_send_time: z.string().optional(),
-  since_send_time: z.string().optional(),
-}).optional();
+export const ReportListQueryInternalSchema = z
+  .object({
+    fields: z.array(z.string()).optional(),
+    exclude_fields: z.array(z.string()).optional(),
+    count: z.number().min(1).max(1000).default(10).optional(),
+    offset: z.number().min(0).default(0).optional(),
+    type: z.enum(REPORT_TYPES).optional(),
+    before_send_time: z.string().optional(),
+    since_send_time: z.string().optional(),
+  })
+  .optional();
 ```
 
 ### Success Response Schema

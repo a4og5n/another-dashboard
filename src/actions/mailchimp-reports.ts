@@ -76,7 +76,7 @@ export function validateCampaignReportId(id: unknown): string {
 
 /**
  * Server action to get Mailchimp campaign reports
- * 
+ *
  * @param params - Query parameters for reports filtering and pagination
  * @returns Success response with reports data or error response
  */
@@ -84,39 +84,39 @@ export async function getMailchimpReports(params: unknown) {
   try {
     // Validate input parameters
     const validatedParams = validateMailchimpReportsQuery(params);
-    
+
     // Get Mailchimp service and fetch reports
     const mailchimp = getMailchimpService();
     const response = await mailchimp.getCampaignReports(validatedParams);
-    
+
     if (!response.success) {
       return {
         success: false,
         error: response.error || "Failed to fetch campaign reports",
       };
     }
-    
+
     if (!response.data) {
       return {
         success: false,
         error: "Invalid response format from Mailchimp service",
       };
     }
-    
+
     return {
       success: true,
       data: response.data,
     };
   } catch (error) {
     console.error("Error in getMailchimpReports:", error);
-    
+
     if (error instanceof ValidationError) {
       return {
         success: false,
         error: `Parameter validation failed: ${error.message}`,
       };
     }
-    
+
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",

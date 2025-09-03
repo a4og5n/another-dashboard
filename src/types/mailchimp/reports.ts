@@ -1,7 +1,7 @@
 /**
  * Mailchimp Reports Types
  * TypeScript type definitions for campaign reports functionality
- * 
+ *
  * Issue #127: Reports types implementation using z.infer pattern
  * All types properly inferred from corresponding schemas
  */
@@ -35,13 +35,17 @@ import {
  * Report query parameter types
  */
 export type ReportListQuery = z.infer<typeof ReportListQuerySchema>;
-export type ReportListQueryInternal = z.infer<typeof ReportListQueryInternalSchema>;
+export type ReportListQueryInternal = z.infer<
+  typeof ReportListQueryInternalSchema
+>;
 
 /**
  * Report response types
  */
 export type ReportListSuccess = z.infer<typeof ReportListSuccessSchema>;
-export type ReportListErrorResponse = z.infer<typeof reportListErrorResponseSchema>;
+export type ReportListErrorResponse = z.infer<
+  typeof reportListErrorResponseSchema
+>;
 
 /**
  * Individual campaign report type
