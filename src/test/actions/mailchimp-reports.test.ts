@@ -1,7 +1,7 @@
 /**
  * Mailchimp Reports Action Test Suite
  * Tests for the mailchimp-reports server action
- * 
+ *
  * Issue #127: Reports action validation testing
  * Tests server action validation, error handling, and data transformation
  */
@@ -21,7 +21,9 @@ describe("Mailchimp Reports Action", () => {
   };
 
   beforeEach(() => {
-    vi.mocked(getMailchimpService).mockReturnValue(mockMailchimpService as any);
+    vi.mocked(getMailchimpService).mockReturnValue(
+      mockMailchimpService as unknown as ReturnType<typeof getMailchimpService>,
+    );
     vi.clearAllMocks();
   });
 
@@ -93,19 +95,21 @@ describe("Mailchimp Reports Action", () => {
     });
 
     it("should validate campaign type parameter", async () => {
-      const result = await getMailchimpReports({ type: "invalid_type" as any });
+      const result = await getMailchimpReports({
+        type: "invalid_type" as "regular",
+      });
       expect(result.success).toBe(false);
       expect(result.error).toContain("validation");
     });
 
     it("should validate date parameters format", async () => {
-      const result1 = await getMailchimpReports({ 
-        before_send_time: "invalid-date" 
+      const result1 = await getMailchimpReports({
+        before_send_time: "invalid-date",
       });
       expect(result1.success).toBe(false);
 
-      const result2 = await getMailchimpReports({ 
-        since_send_time: "2023-13-01T00:00:00Z" // Invalid month
+      const result2 = await getMailchimpReports({
+        since_send_time: "2023-13-01T00:00:00Z", // Invalid month
       });
       expect(result2.success).toBe(false);
     });
@@ -157,7 +161,11 @@ describe("Mailchimp Reports Action", () => {
             click_rate: 0.18,
             last_click: "2023-11-01T14:00:00Z",
           },
-          facebook_likes: { recipient_likes: 2, unique_likes: 2, facebook_likes: 2 },
+          facebook_likes: {
+            recipient_likes: 2,
+            unique_likes: 2,
+            facebook_likes: 2,
+          },
           industry_stats: {
             type: "Technology",
             open_rate: 0.22,
@@ -205,7 +213,9 @@ describe("Mailchimp Reports Action", () => {
         error: "API request failed",
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockErrorResponse);
+      mockMailchimpService.getCampaignReports.mockResolvedValue(
+        mockErrorResponse,
+      );
 
       const result = await getMailchimpReports({ count: 10 });
 
@@ -215,7 +225,7 @@ describe("Mailchimp Reports Action", () => {
 
     it("should handle service exceptions", async () => {
       mockMailchimpService.getCampaignReports.mockRejectedValue(
-        new Error("Network error")
+        new Error("Network error"),
       );
 
       const result = await getMailchimpReports({ count: 10 });
@@ -264,7 +274,9 @@ describe("Mailchimp Reports Action", () => {
         error: "Service unavailable",
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockErrorResponse);
+      mockMailchimpService.getCampaignReports.mockResolvedValue(
+        mockErrorResponse,
+      );
 
       const result = await getMailchimpReports({ count: 10 });
 
@@ -303,18 +315,22 @@ describe("Mailchimp Reports Action", () => {
           click_rate: 0.12,
           last_click: "2023-11-02T12:00:00Z",
         },
-        facebook_likes: { recipient_likes: 25, unique_likes: 20, facebook_likes: 30 },
+        facebook_likes: {
+          recipient_likes: 25,
+          unique_likes: 20,
+          facebook_likes: 30,
+        },
         industry_stats: {
           type: "E-commerce",
           open_rate: 0.28,
-          click_rate: 0.10,
+          click_rate: 0.1,
           bounce_rate: 0.015,
           unsubscribe_rate: 0.008,
         },
         list_stats: {
           sub_rate: 0.15,
           unsub_rate: 0.008,
-          open_rate: 0.30,
+          open_rate: 0.3,
           click_rate: 0.11,
         },
         ab_split: {
@@ -324,7 +340,12 @@ describe("Mailchimp Reports Action", () => {
         timewarp: {
           gmt_offset: -5,
           times: [
-            { gmt_offset: -8, opens: 100, last_open: "2023-11-01T08:00:00Z", unique_opens: 90 }
+            {
+              gmt_offset: -8,
+              opens: 100,
+              last_open: "2023-11-01T08:00:00Z",
+              unique_opens: 90,
+            },
           ],
         },
         timeseries: [
@@ -333,7 +354,7 @@ describe("Mailchimp Reports Action", () => {
             emails_sent: 100,
             unique_opens: 35,
             recipients_clicks: 12,
-          }
+          },
         ],
         share_report: {
           share_url: "https://example.com/share/123",
@@ -341,8 +362,8 @@ describe("Mailchimp Reports Action", () => {
         },
         ecommerce: {
           total_orders: 50,
-          total_spent: 2500.00,
-          total_revenue: 2500.00,
+          total_spent: 2500.0,
+          total_revenue: 2500.0,
           currency_code: "USD",
         },
         delivery_status: {
@@ -368,7 +389,7 @@ describe("Mailchimp Reports Action", () => {
 
       expect(result.success).toBe(true);
       const report = result.data?.reports[0];
-      
+
       // Test that all major sections are preserved
       expect(report).toHaveProperty("bounces");
       expect(report).toHaveProperty("forwards");
@@ -383,7 +404,7 @@ describe("Mailchimp Reports Action", () => {
       expect(report).toHaveProperty("share_report");
       expect(report).toHaveProperty("ecommerce");
       expect(report).toHaveProperty("delivery_status");
-      
+
       // Test specific nested values
       expect(report?.opens.open_rate).toBe(0.35);
       expect(report?.ecommerce?.currency_code).toBe("USD");
@@ -425,12 +446,44 @@ describe("Mailchimp Reports Action", () => {
         send_time: "2023-11-01T10:00:00Z",
         bounces: { hard_bounces: 0, soft_bounces: 1, syntax_errors: 0 },
         forwards: { forwards_count: 5, forwards_opens: 3 },
-        opens: { opens_total: 50, unique_opens: 45, open_rate: 0.45, last_open: "2023-11-01T12:00:00Z" },
-        clicks: { clicks_total: 20, unique_clicks: 18, unique_subscriber_clicks: 17, click_rate: 0.18, last_click: "2023-11-01T14:00:00Z" },
-        facebook_likes: { recipient_likes: 2, unique_likes: 2, facebook_likes: 2 },
-        industry_stats: { type: "Technology", open_rate: 0.22, click_rate: 0.08, bounce_rate: 0.02, unsubscribe_rate: 0.005 },
-        list_stats: { sub_rate: 0.1, unsub_rate: 0.005, open_rate: 0.25, click_rate: 0.09 },
-        delivery_status: { enabled: true, can_cancel: false, status: "sent", emails_sent: 100 * i, emails_canceled: 0 },
+        opens: {
+          opens_total: 50,
+          unique_opens: 45,
+          open_rate: 0.45,
+          last_open: "2023-11-01T12:00:00Z",
+        },
+        clicks: {
+          clicks_total: 20,
+          unique_clicks: 18,
+          unique_subscriber_clicks: 17,
+          click_rate: 0.18,
+          last_click: "2023-11-01T14:00:00Z",
+        },
+        facebook_likes: {
+          recipient_likes: 2,
+          unique_likes: 2,
+          facebook_likes: 2,
+        },
+        industry_stats: {
+          type: "Technology",
+          open_rate: 0.22,
+          click_rate: 0.08,
+          bounce_rate: 0.02,
+          unsubscribe_rate: 0.005,
+        },
+        list_stats: {
+          sub_rate: 0.1,
+          unsub_rate: 0.005,
+          open_rate: 0.25,
+          click_rate: 0.09,
+        },
+        delivery_status: {
+          enabled: true,
+          can_cancel: false,
+          status: "sent",
+          emails_sent: 100 * i,
+          emails_canceled: 0,
+        },
       }));
 
       const mockResponse = {
@@ -452,9 +505,10 @@ describe("Mailchimp Reports Action", () => {
 
     it("should handle timeout scenarios", async () => {
       mockMailchimpService.getCampaignReports.mockImplementation(
-        () => new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("Request timeout")), 100);
-        })
+        () =>
+          new Promise((_, reject) => {
+            setTimeout(() => reject(new Error("Request timeout")), 100);
+          }),
       );
 
       const result = await getMailchimpReports({ count: 10 });

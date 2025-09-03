@@ -1,20 +1,28 @@
 /**
  * Reports Overview Component Test Suite
  * Tests for the ReportsOverview dashboard component
- * 
+ *
  * Issue #127: Reports component testing
  * Tests rendering, interaction, pagination, and accessibility
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
 import type { MailchimpCampaignReport } from "@/services";
 
 // Mock Next.js Link component
 vi.mock("next/link", () => ({
-  default: ({ children, href, className }: any) => (
+  default: ({
+    children,
+    href,
+    className,
+  }: {
+    children: React.ReactNode;
+    href: string;
+    className?: string;
+  }) => (
     <a href={href} className={className}>
       {children}
     </a>
@@ -48,14 +56,14 @@ describe("ReportsOverview Component", () => {
       opens: {
         opens_total: 350,
         unique_opens: 300,
-        open_rate: 0.30,
+        open_rate: 0.3,
         last_open: "2023-11-02T14:30:00Z",
       },
       clicks: {
         clicks_total: 120,
         unique_clicks: 100,
         unique_subscriber_clicks: 95,
-        click_rate: 0.10,
+        click_rate: 0.1,
         last_click: "2023-11-02T16:00:00Z",
       },
       facebook_likes: {
@@ -193,7 +201,7 @@ describe("ReportsOverview Component", () => {
       // Check formatted numbers
       expect(screen.getByText("1,000")).toBeInTheDocument();
       expect(screen.getByText("500")).toBeInTheDocument();
-      
+
       // Check dates
       expect(screen.getByText("Nov 1, 2023")).toBeInTheDocument();
       expect(screen.getByText("Oct 15, 2023")).toBeInTheDocument();
@@ -239,7 +247,9 @@ describe("ReportsOverview Component", () => {
     });
 
     it("should not show reports table when there's an error", () => {
-      render(<ReportsOverview {...defaultProps} error="Something went wrong" />);
+      render(
+        <ReportsOverview {...defaultProps} error="Something went wrong" />,
+      );
 
       expect(screen.queryByText("Newsletter Campaign")).not.toBeInTheDocument();
     });
@@ -250,7 +260,11 @@ describe("ReportsOverview Component", () => {
       render(<ReportsOverview {...defaultProps} reports={[]} />);
 
       expect(screen.getByText("No campaign reports found")).toBeInTheDocument();
-      expect(screen.getByText("Send some campaigns to see performance reports here.")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Send some campaigns to see performance reports here.",
+        ),
+      ).toBeInTheDocument();
     });
 
     it("should not show pagination when no reports", () => {
@@ -265,15 +279,22 @@ describe("ReportsOverview Component", () => {
     it("should render campaign title as a link", () => {
       render(<ReportsOverview {...defaultProps} />);
 
-      const campaignLink = screen.getByRole("link", { name: "Newsletter Campaign" });
-      expect(campaignLink).toHaveAttribute("href", "/mailchimp/campaigns/campaign123");
+      const campaignLink = screen.getByRole("link", {
+        name: "Newsletter Campaign",
+      });
+      expect(campaignLink).toHaveAttribute(
+        "href",
+        "/mailchimp/campaigns/campaign123",
+      );
       expect(campaignLink).toHaveClass("hover:underline");
     });
 
     it("should render list name as a link", () => {
       render(<ReportsOverview {...defaultProps} />);
 
-      const listLink = screen.getByRole("link", { name: "Newsletter Subscribers" });
+      const listLink = screen.getByRole("link", {
+        name: "Newsletter Subscribers",
+      });
       expect(listLink).toHaveAttribute("href", "/mailchimp/audiences/list123");
       expect(listLink).toHaveClass("hover:underline");
     });
@@ -281,19 +302,23 @@ describe("ReportsOverview Component", () => {
     it("should render all campaign links correctly", () => {
       render(<ReportsOverview {...defaultProps} />);
 
-      expect(screen.getByRole("link", { name: "Newsletter Campaign" }))
-        .toHaveAttribute("href", "/mailchimp/campaigns/campaign123");
-      expect(screen.getByRole("link", { name: "Product Launch" }))
-        .toHaveAttribute("href", "/mailchimp/campaigns/campaign456");
+      expect(
+        screen.getByRole("link", { name: "Newsletter Campaign" }),
+      ).toHaveAttribute("href", "/mailchimp/campaigns/campaign123");
+      expect(
+        screen.getByRole("link", { name: "Product Launch" }),
+      ).toHaveAttribute("href", "/mailchimp/campaigns/campaign456");
     });
 
     it("should render all list links correctly", () => {
       render(<ReportsOverview {...defaultProps} />);
 
-      expect(screen.getByRole("link", { name: "Newsletter Subscribers" }))
-        .toHaveAttribute("href", "/mailchimp/audiences/list123");
-      expect(screen.getByRole("link", { name: "Product Updates" }))
-        .toHaveAttribute("href", "/mailchimp/audiences/list456");
+      expect(
+        screen.getByRole("link", { name: "Newsletter Subscribers" }),
+      ).toHaveAttribute("href", "/mailchimp/audiences/list123");
+      expect(
+        screen.getByRole("link", { name: "Product Updates" }),
+      ).toHaveAttribute("href", "/mailchimp/audiences/list456");
     });
   });
 
@@ -324,7 +349,9 @@ describe("ReportsOverview Component", () => {
     });
 
     it("should disable next button on last page", () => {
-      render(<ReportsOverview {...defaultProps} currentPage={2} totalPages={2} />);
+      render(
+        <ReportsOverview {...defaultProps} currentPage={2} totalPages={2} />,
+      );
 
       const nextButton = screen.getByText("Next");
       expect(nextButton.closest("button")).toBeDisabled();
@@ -379,10 +406,14 @@ describe("ReportsOverview Component", () => {
     it("should have accessible link text", () => {
       render(<ReportsOverview {...defaultProps} />);
 
-      const campaignLink = screen.getByRole("link", { name: "Newsletter Campaign" });
+      const campaignLink = screen.getByRole("link", {
+        name: "Newsletter Campaign",
+      });
       expect(campaignLink).toHaveAttribute("title", "Newsletter Campaign");
 
-      const listLink = screen.getByRole("link", { name: "Newsletter Subscribers" });
+      const listLink = screen.getByRole("link", {
+        name: "Newsletter Subscribers",
+      });
       expect(listLink).toHaveAttribute("title", "Newsletter Subscribers");
     });
 
@@ -391,7 +422,9 @@ describe("ReportsOverview Component", () => {
       render(<ReportsOverview {...defaultProps} />);
 
       // Test that links are focusable
-      const firstCampaignLink = screen.getByRole("link", { name: "Newsletter Campaign" });
+      const firstCampaignLink = screen.getByRole("link", {
+        name: "Newsletter Campaign",
+      });
       await user.tab();
       expect(firstCampaignLink).toHaveFocus();
     });
@@ -404,7 +437,7 @@ describe("ReportsOverview Component", () => {
       // Large numbers should be comma-separated
       expect(screen.getByText("1,000")).toBeInTheDocument();
       expect(screen.getByText("500")).toBeInTheDocument();
-      
+
       // Small numbers
       expect(screen.getByText("1")).toBeInTheDocument(); // abuse reports
       expect(screen.getByText("0")).toBeInTheDocument(); // abuse reports for second campaign
@@ -418,14 +451,17 @@ describe("ReportsOverview Component", () => {
     });
 
     it("should handle edge case data", () => {
-      const edgeCaseReports = [{
-        ...mockReports[0],
-        campaign_title: "Very Long Campaign Title That Should Be Truncated In The Table Cell",
-        list_name: "Very Long List Name That Should Also Be Truncated",
-        emails_sent: 0,
-        abuse_reports: 0,
-        unsubscribed: 0,
-      }];
+      const edgeCaseReports = [
+        {
+          ...mockReports[0],
+          campaign_title:
+            "Very Long Campaign Title That Should Be Truncated In The Table Cell",
+          list_name: "Very Long List Name That Should Also Be Truncated",
+          emails_sent: 0,
+          abuse_reports: 0,
+          unsubscribed: 0,
+        },
+      ];
 
       render(<ReportsOverview {...defaultProps} reports={edgeCaseReports} />);
 
@@ -441,8 +477,9 @@ describe("ReportsOverview Component", () => {
         onPerPageChange: undefined,
       };
 
-      expect(() => render(<ReportsOverview {...propsWithoutCallbacks} />))
-        .not.toThrow();
+      expect(() =>
+        render(<ReportsOverview {...propsWithoutCallbacks} />),
+      ).not.toThrow();
     });
 
     it("should use default values for optional props", () => {
@@ -450,8 +487,7 @@ describe("ReportsOverview Component", () => {
         reports: mockReports,
       };
 
-      expect(() => render(<ReportsOverview {...minimalProps} />))
-        .not.toThrow();
+      expect(() => render(<ReportsOverview {...minimalProps} />)).not.toThrow();
     });
 
     it("should handle totalPages of 1", () => {
