@@ -163,54 +163,64 @@ function PerformanceDashboard() {
 }
 ```
 
-### 📊 Mailchimp Campaigns API
+### 📊 Mailchimp API Integration
 
+Comprehensive Mailchimp API integration with campaigns, audiences, and reports functionality:
+
+#### 📧 Campaigns API
 Robust API route for Mailchimp campaign reports and details, featuring:
+- **Strict query parameter validation** using Zod schemas
+- **Centralized error handling** with custom error classes
+- **Type-safe request handling** with TypeScript types
+- **Comprehensive test coverage**
 
-- **Strict query parameter validation** using Zod schemas ([see](src/schemas/mailchimp-campaigns.ts))
-- **Centralized error handling** with custom error classes ([see](src/actions/mailchimp-campaigns.ts))
-- **Type-safe request handling** with TypeScript types ([see](src/types/mailchimp-campaigns.ts))
-- **Comprehensive unit, integration, and accessibility test coverage**
-- **Clear API usage examples**:
+#### 📈 Reports API (NEW)
+Complete campaign reports endpoint with detailed analytics and metrics:
+- **Server action integration** for reports data fetching ([see](src/actions/mailchimp-reports.ts))
+- **Comprehensive schema validation** with nested object support ([see](src/schemas/mailchimp/report-list-success.schema.ts))
+- **Table-based UI** with server-side pagination at `/mailchimp/reports`
+- **Full campaign analytics** including opens, clicks, bounces, and deliverability metrics
 
-  Example request:
+#### 👥 Audiences API
+Audience management and segmentation functionality:
+- **Audience listing** with filtering and pagination
+- **Member statistics** and engagement metrics
+- **Type-safe audience data handling**
 
-  ```http
-  GET /api/mailchimp/campaigns?fields=id,type&count=10&reports=true
-  ```
+#### Usage Examples
 
-  Example response:
+**Reports Server Action:**
+```typescript
+import { getMailchimpReports } from '@/actions/mailchimp-reports';
 
-  ```json
-  {
-    "reports": [ ... ],
-    "metadata": {
-      "fields": ["id", "type"],
-      "count": 10,
-      "lastUpdated": "2025-08-26T20:00:00Z",
-      "rateLimit": { ... }
-    }
-  }
-  ```
+// Get paginated campaign reports
+const result = await getMailchimpReports({
+  count: 10,
+  offset: 0,
+  type: "regular"
+});
 
-  Example error response:
+if (result.success) {
+  console.log(`Found ${result.data.total_items} reports`);
+  result.data.reports.forEach(report => {
+    console.log(`${report.campaign_title}: ${report.emails_sent} sent`);
+  });
+}
+```
 
-  ```json
-  {
-    "error": "Invalid query parameters",
-    "details": [
-      { "path": ["count"], "message": "count must be between 0 and 1000" }
-    ]
-  }
-  ```
+**Error Response Format:**
+```json
+{
+  "success": false,
+  "error": "Parameter validation failed: Invalid campaign report parameters"
+}
+```
 
-- **Returns 400 for invalid query, 500 for server errors**
-- **References:**
-  - [Zod schema](src/schemas/mailchimp-campaigns.ts)
-  - [TypeScript types](src/types/mailchimp-campaigns.ts)
-  - [Validation logic](src/actions/mailchimp-campaigns.ts)
-  - [API route](src/app/api/mailchimp/campaigns/route.ts)
-  - [Detailed docs](docs/api/mailchimp-dashboard-api.md)
+#### Architecture & References
+- **Reports:** [Schema](src/schemas/mailchimp/report-list-success.schema.ts) | [Types](src/types/mailchimp/reports.ts) | [Actions](src/actions/mailchimp-reports.ts) | [UI](src/components/dashboard/reports-overview.tsx)
+- **Campaigns:** [Schema](src/schemas/mailchimp-campaigns.ts) | [Types](src/types/mailchimp-campaigns.ts) | [Actions](src/actions/mailchimp-campaigns.ts)
+- **Service Layer:** [Mailchimp Service](src/services/mailchimp.service.ts) with singleton pattern and health checks
+- **Common Patterns:** [Link Schema](src/schemas/mailchimp/common/link.schema.ts) | [Common Types](src/types/mailchimp/common.ts)
 
 See `.github/copilot-instructions.md` for documentation standards.
 

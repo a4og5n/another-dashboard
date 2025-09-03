@@ -1,16 +1,6 @@
-// Placeholder export to ensure this file is recognized as a module
-export const campaignListResponseSchemaPlaceholder = {};
-/**
- * Mailchimp link object schema (reusable)
- */
-// import { z } from "zod"; // Already imported above
+import { z } from "zod";
+import { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
 
-export const MailchimpLinkSchema = z.object({
-  rel: z.string(),
-  method: z.string(),
-  targetSchema: z.string().optional(),
-  schema: z.string().optional(),
-});
 /**
  * Mailchimp campaign type values (enum)
  */
@@ -33,7 +23,6 @@ export const MAILCHIMP_CAMPAIGN_STATUS = [
   "sending",
   "sent",
 ] as const;
-import { z } from "zod";
 // import type { CampaignListResponse } from '@/types/mailchimp/CampaignListResponse'; // Not used directly
 
 /**
