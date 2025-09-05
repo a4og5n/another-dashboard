@@ -464,16 +464,16 @@ describe("Reports Schema Tests", () => {
         expect(result.success).toBe(true);
       });
 
-      it("should validate rate boundaries (0-1)", () => {
-        const invalidRate = {
+      it("should accept rates above 1.0 (Mailchimp can have rates > 100%)", () => {
+        const highRate = {
           opens_total: 100,
           unique_opens: 80,
-          open_rate: 1.5, // Invalid rate > 1
+          open_rate: 1.5, // Can be > 1 due to multiple opens per recipient
           last_open: "2023-11-01T10:00:00Z",
         };
 
-        const result = ReportOpensSchema.safeParse(invalidRate);
-        expect(result.success).toBe(false);
+        const result = ReportOpensSchema.safeParse(highRate);
+        expect(result.success).toBe(true);
       });
     });
 

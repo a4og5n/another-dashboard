@@ -28,7 +28,7 @@ describe("Mailchimp campaigns API route", () => {
             reports: [
               {
                 id: "abc123",
-                type: "regular",
+                type: "regular" as const,
                 campaign_title: "Test Campaign",
                 list_id: "list123",
                 list_is_active: true,
@@ -86,7 +86,7 @@ describe("Mailchimp campaigns API route", () => {
                 delivery_status: {
                   enabled: true,
                   can_cancel: false,
-                  status: "sent" as const,
+                  status: "delivered" as const,
                   emails_sent: 100,
                   emails_canceled: 0,
                 },
@@ -107,7 +107,7 @@ describe("Mailchimp campaigns API route", () => {
           data: {
             id: campaignId,
             campaign_title: "Test Campaign",
-            type: "regular",
+            type: "regular" as const,
             list_id: "list123",
             list_is_active: true,
             list_name: "Test List",
@@ -160,7 +160,7 @@ describe("Mailchimp campaigns API route", () => {
             delivery_status: {
               enabled: true,
               can_cancel: false,
-              status: "sent" as const,
+              status: "delivered" as const,
               emails_sent: 100,
               emails_canceled: 0,
             },

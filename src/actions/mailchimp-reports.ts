@@ -13,7 +13,15 @@
 
 import { z } from "zod";
 import { ReportListQueryInternalSchema } from "@/schemas/mailchimp/report-list-query.schema";
+import {
+  ReportDetailPathParamsSchema,
+  ReportDetailQueryParamsSchema,
+} from "@/schemas/mailchimp/report-detail-params.schema";
 import type { ReportListQueryInternal } from "@/types/mailchimp/reports";
+import type {
+  ReportDetailPathParams,
+  ReportDetailQueryParams,
+} from "@/types/mailchimp/report-detail";
 import { getMailchimpService } from "@/services";
 
 /**
@@ -75,6 +83,52 @@ export function validateCampaignReportId(id: unknown): string {
 }
 
 /**
+ * Validates campaign report detail path parameters
+ *
+ * @param params - Path parameters from request
+ * @returns Parsed and typed path parameters
+ * @throws ValidationError if validation fails
+ *
+ * Example:
+ *   validateReportDetailPathParams({ campaign_id: "abc123" })
+ */
+export function validateReportDetailPathParams(
+  params: unknown,
+): ReportDetailPathParams {
+  const result = ReportDetailPathParamsSchema.safeParse(params);
+  if (!result.success) {
+    throw new ValidationError(
+      "Invalid campaign report detail path parameters",
+      result.error,
+    );
+  }
+  return result.data;
+}
+
+/**
+ * Validates campaign report detail query parameters
+ *
+ * @param params - Query parameters from request
+ * @returns Parsed and typed query parameters
+ * @throws ValidationError if validation fails
+ *
+ * Example:
+ *   validateReportDetailQueryParams({ fields: "opens,clicks" })
+ */
+export function validateReportDetailQueryParams(
+  params: unknown,
+): ReportDetailQueryParams {
+  const result = ReportDetailQueryParamsSchema.safeParse(params);
+  if (!result.success) {
+    throw new ValidationError(
+      "Invalid campaign report detail query parameters",
+      result.error,
+    );
+  }
+  return result.data;
+}
+
+/**
  * Server action to get Mailchimp campaign reports
  *
  * @param params - Query parameters for reports filtering and pagination
@@ -109,6 +163,68 @@ export async function getMailchimpReports(params: unknown) {
     };
   } catch (error) {
     console.error("Error in getMailchimpReports:", error);
+
+    if (error instanceof ValidationError) {
+      return {
+        success: false,
+        error: `Parameter validation failed: ${error.message}`,
+      };
+    }
+
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Server action to get a single Mailchimp campaign report
+ *
+ * @param campaignId - Campaign ID to get report for
+ * @param queryParams - Optional query parameters for field filtering
+ * @returns Success response with campaign report data or error response
+ */
+export async function getMailchimpCampaignReport(
+  campaignId: unknown,
+  queryParams?: unknown,
+) {
+  try {
+    // Validate path parameters
+    const validatedId = validateCampaignReportId(campaignId);
+
+    // Validate query parameters
+    const validatedQueryParams = queryParams
+      ? validateReportDetailQueryParams(queryParams)
+      : {};
+
+    // Get Mailchimp service and fetch single campaign report
+    const mailchimp = getMailchimpService();
+    const response = await mailchimp.getCampaignReport(
+      validatedId,
+      validatedQueryParams,
+    );
+
+    if (!response.success) {
+      return {
+        success: false,
+        error: response.error || "Failed to fetch campaign report",
+      };
+    }
+
+    if (!response.data) {
+      return {
+        success: false,
+        error: "Invalid response format from Mailchimp service",
+      };
+    }
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    console.error("Error in getMailchimpCampaignReport:", error);
 
     if (error instanceof ValidationError) {
       return {

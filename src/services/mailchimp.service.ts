@@ -8,6 +8,7 @@ import { env } from "@/lib/config";
 import { CampaignFilters, DateFilter } from "@/types/campaign-filters";
 import { format } from "date-fns";
 import type { MailchimpRoot, MailchimpRootQuery } from "@/types/mailchimp";
+import type { CampaignReport } from "@/schemas/mailchimp/common/campaign-report.schema";
 
 /**
  * Mailchimp API Types
@@ -62,85 +63,7 @@ export interface MailchimpCampaign {
   };
 }
 
-export interface MailchimpCampaignReport {
-  id: string;
-  campaign_title: string;
-  type: string;
-  list_id: string;
-  list_is_active: boolean;
-  list_name: string;
-  subject_line: string;
-  preview_text: string;
-  emails_sent: number;
-  abuse_reports: number;
-  unsubscribed: number;
-  send_time: string;
-  rss_last_send?: string;
-  bounces: {
-    hard_bounces: number;
-    soft_bounces: number;
-    syntax_errors: number;
-  };
-  forwards: {
-    forwards_count: number;
-    forwards_opens: number;
-  };
-  opens: {
-    opens_total: number;
-    unique_opens: number;
-    open_rate: number;
-    last_open: string;
-  };
-  clicks: {
-    clicks_total: number;
-    unique_clicks: number;
-    unique_subscriber_clicks: number;
-    click_rate: number;
-    last_click: string;
-  };
-  facebook_likes: {
-    recipient_likes: number;
-    unique_likes: number;
-    facebook_likes: number;
-  };
-  industry_stats: {
-    type: string;
-    open_rate: number;
-    click_rate: number;
-    bounce_rate: number;
-    unopen_rate: number;
-    unsub_rate: number;
-    abuse_rate: number;
-  };
-  list_stats: {
-    sub_rate: number;
-    unsub_rate: number;
-    open_rate: number;
-    click_rate: number;
-  };
-  ab_split?: {
-    a: Record<string, unknown>;
-    b: Record<string, unknown>;
-  };
-  timewarp?: Record<string, unknown>[];
-  timeseries?: Record<string, unknown>[];
-  share_report: {
-    share_url: string;
-    share_password: string;
-  };
-  ecommerce: {
-    total_orders: number;
-    total_spent: number;
-    total_revenue: number;
-  };
-  delivery_status: {
-    enabled: boolean;
-    can_cancel: boolean;
-    status: string;
-    emails_sent: number;
-    emails_canceled: number;
-  };
-}
+export type MailchimpCampaignReport = CampaignReport;
 
 export interface MailchimpList {
   // Core documented fields
@@ -341,11 +264,23 @@ export class MailchimpService extends BaseApiService {
 
   /**
    * Get campaign report (performance metrics)
+   * @param campaignId - The campaign ID to get report for
+   * @param params - Optional query parameters for field filtering
    */
   async getCampaignReport(
     campaignId: string,
+    params?: { fields?: string; exclude_fields?: string },
   ): Promise<ApiResponse<MailchimpCampaignReport>> {
-    return this.get(`/reports/${campaignId}`);
+    // Convert to base service format
+    const queryParams: Record<string, string | number | boolean | string[]> =
+      {};
+    if (params) {
+      if (params.fields) queryParams.fields = params.fields;
+      if (params.exclude_fields)
+        queryParams.exclude_fields = params.exclude_fields;
+    }
+
+    return this.get(`/reports/${campaignId}`, queryParams);
   }
 
   /**
