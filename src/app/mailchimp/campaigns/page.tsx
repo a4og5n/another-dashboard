@@ -1,9 +1,9 @@
 /**
- * Mailchimp Reports Page
- * Displays campaign performance reports with server-side data fetching
+ * Mailchimp Campaigns Page
+ * Displays campaigns with server-side data fetching
  *
- * Issue #130: Reports page implementation following App Router patterns
- * Based on audiences/page.tsx pattern with server-side data fetching
+ * Issue #140: Campaigns page implementation following App Router patterns
+ * Based on reports/page.tsx pattern with server-side data fetching
  * Implements error handling, breadcrumbs, and layout consistency
  */
 
@@ -22,7 +22,7 @@ import {
 import { ReportsOverviewClient } from "@/components/dashboard/reports-overview-client";
 import { getMailchimpService, type MailchimpCampaignReport } from "@/services";
 
-interface ReportsPageProps {
+interface CampaignsPageProps {
   searchParams: Promise<{
     page?: string;
     perPage?: string;
@@ -32,7 +32,7 @@ interface ReportsPageProps {
   }>;
 }
 
-async function ReportsPageContent({ searchParams }: ReportsPageProps) {
+async function CampaignsPageContent({ searchParams }: CampaignsPageProps) {
   // Await searchParams as required by Next.js 15
   const params = await searchParams;
 
@@ -115,21 +115,21 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Reports</BreadcrumbPage>
+              <BreadcrumbPage>Campaigns</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-
+        {/* Header */}
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Campaign Reports</h1>
+            <h1 className="text-3xl font-bold">Campaigns</h1>
             <p className="text-muted-foreground">
-              Analyze your Mailchimp campaign performance and engagement metrics
+              View and analyze your Mailchimp campaigns and their performance
+              metrics
             </p>
           </div>
-        </div>
-
+        </div>{" "}
         {/* Reports Overview */}
         <ReportsOverviewClient
           reports={reports}
@@ -148,10 +148,10 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
   );
 }
 
-export default function ReportsPage({ searchParams }: ReportsPageProps) {
+export default function CampaignsPage({ searchParams }: CampaignsPageProps) {
   return (
-    <Suspense fallback={<div>Loading campaign reports...</div>}>
-      <ReportsPageContent searchParams={searchParams} />
+    <Suspense fallback={<div>Loading campaigns...</div>}>
+      <CampaignsPageContent searchParams={searchParams} />
     </Suspense>
   );
 }

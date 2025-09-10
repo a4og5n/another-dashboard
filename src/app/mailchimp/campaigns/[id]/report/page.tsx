@@ -24,7 +24,10 @@ import Link from "next/link";
 
 interface CampaignReportPageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ fields?: string; exclude_fields?: string }>;
+  searchParams: Promise<{
+    fields?: string;
+    exclude_fields?: string;
+  }>;
 }
 
 export default async function CampaignReportPage({
@@ -42,14 +45,18 @@ export default async function CampaignReportPage({
 
   // Handle error states
   if (!response.success || !response.data) {
+    // Check if this is a "not found" error
     if (
-      response.error?.includes("not found") ||
-      response.error?.includes("404")
+      response.error?.toLowerCase().includes("not found") ||
+      response.error?.includes("404") ||
+      response.error?.toLowerCase().includes("invalid campaign id")
     ) {
       notFound();
     }
 
-    throw new Error(response.error || "Failed to fetch campaign report");
+    // Log the error for debugging but use notFound for a better user experience
+    console.error(`Error fetching campaign report ${id}:`, response.error);
+    notFound();
   }
 
   const report = response.data;
@@ -57,7 +64,7 @@ export default async function CampaignReportPage({
   return (
     <div className="min-h-screen bg-background">
       {/* Breadcrumb Navigation */}
-      <div className="container mx-auto py-4">
+      <div className="container mx-auto pt-20 pb-4">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -68,7 +75,7 @@ export default async function CampaignReportPage({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/mailchimp/reports">Reports</Link>
+                <Link href="/mailchimp/campaigns">Campaigns</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -80,9 +87,11 @@ export default async function CampaignReportPage({
       </div>
 
       {/* Main Content */}
-      <Suspense fallback={<CampaignReportLoading />}>
-        <CampaignReportDetail report={report} />
-      </Suspense>
+      <div className="container mx-auto pb-8 px-6">
+        <Suspense fallback={<CampaignReportLoading />}>
+          <CampaignReportDetail report={report} />
+        </Suspense>
+      </div>
     </div>
   );
 }

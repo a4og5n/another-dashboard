@@ -38,7 +38,7 @@ export function ReportsOverviewClient({
     if (reportType) params.set("type", reportType);
     if (beforeSendTime) params.set("before_send_time", beforeSendTime);
     if (sinceSendTime) params.set("since_send_time", sinceSendTime);
-    router.push(`/mailchimp/reports?${params.toString()}`);
+    router.push(`/mailchimp/campaigns?${params.toString()}`);
   };
 
   const handlePerPageChange = (newPerPage: number) => {
@@ -48,7 +48,7 @@ export function ReportsOverviewClient({
     if (reportType) params.set("type", reportType);
     if (beforeSendTime) params.set("before_send_time", beforeSendTime);
     if (sinceSendTime) params.set("since_send_time", sinceSendTime);
-    router.push(`/mailchimp/reports?${params.toString()}`);
+    router.push(`/mailchimp/campaigns?${params.toString()}`);
   };
 
   return (

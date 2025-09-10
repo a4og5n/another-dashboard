@@ -33,9 +33,9 @@ export default function NotFound() {
 
           <div className="flex flex-col gap-3">
             <Button className="w-full" asChild>
-              <Link href="/mailchimp/reports">
+              <Link href="/mailchimp/campaigns">
                 <Search className="h-4 w-4 mr-2" />
-                Browse All Reports
+                Browse All Campaigns
               </Link>
             </Button>
 

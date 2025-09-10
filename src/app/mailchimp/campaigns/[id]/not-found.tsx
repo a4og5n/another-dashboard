@@ -22,9 +22,9 @@ export default function CampaignNotFound() {
             or the ID is incorrect.
           </p>
           <Button asChild className="w-full">
-            <Link href="/mailchimp/reports">
+            <Link href="/mailchimp/campaigns">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Reports
+              Back to Campaigns
             </Link>
           </Button>
         </CardContent>

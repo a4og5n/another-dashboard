@@ -12,5 +12,6 @@ import { CampaignReportSchema } from "@/schemas/mailchimp/common/campaign-report
 /**
  * Campaign report detail success response schema
  * Reuses the common CampaignReportSchema as the detail endpoint returns the same structure
+ * CampaignReportSchema already includes _links as an array of MailchimpLinkSchema
  */
 export const ReportDetailSuccessSchema = CampaignReportSchema;

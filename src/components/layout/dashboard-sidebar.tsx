@@ -17,7 +17,6 @@ import {
   ChevronRight,
   Send,
   Building2,
-  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,15 +60,9 @@ const navigation: NavigationItem[] = [
         icon: Users,
       },
       {
-        name: "Reports",
-        href: "/mailchimp/reports",
-        icon: FileText,
-      },
-      {
         name: "Campaigns",
         href: "/mailchimp/campaigns",
         icon: Send,
-        disabled: true,
       },
     ],
   },

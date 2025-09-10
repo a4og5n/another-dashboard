@@ -8,12 +8,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Mail, Users } from "lucide-react";
-import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
-
-interface ReportHeaderProps {
-  report: MailchimpCampaignReport;
-}
+import { FileText, Mail, Users, CheckCircle, XCircle } from "lucide-react";
+import type { ReportHeaderProps } from "@/types/components";
+import Link from "next/link";
 
 /**
  * Formats date for display in header
@@ -44,9 +41,6 @@ function getTypeVariant(type: string): "default" | "secondary" | "outline" {
 }
 
 export function ReportHeader({ report }: ReportHeaderProps) {
-  const openRate = (report.opens.open_rate * 100).toFixed(1);
-  const clickRate = (report.clicks.click_rate * 100).toFixed(1);
-
   return (
     <div className="space-y-4">
       {/* Campaign Title and Basic Info */}
@@ -68,7 +62,17 @@ export function ReportHeader({ report }: ReportHeaderProps) {
                 </div>
                 <div className="flex items-center space-x-1">
                   <Users className="h-4 w-4" />
-                  <span>{report.list_name}</span>
+                  <Link
+                    href={`/mailchimp/lists/${report.list_id}`}
+                    className="hover:underline flex items-center"
+                  >
+                    {report.list_name}
+                    {report.list_is_active ? (
+                      <CheckCircle className="h-3 w-3 ml-1 text-green-600" />
+                    ) : (
+                      <XCircle className="h-3 w-3 ml-1 text-red-600" />
+                    )}
+                  </Link>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Mail className="h-4 w-4" />
@@ -105,54 +109,6 @@ export function ReportHeader({ report }: ReportHeaderProps) {
           </div>
         </CardContent>
       </Card>
-
-      {/* Key Metrics Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">
-              {report.emails_sent.toLocaleString()}
-            </div>
-            <div className="text-xs text-muted-foreground">Emails Sent</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-600">{openRate}%</div>
-            <div className="text-xs text-muted-foreground">Open Rate</div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {report.opens.unique_opens.toLocaleString()} opens
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-600">
-              {clickRate}%
-            </div>
-            <div className="text-xs text-muted-foreground">Click Rate</div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {report.clicks.unique_clicks.toLocaleString()} clicks
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-red-600">
-              {report.unsubscribed.toLocaleString()}
-            </div>
-            <div className="text-xs text-muted-foreground">Unsubscribed</div>
-            {report.abuse_reports > 0 && (
-              <div className="text-xs text-red-600 mt-1">
-                {report.abuse_reports} abuse reports
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }

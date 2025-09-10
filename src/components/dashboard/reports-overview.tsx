@@ -72,7 +72,7 @@ export function ReportsOverview({
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <FileText className="h-5 w-5" />
-            <span>Campaign Reports</span>
+            <span>Campaigns</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -90,7 +90,7 @@ export function ReportsOverview({
     return (
       <Card>
         <CardContent className="text-center py-8">
-          <p className="text-red-600 font-medium">Error loading reports</p>
+          <p className="text-red-600 font-medium">Error loading campaigns</p>
           <p className="text-sm text-muted-foreground mt-1">{error}</p>
         </CardContent>
       </Card>
@@ -99,12 +99,12 @@ export function ReportsOverview({
 
   return (
     <div className="space-y-6">
-      {/* Campaign Reports Table */}
+      {/* Campaigns Table */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <FileText className="h-5 w-5" />
-            <span>Campaign Reports</span>
+            <span>Campaigns</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -120,9 +120,11 @@ export function ReportsOverview({
                 aria-hidden="true"
               />
               <span className="font-semibold text-lg mb-2">
-                No campaign reports found
+                No campaigns found
               </span>
-              <span>Send some campaigns to see performance reports here.</span>
+              <span>
+                Send campaigns to view them here with performance metrics.
+              </span>
             </div>
           ) : (
             <>
