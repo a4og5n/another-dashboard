@@ -1,31 +1,12 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { DashboardError } from "@/components/dashboard/shared/dashboard-error";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+import { BreadcrumbNavigation } from "@/components/layout";
 import { ClientAudienceList } from "@/components/mailchimp/audiences/ClientAudienceList";
 import { AudienceStats } from "@/components/mailchimp/audiences/AudienceStats";
 import { getMailchimpService, type MailchimpList } from "@/services";
 import type { AudienceStats as AudienceStatsType } from "@/types/mailchimp/audience";
-
-interface AudiencesPageProps {
-  searchParams: Promise<{
-    page?: string;
-    limit?: string;
-    sort?: string;
-    order?: string;
-    search?: string;
-    visibility?: string;
-    sync_status?: string;
-  }>;
-}
+import type { AudiencesPageProps } from "@/types/mailchimp";
 
 async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
   // Await searchParams as required by Next.js 15
@@ -105,25 +86,13 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Dashboard</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/mailchimp">Mailchimp</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Audiences</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <BreadcrumbNavigation
+          items={[
+            { label: "Dashboard", href: "/" },
+            { label: "Mailchimp", href: "/mailchimp" },
+            { label: "Audiences", isCurrent: true },
+          ]}
+        />
 
         {/* Header */}
         <div className="flex items-center justify-between">

@@ -4,3 +4,6 @@ export * from "@/types/mailchimp/audience";
 export * from "@/types/mailchimp/root";
 export * from "@/types/mailchimp/reports";
 export * from "@/types/mailchimp/report-detail";
+export * from "@/types/mailchimp/campaign-report-page-props";
+export * from "@/types/mailchimp/campaigns-page-props";
+export * from "@/types/mailchimp/audiences-page-props";
