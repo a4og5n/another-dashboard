@@ -54,13 +54,6 @@ export const validDate = (val: string): boolean => {
 export function transformQueryParams(
   params: z.infer<typeof MailchimpAudienceQuerySchema>,
 ) {
-  return {
-    ...params,
-    fields: params.fields
-      ? params.fields.split(",").map((f) => f.trim())
-      : undefined,
-    exclude_fields: params.exclude_fields
-      ? params.exclude_fields.split(",").map((f) => f.trim())
-      : undefined,
-  };
+  // Return params as is - don't convert to arrays to match type expectations
+  return params;
 }

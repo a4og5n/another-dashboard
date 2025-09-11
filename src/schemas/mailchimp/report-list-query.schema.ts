@@ -47,8 +47,8 @@ export const ReportListQuerySchema = z
  */
 export const ReportListQueryInternalSchema = z
   .object({
-    fields: z.string().optional(),
-    exclude_fields: z.string().optional(),
+    fields: z.union([z.string(), z.array(z.string())]).optional(),
+    exclude_fields: z.union([z.string(), z.array(z.string())]).optional(),
     count: z.number().min(1).max(1000).default(10).optional(),
     offset: z.number().min(0).default(0).optional(),
     type: z.enum(REPORT_TYPES).optional(),

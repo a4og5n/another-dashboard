@@ -20,7 +20,8 @@ const validParams = {
 const invalidParams = {
   count: "-1",
   offset: "-5",
-  type: "invalidtype",
+  // Using an invalid type to test schema validation
+  type: "invalidtype" as unknown,
 };
 
 describe("validateMailchimpCampaignsQuery", () => {

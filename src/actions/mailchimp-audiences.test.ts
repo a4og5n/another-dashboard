@@ -11,8 +11,8 @@ describe("Mailchimp Audiences Actions", () => {
       const validQuery = {
         count: "10",
         offset: "0",
-        fields: ["id", "name", "stats.member_count"],
-        exclude_fields: ["contact"],
+        fields: "id,name,stats.member_count",
+        exclude_fields: "contact",
       };
 
       const result = validateMailchimpAudiencesQuery(validQuery);
@@ -20,8 +20,8 @@ describe("Mailchimp Audiences Actions", () => {
       expect(result).toEqual({
         count: 10,
         offset: 0,
-        fields: ["id", "name", "stats.member_count"],
-        exclude_fields: ["contact"],
+        fields: "id,name,stats.member_count",
+        exclude_fields: "contact",
       });
     });
 
@@ -48,13 +48,13 @@ describe("Mailchimp Audiences Actions", () => {
 
     it("should validate supported fields parameters", () => {
       const validQuery = {
-        fields: ["id", "name", "stats.member_count"],
-        exclude_fields: ["contact", "campaign_defaults"],
+        fields: "id,name,stats.member_count",
+        exclude_fields: "contact,campaign_defaults",
       };
       const result = validateMailchimpAudiencesQuery(validQuery);
 
-      expect(result.fields).toEqual(["id", "name", "stats.member_count"]);
-      expect(result.exclude_fields).toEqual(["contact", "campaign_defaults"]);
+      expect(result.fields).toBe("id,name,stats.member_count");
+      expect(result.exclude_fields).toBe("contact,campaign_defaults");
     });
 
     it("should throw ValidationError for invalid count", () => {

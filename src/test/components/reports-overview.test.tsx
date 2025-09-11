@@ -286,7 +286,7 @@ describe("ReportsOverview Component", () => {
       expect(screen.getByText("No campaign reports found")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Send some campaigns to see performance reports here.",
+          "Send campaigns to view them here with performance metrics.",
         ),
       ).toBeInTheDocument();
     });

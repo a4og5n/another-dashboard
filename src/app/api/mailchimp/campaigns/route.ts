@@ -92,7 +92,10 @@ export async function GET(request: NextRequest) {
       // For reports endpoint, create a new query object with the correct typing
       const reportsQuery = {
         ...query,
-        type: query.type as typeof REPORT_TYPES[number] | undefined
+        type: query.type as typeof REPORT_TYPES[number] | undefined,
+        // Ensure fields and exclude_fields are strings, not arrays
+        fields: query.fields ? (Array.isArray(query.fields) ? query.fields.join(',') : query.fields) : undefined,
+        exclude_fields: query.exclude_fields ? (Array.isArray(query.exclude_fields) ? query.exclude_fields.join(',') : query.exclude_fields) : undefined
       };
       response = await mailchimp.getCampaignReports(reportsQuery);
     } else {

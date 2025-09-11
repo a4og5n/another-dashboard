@@ -141,7 +141,15 @@ export async function getMailchimpReports(params: unknown) {
 
     // Get Mailchimp service and fetch reports
     const mailchimp = getMailchimpService();
-    const response = await mailchimp.getCampaignReports(validatedParams);
+    
+    // Convert fields and exclude_fields to strings if they are arrays
+    const serviceParams = {
+      ...validatedParams,
+      fields: validatedParams?.fields ? (Array.isArray(validatedParams.fields) ? validatedParams.fields.join(',') : validatedParams.fields) : undefined,
+      exclude_fields: validatedParams?.exclude_fields ? (Array.isArray(validatedParams.exclude_fields) ? validatedParams.exclude_fields.join(',') : validatedParams.exclude_fields) : undefined
+    };
+    
+    const response = await mailchimp.getCampaignReports(serviceParams);
 
     if (!response.success) {
       return {

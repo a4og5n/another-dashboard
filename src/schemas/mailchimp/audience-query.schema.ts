@@ -32,6 +32,7 @@ export const MailchimpAudienceQuerySchema = z
  */
 export const MailchimpAudienceQueryInternalSchema =
   MailchimpAudienceQuerySchema.extend({
-    fields: z.array(z.string()).optional(),
-    exclude_fields: z.array(z.string()).optional(),
+    // Keep the same string type to match MailchimpAudiencesQuery interface
+    fields: z.string().optional(),
+    exclude_fields: z.string().optional(),
   }).strict(); // Also reject unknown properties in internal schema
