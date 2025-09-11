@@ -7,16 +7,16 @@
 
 import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
 import type { LucideIcon } from "lucide-react";
-import type { 
-  ReportDeliveryStatus, 
-  ReportTimewarp, 
-  ReportEcommerce, 
-  ReportAbSplit, 
+import type {
+  ReportDeliveryStatus,
+  ReportTimewarp,
+  ReportEcommerce,
+  ReportAbSplit,
   ReportClicks,
   ReportOpens,
   ReportForwards,
   ReportFacebookLikes,
-  ReportListStats
+  ReportListStats,
 } from "@/types/mailchimp/reports";
 import { ReportBouncesSchema } from "@/schemas/mailchimp/common/campaign-report.schema";
 import { z } from "zod";
@@ -50,14 +50,6 @@ export interface ReportMetricsProps {
  */
 export interface ReportChartsProps {
   /** The campaign report data to visualize in charts */
-  report: MailchimpCampaignReport;
-}
-
-/**
- * Props for the ReportLinks component
- */
-export interface ReportLinksProps {
-  /** The campaign report data containing links to display */
   report: MailchimpCampaignReport;
 }
 
@@ -120,18 +112,6 @@ export type DeliveryIssuesCardProps = {
   /** Optional CSS class name for styling */
   className?: string;
 };
-
-/**
- * Props for the UnsubscribedCard component
- */
-export interface UnsubscribedCardProps {
-  /** Number of users who unsubscribed from the campaign */
-  unsubscribed: number;
-  /** Number of abuse reports received for the campaign */
-  abuseReports: number;
-  /** Optional CSS class name for styling */
-  className?: string;
-}
 
 /**
  * Props for the EmailsSentCard component

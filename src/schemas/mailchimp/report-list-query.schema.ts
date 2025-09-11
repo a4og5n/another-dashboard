@@ -32,6 +32,11 @@ export const ReportListQuerySchema = z
     type: z.enum(REPORT_TYPES).optional(),
     before_send_time: z.string().optional(), // ISO 8601 format
     since_send_time: z.string().optional(), // ISO 8601 format
+    folder_id: z.string().optional(),
+    member_id: z.string().optional(),
+    list_id: z.string().optional(),
+    sort_field: z.string().optional(),
+    sort_dir: z.enum(["ASC", "DESC"]).optional(),
   })
   .optional();
 
@@ -47,5 +52,10 @@ export const ReportListQueryInternalSchema = z
     type: z.enum(REPORT_TYPES).optional(),
     before_send_time: z.string().optional(),
     since_send_time: z.string().optional(),
+    folder_id: z.string().optional(),
+    member_id: z.string().optional(),
+    list_id: z.string().optional(),
+    sort_field: z.string().optional(),
+    sort_dir: z.enum(["ASC", "DESC"]).optional(),
   })
   .optional();

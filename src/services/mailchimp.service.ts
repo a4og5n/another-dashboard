@@ -3,147 +3,23 @@
  * Handles campaign performance data, audience insights, and reporting metrics
  */
 
-import { BaseApiService, ApiResponse } from "./base-api.service";
+import { BaseApiService, ApiResponse } from "@/services/base-api.service";
 import { env } from "@/lib/config";
 import { CampaignFilters, DateFilter } from "@/types/campaign-filters";
 import { format } from "date-fns";
-import type { MailchimpRoot, MailchimpRootQuery } from "@/types/mailchimp";
+import type {
+  MailchimpCampaign,
+  MailchimpRoot,
+  MailchimpRootQuery,
+  ReportListQuery,
+  MailchimpList,
+  MailchimpListsQuery,
+} from "@/types/mailchimp";
 import type { CampaignReport } from "@/schemas/mailchimp/common/campaign-report.schema";
-
-/**
- * Mailchimp API Types
- */
-export interface MailchimpCampaign {
-  id: string;
-  web_id: number;
-  type: string;
-  create_time: string;
-  archive_url: string;
-  long_archive_url: string;
-  status: "save" | "paused" | "schedule" | "sending" | "sent";
-  emails_sent: number;
-  send_time: string;
-  content_type: string;
-  needs_block_refresh: boolean;
-  resendable: boolean;
-  recipients: {
-    list_id: string;
-    list_is_active: boolean;
-    list_name: string;
-    segment_text: string;
-    recipient_count: number;
-    segment_opts?: Record<string, unknown>;
-  };
-  settings: {
-    subject_line: string;
-    preview_text: string;
-    title: string;
-    from_name: string;
-    reply_to: string;
-    use_conversation: boolean;
-    to_name: string;
-    folder_id: string;
-    authenticate: boolean;
-    auto_footer: boolean;
-    inline_css: boolean;
-    auto_tweet: boolean;
-    drag_and_drop: boolean;
-    fb_comments: boolean;
-    timewarp: boolean;
-    template_id: number;
-  };
-  tracking: {
-    opens: boolean;
-    html_clicks: boolean;
-    text_clicks: boolean;
-    goal_tracking: boolean;
-    ecomm360: boolean;
-    google_analytics: string;
-    clicktale: string;
-  };
-}
 
 export type MailchimpCampaignReport = CampaignReport;
 
-export interface MailchimpList {
-  // Core documented fields
-  id: string;
-  name: string;
-
-  contact: {
-    company: string;
-    address1: string;
-    address2?: string;
-    city: string;
-    state: string;
-    zip: string;
-    country: string;
-    phone?: string;
-  };
-
-  permission_reminder: string;
-  use_archive_bar: boolean;
-  email_type_option: boolean;
-  visibility: "pub" | "prv";
-  date_created: string;
-  list_rating: number;
-
-  campaign_defaults: {
-    from_name: string;
-    from_email: string;
-    subject: string;
-    language: string;
-  };
-
-  notify_on_subscribe?: string;
-  notify_on_unsubscribe?: string;
-  modules?: string[];
-
-  stats: {
-    member_count: number;
-    unsubscribe_count: number;
-    cleaned_count: number;
-    total_contacts?: number;
-    member_count_since_send?: number;
-    unsubscribe_count_since_send?: number;
-    cleaned_count_since_send?: number;
-    campaign_count?: number;
-    campaign_last_sent?: string;
-    merge_field_count?: number;
-    avg_sub_rate?: number;
-    avg_unsub_rate?: number;
-    target_sub_rate?: number;
-    open_rate?: number;
-    click_rate?: number;
-    last_sub_date?: string;
-    last_unsub_date?: string;
-  };
-
-  // Questionable fields - keeping as optional for backward compatibility
-  // These are not used in current mapping and may not exist in real API
-  web_id?: number;
-  subscribe_url_short?: string;
-  subscribe_url_long?: string;
-  beamer_address?: string;
-  double_optin?: boolean;
-  has_welcome?: boolean;
-  marketing_permissions?: boolean;
-}
-
-export interface MailchimpReportsParams {
-  fields?: string[];
-  exclude_fields?: string[];
-  count?: number;
-  offset?: number;
-  type?: string;
-  before_send_time?: string;
-  since_send_time?: string;
-  folder_id?: string;
-  member_id?: string;
-  list_id?: string;
-  sort_field?: string;
-  sort_dir?: "ASC" | "DESC";
-}
+// Using the ReportListQuery type from types/mailchimp/reports.ts
 
 /**
  * Mailchimp API Service Implementation
@@ -223,13 +99,13 @@ export class MailchimpService extends BaseApiService {
   /**
    * Get all campaigns
    */
-  async getCampaigns(params?: MailchimpReportsParams): Promise<
+  async getCampaigns(params?: ReportListQuery): Promise<
     ApiResponse<{
       campaigns: MailchimpCampaign[];
       total_items: number;
     }>
   > {
-    // Convert MailchimpReportsParams to base service format
+    // Convert ReportListQuery to base service format
     const queryParams: Record<string, string | number | boolean | string[]> =
       {};
     if (params) {
@@ -286,13 +162,13 @@ export class MailchimpService extends BaseApiService {
   /**
    * Get all campaign reports
    */
-  async getCampaignReports(params?: MailchimpReportsParams): Promise<
+  async getCampaignReports(params?: ReportListQuery): Promise<
     ApiResponse<{
       reports: MailchimpCampaignReport[];
       total_items: number;
     }>
   > {
-    // Convert MailchimpReportsParams to base service format
+    // Convert ReportListQuery to base service format
     const queryParams: Record<string, string | number | boolean | string[]> =
       {};
     if (params) {
@@ -321,7 +197,7 @@ export class MailchimpService extends BaseApiService {
    */
   async getLists(
     params?: Pick<
-      MailchimpReportsParams,
+      MailchimpListsQuery,
       "fields" | "exclude_fields" | "count" | "offset"
     >,
   ): Promise<
@@ -426,7 +302,7 @@ export class MailchimpService extends BaseApiService {
     const page = filters?.page || 1;
     const offset = (page - 1) * limit;
 
-    const params: MailchimpReportsParams = {
+    const params: ReportListQuery = {
       count: limit,
       offset: offset,
       sort_field: "send_time",
@@ -446,7 +322,19 @@ export class MailchimpService extends BaseApiService {
 
     // Apply campaign type filtering
     if (filters?.campaignType) {
-      params.type = filters.campaignType;
+      // Type assertion to ensure it's a valid campaign type
+      if (
+        ["regular", "plaintext", "absplit", "rss", "variate"].includes(
+          filters.campaignType,
+        )
+      ) {
+        params.type = filters.campaignType as
+          | "regular"
+          | "plaintext"
+          | "absplit"
+          | "rss"
+          | "variate";
+      }
     }
 
     const reportsResponse = await this.getCampaignReports(params);
