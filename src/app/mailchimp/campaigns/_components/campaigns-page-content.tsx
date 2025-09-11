@@ -8,6 +8,7 @@ import { DashboardError } from "@/components/dashboard/shared/dashboard-error";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { ReportsOverviewClient } from "@/components/dashboard/reports-overview-client";
 import { getMailchimpService, type MailchimpCampaignReport } from "@/services";
+import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
 import { CampaignsPageProps } from "@/types/mailchimp/campaigns-page-props";
 
 /**
@@ -24,11 +25,11 @@ export async function CampaignsPageContent({ searchParams }: CampaignsPageProps)
   // Per-page options for selector
   const perPageOptions = [10, 20, 50];
   
-  // Safely type-cast campaign type to valid enum values
+  // Safely type-cast campaign type to valid enum values using schema constants
   const rawType = params.type;
   const reportType = rawType && 
-    ["regular", "plaintext", "absplit", "rss", "variate"].includes(rawType) ? 
-    (rawType as "regular" | "plaintext" | "absplit" | "rss" | "variate") : 
+    REPORT_TYPES.includes(rawType as any) ? 
+    (rawType as typeof REPORT_TYPES[number]) : 
     undefined;
     
   const beforeSendTime = params.before_send_time;

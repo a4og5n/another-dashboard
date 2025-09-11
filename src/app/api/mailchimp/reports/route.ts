@@ -23,18 +23,25 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
+import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
     // Parse and validate query parameters
+    // Validate the type parameter against schema constants
+    const rawType = searchParams.get("type") || undefined;
+    const type = rawType && REPORT_TYPES.includes(rawType as any) ?
+      (rawType as typeof REPORT_TYPES[number]) :
+      undefined;
+      
     const queryParams = {
       count: parseInt(
         searchParams.get("limit") || searchParams.get("perPage") || "20",
       ),
       offset: parseInt(searchParams.get("offset") || "0"),
-      type: searchParams.get("type") || undefined,
+      type,
       before_send_time: searchParams.get("before_send_time") || undefined,
       since_send_time: searchParams.get("since_send_time") || undefined,
     };

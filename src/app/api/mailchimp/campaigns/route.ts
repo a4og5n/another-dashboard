@@ -30,6 +30,8 @@ import {
   validateMailchimpCampaignsQuery,
   ValidationError,
 } from "@/actions/mailchimp-campaigns";
+import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
+import { MAILCHIMP_CAMPAIGN_TYPES } from "@/schemas/mailchimp/campaign-list-response.schema";
 
 /**
  * Mailchimp Campaigns API
@@ -67,16 +69,36 @@ export async function GET(request: NextRequest) {
     const mailchimp = getMailchimpService();
     
     // Ensure query has properly typed 'type' field if present
+    // For reports endpoint we need to filter to only valid report types
     if (query.type && typeof query.type === 'string') {
-      const validTypes = ["regular", "plaintext", "absplit", "rss", "variate"];
-      if (!validTypes.includes(query.type)) {
-        query.type = undefined;
+      if (reports) {
+        // When requesting reports, we need to use the REPORT_TYPES constant
+        if (!REPORT_TYPES.includes(query.type as any)) {
+          query.type = undefined;
+        }
+        // Typescript casting to help the type system
+        query.type = query.type as typeof REPORT_TYPES[number] | undefined;
+      } else {
+        // For regular campaigns, we can use any valid campaign type
+        if (!MAILCHIMP_CAMPAIGN_TYPES.includes(query.type as any)) {
+          query.type = undefined;
+        }
       }
     }
     
-    const response = reports
-      ? await mailchimp.getCampaignReports(query)
-      : await mailchimp.getCampaigns(query);
+    let response;
+    
+    if (reports) {
+      // For reports endpoint, create a new query object with the correct typing
+      const reportsQuery = {
+        ...query,
+        type: query.type as typeof REPORT_TYPES[number] | undefined
+      };
+      response = await mailchimp.getCampaignReports(reportsQuery);
+    } else {
+      // For campaigns endpoint
+      response = await mailchimp.getCampaigns(query as any);
+    }
 
     if (!response.success) {
       return NextResponse.json(
