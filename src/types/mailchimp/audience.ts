@@ -23,8 +23,8 @@ export type MailchimpAudienceSuccess = z.infer<
  * Query parameters for fetching audiences
  */
 export interface MailchimpAudiencesQuery {
-  fields?: string[];
-  exclude_fields?: string[];
+  fields?: string; // Comma-separated list of fields to include
+  exclude_fields?: string; // Comma-separated list of fields to exclude
   count?: number;
   offset?: number;
   before_date_created?: string;

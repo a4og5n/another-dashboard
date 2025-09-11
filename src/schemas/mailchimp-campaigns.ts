@@ -22,26 +22,12 @@ import { z } from "zod";
 export const mailchimpCampaignsQuerySchema = z.object({
   fields: z
     .string()
-    .transform((val) =>
-      val
-        .split(",")
-        .map((f) => f.trim())
-        .filter(Boolean),
-    )
     .optional()
-    .describe("Comma-separated list of fields to include in response as array"),
+    .describe("Comma-separated list of fields to include in response"),
   exclude_fields: z
     .string()
-    .transform((val) =>
-      val
-        .split(",")
-        .map((f) => f.trim())
-        .filter(Boolean),
-    )
     .optional()
-    .describe(
-      "Comma-separated list of fields to exclude from response as array",
-    ),
+    .describe("Comma-separated list of fields to exclude from response"),
   count: z
     .string()
     .regex(/^\d+$/)

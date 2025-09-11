@@ -23,7 +23,14 @@ export async function CampaignsPageContent({ searchParams }: CampaignsPageProps)
 
   // Per-page options for selector
   const perPageOptions = [10, 20, 50];
-  const reportType = params.type;
+  
+  // Safely type-cast campaign type to valid enum values
+  const rawType = params.type;
+  const reportType = rawType && 
+    ["regular", "plaintext", "absplit", "rss", "variate"].includes(rawType) ? 
+    (rawType as "regular" | "plaintext" | "absplit" | "rss" | "variate") : 
+    undefined;
+    
   const beforeSendTime = params.before_send_time;
   const sinceSendTime = params.since_send_time;
 

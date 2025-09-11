@@ -65,6 +65,15 @@ export async function GET(request: NextRequest) {
 
     const reports = searchParams.get("reports") === "true";
     const mailchimp = getMailchimpService();
+    
+    // Ensure query has properly typed 'type' field if present
+    if (query.type && typeof query.type === 'string') {
+      const validTypes = ["regular", "plaintext", "absplit", "rss", "variate"];
+      if (!validTypes.includes(query.type)) {
+        query.type = undefined;
+      }
+    }
+    
     const response = reports
       ? await mailchimp.getCampaignReports(query)
       : await mailchimp.getCampaigns(query);

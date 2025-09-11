@@ -131,6 +131,8 @@ export interface DeliveryStatusCardProps {
   deliveryStatus?: ReportDeliveryStatus;
   /** Total number of emails sent */
   totalEmails: number;
+  /** Optional CSS class name for styling */
+  className?: string;
 }
 
 /**

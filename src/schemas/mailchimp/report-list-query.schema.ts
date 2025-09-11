@@ -41,12 +41,14 @@ export const ReportListQuerySchema = z
   .optional();
 
 /**
- * Internal query schema with arrays for service layer processing
+ * Internal query schema for service layer processing
+ * Note: Using string type for fields and exclude_fields to match Mailchimp API requirements
+ * Fields should be comma-separated lists rather than arrays
  */
 export const ReportListQueryInternalSchema = z
   .object({
-    fields: z.array(z.string()).optional(),
-    exclude_fields: z.array(z.string()).optional(),
+    fields: z.string().optional(),
+    exclude_fields: z.string().optional(),
     count: z.number().min(1).max(1000).default(10).optional(),
     offset: z.number().min(0).default(0).optional(),
     type: z.enum(REPORT_TYPES).optional(),

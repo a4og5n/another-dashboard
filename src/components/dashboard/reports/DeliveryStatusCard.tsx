@@ -23,6 +23,18 @@ export function DeliveryStatusCard({
   totalEmails,
   className,
 }: DeliveryStatusCardProps) {
+  // If deliveryStatus is undefined, render placeholder or return null
+  if (!deliveryStatus) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle>Delivery Status</CardTitle>
+          <CardDescription>No delivery status available</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
   // Calculate sending progress percentage
   const sentPercentage =
     totalEmails > 0 ? (deliveryStatus.emails_sent / totalEmails) * 100 : 0;
