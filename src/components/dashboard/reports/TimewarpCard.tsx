@@ -32,13 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { format, parseISO } from "date-fns";
-import { type ReportTimewarp } from "@/types/mailchimp/reports";
 import { LuGlobe } from "react-icons/lu";
-
-interface TimewarpCardProps {
-  timewarp: ReportTimewarp;
-  className?: string;
-}
+import type { TimewarpCardProps } from "@/types/components/dashboard/reports";
 
 export function TimewarpCard({ timewarp, className }: TimewarpCardProps) {
   const [sortField, setSortField] = useState<string>("gmt_offset");

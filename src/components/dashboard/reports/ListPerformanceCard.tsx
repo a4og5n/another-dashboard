@@ -8,17 +8,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-
-interface ListPerformanceCardProps {
-  listStats: {
-    open_rate: number;
-    click_rate: number;
-    sub_rate: number;
-    unsub_rate: number;
-    proxy_excluded_open_rate?: number;
-  };
-  className?: string;
-}
+import type { ListPerformanceCardProps } from "@/types/components/dashboard/reports";
 
 /**
  * Formats percentage for display

@@ -11,34 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Mail, Users, CheckCircle, XCircle } from "lucide-react";
 import type { ReportHeaderProps } from "@/types/components";
 import Link from "next/link";
-
-/**
- * Formats date for display in header
- */
-function formatHeaderDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-/**
- * Gets campaign type badge variant
- */
-function getTypeVariant(type: string): "default" | "secondary" | "outline" {
-  switch (type.toLowerCase()) {
-    case "regular":
-      return "default";
-    case "ab_split":
-      return "secondary";
-    default:
-      return "outline";
-  }
-}
+import { formatHeaderDate, getTypeVariant } from "@/utils";
 
 export function ReportHeader({ report }: ReportHeaderProps) {
   return (

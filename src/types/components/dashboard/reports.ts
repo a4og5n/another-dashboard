@@ -7,7 +7,17 @@
 
 import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
 import type { LucideIcon } from "lucide-react";
-import type { ReportDeliveryStatus } from "@/types/mailchimp/reports";
+import type { 
+  ReportDeliveryStatus, 
+  ReportTimewarp, 
+  ReportEcommerce, 
+  ReportAbSplit, 
+  ReportClicks,
+  ReportOpens,
+  ReportForwards,
+  ReportFacebookLikes,
+  ReportListStats
+} from "@/types/mailchimp/reports";
 import { ReportBouncesSchema } from "@/schemas/mailchimp/common/campaign-report.schema";
 import { z } from "zod";
 
@@ -137,10 +147,102 @@ export interface EmailsSentCardProps {
  * Props for the DeliveryStatusCard component
  */
 export interface DeliveryStatusCardProps {
-  /** Delivery status information for the campaign */
-  deliveryStatus: ReportDeliveryStatus;
-  /** Total emails sent for percentage calculation */
+  /** Delivery status data */
+  deliveryStatus?: ReportDeliveryStatus;
+  /** Total number of emails sent */
   totalEmails: number;
-  /** Optional CSS class name for styling */
+}
+
+/**
+ * Props for the TimewarpCard component
+ */
+export interface TimewarpCardProps {
+  /** Timewarp data for the campaign */
+  timewarp: ReportTimewarp;
+  /** Optional CSS class name */
+  className?: string;
+}
+
+/**
+ * Props for the TimewarpSection component
+ */
+export interface TimewarpSectionProps {
+  /** Timewarp data for the campaign */
+  timewarp?: ReportTimewarp;
+}
+
+/**
+ * Props for the AbTestSection component
+ */
+export interface AbTestSectionProps {
+  /** A/B Test data for the campaign */
+  abSplit?: ReportAbSplit;
+}
+
+/**
+ * Props for the EcommerceCard component
+ */
+export interface EcommerceCardProps {
+  /** Ecommerce data for the campaign */
+  ecommerce: ReportEcommerce;
+  /** Optional CSS class name */
+  className?: string;
+}
+
+/**
+ * Props for the EcommerceSection component
+ */
+export interface EcommerceSectionProps {
+  /** Ecommerce data for the campaign */
+  ecommerce: ReportEcommerce;
+}
+
+/**
+ * Props for the ClicksCard component
+ */
+export interface ClicksCardProps {
+  /** Click statistics for the campaign */
+  clicks: ReportClicks;
+  /** Optional CSS class name */
+  className?: string;
+}
+
+/**
+ * Props for the OpensCard component
+ */
+export interface OpensCardProps {
+  /** Open statistics for the campaign */
+  opens: ReportOpens;
+  /** Optional CSS class name */
+  className?: string;
+}
+
+/**
+ * Props for the ForwardsCard component
+ */
+export interface ForwardsCardProps {
+  /** Forward statistics for the campaign */
+  forwards: ReportForwards;
+  /** Optional CSS class name */
+  className?: string;
+}
+
+/**
+ * Props for the SocialEngagementCard component
+ */
+export interface SocialEngagementCardProps {
+  /** Facebook like statistics for the campaign */
+  facebookLikes: ReportFacebookLikes;
+  /** Optional CSS class name */
+  className?: string;
+}
+
+/**
+ * Props for the ListPerformanceCard component
+ */
+export interface ListPerformanceCardProps {
+  /** List performance statistics */
+  listStats: ReportListStats;
+  /** Optional CSS class name */
   className?: string;
 }

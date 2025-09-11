@@ -5,13 +5,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Share } from "lucide-react";
-
-interface ForwardsCardProps {
-  forwards: {
-    forwards_count: number;
-    forwards_opens: number;
-  };
-}
+import type { ForwardsCardProps } from "@/types/components/dashboard/reports";
 
 export function ForwardsCard({ forwards }: ForwardsCardProps) {
   // Calculate engagement rate from forwards (if any)

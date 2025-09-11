@@ -8,15 +8,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Share2 } from "lucide-react";
-
-interface SocialEngagementCardProps {
-  facebookLikes: {
-    facebook_likes: number;
-    unique_likes: number;
-    recipient_likes: number;
-  };
-  className?: string;
-}
+import type { SocialEngagementCardProps } from "@/types/components/dashboard/reports";
 
 export function SocialEngagementCard({
   facebookLikes,

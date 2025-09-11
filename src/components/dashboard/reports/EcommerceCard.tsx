@@ -13,13 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { type ReportEcommerce } from "@/types/mailchimp/reports";
 import { LuShoppingCart, LuDollarSign, LuArrowUpRight } from "react-icons/lu";
-
-interface EcommerceCardProps {
-  ecommerce: ReportEcommerce;
-  className?: string;
-}
+import type { EcommerceCardProps } from "@/types/components/dashboard/reports";
 
 export function EcommerceCard({ ecommerce, className }: EcommerceCardProps) {
   // Format currency using locale string with the currency code if available

@@ -12,14 +12,10 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReportHeader } from "@/components/dashboard/reports/ReportHeader";
-import { ReportMetrics } from "@/components/dashboard/reports/ReportMetrics";
 import { ReportCharts } from "@/components/dashboard/reports/ReportCharts";
 import { ReportLinks } from "@/components/dashboard/reports/ReportLinks";
 import { DeliveryStatusCard } from "@/components/dashboard/reports/DeliveryStatusCard";
-import { EcommerceCard } from "@/components/dashboard/reports/EcommerceCard";
 import { TimeseriesCard } from "@/components/dashboard/reports/TimeseriesCard";
-import { TimewarpCard } from "@/components/dashboard/reports/TimewarpCard";
-import { AbSplitCard } from "@/components/dashboard/reports/AbSplitCard";
 import { ForwardsCard } from "@/components/dashboard/reports/ForwardsCard";
 import { OpensCard } from "@/components/dashboard/reports/OpensCard";
 import { ClicksCard } from "@/components/dashboard/reports/ClicksCard";
@@ -28,7 +24,12 @@ import { EmailsSentCard } from "@/components/dashboard/reports/EmailsSentCard";
 import { DeliveryIssuesCard } from "@/components/dashboard/reports/DeliveryIssuesCard";
 import { ListHealthCard } from "@/components/dashboard/reports/ListHealthCard";
 import { UnsubscribedCard } from "@/components/dashboard/reports/UnsubscribedCard";
+import { TimewarpSection } from "@/components/dashboard/reports/TimewarpSection";
+import { EcommerceSection } from "@/components/dashboard/reports/EcommerceSection";
+import { AbTestSection } from "@/components/dashboard/reports/AbTestSection";
 import type { CampaignReportDetailProps } from "@/types/components";
+import { SocialEngagementCard } from "./SocialEngagementCard";
+import { ListPerformanceCard } from "./ListPerformanceCard";
 
 export function CampaignReportDetail({ report }: CampaignReportDetailProps) {
   // Define valid tabs for the component
@@ -109,7 +110,13 @@ export function CampaignReportDetail({ report }: CampaignReportDetailProps) {
 
             {/* Main Content */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ReportMetrics report={report} />
+              {/* Engagement Details */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <SocialEngagementCard facebookLikes={report.facebook_likes} />
+              </div>
+        
+              {/* List Performance Comparison */}
+              <ListPerformanceCard listStats={report.list_stats} />
               <div className="space-y-6">
                 <OpensCard opens={report.opens} />
                 <ClicksCard clicks={report.clicks} />
@@ -142,122 +149,13 @@ export function CampaignReportDetail({ report }: CampaignReportDetailProps) {
             </div>
 
             {/* A/B Test Section */}
-            <div className="space-y-6 pt-4 border-t">
-              <h2 className="text-2xl font-bold">A/B Test Analysis</h2>
-              {report.ab_split ? (
-                <>
-                  <div className="bg-card rounded-xl border shadow-sm p-6">
-                    <h3 className="text-xl font-semibold mb-4">
-                      A/B Test Results
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      This campaign was sent as an A/B test with two different
-                      variants. Compare the performance of each variant to
-                      determine which was more effective.
-                    </p>
-                  </div>
-                  <AbSplitCard abSplit={report.ab_split} />
-                </>
-              ) : (
-                <div className="bg-card rounded-xl border shadow-sm p-6">
-                  <h3 className="text-xl font-semibold mb-4">
-                    A/B Testing Not Available
-                  </h3>
-                  <p className="text-muted-foreground">
-                    This campaign was not sent as an A/B test, or no A/B test
-                    data is available. A/B testing allows you to test different
-                    versions of your campaign to see which performs better.
-                  </p>
-                </div>
-              )}
-            </div>
+            <AbTestSection abSplit={report.ab_split} />
 
             {/* Ecommerce Section */}
-            <div className="space-y-6 pt-4 border-t">
-              <h2 className="text-2xl font-bold">Ecommerce Performance</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-1">
-                  <EcommerceCard
-                    ecommerce={report.ecommerce}
-                    className="h-full"
-                  />
-                </div>
-                <div className="md:col-span-1 bg-card rounded-xl border shadow-sm p-6">
-                  <h3 className="text-xl font-semibold mb-4">
-                    Ecommerce Insights
-                  </h3>
-                  <div className="prose prose-sm max-w-none">
-                    <p>
-                      This campaign generated{" "}
-                      <strong>
-                        {report.ecommerce.total_orders.toLocaleString()}
-                      </strong>{" "}
-                      orders with a total revenue of{" "}
-                      <strong>
-                        {report.ecommerce.total_revenue.toLocaleString()}
-                      </strong>
-                      {report.ecommerce.currency_code
-                        ? ` ${report.ecommerce.currency_code}`
-                        : ""}
-                      .
-                    </p>
-                    {report.ecommerce.total_orders > 0 && (
-                      <p>
-                        The average order value was{" "}
-                        <strong>
-                          {(
-                            report.ecommerce.total_spent /
-                            report.ecommerce.total_orders
-                          ).toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                          {report.ecommerce.currency_code
-                            ? ` ${report.ecommerce.currency_code}`
-                            : ""}
-                        </strong>
-                        .
-                      </p>
-                    )}
-                    <p className="text-muted-foreground text-sm mt-4">
-                      For detailed product sales information, visit your
-                      e-commerce platform&apos;s analytics dashboard.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <EcommerceSection ecommerce={report.ecommerce} />
 
             {/* Timewarp Section */}
-            <div className="space-y-6 pt-4 border-t">
-              <h2 className="text-2xl font-bold">Time Zone Analysis</h2>
-              {report.timewarp && report.timewarp.length > 0 ? (
-                <>
-                  <div className="bg-card rounded-xl border shadow-sm p-6">
-                    <h3 className="text-xl font-semibold mb-4">
-                      Time Zone Performance
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      This campaign was sent using Timewarp, delivering your
-                      content at the same local time in different time zones.
-                      Below you can see how your campaign performed across
-                      different regions.
-                    </p>
-                  </div>
-                  <TimewarpCard timewarp={report.timewarp} />
-                </>
-              ) : (
-                <div className="bg-card rounded-xl border shadow-sm p-6">
-                  <h3 className="text-xl font-semibold mb-4">
-                    Timewarp Not Available
-                  </h3>
-                  <p className="text-muted-foreground">
-                    This campaign was not sent using Timewarp, or no time zone
-                    data is available. Timewarp allows you to send campaigns to
-                    arrive at the same local time in different time zones.
-                  </p>
-                </div>
-              )}
-            </div>
+            <TimewarpSection timewarp={report.timewarp} />
           </div>
         </TabsContent>
 

@@ -10,18 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/Switch";
 import { MailOpen } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-interface OpensCardProps {
-  opens: {
-    opens_total: number;
-    proxy_excluded_opens?: number;
-    unique_opens: number;
-    proxy_excluded_unique_opens?: number;
-    open_rate: number;
-    proxy_excluded_open_rate?: number;
-    last_open: string;
-  };
-}
+import type { OpensCardProps } from "@/types/components/dashboard/reports";
 
 export function OpensCard({ opens }: OpensCardProps) {
   const [showProxyExcluded, setShowProxyExcluded] = useState(false);

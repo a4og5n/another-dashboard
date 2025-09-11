@@ -9,7 +9,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   LineChart,
   Line,
@@ -20,17 +19,13 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
 import {
   TrendingUp,
-  BarChart3,
-  PieChart as PieChartIcon,
   Clock,
 } from "lucide-react";
 import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
+import type { ReportTimeseries, ReportTimewarp } from "@/types/mailchimp/reports";
 
 interface ReportChartsProps {
   report: MailchimpCampaignReport;
@@ -38,42 +33,12 @@ interface ReportChartsProps {
 
 // Helper functions moved to when they're needed
 
-/**
- * Colors for pie chart segments
- */
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
-
 export function ReportCharts({ report }: ReportChartsProps) {
-  // Prepare timeseries data for line chart (empty for now since service returns Record<string, unknown>)
-  const timeseriesData: unknown[] = []; // TODO: Update when service returns proper typed data
+  // Prepare timeseries data for line chart using the proper type
+  const timeseriesData: ReportTimeseries = report.timeseries || []; 
 
-  // Prepare timewarp data for bar chart (empty for now since service returns Record<string, unknown>)
-  const timewarpData: unknown[] = []; // TODO: Update when service returns proper typed data
-
-  // Prepare engagement breakdown for pie chart
-  const engagementData = [
-    {
-      name: "Unique Opens",
-      value: report.opens.unique_opens,
-      color: COLORS[0],
-    },
-    {
-      name: "Unique Clicks",
-      value: report.clicks.unique_clicks,
-      color: COLORS[1],
-    },
-    {
-      name: "Forwards",
-      value: report.forwards.forwards_count,
-      color: COLORS[2],
-    },
-    { name: "Unsubscribes", value: report.unsubscribed, color: COLORS[3] },
-    {
-      name: "Hard Bounces",
-      value: report.bounces.hard_bounces,
-      color: COLORS[4],
-    },
-  ].filter((item) => item.value > 0);
+  // Prepare timewarp data for bar chart using the proper type
+  const timewarpData: ReportTimewarp = report.timewarp || [];
 
   return (
     <div className="space-y-6">
@@ -222,97 +187,7 @@ export function ReportCharts({ report }: ReportChartsProps) {
             </CardContent>
           </Card>
         )}
-
-        {/* Engagement Breakdown */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <PieChartIcon className="h-5 w-5" />
-              <span>Engagement Breakdown</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={engagementData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    dataKey="value"
-                    label={({ name, percent }) =>
-                      `${name}: ${((percent || 0) * 100).toFixed(1)}%`
-                    }
-                  >
-                    {engagementData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value) => [
-                      Number(value).toLocaleString(),
-                      "Count",
-                    ]}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
       </div>
-
-      {/* Campaign Stats Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <BarChart3 className="h-5 w-5" />
-            <span>Performance Summary</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-blue-600">
-                {report.opens.opens_total.toLocaleString()}
-              </div>
-              <div className="text-sm text-muted-foreground">Total Opens</div>
-              <Badge variant="outline" className="mt-1">
-                {report.opens.unique_opens.toLocaleString()} unique
-              </Badge>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-green-600">
-                {report.clicks.clicks_total.toLocaleString()}
-              </div>
-              <div className="text-sm text-muted-foreground">Total Clicks</div>
-              <Badge variant="outline" className="mt-1">
-                {report.clicks.unique_clicks.toLocaleString()} unique
-              </Badge>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-purple-600">
-                {report.forwards.forwards_count.toLocaleString()}
-              </div>
-              <div className="text-sm text-muted-foreground">Forwards</div>
-              <Badge variant="outline" className="mt-1">
-                {report.forwards.forwards_opens.toLocaleString()} opens
-              </Badge>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-red-600">
-                {report.facebook_likes.facebook_likes.toLocaleString()}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Facebook Likes
-              </div>
-              <Badge variant="outline" className="mt-1">
-                {report.facebook_likes.unique_likes.toLocaleString()} unique
-              </Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

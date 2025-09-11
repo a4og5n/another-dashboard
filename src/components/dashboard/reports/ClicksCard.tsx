@@ -8,16 +8,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MousePointer } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-interface ClicksCardProps {
-  clicks: {
-    clicks_total: number;
-    unique_clicks: number;
-    unique_subscriber_clicks: number;
-    click_rate: number;
-    last_click: string;
-  };
-}
+import type { ClicksCardProps } from "@/types/components/dashboard/reports";
 
 export function ClicksCard({ clicks }: ClicksCardProps) {
   // Format last click date as a relative time (e.g., "2 days ago")
