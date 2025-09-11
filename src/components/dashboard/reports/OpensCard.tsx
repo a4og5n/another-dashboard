@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/Switch";
+import { Switch } from "@/components/ui/switch";
 import { MailOpen } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { OpensCardProps } from "@/types/components/dashboard/reports";
