@@ -14,7 +14,9 @@ import { CampaignsPageProps } from "@/types/mailchimp/campaigns-page-props";
 /**
  * Renders the campaigns page content with data fetching
  */
-export async function CampaignsPageContent({ searchParams }: CampaignsPageProps) {
+export async function CampaignsPageContent({
+  searchParams,
+}: CampaignsPageProps) {
   // Await searchParams as required by Next.js 15
   const params = await searchParams;
 
@@ -24,14 +26,14 @@ export async function CampaignsPageContent({ searchParams }: CampaignsPageProps)
 
   // Per-page options for selector
   const perPageOptions = [10, 20, 50];
-  
+
   // Safely type-cast campaign type to valid enum values using schema constants
   const rawType = params.type;
-  const reportType = rawType && 
-    REPORT_TYPES.includes(rawType as any) ? 
-    (rawType as typeof REPORT_TYPES[number]) : 
-    undefined;
-    
+  const reportType =
+    rawType && REPORT_TYPES.includes(rawType as (typeof REPORT_TYPES)[number])
+      ? (rawType as (typeof REPORT_TYPES)[number])
+      : undefined;
+
   const beforeSendTime = params.before_send_time;
   const sinceSendTime = params.since_send_time;
 
@@ -93,7 +95,7 @@ export async function CampaignsPageContent({ searchParams }: CampaignsPageProps)
           items={[
             { label: "Dashboard", href: "/" },
             { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Campaigns", isCurrent: true }
+            { label: "Campaigns", isCurrent: true },
           ]}
         />
         {/* Header */}

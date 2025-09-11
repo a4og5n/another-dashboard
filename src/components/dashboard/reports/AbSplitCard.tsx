@@ -58,7 +58,7 @@ export function AbSplitCard({ abSplit, className }: AbSplitCardProps) {
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), "MMM d, yyyy h:mm a");
-    } catch (_) {
+    } catch (error) {
       return "Invalid Date";
     }
   };

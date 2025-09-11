@@ -32,10 +32,11 @@ export async function GET(request: NextRequest) {
     // Parse and validate query parameters
     // Validate the type parameter against schema constants
     const rawType = searchParams.get("type") || undefined;
-    const type = rawType && REPORT_TYPES.includes(rawType as any) ?
-      (rawType as typeof REPORT_TYPES[number]) :
-      undefined;
-      
+    const type =
+      rawType && REPORT_TYPES.includes(rawType as (typeof REPORT_TYPES)[number])
+        ? (rawType as (typeof REPORT_TYPES)[number])
+        : undefined;
+
     const queryParams = {
       count: parseInt(
         searchParams.get("limit") || searchParams.get("perPage") || "20",
