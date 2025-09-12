@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
-import { FileText } from "lucide-react";
+import { FileText, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import type { ReportsOverviewProps } from "@/types/mailchimp/reports";
 
@@ -77,7 +78,7 @@ export function ReportsOverview({
         <CardContent>
           <TableSkeleton
             rows={perPage}
-            columns={8}
+            columns={9}
             data-testid="table-skeleton"
           />
         </CardContent>
@@ -98,7 +99,7 @@ export function ReportsOverview({
 
   return (
     <div className="space-y-6">
-      {/* Campaign Reports Table */}
+      {/* Campaigns Table */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -121,7 +122,9 @@ export function ReportsOverview({
               <span className="font-semibold text-lg mb-2">
                 No campaign reports found
               </span>
-              <span>Send some campaigns to see performance reports here.</span>
+              <span>
+                Send campaigns to view them here with performance metrics.
+              </span>
             </div>
           ) : (
             <>
@@ -136,6 +139,7 @@ export function ReportsOverview({
                     <TableHead className="text-right">Abuse Reports</TableHead>
                     <TableHead className="text-right">Unsubscribed</TableHead>
                     <TableHead className="text-right">Sent Date</TableHead>
+                    <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -176,6 +180,16 @@ export function ReportsOverview({
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {formatDate(report.send_time)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link
+                            href={`/mailchimp/campaigns/${report.id}/report`}
+                          >
+                            <BarChart3 className="h-3 w-3 mr-1" />
+                            View Report
+                          </Link>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

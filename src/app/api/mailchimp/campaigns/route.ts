@@ -26,10 +26,13 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
+import { ReportListQuery } from "@/types/mailchimp/reports";
 import {
   validateMailchimpCampaignsQuery,
   ValidationError,
 } from "@/actions/mailchimp-campaigns";
+import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
+import { MAILCHIMP_CAMPAIGN_TYPES } from "@/schemas/mailchimp/campaign-list-response.schema";
 
 /**
  * Mailchimp Campaigns API
@@ -65,9 +68,75 @@ export async function GET(request: NextRequest) {
 
     const reports = searchParams.get("reports") === "true";
     const mailchimp = getMailchimpService();
-    const response = reports
-      ? await mailchimp.getCampaignReports(query)
-      : await mailchimp.getCampaigns(query);
+
+    // Ensure query has properly typed 'type' field if present
+    // For reports endpoint we need to filter to only valid report types
+    if (query.type && typeof query.type === "string") {
+      if (reports) {
+        // When requesting reports, we need to use the REPORT_TYPES constant
+        // Type guard check to ensure type is valid
+        const queryTypeStr = query.type as string;
+        const validType = REPORT_TYPES.some((type) => type === queryTypeStr);
+        if (!validType) {
+          query.type = undefined;
+        }
+        // Typescript casting to help the type system
+        query.type = query.type as (typeof REPORT_TYPES)[number] | undefined;
+      } else {
+        // For regular campaigns, we can use any valid campaign type
+        // Type guard check to ensure type is valid
+        const queryTypeStr = query.type as string;
+        const validType = MAILCHIMP_CAMPAIGN_TYPES.some(
+          (type) => type === queryTypeStr,
+        );
+        if (!validType) {
+          query.type = undefined;
+        }
+      }
+    }
+
+    let response;
+
+    if (reports) {
+      // For reports endpoint, create a new query object with the correct typing
+      const reportsQuery: ReportListQuery = {
+        ...query,
+        // We've validated the type above, so this cast is safe
+        type: query.type as (typeof REPORT_TYPES)[number] | undefined,
+        // Ensure fields and exclude_fields are strings, not arrays
+        fields: query.fields
+          ? Array.isArray(query.fields)
+            ? query.fields.join(",")
+            : query.fields
+          : undefined,
+        exclude_fields: query.exclude_fields
+          ? Array.isArray(query.exclude_fields)
+            ? query.exclude_fields.join(",")
+            : query.exclude_fields
+          : undefined,
+      };
+      response = await mailchimp.getCampaignReports(reportsQuery);
+    } else {
+      // For campaigns endpoint - convert query to the required format
+      // Type assertion to ReportListQuery is safe because we've already validated the fields
+      const campaignsQuery: ReportListQuery = {
+        ...query,
+        // Ensure fields and exclude_fields are strings, not arrays
+        fields: query.fields
+          ? Array.isArray(query.fields)
+            ? query.fields.join(",")
+            : query.fields
+          : undefined,
+        exclude_fields: query.exclude_fields
+          ? Array.isArray(query.exclude_fields)
+            ? query.exclude_fields.join(",")
+            : query.exclude_fields
+          : undefined,
+        // Ensure type is compatible with the expected report types
+        type: query.type as (typeof REPORT_TYPES)[number] | undefined,
+      };
+      response = await mailchimp.getCampaigns(campaignsQuery);
+    }
 
     if (!response.success) {
       return NextResponse.json(

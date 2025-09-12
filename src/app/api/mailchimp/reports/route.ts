@@ -1,5 +1,20 @@
 /**
- * Mailchimp Reports API Route
+ * Mailchimp    // Safely validate type parameter
+    const rawType = searchParams.get("type") || undefined;
+    const validTypes = ["regular", "plaintext", "absplit", "rss", "variate"];
+    const type = rawType && validTypes.includes(rawType) ? 
+      rawType as "regular" | "plaintext" | "absplit" | "rss" | "variate" : 
+      undefined;
+      
+    const queryParams = {
+      count: parseInt(
+        searchParams.get("count") || searchParams.get("perPage") || "10",
+      ),
+      offset: parseInt(searchParams.get("offset") || "0"),
+      type,
+      before_send_time: searchParams.get("before_send_time") || undefined,
+      since_send_time: searchParams.get("since_send_time") || undefined,
+    };API Route
  * Handles fetching campaign reports with pagination and filtering
  *
  * Issue #127: Reports API endpoint following App Router patterns
@@ -8,18 +23,28 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getMailchimpService } from "@/services";
+import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
     // Parse and validate query parameters
+    // Validate the type parameter against schema constants
+    const rawType = searchParams.get("type") || undefined;
+    // Type guard to validate type
+    const isValidType =
+      rawType && REPORT_TYPES.some((type) => type === rawType);
+    const type = isValidType
+      ? (rawType as (typeof REPORT_TYPES)[number])
+      : undefined;
+
     const queryParams = {
       count: parseInt(
         searchParams.get("limit") || searchParams.get("perPage") || "20",
       ),
       offset: parseInt(searchParams.get("offset") || "0"),
-      type: searchParams.get("type") || undefined,
+      type,
       before_send_time: searchParams.get("before_send_time") || undefined,
       since_send_time: searchParams.get("since_send_time") || undefined,
     };

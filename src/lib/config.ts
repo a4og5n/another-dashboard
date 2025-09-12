@@ -89,25 +89,107 @@ export type Env = z.infer<typeof envSchema>;
 
 /**
  * Parse and validate environment variables
- * Throws an error if validation fails
+ * In development mode, will provide default values when needed
+ * In production, will throw an error if validation fails
  */
 function parseEnv(): Env {
+  // Check if ENABLE_MOCK_DATA is set to true before validation
+  const enableMockData = process.env.ENABLE_MOCK_DATA === "true";
+
+  // If mock data is enabled or we're in test/CI mode, provide default values
+  if (
+    enableMockData ||
+    process.env.NODE_ENV === "test" ||
+    process.env.CI === "true"
+  ) {
+    console.log("📋 Using mock data for environment variables");
+
+    // Create a new process.env-like object with default values for required fields
+    const mockEnv = {
+      ...process.env,
+      NODE_ENV: process.env.NODE_ENV || "development",
+      NEXT_PUBLIC_APP_URL:
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY || "mock-api-key-us1",
+      MAILCHIMP_SERVER_PREFIX: process.env.MAILCHIMP_SERVER_PREFIX || "us1",
+      DEBUG_API_CALLS: process.env.DEBUG_API_CALLS || "true",
+      ENABLE_MOCK_DATA: "true",
+      NEXT_PUBLIC_VERCEL_ANALYTICS:
+        process.env.NEXT_PUBLIC_VERCEL_ANALYTICS || "false",
+      NEXT_PUBLIC_ANALYTICS_ENDPOINT:
+        process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT || "/api/analytics",
+    };
+
+    const parsed = envSchema.safeParse(mockEnv);
+
+    if (parsed.success) {
+      return parsed.data;
+    }
+    // If still failing even with mock data, continue to error reporting
+  }
+
+  // Normal validation flow
   const parsed = envSchema.safeParse(process.env);
 
   if (!parsed.success) {
-    console.error("❌ Invalid environment variables:");
-    console.error(parsed.error.flatten().fieldErrors);
+    // In development, provide fallback values to keep the app running without errors
+    if (
+      process.env.NODE_ENV === "development" ||
+      process.env.NODE_ENV === undefined
+    ) {
+      console.warn(
+        "⚠️ Using fallback values for development. NOT SUITABLE FOR PRODUCTION!",
+      );
 
-    // In development, provide more helpful error message
-    if (process.env.NODE_ENV === "development") {
-      console.error("\n💡 Make sure you have created .env.local with:");
-      console.error("MAILCHIMP_API_KEY=your_api_key_here");
-      console.error("MAILCHIMP_SERVER_PREFIX=your_server_prefix_here");
-      console.error("\nExample: MAILCHIMP_API_KEY=abc123def456-us1");
-      console.error("Example: MAILCHIMP_SERVER_PREFIX=us1\n");
+      // Skip showing error messages in development mode since we'll use fallbacks
+      if (process.env.DEBUG_API_CALLS === "true") {
+        // Only show detailed errors if DEBUG_API_CALLS is enabled
+        console.warn(
+          "Environment validation issues (suppressed in normal development):",
+        );
+        console.warn(parsed.error.flatten().fieldErrors);
+      }
+
+      // Create fallback environment
+      // Create a more comprehensive fallback environment
+      const fallbackEnv = {
+        NODE_ENV: "development",
+        NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+        MAILCHIMP_API_KEY: "fallback-key-us1",
+        MAILCHIMP_SERVER_PREFIX: "us1",
+        DEBUG_API_CALLS: true,
+        ENABLE_MOCK_DATA: true,
+        NEXT_PUBLIC_VERCEL_ANALYTICS: false,
+        NEXT_PUBLIC_ANALYTICS_ENDPOINT: "/api/analytics",
+        // Optional fallbacks that might be needed
+        GA4_SERVICE_ACCOUNT_KEY_PATH: undefined,
+        GA4_PROPERTY_ID: undefined,
+        GA4_CLIENT_EMAIL: undefined,
+        YOUTUBE_API_KEY: undefined,
+        YOUTUBE_CLIENT_ID: undefined,
+        YOUTUBE_CLIENT_SECRET: undefined,
+        META_APP_ID: undefined,
+        META_APP_SECRET: undefined,
+        META_ACCESS_TOKEN: undefined,
+        WORDPRESS_API_URL: undefined,
+        WORDPRESS_USERNAME: undefined,
+        WORDPRESS_APP_PASSWORD: undefined,
+        GSC_SERVICE_ACCOUNT_KEY_PATH: undefined,
+        GSC_CLIENT_EMAIL: undefined,
+        SENTRY_DSN: undefined,
+      };
+
+      return fallbackEnv as Env;
+    } else {
+      // In production, show detailed error and throw
+      console.error("\n❌ Environment validation failed in production mode!");
+      console.error(
+        "The following environment variables are invalid or missing:",
+      );
+      console.error(parsed.error.flatten().fieldErrors);
+
+      throw new Error("Invalid environment variables");
     }
-
-    throw new Error("Invalid environment variables");
   }
 
   return parsed.data;

@@ -3,24 +3,22 @@
  * Central export point for all API services
  */
 
-export { BaseApiService, ApiServiceFactory } from "./base-api.service";
+export { BaseApiService, ApiServiceFactory } from "@/services/base-api.service";
 export type {
   ApiResponse,
   RateLimitInfo,
   HttpClientConfig,
-} from "./base-api.service";
+} from "@/services/base-api.service";
 
-export { MailchimpService } from "./mailchimp.service";
-export type {
-  MailchimpCampaign,
-  MailchimpCampaignReport,
-  MailchimpList,
-  MailchimpReportsParams,
-} from "./mailchimp.service";
+export { MailchimpService } from "@/services/mailchimp.service";
+export type { MailchimpCampaignReport } from "@/services/mailchimp.service";
+
+// Re-export these types from their new location for backward compatibility
+export type { MailchimpList, MailchimpListsQuery } from "@/types/mailchimp";
 
 // Service factory instances
-import { MailchimpService } from "./mailchimp.service";
-import { ApiServiceFactory } from "./base-api.service";
+import { MailchimpService } from "@/services/mailchimp.service";
+import { ApiServiceFactory } from "@/services/base-api.service";
 
 /**
  * Get Mailchimp service instance (singleton)

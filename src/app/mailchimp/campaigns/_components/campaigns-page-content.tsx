@@ -1,38 +1,22 @@
 /**
- * Mailchimp Reports Page
- * Displays campaign performance reports with server-side data fetching
- *
- * Issue #130: Reports page implementation following App Router patterns
- * Based on audiences/page.tsx pattern with server-side data fetching
- * Implements error handling, breadcrumbs, and layout consistency
+ * Campaigns Page Content Component
+ * Server component that handles data fetching and rendering for the campaigns page
  */
 
-import { Suspense } from "react";
-import Link from "next/link";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { DashboardError } from "@/components/dashboard/shared/dashboard-error";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+import { BreadcrumbNavigation } from "@/components/layout";
 import { ReportsOverviewClient } from "@/components/dashboard/reports-overview-client";
 import { getMailchimpService, type MailchimpCampaignReport } from "@/services";
+import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
+import { CampaignsPageProps } from "@/types/mailchimp/campaigns-page-props";
 
-interface ReportsPageProps {
-  searchParams: Promise<{
-    page?: string;
-    perPage?: string;
-    type?: string;
-    before_send_time?: string;
-    since_send_time?: string;
-  }>;
-}
-
-async function ReportsPageContent({ searchParams }: ReportsPageProps) {
+/**
+ * Renders the campaigns page content with data fetching
+ */
+export async function CampaignsPageContent({
+  searchParams,
+}: CampaignsPageProps) {
   // Await searchParams as required by Next.js 15
   const params = await searchParams;
 
@@ -42,7 +26,15 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
 
   // Per-page options for selector
   const perPageOptions = [10, 20, 50];
-  const reportType = params.type;
+
+  // Safely type-cast campaign type to valid enum values using schema constants
+  const rawType = params.type;
+  // Type guard to validate type
+  const isValidType = rawType && REPORT_TYPES.some((type) => type === rawType);
+  const reportType = isValidType
+    ? (rawType as (typeof REPORT_TYPES)[number])
+    : undefined;
+
   const beforeSendTime = params.before_send_time;
   const sinceSendTime = params.since_send_time;
 
@@ -100,36 +92,23 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/">Dashboard</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/mailchimp">Mailchimp</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Reports</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
+        <BreadcrumbNavigation
+          items={[
+            { label: "Dashboard", href: "/" },
+            { label: "Mailchimp", href: "/mailchimp" },
+            { label: "Campaigns", isCurrent: true },
+          ]}
+        />
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Campaign Reports</h1>
+            <h1 className="text-3xl font-bold">Campaigns</h1>
             <p className="text-muted-foreground">
-              Analyze your Mailchimp campaign performance and engagement metrics
+              View and analyze your Mailchimp campaigns and their performance
+              metrics
             </p>
           </div>
         </div>
-
         {/* Reports Overview */}
         <ReportsOverviewClient
           reports={reports}
@@ -145,13 +124,5 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
         />
       </div>
     </DashboardLayout>
-  );
-}
-
-export default function ReportsPage({ searchParams }: ReportsPageProps) {
-  return (
-    <Suspense fallback={<div>Loading campaign reports...</div>}>
-      <ReportsPageContent searchParams={searchParams} />
-    </Suspense>
   );
 }

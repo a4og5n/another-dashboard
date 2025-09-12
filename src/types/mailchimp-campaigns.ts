@@ -19,6 +19,12 @@
 import { z } from "zod";
 import { mailchimpCampaignsQuerySchema } from "@/schemas/mailchimp-campaigns";
 
-export type MailchimpCampaignsQuery = z.infer<
+export type MailchimpCampaignsQueryBase = z.infer<
   typeof mailchimpCampaignsQuerySchema
 >;
+
+export interface MailchimpCampaignsQuery
+  extends Omit<MailchimpCampaignsQueryBase, "fields" | "exclude_fields"> {
+  fields?: string[];
+  exclude_fields?: string[];
+}

@@ -57,5 +57,32 @@ export function validateMailchimpCampaignsQuery(
       result.error,
     );
   }
-  return result.data;
+
+  // Transform fields and exclude_fields from string to arrays
+  const data = result.data;
+
+  // Create a new object with the transformed data
+  const transformedData: MailchimpCampaignsQuery = {
+    ...data,
+    fields:
+      data.fields === undefined
+        ? undefined
+        : data.fields === ""
+          ? []
+          : data.fields
+              .split(",")
+              .map((field) => field.trim())
+              .filter(Boolean),
+    exclude_fields:
+      data.exclude_fields === undefined
+        ? undefined
+        : data.exclude_fields === ""
+          ? []
+          : data.exclude_fields
+              .split(",")
+              .map((field) => field.trim())
+              .filter(Boolean),
+  };
+
+  return transformedData;
 }

@@ -28,7 +28,7 @@ describe("Mailchimp campaigns API route", () => {
             reports: [
               {
                 id: "abc123",
-                type: "regular",
+                type: "regular" as const,
                 campaign_title: "Test Campaign",
                 list_id: "list123",
                 list_is_active: true,
@@ -86,7 +86,7 @@ describe("Mailchimp campaigns API route", () => {
                 delivery_status: {
                   enabled: true,
                   can_cancel: false,
-                  status: "sent" as const,
+                  status: "delivered" as const,
                   emails_sent: 100,
                   emails_canceled: 0,
                 },
@@ -107,7 +107,7 @@ describe("Mailchimp campaigns API route", () => {
           data: {
             id: campaignId,
             campaign_title: "Test Campaign",
-            type: "regular",
+            type: "regular" as const,
             list_id: "list123",
             list_is_active: true,
             list_name: "Test List",
@@ -160,7 +160,7 @@ describe("Mailchimp campaigns API route", () => {
             delivery_status: {
               enabled: true,
               can_cancel: false,
-              status: "sent" as const,
+              status: "delivered" as const,
               emails_sent: 100,
               emails_canceled: 0,
             },
@@ -288,7 +288,7 @@ describe("Mailchimp campaigns API route", () => {
           data: {
             id: campaignId,
             web_id: 789,
-            type: "regular",
+            type: "regular" as const,
             create_time: "2025-08-26T00:00:00+00:00",
             archive_url: "https://mailchimp.com/archive/def456",
             long_archive_url: "https://mailchimp.com/archive/def456/long",
@@ -378,6 +378,8 @@ describe("Mailchimp campaigns API route", () => {
     // For this mock, we expect the service to throw for invalid type
     const service = services.getMailchimpService();
     try {
+      // Using any to bypass type checking for this test case
+      // @ts-expect-error - Testing invalid type
       await service.getCampaignReports({ type: "invalidtype" });
       throw new Error("Expected error not thrown");
     } catch (err) {

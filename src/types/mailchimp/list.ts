@@ -1,0 +1,42 @@
+/**
+ * Mailchimp List TypeScript Types
+ * Types inferred from Zod schemas for the Mailchimp API lists endpoint
+ */
+import { z } from "zod";
+import type {
+  MailchimpListSchema,
+  MailchimpListResponseSchema,
+  ListContactSchema,
+  ListCampaignDefaultsSchema,
+  ListStatsSchema,
+  LIST_VISIBILITY,
+} from "@/schemas/mailchimp/list.schema";
+
+// Nested object types
+export type ListContact = z.infer<typeof ListContactSchema>;
+export type ListCampaignDefaults = z.infer<typeof ListCampaignDefaultsSchema>;
+export type ListStats = z.infer<typeof ListStatsSchema>;
+
+// Main API response types
+export type MailchimpList = z.infer<typeof MailchimpListSchema>;
+export type MailchimpListResponse = z.infer<typeof MailchimpListResponseSchema>;
+
+// List visibility type
+export type ListVisibility = (typeof LIST_VISIBILITY)[number];
+
+/**
+ * Query parameters for retrieving lists
+ */
+export interface MailchimpListsQuery {
+  fields?: string;
+  exclude_fields?: string;
+  count?: number;
+  offset?: number;
+  before_date_created?: string;
+  since_date_created?: string;
+  before_campaign_last_sent?: string;
+  since_campaign_last_sent?: string;
+  email?: string;
+  sort_field?: "date_created" | "member_count";
+  sort_dir?: "ASC" | "DESC";
+}
