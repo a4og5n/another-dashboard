@@ -14,6 +14,8 @@ import type {
   ReportListQuery,
   MailchimpList,
   MailchimpListsQuery,
+  OpenListQueryParams,
+  ReportOpenListSuccess,
 } from "@/types/mailchimp";
 import type { CampaignReport } from "@/schemas/mailchimp/common/campaign-report.schema";
 
@@ -190,6 +192,32 @@ export class MailchimpService extends BaseApiService {
     }
 
     return this.get("/reports", queryParams);
+  }
+
+  /**
+   * Get campaign open list (who opened the campaign)
+   * @param campaignId - The campaign ID to get open list for
+   * @param params - Optional query parameters for pagination and filtering
+   */
+  async getCampaignOpenList(
+    campaignId: string,
+    params?: OpenListQueryParams,
+  ): Promise<ApiResponse<ReportOpenListSuccess>> {
+    // Convert OpenListQueryParams to base service format
+    const queryParams: Record<string, string | number | boolean | string[]> =
+      {};
+    if (params) {
+      if (params.fields) queryParams.fields = params.fields;
+      if (params.exclude_fields)
+        queryParams.exclude_fields = params.exclude_fields;
+      if (params.count) queryParams.count = params.count;
+      if (params.offset) queryParams.offset = params.offset;
+      if (params.since) queryParams.since = params.since;
+      if (params.sort_field) queryParams.sort_field = params.sort_field;
+      if (params.sort_dir) queryParams.sort_dir = params.sort_dir;
+    }
+
+    return this.get(`/reports/${campaignId}/open-details`, queryParams);
   }
 
   /**
