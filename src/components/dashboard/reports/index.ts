@@ -41,5 +41,5 @@ export { CampaignReportLoading } from "@/components/dashboard/reports/CampaignRe
 
 // Campaign opens components
 export { CampaignOpensTable } from "@/components/dashboard/reports/CampaignOpensTable";
-export { CampaignOpensClient } from "@/components/dashboard/reports/CampaignOpensClient";
+export { CampaignOpens } from "@/components/dashboard/reports/CampaignOpensClient";
 export { CampaignOpensLoading } from "@/components/dashboard/reports/CampaignOpensLoading";

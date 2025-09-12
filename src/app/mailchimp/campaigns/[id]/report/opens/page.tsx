@@ -10,9 +10,9 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getMailchimpCampaignOpenList } from "@/actions/mailchimp-reports-open";
 import { BreadcrumbNavigation } from "@/components/layout";
-import { CampaignOpensPageProps } from "@/types/mailchimp";
+import type { CampaignOpensPageProps } from "@/types/mailchimp/campaign-opens-page-props";
 import {
-  CampaignOpensClient,
+  CampaignOpens,
   CampaignOpensLoading,
 } from "@/components/dashboard/reports";
 
@@ -28,7 +28,7 @@ export default async function CampaignOpensPage({
   const queryParams = {
     fields,
     exclude_fields,
-    count: count ? parseInt(count, 10) : 25, // Default to 25 items per page
+    count: count ? parseInt(count, 10) : 10, // Default to 10 items per page
     offset: offset ? parseInt(offset, 10) : 0,
     since,
     sort_field,
@@ -84,7 +84,7 @@ export default async function CampaignOpensPage({
 
           {/* Opens Table */}
           <Suspense fallback={<CampaignOpensLoading />}>
-            <CampaignOpensClient
+            <CampaignOpens
               opensData={opensData}
               currentParams={queryParams}
               campaignId={id}

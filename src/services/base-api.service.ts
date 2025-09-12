@@ -170,6 +170,9 @@ export abstract class BaseApiService {
       url += `?${searchParams.toString()}`;
     }
 
+    console.log("BaseApiService GET URL:", url);
+    console.log("BaseApiService GET params:", params);
+
     return this.httpClient<T>(url, { method: "GET" });
   }
 

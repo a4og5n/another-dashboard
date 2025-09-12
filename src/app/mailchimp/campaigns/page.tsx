@@ -9,7 +9,7 @@
 
 import { Suspense } from "react";
 import { CampaignsPageProps } from "@/types/mailchimp/campaigns-page-props";
-import { CampaignsPageContent } from "./_components/campaigns-page-content";
+import { CampaignsPageContent } from "@/app/mailchimp/campaigns/_components/campaigns-page-content";
 
 /**
  * Main page component for the Campaigns route

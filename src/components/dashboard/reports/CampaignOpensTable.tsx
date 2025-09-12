@@ -9,6 +9,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Link from "next/link";
 import {
   ColumnDef,
   flexRender,
@@ -25,9 +26,9 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
+import { formatDateTime } from "@/utils";
 import {
   Mail,
   Eye,
@@ -37,18 +38,14 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-import type {
-  ReportOpenListMember,
-  CampaignOpensTableProps,
-} from "@/types/mailchimp";
+import type { ReportOpenListMember } from "@/types/mailchimp/report-open-list";
+import type { CampaignOpensTableProps } from "@/types/mailchimp/campaign-opens-page-props";
 
 export function CampaignOpensTable({
   opensData,
   currentParams,
   perPageOptions = [10, 20, 50],
-  onPageChange,
-  onPerPageChange,
-  onSortChange,
+  baseUrl,
 }: CampaignOpensTableProps) {
   const { members, total_items, total_opens, total_proxy_excluded_opens } =
     opensData;
@@ -58,17 +55,44 @@ export function CampaignOpensTable({
   const currentPage = Math.floor(offset / count) + 1;
   const totalPages = Math.ceil(total_items / count);
 
-  // Utility functions
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+  // Helper functions for URL generation
+  const createUrl = (params: Record<string, string | number>) => {
+    const searchParams = new URLSearchParams();
+
+    // Set current parameters
+    Object.entries(currentParams).forEach(([key, value]) => {
+      searchParams.set(key, value.toString());
+    });
+
+    // Override with new parameters
+    Object.entries(params).forEach(([key, value]) => {
+      searchParams.set(key, value.toString());
+    });
+
+    return `${baseUrl}?${searchParams.toString()}`;
+  };
+
+  const createSortUrl = (sortField: "opens_count", sortDir: "ASC" | "DESC") => {
+    return createUrl({
+      offset: "0", // Reset to first page when sorting
+      sort_field: sortField,
+      sort_dir: sortDir,
     });
   };
 
+  const createPageUrl = (page: number) => {
+    const newOffset = (page - 1) * count;
+    return createUrl({ offset: newOffset });
+  };
+
+  const createPerPageUrl = (newPerPage: number) => {
+    return createUrl({
+      offset: "0", // Reset to first page
+      count: newPerPage,
+    });
+  };
+
+  // Utility functions
   const getVipBadge = (isVip: boolean) => {
     return isVip ? (
       <Badge variant="secondary" className="text-xs">
@@ -97,33 +121,11 @@ export function CampaignOpensTable({
     () => [
       {
         accessorKey: "email_address",
-        header: () => {
-          const isSorted = sort_field === "email_address";
-          const isDesc = isSorted && sort_dir === "DESC";
-          const isAsc = isSorted && sort_dir === "ASC";
-
-          return (
-            <Button
-              variant="ghost"
-              onClick={() => {
-                if (onSortChange) {
-                  const newDir = isAsc ? "DESC" : "ASC";
-                  onSortChange("email_address", newDir);
-                }
-              }}
-              className="h-8 px-2 lg:px-3"
-            >
-              Email Address
-              {isDesc ? (
-                <ArrowDown className="ml-2 h-3 w-3" />
-              ) : isAsc ? (
-                <ArrowUp className="ml-2 h-3 w-3" />
-              ) : (
-                <ArrowUpDown className="ml-2 h-3 w-3" />
-              )}
-            </Button>
-          );
-        },
+        header: () => (
+          <div className="h-8 px-2 lg:px-3 flex items-center">
+            Email Address
+          </div>
+        ),
         cell: ({ row }) => (
           <div className="font-medium max-w-xs">
             <div className="truncate" title={row.getValue("email_address")}>
@@ -134,33 +136,9 @@ export function CampaignOpensTable({
       },
       {
         accessorKey: "contact_status",
-        header: () => {
-          const isSorted = sort_field === "contact_status";
-          const isDesc = isSorted && sort_dir === "DESC";
-          const isAsc = isSorted && sort_dir === "ASC";
-
-          return (
-            <Button
-              variant="ghost"
-              onClick={() => {
-                if (onSortChange) {
-                  const newDir = isAsc ? "DESC" : "ASC";
-                  onSortChange("contact_status", newDir);
-                }
-              }}
-              className="h-8 px-2 lg:px-3"
-            >
-              Status
-              {isDesc ? (
-                <ArrowDown className="ml-2 h-3 w-3" />
-              ) : isAsc ? (
-                <ArrowUp className="ml-2 h-3 w-3" />
-              ) : (
-                <ArrowUpDown className="ml-2 h-3 w-3" />
-              )}
-            </Button>
-          );
-        },
+        header: () => (
+          <div className="h-8 px-2 lg:px-3 flex items-center">Status</div>
+        ),
         cell: ({ row }) => getStatusBadge(row.getValue("contact_status")),
       },
       {
@@ -169,18 +147,14 @@ export function CampaignOpensTable({
           const isSorted = sort_field === "opens_count";
           const isDesc = isSorted && sort_dir === "DESC";
           const isAsc = isSorted && sort_dir === "ASC";
+          const newDir = isAsc ? "DESC" : "ASC";
+          const sortUrl = createSortUrl("opens_count", newDir);
 
           return (
             <div className="text-right">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  if (onSortChange) {
-                    const newDir = isAsc ? "DESC" : "ASC";
-                    onSortChange("opens_count", newDir);
-                  }
-                }}
-                className="h-8 px-2 lg:px-3"
+              <Link
+                href={sortUrl}
+                className="h-8 px-2 lg:px-3 flex items-center justify-end hover:bg-accent rounded-md"
               >
                 Opens Count
                 {isDesc ? (
@@ -190,7 +164,7 @@ export function CampaignOpensTable({
                 ) : (
                   <ArrowUpDown className="ml-2 h-3 w-3" />
                 )}
-              </Button>
+              </Link>
             </div>
           );
         },
@@ -202,33 +176,9 @@ export function CampaignOpensTable({
       },
       {
         id: "last_opened",
-        header: () => {
-          const isSorted = sort_field === "last_opened";
-          const isDesc = isSorted && sort_dir === "DESC";
-          const isAsc = isSorted && sort_dir === "ASC";
-
-          return (
-            <Button
-              variant="ghost"
-              onClick={() => {
-                if (onSortChange) {
-                  const newDir = isAsc ? "DESC" : "ASC";
-                  onSortChange("last_opened", newDir);
-                }
-              }}
-              className="h-8 px-2 lg:px-3"
-            >
-              Last Opened
-              {isDesc ? (
-                <ArrowDown className="ml-2 h-3 w-3" />
-              ) : isAsc ? (
-                <ArrowUp className="ml-2 h-3 w-3" />
-              ) : (
-                <ArrowUpDown className="ml-2 h-3 w-3" />
-              )}
-            </Button>
-          );
-        },
+        header: () => (
+          <div className="h-8 px-2 lg:px-3 flex items-center">Last Opened</div>
+        ),
         accessorFn: (row) => {
           const lastOpen = row.opens[row.opens.length - 1];
           return lastOpen ? lastOpen.timestamp : "";
@@ -238,44 +188,20 @@ export function CampaignOpensTable({
           const lastOpen = member.opens[member.opens.length - 1];
           return (
             <div className="text-muted-foreground">
-              {lastOpen ? formatDate(lastOpen.timestamp) : "—"}
+              {lastOpen ? formatDateTime(lastOpen.timestamp) : "—"}
             </div>
           );
         },
       },
       {
         accessorKey: "vip",
-        header: () => {
-          const isSorted = sort_field === "vip";
-          const isDesc = isSorted && sort_dir === "DESC";
-          const isAsc = isSorted && sort_dir === "ASC";
-
-          return (
-            <Button
-              variant="ghost"
-              onClick={() => {
-                if (onSortChange) {
-                  const newDir = isAsc ? "DESC" : "ASC";
-                  onSortChange("vip", newDir);
-                }
-              }}
-              className="h-8 px-2 lg:px-3"
-            >
-              VIP
-              {isDesc ? (
-                <ArrowDown className="ml-2 h-3 w-3" />
-              ) : isAsc ? (
-                <ArrowUp className="ml-2 h-3 w-3" />
-              ) : (
-                <ArrowUpDown className="ml-2 h-3 w-3" />
-              )}
-            </Button>
-          );
-        },
+        header: () => (
+          <div className="h-8 px-2 lg:px-3 flex items-center">VIP</div>
+        ),
         cell: ({ row }) => getVipBadge(row.getValue("vip")),
       },
     ],
-    [sort_field, sort_dir, onSortChange],
+    [sort_field, sort_dir, baseUrl, currentParams],
   );
 
   // Initialize the table
@@ -414,12 +340,13 @@ export function CampaignOpensTable({
           <PerPageSelector
             value={count}
             options={perPageOptions}
-            onChange={onPerPageChange || (() => {})}
+            createPerPageUrl={createPerPageUrl}
+            itemName="items per page"
           />
           <PaginationControls
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={onPageChange || (() => {})}
+            createPageUrl={createPageUrl}
           />
         </div>
       )}

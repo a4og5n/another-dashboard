@@ -34,7 +34,5 @@ export interface CampaignOpensTableProps {
   opensData: ReportOpenListSuccess;
   currentParams: OpenListQueryParams & { count: number; offset: number };
   perPageOptions?: number[];
-  onPageChange?: (page: number) => void;
-  onPerPageChange?: (perPage: number) => void;
-  onSortChange?: (sortField: string, sortDir: "ASC" | "DESC") => void;
+  baseUrl: string; // Base URL for navigation (replaces callback functions)
 }

@@ -8,7 +8,11 @@ import { DashboardError } from "@/components/dashboard/shared/dashboard-error";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { ReportsOverviewClient } from "@/components/dashboard/reports-overview-client";
 import { getMailchimpService, type MailchimpCampaignReport } from "@/services";
-import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
+import {
+  CAMPAIGNS_PER_PAGE_OPTIONS,
+  CAMPAIGN_TYPES,
+} from "@/schemas/mailchimp/campaign-query.schema";
+import { validateCampaignsPageParams } from "@/utils/mailchimp/query-params";
 import { CampaignsPageProps } from "@/types/mailchimp/campaigns-page-props";
 
 /**
@@ -20,59 +24,59 @@ export async function CampaignsPageContent({
   // Await searchParams as required by Next.js 15
   const params = await searchParams;
 
-  // Parse URL params with validation
-  const currentPage = Math.max(1, parseInt(params.page || "1"));
-  const perPage = Math.max(1, parseInt(params.perPage || "10"));
+  // Validate parameters using centralized schema - following Next.js best practices
+  const validationResult = validateCampaignsPageParams(params);
 
-  // Per-page options for selector
-  const perPageOptions = [10, 20, 50];
+  if (!validationResult.success) {
+    return (
+      <DashboardLayout>
+        <DashboardError
+          error={validationResult.error}
+          onRetry={() => window.location.reload()}
+          onGoHome={() => (window.location.href = "/mailchimp")}
+        />
+      </DashboardLayout>
+    );
+  }
 
-  // Safely type-cast campaign type to valid enum values using schema constants
-  const rawType = params.type;
-  // Type guard to validate type
-  const isValidType = rawType && REPORT_TYPES.some((type) => type === rawType);
-  const reportType = isValidType
-    ? (rawType as (typeof REPORT_TYPES)[number])
-    : undefined;
-
-  const beforeSendTime = params.before_send_time;
-  const sinceSendTime = params.since_send_time;
+  const {
+    page: currentPage,
+    perPage,
+    type: reportType,
+    before_send_time: beforeSendTime,
+    since_send_time: sinceSendTime,
+  } = validationResult.data;
 
   // Fetch data from Mailchimp service on server side
   let reports: MailchimpCampaignReport[] = [];
   let totalCount = 0;
   let error: string | null = null;
 
-  try {
-    // Get Mailchimp service and fetch reports directly
-    const mailchimp = getMailchimpService();
+  // Get Mailchimp service and fetch reports directly
+  const mailchimp = getMailchimpService();
 
-    const serviceParams = {
-      count: perPage,
-      offset: (currentPage - 1) * perPage,
-      ...(reportType && { type: reportType }),
-      ...(beforeSendTime && { before_send_time: beforeSendTime }),
-      ...(sinceSendTime && { since_send_time: sinceSendTime }),
-    };
+  const serviceParams = {
+    count: perPage,
+    offset: (currentPage - 1) * perPage,
+    ...(reportType && { type: reportType as (typeof CAMPAIGN_TYPES)[number] }),
+    ...(beforeSendTime && { before_send_time: beforeSendTime }),
+    ...(sinceSendTime && { since_send_time: sinceSendTime }),
+  };
 
-    // Fetch campaign reports from Mailchimp service
-    const response = await mailchimp.getCampaignReports(serviceParams);
+  // Fetch campaign reports from Mailchimp service
+  const response = await mailchimp.getCampaignReports(serviceParams);
 
-    if (!response.success) {
-      error = response.error || "Failed to load campaign reports";
-    } else if (response.data) {
-      const reportsData = response.data;
+  // Handle expected errors by checking service response
+  if (!response.success) {
+    error = response.error || "Failed to load campaign reports";
+  } else if (response.data) {
+    const reportsData = response.data;
 
-      // Use Mailchimp API response directly
-      if (reportsData.reports) {
-        reports = reportsData.reports;
-        totalCount = reportsData.total_items || reports.length;
-      }
+    // Use Mailchimp API response directly
+    if (reportsData.reports) {
+      reports = reportsData.reports;
+      totalCount = reportsData.total_items || reports.length;
     }
-  } catch (err) {
-    console.error("Failed to fetch campaign reports:", err);
-    error =
-      err instanceof Error ? err.message : "Failed to load campaign reports";
   }
 
   // Handle error state
@@ -117,7 +121,7 @@ export async function CampaignsPageContent({
           currentPage={currentPage}
           totalPages={Math.max(1, Math.ceil(totalCount / perPage))}
           perPage={perPage}
-          perPageOptions={perPageOptions}
+          perPageOptions={[...CAMPAIGNS_PER_PAGE_OPTIONS]}
           reportType={reportType}
           beforeSendTime={beforeSendTime}
           sinceSendTime={sinceSendTime}

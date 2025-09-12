@@ -22,7 +22,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { type ReportAbSplit } from "@/types/mailchimp/reports";
+import { type AbSplitCardProps } from "@/types/components";
 import { LuSplit } from "react-icons/lu";
 import {
   Bar,
@@ -34,12 +34,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { format, parseISO } from "date-fns";
-
-interface AbSplitCardProps {
-  abSplit: ReportAbSplit;
-  className?: string;
-}
+import { formatDateTimeSafe } from "@/utils";
 
 export function AbSplitCard({ abSplit, className }: AbSplitCardProps) {
   const [metricType, setMetricType] = useState<string>("opens");
@@ -52,16 +47,6 @@ export function AbSplitCard({ abSplit, className }: AbSplitCardProps) {
     const winner = diff > 0 ? "B" : diff < 0 ? "A" : null;
 
     return { diff: Math.abs(diff), winner };
-  };
-
-  // Format a date string to be more readable
-  const formatDate = (dateString: string) => {
-    try {
-      return format(parseISO(dateString), "MMM d, yyyy h:mm a");
-    } catch {
-      // Silently handle parsing errors
-      return "Invalid Date";
-    }
   };
 
   // Prepare data for the bar chart comparison
@@ -280,13 +265,13 @@ export function AbSplitCard({ abSplit, className }: AbSplitCardProps) {
           <div>
             <h4 className="font-medium mb-1">Version A Last Activity</h4>
             <p className="text-muted-foreground">
-              Last opened: {formatDate(abSplit.a.last_open)}
+              Last opened: {formatDateTimeSafe(abSplit.a.last_open)}
             </p>
           </div>
           <div>
             <h4 className="font-medium mb-1">Version B Last Activity</h4>
             <p className="text-muted-foreground">
-              Last opened: {formatDate(abSplit.b.last_open)}
+              Last opened: {formatDateTimeSafe(abSplit.b.last_open)}
             </p>
           </div>
         </div>

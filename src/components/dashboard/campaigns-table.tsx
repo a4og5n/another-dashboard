@@ -7,32 +7,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { DateFilterPopover } from "@/components/ui/date-filter-popover";
+import { CampaignStatusBadge } from "@/components/ui/campaign-status-badge";
 import { Mail } from "lucide-react";
-import { DateRange } from "react-day-picker";
 import { CampaignsArraySchema } from "@/schemas/campaign";
 import type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
-
-interface CampaignsTableProps {
-  /**
-   * Campaigns data to display in the table.
-   * Validated with Zod schema for safety. Accepts any input, but only valid campaigns are rendered.
-   * If validation fails, the table will be empty and no runtime error will occur.
-   *
-   * @see CampaignSchema for validation
-   * @example
-   * <CampaignsTable campaigns={dataFromApi} />
-   */
-  campaigns: unknown;
-  loading?: boolean;
-  // Date filtering props
-  dateRange?: DateRange;
-  onDateRangeChange?: (range: DateRange | undefined) => void;
-  onPresetSelect?: (range: DateRange | undefined) => void;
-}
+import type { CampaignsTableProps } from "@/types/components/dashboard/campaigns-table";
+import { formatDateShort } from "@/utils";
 
 export function CampaignsTable({
   campaigns,
@@ -55,31 +38,6 @@ export function CampaignsTable({
     // Optionally log error or show fallback UI
     safeCampaigns = [];
   }
-
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "sent":
-        return <Badge variant="default">Sent</Badge>;
-      case "sending":
-        return <Badge variant="secondary">Sending</Badge>;
-      case "schedule":
-        return <Badge variant="outline">Scheduled</Badge>;
-      case "save":
-        return <Badge variant="secondary">Draft</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  // Defensive: Zod validation ensures campaigns is always an array
 
   return (
     <Card>
@@ -119,13 +77,15 @@ export function CampaignsTable({
                         {campaign.title}
                       </div>
                     </TableCell>
-                    <TableCell>{getStatusBadge(campaign.status)}</TableCell>
+                    <TableCell>
+                      <CampaignStatusBadge status={campaign.status} />
+                    </TableCell>
                     <TableCell className="text-right">
                       {campaign.emailsSent.toLocaleString()}
                     </TableCell>
                     {/* ...existing code... */}
                     <TableCell className="text-right text-muted-foreground">
-                      {formatDate(campaign.sendTime)}
+                      {formatDateShort(campaign.sendTime)}
                     </TableCell>
                   </TableRow>
                 ))}
