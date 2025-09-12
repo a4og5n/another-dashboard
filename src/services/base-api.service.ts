@@ -235,7 +235,19 @@ export abstract class BaseApiService {
     if (!isDev || !env.DEBUG_API_CALLS) return;
 
     console.log(`✅ [${this.serviceName}] ${status} - ${url}`);
-    console.log(`📦 [${this.serviceName}] Response:`, data);
+
+    // Only log response data if explicitly requested via VERBOSE_API_LOGS
+    if (process.env.VERBOSE_API_LOGS === "true") {
+      console.log(`📦 [${this.serviceName}] Response:`, data);
+    } else {
+      // Just log a summary of the response
+      if (data && typeof data === "object") {
+        const summary = Array.isArray(data)
+          ? `Array[${data.length}]`
+          : `Object{${Object.keys(data).length} keys}`;
+        console.log(`📦 [${this.serviceName}] Response: ${summary}`);
+      }
+    }
   }
 
   protected logError(url: string, error: Error, attempt: number): void {

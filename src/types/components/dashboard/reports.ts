@@ -195,6 +195,8 @@ export interface ClicksCardProps {
 export interface OpensCardProps {
   /** Open statistics for the campaign */
   opens: ReportOpens;
+  /** Campaign ID for navigation to detailed opens page */
+  campaignId: string;
   /** Optional CSS class name */
   className?: string;
 }

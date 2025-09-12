@@ -6,13 +6,15 @@
  */
 
 import { useState } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { MailOpen } from "lucide-react";
+import { MailOpen, ExternalLink } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { OpensCardProps } from "@/types/components/dashboard/reports";
 
-export function OpensCard({ opens }: OpensCardProps) {
+export function OpensCard({ opens, campaignId }: OpensCardProps) {
   const [showProxyExcluded, setShowProxyExcluded] = useState(false);
 
   // Format last open date as a relative time (e.g., "2 days ago")
@@ -88,6 +90,16 @@ export function OpensCard({ opens }: OpensCardProps) {
               Last opened {lastOpenRelative}
             </span>
           </div>
+        </div>
+
+        {/* View Details Button */}
+        <div className="pt-2 border-t">
+          <Link href={`/mailchimp/campaigns/${campaignId}/report/opens`}>
+            <Button variant="outline" className="w-full" size="sm">
+              <ExternalLink className="h-3 w-3 mr-2" />
+              View Opens Details
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>

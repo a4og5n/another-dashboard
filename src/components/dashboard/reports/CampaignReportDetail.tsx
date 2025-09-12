@@ -104,7 +104,7 @@ export function CampaignReportDetail({ report }: CampaignReportDetailProps) {
 
           {/* Main Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <OpensCard opens={report.opens} />
+            <OpensCard opens={report.opens} campaignId={report.id} />
             <ClicksCard clicks={report.clicks} />
           </div>
         </TabsContent>
