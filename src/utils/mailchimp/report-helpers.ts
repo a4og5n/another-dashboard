@@ -10,7 +10,7 @@ export function formatHeaderDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
-    month: "long", 
+    month: "long",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
@@ -20,7 +20,9 @@ export function formatHeaderDate(dateString: string): string {
 /**
  * Gets campaign type badge variant
  */
-export function getTypeVariant(type: string): "default" | "secondary" | "outline" {
+export function getTypeVariant(
+  type: string,
+): "default" | "secondary" | "outline" {
   switch (type.toLowerCase()) {
     case "regular":
       return "default";

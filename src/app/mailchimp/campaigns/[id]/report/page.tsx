@@ -51,11 +51,11 @@ export default async function CampaignReportPage({
   return (
     <div className="min-h-screen bg-background">
       {/* Breadcrumb Navigation */}
-      <BreadcrumbNavigation 
+      <BreadcrumbNavigation
         items={[
           { label: "Dashboard", href: "/mailchimp" },
           { label: "Campaigns", href: "/mailchimp/campaigns" },
-          { label: report.campaign_title, isCurrent: true }
+          { label: report.campaign_title, isCurrent: true },
         ]}
       />
 

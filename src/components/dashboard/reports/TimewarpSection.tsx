@@ -22,23 +22,20 @@ export function TimewarpSection({ timewarp }: TimewarpSectionProps) {
               Time Zone Performance
             </h3>
             <p className="text-muted-foreground mb-4">
-              This campaign was sent using Timewarp, delivering your
-              content at the same local time in different time zones.
-              Below you can see how your campaign performed across
-              different regions.
+              This campaign was sent using Timewarp, delivering your content at
+              the same local time in different time zones. Below you can see how
+              your campaign performed across different regions.
             </p>
           </div>
           <TimewarpCard timewarp={timewarp} />
         </>
       ) : (
         <div className="bg-card rounded-xl border shadow-sm p-6">
-          <h3 className="text-xl font-semibold mb-4">
-            Timewarp Not Available
-          </h3>
+          <h3 className="text-xl font-semibold mb-4">Timewarp Not Available</h3>
           <p className="text-muted-foreground">
-            This campaign was not sent using Timewarp, or no time zone
-            data is available. Timewarp allows you to send campaigns to
-            arrive at the same local time in different time zones.
+            This campaign was not sent using Timewarp, or no time zone data is
+            available. Timewarp allows you to send campaigns to arrive at the
+            same local time in different time zones.
           </p>
         </div>
       )}

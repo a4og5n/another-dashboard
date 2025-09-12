@@ -23,7 +23,8 @@ export type MailchimpCampaignsQueryBase = z.infer<
   typeof mailchimpCampaignsQuerySchema
 >;
 
-export interface MailchimpCampaignsQuery extends Omit<MailchimpCampaignsQueryBase, 'fields' | 'exclude_fields'> {
+export interface MailchimpCampaignsQuery
+  extends Omit<MailchimpCampaignsQueryBase, "fields" | "exclude_fields"> {
   fields?: string[];
   exclude_fields?: string[];
 }

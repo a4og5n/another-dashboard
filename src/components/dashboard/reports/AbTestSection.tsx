@@ -18,13 +18,11 @@ export function AbTestSection({ abSplit }: AbTestSectionProps) {
       {hasAbTestData ? (
         <>
           <div className="bg-card rounded-xl border shadow-sm p-6">
-            <h3 className="text-xl font-semibold mb-4">
-              A/B Test Results
-            </h3>
+            <h3 className="text-xl font-semibold mb-4">A/B Test Results</h3>
             <p className="text-muted-foreground mb-4">
-              This campaign was sent as an A/B test with two different
-              variants. Compare the performance of each variant to
-              determine which was more effective.
+              This campaign was sent as an A/B test with two different variants.
+              Compare the performance of each variant to determine which was
+              more effective.
             </p>
           </div>
           <AbSplitCard abSplit={abSplit} />
@@ -35,9 +33,9 @@ export function AbTestSection({ abSplit }: AbTestSectionProps) {
             A/B Testing Not Available
           </h3>
           <p className="text-muted-foreground">
-            This campaign was not sent as an A/B test, or no A/B test
-            data is available. A/B testing allows you to test different
-            versions of your campaign to see which performs better.
+            This campaign was not sent as an A/B test, or no A/B test data is
+            available. A/B testing allows you to test different versions of your
+            campaign to see which performs better.
           </p>
         </div>
       )}

@@ -1,7 +1,7 @@
 /**
  * Breadcrumb Navigation Component
  * Reusable breadcrumb component for consistent page navigation
- * 
+ *
  * Following project guidelines to create reusable UI components
  * and keep page components lean
  */
@@ -17,7 +17,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import type { BreadcrumbNavigationProps } from "@/types/components";
 
-export function BreadcrumbNavigation({ items, className = "" }: BreadcrumbNavigationProps) {
+export function BreadcrumbNavigation({
+  items,
+  className = "",
+}: BreadcrumbNavigationProps) {
   return (
     <div className={`container mx-auto pt-20 pb-4 ${className}`}>
       <Breadcrumb>
@@ -30,7 +33,9 @@ export function BreadcrumbNavigation({ items, className = "" }: BreadcrumbNaviga
                     <Link href={item.href}>{item.label}</Link>
                   </BreadcrumbLink>
                 ) : (
-                  <span className={item.isCurrent ? "font-medium" : ""}>{item.label}</span>
+                  <span className={item.isCurrent ? "font-medium" : ""}>
+                    {item.label}
+                  </span>
                 )}
               </BreadcrumbItemUI>
               {index < items.length - 1 && <BreadcrumbSeparator />}

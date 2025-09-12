@@ -16,12 +16,17 @@ console.log("NODE_ENV:", process.env.NODE_ENV);
 // Display all environment variables (sanitized)
 console.log("\n=== ALL ENV VARIABLES ===");
 const allEnvKeys = Object.keys(process.env).sort();
-allEnvKeys.forEach(key => {
+allEnvKeys.forEach((key) => {
   const value = process.env[key];
-  if (key.includes("KEY") || key.includes("SECRET") || key.includes("TOKEN") || key.includes("PASSWORD")) {
-    console.log(`${key}: ${value ? '[REDACTED]' : 'undefined'}`);
+  if (
+    key.includes("KEY") ||
+    key.includes("SECRET") ||
+    key.includes("TOKEN") ||
+    key.includes("PASSWORD")
+  ) {
+    console.log(`${key}: ${value ? "[REDACTED]" : "undefined"}`);
   } else {
-    console.log(`${key}: ${value || 'undefined'}`);
+    console.log(`${key}: ${value || "undefined"}`);
   }
 });
 
@@ -94,7 +99,7 @@ const fullEnvSchema = z.object({
 
 // Test each key individually
 console.log("\n=== INDIVIDUAL VALIDATION ===");
-allEnvKeys.forEach(key => {
+allEnvKeys.forEach((key) => {
   try {
     const singleSchema = z.object({ [key]: z.any() });
     singleSchema.parse({ [key]: process.env[key] });
@@ -110,16 +115,31 @@ try {
   const result = fullEnvSchema.safeParse(process.env);
   if (result.success) {
     console.log("✅ Schema validation PASSED");
-    
+
     // Check transformed values
     const data = result.data;
     console.log("\nTransformed Values:");
-    console.log("DEBUG_API_CALLS:", typeof data.DEBUG_API_CALLS, data.DEBUG_API_CALLS);
-    console.log("ENABLE_MOCK_DATA:", typeof data.ENABLE_MOCK_DATA, data.ENABLE_MOCK_DATA);
-    console.log("NEXT_PUBLIC_VERCEL_ANALYTICS:", typeof data.NEXT_PUBLIC_VERCEL_ANALYTICS, data.NEXT_PUBLIC_VERCEL_ANALYTICS);
+    console.log(
+      "DEBUG_API_CALLS:",
+      typeof data.DEBUG_API_CALLS,
+      data.DEBUG_API_CALLS,
+    );
+    console.log(
+      "ENABLE_MOCK_DATA:",
+      typeof data.ENABLE_MOCK_DATA,
+      data.ENABLE_MOCK_DATA,
+    );
+    console.log(
+      "NEXT_PUBLIC_VERCEL_ANALYTICS:",
+      typeof data.NEXT_PUBLIC_VERCEL_ANALYTICS,
+      data.NEXT_PUBLIC_VERCEL_ANALYTICS,
+    );
   } else {
     console.log("❌ Schema validation FAILED");
-    console.log("\nError details:", JSON.stringify(result.error.format(), null, 2));
+    console.log(
+      "\nError details:",
+      JSON.stringify(result.error.format(), null, 2),
+    );
   }
 } catch (error) {
   console.log("❌ Schema validation FAILED with exception:", error);

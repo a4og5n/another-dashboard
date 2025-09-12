@@ -1,7 +1,7 @@
 /**
  * Mailchimp Metadata Utilities
  * Functions for generating metadata for Mailchimp-related pages
- * 
+ *
  * Issue #135: Campaign report detail metadata generation
  * Following project guidelines to extract reusable utilities
  */
@@ -11,7 +11,7 @@ import { Metadata } from "next";
 
 /**
  * Generates metadata for campaign-related pages based on campaign ID
- * 
+ *
  * @param params - Object containing the campaign ID
  * @param pageType - The type of page (report, edit, etc.) to generate appropriate title/description
  * @returns Next.js Metadata object for the page
@@ -36,7 +36,7 @@ export async function generateCampaignMetadata({
   }
 
   const report = response.data;
-  
+
   // Create metadata based on page type
   switch (pageType) {
     case "report":

@@ -20,12 +20,12 @@ import {
   BarChart,
   Bar,
 } from "recharts";
-import {
-  TrendingUp,
-  Clock,
-} from "lucide-react";
+import { TrendingUp, Clock } from "lucide-react";
 import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
-import type { ReportTimeseries, ReportTimewarp } from "@/types/mailchimp/reports";
+import type {
+  ReportTimeseries,
+  ReportTimewarp,
+} from "@/types/mailchimp/reports";
 
 interface ReportChartsProps {
   report: MailchimpCampaignReport;
@@ -35,7 +35,7 @@ interface ReportChartsProps {
 
 export function ReportCharts({ report }: ReportChartsProps) {
   // Prepare timeseries data for line chart using the proper type
-  const timeseriesData: ReportTimeseries = report.timeseries || []; 
+  const timeseriesData: ReportTimeseries = report.timeseries || [];
 
   // Prepare timewarp data for bar chart using the proper type
   const timewarpData: ReportTimewarp = report.timewarp || [];
