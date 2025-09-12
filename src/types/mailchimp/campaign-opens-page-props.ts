@@ -36,4 +36,5 @@ export interface CampaignOpensTableProps {
   perPageOptions?: number[];
   onPageChange?: (page: number) => void;
   onPerPageChange?: (perPage: number) => void;
+  onSortChange?: (sortField: string, sortDir: "ASC" | "DESC") => void;
 }

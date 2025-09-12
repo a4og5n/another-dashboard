@@ -13,8 +13,6 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -50,16 +48,15 @@ export function CampaignOpensTable({
   perPageOptions = [10, 20, 50],
   onPageChange,
   onPerPageChange,
+  onSortChange,
 }: CampaignOpensTableProps) {
   const { members, total_items, total_opens, total_proxy_excluded_opens } =
     opensData;
-  const { count, offset } = currentParams;
+  const { count, offset, sort_field, sort_dir } = currentParams;
 
   // Calculate pagination
   const currentPage = Math.floor(offset / count) + 1;
   const totalPages = Math.ceil(total_items / count);
-
-  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   // Utility functions
   const formatDate = (dateString: string) => {
@@ -100,19 +97,26 @@ export function CampaignOpensTable({
     () => [
       {
         accessorKey: "email_address",
-        header: ({ column }) => {
+        header: () => {
+          const isSorted = sort_field === "email_address";
+          const isDesc = isSorted && sort_dir === "DESC";
+          const isAsc = isSorted && sort_dir === "ASC";
+
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => {
+                if (onSortChange) {
+                  const newDir = isAsc ? "DESC" : "ASC";
+                  onSortChange("email_address", newDir);
+                }
+              }}
               className="h-8 px-2 lg:px-3"
             >
               Email Address
-              {column.getIsSorted() === "desc" ? (
+              {isDesc ? (
                 <ArrowDown className="ml-2 h-3 w-3" />
-              ) : column.getIsSorted() === "asc" ? (
+              ) : isAsc ? (
                 <ArrowUp className="ml-2 h-3 w-3" />
               ) : (
                 <ArrowUpDown className="ml-2 h-3 w-3" />
@@ -130,19 +134,26 @@ export function CampaignOpensTable({
       },
       {
         accessorKey: "contact_status",
-        header: ({ column }) => {
+        header: () => {
+          const isSorted = sort_field === "contact_status";
+          const isDesc = isSorted && sort_dir === "DESC";
+          const isAsc = isSorted && sort_dir === "ASC";
+
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => {
+                if (onSortChange) {
+                  const newDir = isAsc ? "DESC" : "ASC";
+                  onSortChange("contact_status", newDir);
+                }
+              }}
               className="h-8 px-2 lg:px-3"
             >
               Status
-              {column.getIsSorted() === "desc" ? (
+              {isDesc ? (
                 <ArrowDown className="ml-2 h-3 w-3" />
-              ) : column.getIsSorted() === "asc" ? (
+              ) : isAsc ? (
                 <ArrowUp className="ml-2 h-3 w-3" />
               ) : (
                 <ArrowUpDown className="ml-2 h-3 w-3" />
@@ -154,20 +165,27 @@ export function CampaignOpensTable({
       },
       {
         accessorKey: "opens_count",
-        header: ({ column }) => {
+        header: () => {
+          const isSorted = sort_field === "opens_count";
+          const isDesc = isSorted && sort_dir === "DESC";
+          const isAsc = isSorted && sort_dir === "ASC";
+
           return (
             <div className="text-right">
               <Button
                 variant="ghost"
-                onClick={() =>
-                  column.toggleSorting(column.getIsSorted() === "asc")
-                }
+                onClick={() => {
+                  if (onSortChange) {
+                    const newDir = isAsc ? "DESC" : "ASC";
+                    onSortChange("opens_count", newDir);
+                  }
+                }}
                 className="h-8 px-2 lg:px-3"
               >
                 Opens Count
-                {column.getIsSorted() === "desc" ? (
+                {isDesc ? (
                   <ArrowDown className="ml-2 h-3 w-3" />
-                ) : column.getIsSorted() === "asc" ? (
+                ) : isAsc ? (
                   <ArrowUp className="ml-2 h-3 w-3" />
                 ) : (
                   <ArrowUpDown className="ml-2 h-3 w-3" />
@@ -184,19 +202,26 @@ export function CampaignOpensTable({
       },
       {
         id: "last_opened",
-        header: ({ column }) => {
+        header: () => {
+          const isSorted = sort_field === "last_opened";
+          const isDesc = isSorted && sort_dir === "DESC";
+          const isAsc = isSorted && sort_dir === "ASC";
+
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => {
+                if (onSortChange) {
+                  const newDir = isAsc ? "DESC" : "ASC";
+                  onSortChange("last_opened", newDir);
+                }
+              }}
               className="h-8 px-2 lg:px-3"
             >
               Last Opened
-              {column.getIsSorted() === "desc" ? (
+              {isDesc ? (
                 <ArrowDown className="ml-2 h-3 w-3" />
-              ) : column.getIsSorted() === "asc" ? (
+              ) : isAsc ? (
                 <ArrowUp className="ml-2 h-3 w-3" />
               ) : (
                 <ArrowUpDown className="ml-2 h-3 w-3" />
@@ -220,19 +245,26 @@ export function CampaignOpensTable({
       },
       {
         accessorKey: "vip",
-        header: ({ column }) => {
+        header: () => {
+          const isSorted = sort_field === "vip";
+          const isDesc = isSorted && sort_dir === "DESC";
+          const isAsc = isSorted && sort_dir === "ASC";
+
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => {
+                if (onSortChange) {
+                  const newDir = isAsc ? "DESC" : "ASC";
+                  onSortChange("vip", newDir);
+                }
+              }}
               className="h-8 px-2 lg:px-3"
             >
               VIP
-              {column.getIsSorted() === "desc" ? (
+              {isDesc ? (
                 <ArrowDown className="ml-2 h-3 w-3" />
-              ) : column.getIsSorted() === "asc" ? (
+              ) : isAsc ? (
                 <ArrowUp className="ml-2 h-3 w-3" />
               ) : (
                 <ArrowUpDown className="ml-2 h-3 w-3" />
@@ -243,7 +275,7 @@ export function CampaignOpensTable({
         cell: ({ row }) => getVipBadge(row.getValue("vip")),
       },
     ],
-    [],
+    [sort_field, sort_dir, onSortChange],
   );
 
   // Initialize the table
@@ -251,13 +283,9 @@ export function CampaignOpensTable({
     data: members,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    state: {
-      sorting,
-    },
-    // Disable built-in pagination since we handle it server-side
+    // Disable built-in pagination and sorting since we handle both server-side
     manualPagination: true,
+    manualSorting: true,
     pageCount: totalPages,
   });
 

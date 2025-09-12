@@ -12,7 +12,7 @@ import { getMailchimpCampaignOpenList } from "@/actions/mailchimp-reports-open";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { CampaignOpensPageProps } from "@/types/mailchimp";
 import {
-  CampaignOpensTable,
+  CampaignOpensClient,
   CampaignOpensLoading,
 } from "@/components/dashboard/reports";
 
@@ -84,9 +84,10 @@ export default async function CampaignOpensPage({
 
           {/* Opens Table */}
           <Suspense fallback={<CampaignOpensLoading />}>
-            <CampaignOpensTable
+            <CampaignOpensClient
               opensData={opensData}
               currentParams={queryParams}
+              campaignId={id}
             />
           </Suspense>
         </div>
