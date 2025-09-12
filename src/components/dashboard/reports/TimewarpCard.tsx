@@ -53,7 +53,8 @@ export function TimewarpCard({ timewarp, className }: TimewarpCardProps) {
     if (!dateString) return "N/A";
     try {
       return format(parseISO(dateString), "MMM d, yyyy h:mm a");
-    } catch (error) {
+    } catch {
+      // Silently handle parsing errors
       return "Invalid Date";
     }
   };

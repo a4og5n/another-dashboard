@@ -32,10 +32,12 @@ export async function GET(request: NextRequest) {
     // Parse and validate query parameters
     // Validate the type parameter against schema constants
     const rawType = searchParams.get("type") || undefined;
-    const type =
-      rawType && REPORT_TYPES.includes(rawType as (typeof REPORT_TYPES)[number])
-        ? (rawType as (typeof REPORT_TYPES)[number])
-        : undefined;
+    // Type guard to validate type
+    const isValidType =
+      rawType && REPORT_TYPES.some((type) => type === rawType);
+    const type = isValidType
+      ? (rawType as (typeof REPORT_TYPES)[number])
+      : undefined;
 
     const queryParams = {
       count: parseInt(

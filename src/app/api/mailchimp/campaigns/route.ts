@@ -74,20 +74,22 @@ export async function GET(request: NextRequest) {
     if (query.type && typeof query.type === "string") {
       if (reports) {
         // When requesting reports, we need to use the REPORT_TYPES constant
-        if (
-          !REPORT_TYPES.includes(query.type as (typeof REPORT_TYPES)[number])
-        ) {
+        // Type guard check to ensure type is valid
+        const queryTypeStr = query.type as string;
+        const validType = REPORT_TYPES.some((type) => type === queryTypeStr);
+        if (!validType) {
           query.type = undefined;
         }
         // Typescript casting to help the type system
         query.type = query.type as (typeof REPORT_TYPES)[number] | undefined;
       } else {
         // For regular campaigns, we can use any valid campaign type
-        if (
-          !MAILCHIMP_CAMPAIGN_TYPES.includes(
-            query.type as (typeof MAILCHIMP_CAMPAIGN_TYPES)[number],
-          )
-        ) {
+        // Type guard check to ensure type is valid
+        const queryTypeStr = query.type as string;
+        const validType = MAILCHIMP_CAMPAIGN_TYPES.some(
+          (type) => type === queryTypeStr,
+        );
+        if (!validType) {
           query.type = undefined;
         }
       }
@@ -97,8 +99,9 @@ export async function GET(request: NextRequest) {
 
     if (reports) {
       // For reports endpoint, create a new query object with the correct typing
-      const reportsQuery = {
+      const reportsQuery: ReportListQuery = {
         ...query,
+        // We've validated the type above, so this cast is safe
         type: query.type as (typeof REPORT_TYPES)[number] | undefined,
         // Ensure fields and exclude_fields are strings, not arrays
         fields: query.fields

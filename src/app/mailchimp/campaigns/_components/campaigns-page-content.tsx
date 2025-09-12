@@ -29,10 +29,11 @@ export async function CampaignsPageContent({
 
   // Safely type-cast campaign type to valid enum values using schema constants
   const rawType = params.type;
-  const reportType =
-    rawType && REPORT_TYPES.includes(rawType as (typeof REPORT_TYPES)[number])
-      ? (rawType as (typeof REPORT_TYPES)[number])
-      : undefined;
+  // Type guard to validate type
+  const isValidType = rawType && REPORT_TYPES.some((type) => type === rawType);
+  const reportType = isValidType
+    ? (rawType as (typeof REPORT_TYPES)[number])
+    : undefined;
 
   const beforeSendTime = params.before_send_time;
   const sinceSendTime = params.since_send_time;
