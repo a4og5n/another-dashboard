@@ -9,7 +9,9 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getMailchimpCampaignOpenList } from "@/actions/mailchimp-reports-open";
+import { processOpenListSearchParams } from "@/utils/mailchimp";
 import { BreadcrumbNavigation } from "@/components/layout";
+import { isDev } from "@/lib/config";
 import type { CampaignOpensPageProps } from "@/types/mailchimp/campaign-opens-page-props";
 import {
   CampaignOpens,
@@ -21,25 +23,16 @@ export default async function CampaignOpensPage({
   searchParams,
 }: CampaignOpensPageProps) {
   const { id } = await params;
-  const { fields, exclude_fields, count, offset, since, sort_field, sort_dir } =
-    await searchParams;
+  const rawSearchParams = await searchParams;
 
-  // Convert string parameters to appropriate types
-  const queryParams = {
-    fields,
-    exclude_fields,
-    count: count ? parseInt(count, 10) : 10, // Default to 10 items per page
-    offset: offset ? parseInt(offset, 10) : 0,
-    since,
-    sort_field,
-    sort_dir,
-  };
+  // Process and validate search parameters using utility function
+  const queryParams = processOpenListSearchParams(rawSearchParams);
 
   // Fetch campaign open list data
   const response = await getMailchimpCampaignOpenList(id, queryParams);
 
   // Handle error states
-  if (!response.success || !response.data) {
+  if (response.error) {
     // Check if this is a "not found" error
     if (
       response.error?.toLowerCase().includes("not found") ||
@@ -50,11 +43,14 @@ export default async function CampaignOpensPage({
     }
 
     // Log the error for debugging but use notFound for a better user experience
-    console.error(`Error fetching campaign opens ${id}:`, response.error);
+    if (isDev) {
+      console.error(`Error fetching campaign opens ${id}:`, response.error);
+    }
     notFound();
   }
 
-  const opensData = response.data;
+  // At this point, response.data is guaranteed to exist (server action ensures this)
+  const opensData = response.data!;
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,8 +73,9 @@ export default async function CampaignOpensPage({
               Campaign Opens
             </h1>
             <p className="text-muted-foreground">
-              Members who opened this campaign - {opensData.total_items} total
-              opens
+              {opensData.total_items > 0
+                ? `Members who opened this campaign - ${opensData.total_items} total opens`
+                : "Campaign opens data"}
             </p>
           </div>
 
