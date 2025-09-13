@@ -43,3 +43,4 @@ export { CampaignReportLoading } from "@/components/dashboard/reports/CampaignRe
 export { CampaignOpensTable } from "@/components/dashboard/reports/CampaignOpensTable";
 export { CampaignOpens } from "@/components/dashboard/reports/CampaignOpensClient";
 export { CampaignOpensLoading } from "@/components/dashboard/reports/CampaignOpensLoading";
+export { CampaignOpensEmpty } from "@/components/dashboard/reports/CampaignOpensEmpty";
