@@ -1,6 +1,19 @@
 /**
- * Reports Overview Dashboard Component
- * Displays campaign reports with metrics cards and report list
+ * Reports Overview Dashboard Coexport function ReportsOverview(rawProps: ReportsTableProps) {
+  // Parse props with schema to apply validation and default values
+  const {
+    reports,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    perPage,
+    perPageOptions,
+    onPageChange,
+    onPerPageChange,
+  } = reportsTablePropsSchema.parse(rawProps);
+
+  if (loading) {plays campaign reports with metrics cards and report list
  *
  * Issue #129: Reports dashboard component implementation
  * Following established patterns from audiences-overview.tsx
@@ -23,30 +36,9 @@ import { PaginationControls } from "@/components/dashboard/shared/pagination-con
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { FileText, BarChart3 } from "lucide-react";
 import Link from "next/link";
-import type { ReportsOverviewProps } from "@/types/mailchimp/reports";
-
-interface ReportsTableProps {
-  reports: ReportsOverviewProps["reports"];
-  loading?: boolean;
-  error?: string | null;
-  currentPage?: number;
-  totalPages?: number;
-  perPage?: number;
-  perPageOptions?: number[];
-  onPageChange?: (page: number) => void;
-  onPerPageChange?: (perPage: number) => void;
-}
-
-/**
- * Formats date string for display
- */
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+import type { ReportsTableProps } from "@/types";
+import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports";
+import { formatDateShort } from "@/utils";
 
 /**
  * Gets status badge for sent campaigns
@@ -55,17 +47,29 @@ function getStatusBadge() {
   return <Badge variant="default">Sent</Badge>;
 }
 
-export function ReportsOverview({
-  reports,
-  loading = false,
-  error = null,
-  currentPage = 1,
-  totalPages = 1,
-  perPage = 10,
-  perPageOptions = [10, 20, 50],
-  onPageChange,
-  onPerPageChange,
-}: ReportsTableProps) {
+export function ReportsOverview(rawProps: ReportsTableProps) {
+  // Parse props with schema to apply validation and default values
+  const {
+    reports,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    perPage,
+    perPageOptions,
+    onPageChange,
+    onPerPageChange,
+  } = reportsTablePropsSchema.parse({
+    // Ensure all required fields are present with proper defaults
+    loading: false,
+    error: null,
+    currentPage: 1,
+    totalPages: 1,
+    perPage: 10,
+    perPageOptions: [10, 20, 50],
+    ...rawProps, // Override with provided props
+  });
+
   if (loading) {
     return (
       <Card>
@@ -179,7 +183,7 @@ export function ReportsOverview({
                         {report.unsubscribed.toLocaleString()}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {formatDate(report.send_time)}
+                        {formatDateShort(report.send_time)}
                       </TableCell>
                       <TableCell className="text-center">
                         <Button variant="outline" size="sm" asChild>

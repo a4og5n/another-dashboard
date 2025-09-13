@@ -7,6 +7,7 @@
 
 import { z } from "zod";
 import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp/audience-query.schema";
+import { CampaignsPageQuerySchema } from "@/schemas/mailchimp/campaign-query.schema";
 
 /**
  * Date validation helper for YYYY-MM-DD format
@@ -56,4 +57,39 @@ export function transformQueryParams(
 ) {
   // Return params as is - don't convert to arrays to match type expectations
   return params;
+}
+
+/**
+ * Validation function for campaigns page query parameters
+ * Returns result object following Next.js best practices for expected errors
+ *
+ * @param params - URL search parameters from campaigns page
+ * @returns Success object with validated data or error object with message
+ *
+ * @example
+ * ```typescript
+ * const result = validateCampaignsPageParams({ page: "1", perPage: "10" });
+ * if (result.success) {
+ *   console.log(result.data.page); // 1 (number)
+ * } else {
+ *   console.error(result.error); // validation error message
+ * }
+ * ```
+ */
+export function validateCampaignsPageParams(
+  params: Record<string, string | undefined>,
+) {
+  const result = CampaignsPageQuerySchema.safeParse(params);
+
+  if (!result.success) {
+    return {
+      success: false as const,
+      error: `Invalid campaigns page parameters: ${result.error.issues.map((issue) => issue.message).join(", ")}`,
+    };
+  }
+
+  return {
+    success: true as const,
+    data: result.data,
+  };
 }

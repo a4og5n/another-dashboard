@@ -249,7 +249,9 @@ describe("AccountOverview", () => {
       render(<AccountOverview account={null} error={errorMessage} />);
 
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
-      expect(screen.getByText("Account Information")).toBeInTheDocument();
+      // Error state should not show account sections
+      expect(screen.queryByText("Account Information")).not.toBeInTheDocument();
+      expect(screen.queryByText("Account Details")).not.toBeInTheDocument();
     });
 
     it("displays generic error when account is null without specific error", () => {

@@ -17,9 +17,15 @@ import type {
   ReportForwards,
   ReportFacebookLikes,
   ReportListStats,
+  ReportsOverviewProps,
 } from "@/types/mailchimp/reports";
+import type {
+  ReportOpenListSuccess,
+  OpenListQueryParams,
+} from "@/types/mailchimp/report-open-list";
 import { ReportBouncesSchema } from "@/schemas/mailchimp/common/campaign-report.schema";
 import { z } from "zod";
+import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports";
 
 /**
  * Props for the CampaignReportDetail component
@@ -195,6 +201,8 @@ export interface ClicksCardProps {
 export interface OpensCardProps {
   /** Open statistics for the campaign */
   opens: ReportOpens;
+  /** Campaign ID for navigation to detailed opens page */
+  campaignId: string;
   /** Optional CSS class name */
   className?: string;
 }
@@ -228,3 +236,50 @@ export interface ListPerformanceCardProps {
   /** Optional CSS class name */
   className?: string;
 }
+
+/**
+ * Input props for the ReportsTable component (used in ReportsOverview)
+ * Only requires essential props, others have defaults applied by schema
+ */
+/**
+ * Props for the AbSplitCard component
+ */
+export interface AbSplitCardProps {
+  /** A/B split test data for the campaign */
+  abSplit: ReportAbSplit;
+  /** Optional CSS class name */
+  className?: string;
+}
+
+export type ReportsTableProps = {
+  /** Array of campaign reports to display - properly typed */
+  reports: ReportsOverviewProps["reports"];
+} & Partial<z.infer<typeof reportsTablePropsSchema>>;
+
+/**
+ * Parsed props after schema validation with all defaults applied
+ * This is what the component actually receives internally
+ */
+export type ParsedReportsTableProps = z.infer<
+  typeof reportsTablePropsSchema
+> & {
+  /** Array of campaign reports to display - properly typed */
+  reports: ReportsOverviewProps["reports"];
+};
+
+/**
+ * Props for the CampaignOpens server component
+ */
+export interface CampaignOpensProps {
+  /** Campaign opens data from the API */
+  opensData: ReportOpenListSuccess;
+  /** Current query parameters including pagination */
+  currentParams: OpenListQueryParams & { count: number; offset: number };
+  /** Campaign ID for URL routing */
+  campaignId: string;
+  /** Available options for per-page selection */
+  perPageOptions?: number[];
+}
+
+// Legacy alias for backward compatibility during migration
+export type CampaignOpensClientProps = CampaignOpensProps;

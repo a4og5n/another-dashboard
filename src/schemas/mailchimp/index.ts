@@ -20,4 +20,7 @@ export * from "@/schemas/mailchimp/report-list-error-response.schema";
 export * from "@/schemas/mailchimp/report-detail-params.schema";
 export * from "@/schemas/mailchimp/report-detail-success.schema";
 export * from "@/schemas/mailchimp/report-detail-error.schema";
+export * from "@/schemas/mailchimp/report-open-list-params.schema";
+export * from "@/schemas/mailchimp/report-open-list-success.schema";
+export * from "@/schemas/mailchimp/report-open-list-error.schema";
 export * from "@/schemas/mailchimp/list.schema";

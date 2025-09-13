@@ -10,14 +10,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PricingPlanBadge } from "@/components/ui/pricing-plan-badge";
+import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { Building2, Mail, Users, Calendar, Globe } from "lucide-react";
-import type { MailchimpRoot } from "@/types/mailchimp";
-
-interface AccountOverviewProps {
-  account: MailchimpRoot | null;
-  loading?: boolean;
-  error?: string;
-}
+import type { AccountOverviewProps } from "@/types/components";
+import { formatDateLongSafe } from "@/utils";
 
 export function AccountOverview({
   account,
@@ -30,56 +27,11 @@ export function AccountOverview({
 
   if (error || !account) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            {error || "Unable to load account information"}
-          </p>
-        </CardContent>
-      </Card>
+      <DashboardInlineError
+        error={error || "Unable to load account information"}
+      />
     );
   }
-
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    } catch {
-      return dateString;
-    }
-  };
-
-  const formatPricingPlan = (planType: string) => {
-    switch (planType) {
-      case "monthly":
-        return "Monthly";
-      case "pay_as_you_go":
-        return "Pay As You Go";
-      case "forever_free":
-        return "Forever Free";
-      default:
-        return planType;
-    }
-  };
-
-  const getPlanVariant = (planType: string) => {
-    switch (planType) {
-      case "forever_free":
-        return "secondary";
-      case "pay_as_you_go":
-        return "outline";
-      case "monthly":
-        return "default";
-      default:
-        return "outline";
-    }
-  };
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -102,9 +54,7 @@ export function AccountOverview({
               <p className="text-sm">{account.email}</p>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant={getPlanVariant(account.pricing_plan_type)}>
-                {formatPricingPlan(account.pricing_plan_type)}
-              </Badge>
+              <PricingPlanBadge planType={account.pricing_plan_type} />
               {account.pro_enabled && (
                 <Badge variant="default" className="bg-orange-600">
                   Pro
@@ -168,14 +118,14 @@ export function AccountOverview({
             <div className="space-y-2">
               <p className="text-sm font-medium">Member Since</p>
               <p className="text-xl font-bold">
-                {formatDate(account.member_since)}
+                {formatDateLongSafe(account.member_since)}
               </p>
             </div>
             {account.first_payment && (
               <div className="space-y-2">
                 <p className="text-sm font-medium">First Payment</p>
                 <p className="text-xl font-bold">
-                  {formatDate(account.first_payment)}
+                  {formatDateLongSafe(account.first_payment)}
                 </p>
               </div>
             )}
@@ -183,7 +133,7 @@ export function AccountOverview({
               <div className="space-y-2">
                 <p className="text-sm font-medium">Last Login</p>
                 <p className="text-xl font-bold">
-                  {formatDate(account.last_login)}
+                  {formatDateLongSafe(account.last_login)}
                 </p>
               </div>
             )}

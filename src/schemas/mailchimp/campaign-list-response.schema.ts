@@ -15,6 +15,8 @@ export const MAILCHIMP_CAMPAIGN_TYPES = [
 
 /**
  * Mailchimp campaign status values (enum)
+ * Official values from Mailchimp API documentation
+ * @see https://mailchimp.com/developer/marketing/api/campaigns/list-campaigns/
  */
 export const MAILCHIMP_CAMPAIGN_STATUS = [
   "save",
@@ -83,5 +85,3 @@ export const MailchimpCampaignListResponseSchema = z.object({
   total_items: z.number(),
   links: z.array(MailchimpLinkSchema).optional(),
 });
-
-// Type definition moved to '@/types/mailchimp/CampaignListResponse'

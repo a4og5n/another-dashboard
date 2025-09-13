@@ -31,33 +31,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { format, parseISO } from "date-fns";
 import { LuGlobe } from "react-icons/lu";
 import type { TimewarpCardProps } from "@/types/components/dashboard/reports";
+import { formatDateTimeSafe, formatTimezone } from "@/utils";
 
 export function TimewarpCard({ timewarp, className }: TimewarpCardProps) {
   const [sortField, setSortField] = useState<string>("gmt_offset");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-  // Format GMT offset to display as a timezone
-  const formatTimezone = (offset: number) => {
-    const sign = offset >= 0 ? "+" : "-";
-    const hours = Math.floor(Math.abs(offset));
-    const minutes = Math.round((Math.abs(offset) - hours) * 60);
-
-    return `GMT${sign}${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-  };
-
-  // Format date to be more readable
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
-    try {
-      return format(parseISO(dateString), "MMM d, yyyy h:mm a");
-    } catch {
-      // Silently handle parsing errors
-      return "Invalid Date";
-    }
-  };
 
   // Sort timewarp data based on selected field and direction
   const sortedData = [...timewarp].sort((a, b) => {
@@ -265,7 +245,7 @@ export function TimewarpCard({ timewarp, className }: TimewarpCardProps) {
             <h4 className="text-sm font-medium mb-2">Last Open Activity</h4>
             <div className="text-sm text-muted-foreground">
               {sortedData.length > 0 && sortedData[0].last_open
-                ? formatDate(sortedData[0].last_open)
+                ? formatDateTimeSafe(sortedData[0].last_open)
                 : "No activity recorded"}
             </div>
           </div>
@@ -273,7 +253,7 @@ export function TimewarpCard({ timewarp, className }: TimewarpCardProps) {
             <h4 className="text-sm font-medium mb-2">Last Click Activity</h4>
             <div className="text-sm text-muted-foreground">
               {sortedData.length > 0 && sortedData[0].last_click
-                ? formatDate(sortedData[0].last_click)
+                ? formatDateTimeSafe(sortedData[0].last_click)
                 : "No activity recorded"}
             </div>
           </div>

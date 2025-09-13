@@ -102,7 +102,10 @@ function parseEnv(): Env {
     process.env.NODE_ENV === "test" ||
     process.env.CI === "true"
   ) {
-    console.log("📋 Using mock data for environment variables");
+    // Only log this in CI or test environments, not in development
+    if (process.env.NODE_ENV === "test" || process.env.CI === "true") {
+      console.log("📋 Using mock data for environment variables");
+    }
 
     // Create a new process.env-like object with default values for required fields
     const mockEnv = {
