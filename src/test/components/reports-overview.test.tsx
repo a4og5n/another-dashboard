@@ -517,8 +517,10 @@ describe("ReportsOverview Component", () => {
     it("should handle totalPages of 1", () => {
       render(<ReportsOverview {...defaultProps} totalPages={1} />);
 
-      // Pagination should still show if there are reports
-      expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
+      // Pagination should be hidden when there's only one page
+      expect(screen.queryByText("Page 1 of 1")).not.toBeInTheDocument();
+      expect(screen.queryByText("Previous")).not.toBeInTheDocument();
+      expect(screen.queryByText("Next")).not.toBeInTheDocument();
     });
   });
 
