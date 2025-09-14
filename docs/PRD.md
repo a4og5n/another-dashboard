@@ -352,6 +352,15 @@ _Roles are not mutually exclusive; users can be assigned multiple roles._
 
 #### MVP Features (Local Development, Single-User, Read-Only)
 
+0. **Authentication with Kinde (Login/Logout)**
+   - Users must log in via Kinde (Google or email/password) to access protected routes (e.g., /mailchimp dashboard).
+   - The root page (/) remains public; /mailchimp and subroutes require authentication.
+   - Embedded login flow: users remain on our domain for authentication (no Kinde-hosted redirect).
+   - Logout functionality is provided.
+   - Loading indicator shown while authentication state is checked.
+   - Environment variables are used for Kinde credentials (local and Vercel).
+   - Google login is enabled; Kinde email/password is available as backup.
+
 1. **Multi-Platform Data Connections**
    - Connect to various content, marketing, analytics, and revenue platforms via their APIs.
    - No local database; data is retrieved live from each source.
@@ -442,6 +451,7 @@ _Roles are not mutually exclusive; users can be assigned multiple roles._
 **Backend:** Supabase (Postgres) with Drizzle ORM
 **Data Storage & Analytics:** Google BigQuery for storing and querying large datasets; backend will interact with BigQuery for data aggregation and reporting
 **Authentication:** Kinde (SSO, user management)
+(embedded login, Google and email/password support)
 **Hosting:** Vercel (Next.js optimized, serverless deployment)
 **Version Management:** GitHub (source control, collaboration)
 **CI/CD:** Vercel Deployment (automatic build, preview, and production deploys on push/PR)
@@ -650,22 +660,36 @@ MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
    - Support keyboard navigation, screen readers, and high-contrast modes.
 
 5. **Responsiveness**
+6. **Authentication Flow**
+   - Unauthenticated users are redirected to a dedicated /login page when accessing protected routes.
+   - Loading indicator is shown while authentication is checked.
+   - User info (name, email, avatar) is displayed in the UI when logged in.
+7. **Login and Access Control**
+   - **Actors:** All users
+   - **Goal:** Securely log in to access dashboards and reports; ensure only authenticated users can access protected data.
+   - **Steps:**
+     1. Visit the root page (public)
+     2. Attempt to access /mailchimp or other protected route
+     3. If not authenticated, redirected to /login
+     4. Log in with Google or email/password (Kinde embedded login)
+     5. Upon success, redirected to intended page
+     6. User info is shown in the UI; logout is available
    - Design for mobile-first, ensuring usability across devices and screen sizes.
 
-6. **Customizability**
+8. **Customizability**
    - Allow users to personalize dashboard layouts and widgets to fit their needs.
 
-7. **Feedback & Guidance**
+9. **Feedback & Guidance**
    - Provide immediate, clear feedback for user actions (loading, errors, success).
    - Offer contextual help, tooltips, and onboarding guides.
 
-8. **Security & Trust**
-   - Visually communicate data privacy and security, especially around sensitive information.
+10. **Security & Trust**
+    - Visually communicate data privacy and security, especially around sensitive information.
 
-9. **Scalability**
-   - Design components and layouts to gracefully handle increasing data, users, and features.
+11. **Scalability**
+    - Design components and layouts to gracefully handle increasing data, users, and features.
 
-10. **Delight**
+12. **Delight**
     - Incorporate subtle animations, micro-interactions, and thoughtful details to make the experience enjoyable.
 
 ### UI Requirements
