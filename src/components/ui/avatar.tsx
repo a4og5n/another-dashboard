@@ -2,13 +2,25 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import type { AvatarProps } from "@/types/components/avatar";
 
-// Use next/image for optimized images if available
-let NextImage: typeof import("next/image").default | undefined;
-try {
-  // Dynamically require next/image only if available (avoids SSR issues)
-  // @ts-ignore
-  NextImage = require("next/image").default;
-} catch {}
+// Use next/image for optimized images if available (client-side only)
+import { useEffect, useState } from "react";
+
+function useNextImage() {
+  const [NextImage, setNextImage] =
+    useState<typeof import("next/image").default>();
+  useEffect(() => {
+    let mounted = true;
+    import("next/image")
+      .then((mod) => {
+        if (mounted) setNextImage(() => mod.default);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, []);
+  return NextImage;
+}
 
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
   ({ className, src, alt, fallback, size = "default", ...props }, ref) => {
@@ -17,7 +29,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       default: "h-10 w-10 text-base",
       lg: "h-12 w-12 text-lg",
     };
-
+    const NextImage = useNextImage();
     return (
       <div
         ref={ref}

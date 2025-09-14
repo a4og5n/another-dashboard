@@ -52,10 +52,18 @@ describe("UserMenu", () => {
     const src = avatar.getAttribute("src");
     expect(src).toBeTruthy();
     // Should either be the direct URL or contain the original URL as a param
-    if (src === mockUser.picture) {
-      expect(src).toBe(mockUser.picture);
-    } else if (typeof src === "string") {
-      expect(src).toContain(encodeURIComponent(mockUser.picture));
+    if (typeof src !== "string" || !src) {
+      throw new Error("Avatar src is not a string");
+    }
+    if (typeof mockUser.picture !== "string" || !mockUser.picture) {
+      throw new Error("mockUser.picture is not a string");
+    }
+    const imgSrc: string = src;
+    const picture: string = mockUser.picture;
+    if (imgSrc === picture) {
+      expect(imgSrc).toBe(picture);
+    } else {
+      expect(imgSrc).toContain(encodeURIComponent(picture));
     }
     expect(avatar).toHaveAttribute("alt", "John Doe");
   });
