@@ -77,6 +77,15 @@ const envSchema = z.object({
     .default("false")
     .transform((val) => val === "true"),
 
+  // Kinde Authentication
+  KINDE_CLIENT_ID: z.string().optional(),
+  KINDE_CLIENT_SECRET: z.string().optional(),
+  KINDE_ISSUER_URL: z.string().url().optional(),
+  KINDE_SITE_URL: z.string().url().optional(),
+  KINDE_POST_LOGOUT_REDIRECT_URL: z.string().url().optional(),
+  KINDE_POST_LOGIN_REDIRECT_URL: z.string().url().optional(),
+  KINDE_GOOGLE_CONNECTION_ID: z.string().optional(),
+
   // Optional: Error tracking (future)
   SENTRY_DSN: z.string().url().optional(),
 });
@@ -179,6 +188,14 @@ function parseEnv(): Env {
         WORDPRESS_APP_PASSWORD: undefined,
         GSC_SERVICE_ACCOUNT_KEY_PATH: undefined,
         GSC_CLIENT_EMAIL: undefined,
+        // Kinde Authentication (optional)
+        KINDE_CLIENT_ID: undefined,
+        KINDE_CLIENT_SECRET: undefined,
+        KINDE_ISSUER_URL: undefined,
+        KINDE_SITE_URL: undefined,
+        KINDE_POST_LOGOUT_REDIRECT_URL: undefined,
+        KINDE_POST_LOGIN_REDIRECT_URL: undefined,
+        KINDE_GOOGLE_CONNECTION_ID: undefined,
         SENTRY_DSN: undefined,
       };
 
