@@ -35,12 +35,17 @@ export class AuthService {
       // Validate user data with Zod schema
       const validatedUser = kindeUserSchema.parse(user);
 
+      // Extract the actual token string if accessToken is an object
+      const tokenString = accessToken && typeof accessToken === 'object' 
+        ? (accessToken as any)?.access_token || null
+        : accessToken || null;
+
       // Build session object
       const sessionData = {
         user: validatedUser,
         isAuthenticated: isAuth,
         isLoading: false,
-        accessToken: accessToken || null,
+        accessToken: tokenString,
         permissions: permissions?.permissions || [],
         roles: roles?.map(role => role.key) || [],
       };
@@ -50,6 +55,12 @@ export class AuthService {
       
       return validatedSession;
     } catch (error) {
+      // Handle AbortError gracefully (happens during navigation/unmounting)
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log("AuthService.getSession: Request was aborted (navigation/unmount)");
+        return null;
+      }
+      
       console.error("AuthService.getSession error:", error);
       return null;
     }

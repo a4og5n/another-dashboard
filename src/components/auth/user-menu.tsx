@@ -6,6 +6,7 @@
  * 
  * Following established component patterns and using shadcn/ui components
  */
+import React from "react";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { 
   DropdownMenu,
@@ -16,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { User, LogOut, Settings } from "lucide-react";
 import type { KindeUser } from "@/types/auth";
 
@@ -30,14 +30,18 @@ export function UserMenu({ user, displayName, initials }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+        <button 
+          className="relative h-8 w-8 rounded-full bg-transparent border-0 p-0 cursor-pointer hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          type="button"
+          aria-label="User menu"
+        >
           <Avatar
             src={user.picture || undefined}
             alt={displayName}
             fallback={initials}
             size="sm"
           />
-        </Button>
+        </button>
       </DropdownMenuTrigger>
       
       <DropdownMenuContent className="w-56" align="end" forceMount>

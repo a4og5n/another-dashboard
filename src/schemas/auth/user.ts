@@ -30,13 +30,13 @@ export const USER_PERMISSIONS = [
 export const kindeUserSchema = z.object({
   id: z.string().min(1, "User ID is required"),
   email: z.string().email("Valid email is required"),
-  given_name: z.string().nullable(),
-  family_name: z.string().nullable(),
-  picture: z.string().url().nullable(),
-  created_on: z.string().nullable(),
-  organization: z.string().nullable(),
-  job_title: z.string().nullable(),
-  phone: z.string().nullable(),
+  given_name: z.string().nullable().optional(),
+  family_name: z.string().nullable().optional(),
+  picture: z.string().url().nullable().optional(),
+  created_on: z.string().nullable().optional(),
+  organization: z.string().nullable().optional(),
+  job_title: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
 });
 
 /**

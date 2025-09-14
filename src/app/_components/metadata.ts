@@ -35,7 +35,7 @@ export function generateMetadata(config: MetadataConfig): Metadata {
     title = "NextJS Project",
     description = "A modern Next.js application",
     image = "/og-default.png",
-    url = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    url = process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
     type = "website",
     siteName = "NextJS Project",
     twitterCard = "summary_large_image",
@@ -119,7 +119,7 @@ export function generateOGImageUrl(
   description?: string,
   theme: "light" | "dark" = "light",
 ): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000";
   const params = new URLSearchParams({
     title,
     theme,
@@ -135,7 +135,7 @@ export function generateOGImageUrl(
 export const siteConfig = {
   name: "NextJS Project",
   description: "A modern Next.js application with comprehensive tooling",
-  url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
   ogImage: "/og-default.png",
   creator: "NextJS Developer",
   keywords: [
@@ -160,7 +160,7 @@ export function generateStructuredData(config: {
   publishedDate?: string;
   modifiedDate?: string;
 }) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000";
 
   const baseSchema = {
     "@context": "https://schema.org",

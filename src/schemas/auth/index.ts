@@ -5,3 +5,4 @@
  * Following established mailchimp pattern for schema exports
  */
 export * from "@/schemas/auth/user";
+export * from "@/schemas/auth/custom-login";

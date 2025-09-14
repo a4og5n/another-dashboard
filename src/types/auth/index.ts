@@ -5,3 +5,4 @@
  * Following established mailchimp pattern for type exports
  */
 export * from "@/types/auth/user";
+export * from "@/types/auth/custom-login";
