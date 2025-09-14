@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Toaster } from "sonner";
 export const metadata: Metadata = {
@@ -145,7 +146,11 @@ export default function RootLayout({
         <meta property="og:image" content="/icons/icon-512x512.png" />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <DashboardShell>{children}</DashboardShell>
+        <AuthProvider>
+          {(authData) => (
+            <DashboardShell authData={authData}>{children}</DashboardShell>
+          )}
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

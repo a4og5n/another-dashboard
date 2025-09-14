@@ -1,14 +1,23 @@
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// Removed DropdownMenu imports for issue #30
+import { UserMenu, AuthLoading } from "@/components/auth";
+import type { AuthSession } from "@/types/auth";
+
+interface DashboardHeaderProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  session: AuthSession | null;
+  displayName?: string;
+  initials?: string;
+}
 
 export function DashboardHeader({
   sidebarOpen,
   setSidebarOpen,
-}: {
-  sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
-}) {
+  session,
+  displayName,
+  initials,
+}: DashboardHeaderProps) {
   return (
     <header className="fixed top-0 left-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center px-6">
@@ -36,11 +45,19 @@ export function DashboardHeader({
             Another Dashboard
           </h1>
         </div>
-        {/* Spacer to maintain layout after search removal */}
+        {/* Spacer to maintain layout */}
         <div className="flex-1" />
-        {/* Actions - removed user menu for issue #30 */}
+        {/* Actions - User menu when authenticated */}
         <div className="flex items-center space-x-4">
-          {/* Removed notification and user menu icons for issues #29 and #30 */}
+          {session && displayName && initials ? (
+            <UserMenu
+              user={session.user}
+              displayName={displayName}
+              initials={initials}
+            />
+          ) : (
+            <AuthLoading />
+          )}
         </div>
       </div>
     </header>
