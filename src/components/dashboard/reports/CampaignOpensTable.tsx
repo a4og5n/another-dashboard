@@ -8,7 +8,7 @@
 
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import Link from "next/link";
 import {
   ColumnDef,
@@ -56,29 +56,35 @@ export function CampaignOpensTable({
   const totalPages = Math.ceil(total_items / count);
 
   // Helper functions for URL generation
-  const createUrl = (params: Record<string, string | number>) => {
-    const searchParams = new URLSearchParams();
+  const createUrl = useCallback(
+    (params: Record<string, string | number>) => {
+      const searchParams = new URLSearchParams();
 
-    // Set current parameters
-    Object.entries(currentParams).forEach(([key, value]) => {
-      searchParams.set(key, value.toString());
-    });
+      // Set current parameters
+      Object.entries(currentParams).forEach(([key, value]) => {
+        searchParams.set(key, value.toString());
+      });
 
-    // Override with new parameters
-    Object.entries(params).forEach(([key, value]) => {
-      searchParams.set(key, value.toString());
-    });
+      // Override with new parameters
+      Object.entries(params).forEach(([key, value]) => {
+        searchParams.set(key, value.toString());
+      });
 
-    return `${baseUrl}?${searchParams.toString()}`;
-  };
+      return `${baseUrl}?${searchParams.toString()}`;
+    },
+    [baseUrl, currentParams],
+  );
 
-  const createSortUrl = (sortField: "opens_count", sortDir: "ASC" | "DESC") => {
-    return createUrl({
-      offset: "0", // Reset to first page when sorting
-      sort_field: sortField,
-      sort_dir: sortDir,
-    });
-  };
+  const createSortUrl = useCallback(
+    (sortField: "opens_count", sortDir: "ASC" | "DESC") => {
+      return createUrl({
+        offset: "0", // Reset to first page when sorting
+        sort_field: sortField,
+        sort_dir: sortDir,
+      });
+    },
+    [createUrl],
+  );
 
   const createPageUrl = (page: number) => {
     const newOffset = (page - 1) * count;
@@ -201,7 +207,7 @@ export function CampaignOpensTable({
         cell: ({ row }) => getVipBadge(row.getValue("vip")),
       },
     ],
-    [sort_field, sort_dir, baseUrl, currentParams, createSortUrl],
+    [sort_field, sort_dir, createSortUrl],
   );
 
   // Initialize the table
