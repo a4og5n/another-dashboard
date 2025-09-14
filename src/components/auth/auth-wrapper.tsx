@@ -3,7 +3,7 @@
 /**
  * Auth Wrapper Component
  * Client component for protecting pages and handling redirects
- * 
+ *
  * Following established patterns for protected route handling
  */
 import { useEffect } from "react";

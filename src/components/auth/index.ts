@@ -1,7 +1,7 @@
 /**
  * Auth Components Index
  * Re-exports all authentication-related components
- * 
+ *
  * Following established component export patterns
  */
 export { UserMenu } from "@/components/auth/user-menu";

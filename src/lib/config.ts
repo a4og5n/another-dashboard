@@ -9,11 +9,14 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  NEXT_PUBLIC_APP_URL: z.string().url().default(
-    process.env.NODE_ENV === "development" 
-      ? "https://localhost:3000" 
-      : "http://localhost:3000"
-  ),
+  NEXT_PUBLIC_APP_URL: z
+    .string()
+    .url()
+    .default(
+      process.env.NODE_ENV === "development"
+        ? "https://localhost:3000"
+        : "http://localhost:3000",
+    ),
 
   // Mailchimp Marketing API (Primary Integration)
   // In CI/test environments, these can be dummy values for build purposes
@@ -154,12 +157,14 @@ function parseEnv(): Env {
       DEBUG_API_CALLS: process.env.DEBUG_API_CALLS,
       ENABLE_MOCK_DATA: process.env.ENABLE_MOCK_DATA,
       NEXT_PUBLIC_VERCEL_ANALYTICS: process.env.NEXT_PUBLIC_VERCEL_ANALYTICS,
-      NEXT_PUBLIC_ANALYTICS_ENDPOINT: process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT,
+      NEXT_PUBLIC_ANALYTICS_ENDPOINT:
+        process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT,
       KINDE_CLIENT_ID: process.env.KINDE_CLIENT_ID,
       KINDE_CLIENT_SECRET: process.env.KINDE_CLIENT_SECRET,
       KINDE_ISSUER_URL: process.env.KINDE_ISSUER_URL,
       KINDE_SITE_URL: process.env.KINDE_SITE_URL,
-      KINDE_POST_LOGOUT_REDIRECT_URL: process.env.KINDE_POST_LOGOUT_REDIRECT_URL,
+      KINDE_POST_LOGOUT_REDIRECT_URL:
+        process.env.KINDE_POST_LOGOUT_REDIRECT_URL,
       KINDE_POST_LOGIN_REDIRECT_URL: process.env.KINDE_POST_LOGIN_REDIRECT_URL,
     });
   }

@@ -1,7 +1,7 @@
 /**
  * Auth Loading Component
  * Skeleton loading state for authentication components
- * 
+ *
  * Following established loading patterns using shadcn/ui Skeleton
  */
 import { Skeleton } from "@/components/ui/skeleton";

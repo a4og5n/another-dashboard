@@ -201,7 +201,7 @@ export function CampaignOpensTable({
         cell: ({ row }) => getVipBadge(row.getValue("vip")),
       },
     ],
-    [sort_field, sort_dir, baseUrl, currentParams],
+    [sort_field, sort_dir, baseUrl, currentParams, createSortUrl],
   );
 
   // Initialize the table

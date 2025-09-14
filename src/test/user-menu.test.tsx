@@ -1,7 +1,7 @@
 /**
  * User Menu Component Test
  * Tests for authentication user menu component
- * 
+ *
  * Following established component testing patterns
  */
 import { describe, it, expect, vi } from "vitest";
@@ -38,7 +38,7 @@ describe("UserMenu", () => {
 
   it("should render user menu trigger", () => {
     render(<UserMenu {...defaultProps} />);
-    
+
     const trigger = screen.getByRole("button");
     expect(trigger).toBeInTheDocument();
     expect(trigger).toHaveAttribute("aria-haspopup", "menu");
@@ -46,9 +46,17 @@ describe("UserMenu", () => {
 
   it("should render user picture in avatar when provided", () => {
     render(<UserMenu {...defaultProps} />);
-    
+
     const avatar = screen.getByRole("img");
-    expect(avatar).toHaveAttribute("src", mockUser.picture);
+    // Accept both <img src=...> and Next.js <Image> loader src
+    const src = avatar.getAttribute("src");
+    expect(src).toBeTruthy();
+    // Should either be the direct URL or contain the original URL as a param
+    if (src === mockUser.picture) {
+      expect(src).toBe(mockUser.picture);
+    } else if (typeof src === "string") {
+      expect(src).toContain(encodeURIComponent(mockUser.picture));
+    }
     expect(avatar).toHaveAttribute("alt", "John Doe");
   });
 
@@ -57,14 +65,9 @@ describe("UserMenu", () => {
       ...mockUser,
       picture: null,
     };
-    
-    render(
-      <UserMenu
-        {...defaultProps}
-        user={userWithoutPicture}
-      />
-    );
-    
+
+    render(<UserMenu {...defaultProps} user={userWithoutPicture} />);
+
     // Should show initials when no picture
     expect(screen.getByText("JD")).toBeInTheDocument();
   });
@@ -72,13 +75,13 @@ describe("UserMenu", () => {
   it("should open dropdown and show menu content when clicked", async () => {
     const user = userEvent.setup();
     render(<UserMenu {...defaultProps} />);
-    
+
     const trigger = screen.getByRole("button");
     await user.click(trigger);
-    
+
     // Check if dropdown opened (aria-expanded should be true)
     expect(trigger).toHaveAttribute("aria-expanded", "true");
-    
+
     // Check for dropdown content
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("john.doe@example.com")).toBeInTheDocument();
@@ -90,16 +93,16 @@ describe("UserMenu", () => {
   it("should render logout link in dropdown", async () => {
     const user = userEvent.setup();
     render(<UserMenu {...defaultProps} />);
-    
+
     const trigger = screen.getByRole("button");
     await user.click(trigger);
-    
+
     expect(screen.getByTestId("logout-link")).toBeInTheDocument();
   });
 
   it("should handle accessibility attributes", () => {
     render(<UserMenu {...defaultProps} />);
-    
+
     const trigger = screen.getByRole("button");
     expect(trigger).toHaveAttribute("aria-haspopup", "menu");
     expect(trigger).toHaveAttribute("aria-expanded", "false");

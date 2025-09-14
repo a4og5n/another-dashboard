@@ -1,7 +1,7 @@
 /**
  * Auth User Types
  * TypeScript types inferred from auth schemas using z.infer pattern
- * 
+ *
  * Following established mailchimp type patterns exactly
  */
 import { z } from "zod";

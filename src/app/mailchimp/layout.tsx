@@ -1,7 +1,7 @@
 /**
  * Mailchimp Layout
  * Protected layout that requires authentication for all mailchimp routes
- * 
+ *
  * Following established layout patterns with route protection
  */
 import { AuthWrapper } from "@/components/auth";

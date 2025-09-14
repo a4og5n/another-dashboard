@@ -1,7 +1,7 @@
 /**
  * Avatar Component Types
  * TypeScript types for Avatar UI component
- * 
+ *
  * Following established types patterns
  */
 import * as React from "react";

@@ -1,7 +1,7 @@
 /**
  * Auth Provider Component
  * Server component that fetches auth state and provides it to client components
- * 
+ *
  * Following React server component patterns for auth integration
  */
 import { authService } from "@/services/auth.service";
@@ -18,7 +18,7 @@ interface AuthProviderProps {
 export async function AuthProvider({ children }: AuthProviderProps) {
   // Get auth session on server
   const session = await authService.getSession();
-  
+
   // Prepare auth data
   const authData = {
     session,

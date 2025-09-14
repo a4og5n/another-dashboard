@@ -1,7 +1,7 @@
 /**
  * Auth Schemas Test
  * Validates authentication-related Zod schemas
- * 
+ *
  * Following established testing patterns from mailchimp schema tests
  */
 import { describe, it, expect } from "vitest";

@@ -1,7 +1,7 @@
 /**
  * Kinde Authentication User Schema
  * Schemas for Kinde user data, session management, and authentication state
- * 
+ *
  * Following established mailchimp schema patterns with Zod validation
  */
 import { z } from "zod";
@@ -17,7 +17,7 @@ export const USER_ROLES = ["admin", "user", "viewer"] as const;
  */
 export const USER_PERMISSIONS = [
   "read:dashboard",
-  "write:dashboard", 
+  "write:dashboard",
   "admin:settings",
   "read:mailchimp",
   "write:mailchimp",
@@ -72,8 +72,10 @@ export const extendedUserSchema = kindeUserSchema.extend({
   displayName: z.string().nullable(),
   initials: z.string().nullable(),
   lastLoginAt: z.string().nullable(),
-  preferences: z.object({
-    theme: z.enum(["light", "dark", "system"]).default("system"),
-    notifications: z.boolean().default(true),
-  }).optional(),
+  preferences: z
+    .object({
+      theme: z.enum(["light", "dark", "system"]).default("system"),
+      notifications: z.boolean().default(true),
+    })
+    .optional(),
 });

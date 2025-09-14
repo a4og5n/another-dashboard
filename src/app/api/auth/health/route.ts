@@ -1,7 +1,7 @@
 /**
  * Auth Health Check API Route
  * Validates Kinde authentication configuration
- * 
+ *
  * Following established API route patterns from mailchimp
  */
 import { NextResponse } from "next/server";
@@ -28,11 +28,13 @@ export async function GET() {
         timestamp: new Date().toISOString(),
         configured: kindeConfigured,
         authenticated: !!session,
-        user: session ? {
-          id: session.user.id,
-          email: session.user.email,
-          displayName: authService.getDisplayName(session.user),
-        } : null,
+        user: session
+          ? {
+              id: session.user.id,
+              email: session.user.email,
+              displayName: authService.getDisplayName(session.user),
+            }
+          : null,
         environment: {
           hasClientId: !!env.KINDE_CLIENT_ID,
           hasClientSecret: !!env.KINDE_CLIENT_SECRET,
@@ -51,7 +53,7 @@ export async function GET() {
         details: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
