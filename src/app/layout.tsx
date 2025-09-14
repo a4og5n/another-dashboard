@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Toaster } from "sonner";
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Dashboard Developer" }],
   creator: "Mailchimp Dashboard",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
   ),
   alternates: {
     canonical: "/",
@@ -121,7 +122,7 @@ export default function RootLayout({
         <meta name="twitter:card" content="summary" />
         <meta
           name="twitter:url"
-          content={process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}
+          content={process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000"}
         />
         <meta name="twitter:title" content="NextJS Project" />
         <meta
@@ -140,12 +141,16 @@ export default function RootLayout({
         <meta property="og:site_name" content="NextJS Project" />
         <meta
           property="og:url"
-          content={process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}
+          content={process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000"}
         />
         <meta property="og:image" content="/icons/icon-512x512.png" />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <DashboardShell>{children}</DashboardShell>
+        <AuthProvider>
+          {(authData) => (
+            <DashboardShell authData={authData}>{children}</DashboardShell>
+          )}
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

@@ -13,6 +13,8 @@ export type {
 export { MailchimpService } from "@/services/mailchimp.service";
 export type { MailchimpCampaignReport } from "@/services/mailchimp.service";
 
+export { AuthService, authService } from "@/services/auth.service";
+
 // Re-export these types from their new location for backward compatibility
 export type { MailchimpList, MailchimpListsQuery } from "@/types/mailchimp";
 

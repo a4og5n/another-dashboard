@@ -11,6 +11,9 @@ export * from "@/types/components";
 // API Error types
 export * from "@/types/api-errors";
 
+// Auth types
+export * from "@/types/auth";
+
 // Campaign types
 export * from "@/types/campaign-filters";
 export * from "@/types/mailchimp-campaigns";

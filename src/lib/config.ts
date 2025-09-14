@@ -9,7 +9,14 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
+  NEXT_PUBLIC_APP_URL: z
+    .string()
+    .url()
+    .default(
+      process.env.NODE_ENV === "development"
+        ? "https://localhost:3000"
+        : "http://localhost:3000",
+    ),
 
   // Mailchimp Marketing API (Primary Integration)
   // In CI/test environments, these can be dummy values for build purposes
@@ -77,6 +84,15 @@ const envSchema = z.object({
     .default("false")
     .transform((val) => val === "true"),
 
+  // Kinde Authentication
+  KINDE_CLIENT_ID: z.string().optional(),
+  KINDE_CLIENT_SECRET: z.string().optional(),
+  KINDE_ISSUER_URL: z.string().url().optional(),
+  KINDE_SITE_URL: z.string().url().optional(),
+  KINDE_POST_LOGOUT_REDIRECT_URL: z.string().url().optional(),
+  KINDE_POST_LOGIN_REDIRECT_URL: z.string().url().optional(),
+  KINDE_GOOGLE_CONNECTION_ID: z.string().optional(),
+
   // Optional: Error tracking (future)
   SENTRY_DSN: z.string().url().optional(),
 });
@@ -112,7 +128,7 @@ function parseEnv(): Env {
       ...process.env,
       NODE_ENV: process.env.NODE_ENV || "development",
       NEXT_PUBLIC_APP_URL:
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+        process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
       MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY || "mock-api-key-us1",
       MAILCHIMP_SERVER_PREFIX: process.env.MAILCHIMP_SERVER_PREFIX || "us1",
       DEBUG_API_CALLS: process.env.DEBUG_API_CALLS || "true",
@@ -131,6 +147,27 @@ function parseEnv(): Env {
     // If still failing even with mock data, continue to error reporting
   }
 
+  // Debug: Print all relevant environment variables before validation
+  if (process.env.NODE_ENV === "development") {
+    console.log("[env debug] process.env snapshot:", {
+      NODE_ENV: process.env.NODE_ENV,
+      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+      MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY,
+      MAILCHIMP_SERVER_PREFIX: process.env.MAILCHIMP_SERVER_PREFIX,
+      DEBUG_API_CALLS: process.env.DEBUG_API_CALLS,
+      ENABLE_MOCK_DATA: process.env.ENABLE_MOCK_DATA,
+      NEXT_PUBLIC_VERCEL_ANALYTICS: process.env.NEXT_PUBLIC_VERCEL_ANALYTICS,
+      NEXT_PUBLIC_ANALYTICS_ENDPOINT:
+        process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT,
+      KINDE_CLIENT_ID: process.env.KINDE_CLIENT_ID,
+      KINDE_CLIENT_SECRET: process.env.KINDE_CLIENT_SECRET,
+      KINDE_ISSUER_URL: process.env.KINDE_ISSUER_URL,
+      KINDE_SITE_URL: process.env.KINDE_SITE_URL,
+      KINDE_POST_LOGOUT_REDIRECT_URL:
+        process.env.KINDE_POST_LOGOUT_REDIRECT_URL,
+      KINDE_POST_LOGIN_REDIRECT_URL: process.env.KINDE_POST_LOGIN_REDIRECT_URL,
+    });
+  }
   // Normal validation flow
   const parsed = envSchema.safeParse(process.env);
 
@@ -157,7 +194,7 @@ function parseEnv(): Env {
       // Create a more comprehensive fallback environment
       const fallbackEnv = {
         NODE_ENV: "development",
-        NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+        NEXT_PUBLIC_APP_URL: "https://localhost:3000",
         MAILCHIMP_API_KEY: "fallback-key-us1",
         MAILCHIMP_SERVER_PREFIX: "us1",
         DEBUG_API_CALLS: true,
@@ -179,6 +216,14 @@ function parseEnv(): Env {
         WORDPRESS_APP_PASSWORD: undefined,
         GSC_SERVICE_ACCOUNT_KEY_PATH: undefined,
         GSC_CLIENT_EMAIL: undefined,
+        // Kinde Authentication (optional)
+        KINDE_CLIENT_ID: undefined,
+        KINDE_CLIENT_SECRET: undefined,
+        KINDE_ISSUER_URL: undefined,
+        KINDE_SITE_URL: undefined,
+        KINDE_POST_LOGOUT_REDIRECT_URL: undefined,
+        KINDE_POST_LOGIN_REDIRECT_URL: undefined,
+        KINDE_GOOGLE_CONNECTION_ID: undefined,
         SENTRY_DSN: undefined,
       };
 
