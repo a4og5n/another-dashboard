@@ -18,11 +18,8 @@ export * from "@/types/auth";
 export * from "@/types/campaign-filters";
 export * from "@/types/mailchimp-campaigns";
 
-// Mailchimp dashboard types - resolving naming conflicts
-export type {
-  MailchimpDashboardCampaign,
-  MailchimpDashboardResponse,
-} from "@/types/mailchimp-dashboard";
+// Mailchimp dashboard component types
+export type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
 
 // All other Mailchimp specific types
 export * from "@/types/mailchimp";

@@ -147,27 +147,6 @@ function parseEnv(): Env {
     // If still failing even with mock data, continue to error reporting
   }
 
-  // Debug: Print all relevant environment variables before validation
-  if (process.env.NODE_ENV === "development") {
-    console.log("[env debug] process.env snapshot:", {
-      NODE_ENV: process.env.NODE_ENV,
-      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-      MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY,
-      MAILCHIMP_SERVER_PREFIX: process.env.MAILCHIMP_SERVER_PREFIX,
-      DEBUG_API_CALLS: process.env.DEBUG_API_CALLS,
-      ENABLE_MOCK_DATA: process.env.ENABLE_MOCK_DATA,
-      NEXT_PUBLIC_VERCEL_ANALYTICS: process.env.NEXT_PUBLIC_VERCEL_ANALYTICS,
-      NEXT_PUBLIC_ANALYTICS_ENDPOINT:
-        process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT,
-      KINDE_CLIENT_ID: process.env.KINDE_CLIENT_ID,
-      KINDE_CLIENT_SECRET: process.env.KINDE_CLIENT_SECRET,
-      KINDE_ISSUER_URL: process.env.KINDE_ISSUER_URL,
-      KINDE_SITE_URL: process.env.KINDE_SITE_URL,
-      KINDE_POST_LOGOUT_REDIRECT_URL:
-        process.env.KINDE_POST_LOGOUT_REDIRECT_URL,
-      KINDE_POST_LOGIN_REDIRECT_URL: process.env.KINDE_POST_LOGIN_REDIRECT_URL,
-    });
-  }
   // Normal validation flow
   const parsed = envSchema.safeParse(process.env);
 
