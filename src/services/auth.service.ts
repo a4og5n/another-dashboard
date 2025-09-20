@@ -23,7 +23,7 @@ export class AuthService {
    * Returns validated session data or null if unauthenticated
    */
   async getSession(): Promise<AuthSession | null> {
-    try {
+  try {
       const {
         getUser,
         isAuthenticated,
@@ -93,6 +93,13 @@ export class AuthService {
 
       return validatedSession;
     } catch (error) {
+      // Handle AbortError gracefully (happens during navigation/unmounting)
+      if (error instanceof Error && error.name === "AbortError") {
+        console.log(
+          "AuthService.getSession: Request was aborted (navigation/unmount)",
+        );
+        return null;
+      }
       // Log and return null for any other error
       console.error("AuthService.getSession error:", error);
       return null;
