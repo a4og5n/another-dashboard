@@ -23,7 +23,7 @@ export class AuthService {
    * Returns validated session data or null if unauthenticated
    */
   async getSession(): Promise<AuthSession | null> {
-  try {
+    try {
       const {
         getUser,
         isAuthenticated,
@@ -36,9 +36,13 @@ export class AuthService {
       try {
         const authResult = await isAuthenticated();
         isAuth = !!authResult;
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Handle Next.js NEXT_REDIRECT error gracefully
-        if (error && error.message && error.message.includes('NEXT_REDIRECT')) {
+        if (
+          error instanceof Error &&
+          typeof error.message === "string" &&
+          error.message.includes("NEXT_REDIRECT")
+        ) {
           // User is not authenticated, do not throw, just return null
           return null;
         }
