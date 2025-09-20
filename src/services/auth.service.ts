@@ -32,7 +32,27 @@ export class AuthService {
         getAccessToken,
       } = getKindeServerSession();
 
-      const isAuth = await isAuthenticated();
+      let isAuth = false;
+      try {
+        const authResult = await isAuthenticated();
+        isAuth = !!authResult;
+      } catch (error: any) {
+        // Handle Next.js NEXT_REDIRECT error gracefully
+        if (error && error.message && error.message.includes('NEXT_REDIRECT')) {
+          // User is not authenticated, do not throw, just return null
+          return null;
+        }
+        // Handle AbortError gracefully (happens during navigation/unmounting)
+        if (error instanceof Error && error.name === "AbortError") {
+          console.log(
+            "AuthService.getSession: Request was aborted (navigation/unmount)",
+          );
+          return null;
+        }
+        // Log and return null for any other error
+        console.error("AuthService.getSession isAuthenticated error:", error);
+        return null;
+      }
 
       if (!isAuth) {
         return null;
@@ -73,14 +93,7 @@ export class AuthService {
 
       return validatedSession;
     } catch (error) {
-      // Handle AbortError gracefully (happens during navigation/unmounting)
-      if (error instanceof Error && error.name === "AbortError") {
-        console.log(
-          "AuthService.getSession: Request was aborted (navigation/unmount)",
-        );
-        return null;
-      }
-
+      // Log and return null for any other error
       console.error("AuthService.getSession error:", error);
       return null;
     }
