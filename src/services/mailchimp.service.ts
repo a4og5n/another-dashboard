@@ -13,10 +13,10 @@ import type {
   MailchimpRootQuery,
   ReportListQuery,
   MailchimpList,
-  MailchimpListsQuery,
   OpenListQueryParams,
   ReportOpenListSuccess,
 } from "@/types/mailchimp";
+import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp/audience-query.schema";
 import type { CampaignReport } from "@/schemas/mailchimp/common/campaign-report.schema";
 
 export type MailchimpCampaignReport = CampaignReport;
@@ -222,28 +222,48 @@ export class MailchimpService extends BaseApiService {
 
   /**
    * Get all lists (audiences)
+   * Accepts raw search params and handles parsing/validation internally
    */
-  async getLists(
-    params?: Pick<
-      MailchimpListsQuery,
-      "fields" | "exclude_fields" | "count" | "offset"
-    >,
-  ): Promise<
+  async getLists(rawParams?: {
+    page?: string;
+    limit?: string;
+    fields?: string;
+    exclude_fields?: string;
+    count?: string | number;
+    offset?: string | number;
+  }): Promise<
     ApiResponse<{
       lists: MailchimpList[];
       total_items: number;
     }>
   > {
+    // Parse and validate params using schema defaults
+    const queryDefaults = MailchimpAudienceQuerySchema.parse({});
+
+    // Convert page/limit to count/offset format, handling both string and number inputs
+    const currentPage = parseInt(rawParams?.page || "1");
+    const pageSize = rawParams?.count
+      ? typeof rawParams.count === "string"
+        ? parseInt(rawParams.count)
+        : rawParams.count
+      : parseInt(rawParams?.limit || queryDefaults.count.toString());
+
     // Convert to base service format
-    const queryParams: Record<string, string | number | boolean | string[]> =
-      {};
-    if (params) {
-      if (params.fields) queryParams.fields = params.fields;
-      if (params.exclude_fields)
-        queryParams.exclude_fields = params.exclude_fields;
-      if (params.count) queryParams.count = params.count;
-      if (params.offset) queryParams.offset = params.offset;
-    }
+    const offset = rawParams?.offset
+      ? typeof rawParams.offset === "string"
+        ? parseInt(rawParams.offset)
+        : rawParams.offset
+      : (currentPage - 1) * pageSize;
+
+    const queryParams: Record<string, string | number | boolean | string[]> = {
+      count: pageSize,
+      offset: offset,
+    };
+
+    // Add optional field parameters
+    if (rawParams?.fields) queryParams.fields = rawParams.fields;
+    if (rawParams?.exclude_fields)
+      queryParams.exclude_fields = rawParams.exclude_fields;
 
     return this.get("/lists", queryParams);
   }

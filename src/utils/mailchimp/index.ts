@@ -3,6 +3,7 @@
  * Centralized exports for mailchimp utility functions
  */
 
+export * from "@/utils/mailchimp/audience-stats";
 export * from "@/utils/mailchimp/metadata";
 export * from "@/utils/mailchimp/query-params";
 export * from "@/utils/mailchimp/report-helpers";
