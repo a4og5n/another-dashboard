@@ -31,7 +31,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TableSkeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/skeletons";
 import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { FileText, BarChart3 } from "lucide-react";

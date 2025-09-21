@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { MailchimpDashboardSkeleton } from "@/components/ui/skeleton";
+import { MailchimpDashboardSkeleton } from "@/skeletons";
 import { RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ListSkeleton } from "@/components/ui/skeleton";
+import { ListSkeleton } from "@/skeletons";
 import { Users, TrendingUp } from "lucide-react";
 
 interface Audience {

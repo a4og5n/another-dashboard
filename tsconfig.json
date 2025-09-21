@@ -26,7 +26,8 @@
       "@/schemas/*": ["./src/schemas/*"],
       "@schemas/mailchimp/*": ["./src/schemas/mailchimp/*"],
       "@/utils/*": ["./src/utils/*"],
-      "@/lib/*": ["./src/lib/*"]
+      "@/lib/*": ["./src/lib/*"],
+      "@/skeletons/*": ["./src/skeletons/*"]
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true,

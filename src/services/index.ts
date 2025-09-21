@@ -21,6 +21,7 @@ export type { MailchimpList, MailchimpListsQuery } from "@/types/mailchimp";
 // Service factory instances
 import { MailchimpService } from "@/services/mailchimp.service";
 import { ApiServiceFactory } from "@/services/base-api.service";
+import type { ServiceName, ServiceInstance } from "@/types/services";
 
 /**
  * Get Mailchimp service instance (singleton)
@@ -38,14 +39,6 @@ export const getMailchimpService = () => {
 export const services = {
   mailchimp: getMailchimpService,
 } as const;
-
-/**
- * Service type helpers
- */
-export type ServiceName = keyof typeof services;
-export type ServiceInstance<T extends ServiceName> = ReturnType<
-  (typeof services)[T]
->;
 
 /**
  * Helper to get any service by name

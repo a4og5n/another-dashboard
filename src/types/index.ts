@@ -23,3 +23,6 @@ export type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
 
 // All other Mailchimp specific types
 export * from "@/types/mailchimp";
+
+// Service types
+export * from "@/types/services";
