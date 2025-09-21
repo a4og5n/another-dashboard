@@ -68,6 +68,9 @@ export default function AccountPage() {
   );
 }
 
+// Force dynamic rendering to prevent build-time API calls
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Account | Mailchimp Dashboard",
   description: "View your Mailchimp account information and settings",
