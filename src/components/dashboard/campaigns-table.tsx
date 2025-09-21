@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TableSkeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/skeletons";
 import { DateFilterPopover } from "@/components/ui/date-filter-popover";
 import { CampaignStatusBadge } from "@/components/ui/campaign-status-badge";
 import { Mail } from "lucide-react";

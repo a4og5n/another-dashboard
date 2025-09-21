@@ -4,7 +4,7 @@
  *
  * Following established loading patterns using shadcn/ui Skeleton
  */
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/skeletons";
 
 export function AuthLoading() {
   return (

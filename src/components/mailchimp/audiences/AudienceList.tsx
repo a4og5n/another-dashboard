@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { AudienceCard } from "./AudienceCard";
 import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
-import { TableSkeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/skeletons";
 import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MailchimpList } from "@/services";
