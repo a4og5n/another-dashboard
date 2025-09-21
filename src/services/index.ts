@@ -40,7 +40,6 @@ export const services = {
   mailchimp: getMailchimpService,
 } as const;
 
-
 /**
  * Helper to get any service by name
  */

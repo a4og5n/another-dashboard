@@ -16,7 +16,7 @@ import { getMailchimpService } from "@/services";
 async function AccountPageContent() {
   // Get Mailchimp service and fetch account data directly
   const mailchimp = getMailchimpService();
-  
+
   // Fetch account data from Mailchimp service - let errors bubble up naturally
   const response = await mailchimp.getApiRoot();
 
