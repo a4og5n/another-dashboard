@@ -12,6 +12,18 @@ import userEvent from "@testing-library/user-event";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
 import type { MailchimpCampaignReport } from "@/services";
 
+// Mock Next.js router
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}));
+
 // Mock Next.js Link component
 vi.mock("next/link", () => ({
   default: ({
@@ -187,8 +199,8 @@ describe("ReportsOverview Component", () => {
     totalPages: 2,
     perPage: 10,
     perPageOptions: [10, 20, 50],
-    onPageChange: vi.fn(),
-    onPerPageChange: vi.fn(),
+    basePath: "/mailchimp/campaigns",
+    additionalParams: {},
   };
 
   beforeEach(() => {
@@ -355,14 +367,11 @@ describe("ReportsOverview Component", () => {
       expect(screen.getByText("Next")).toBeInTheDocument();
     });
 
-    it("should call onPageChange when pagination is clicked", async () => {
-      const user = userEvent.setup();
-      render(<ReportsOverview {...defaultProps} />);
+    it("should render pagination controls when there are multiple pages", async () => {
+      render(<ReportsOverview {...defaultProps} totalPages={5} />);
 
-      const nextButton = screen.getByText("Next");
-      await user.click(nextButton);
-
-      expect(defaultProps.onPageChange).toHaveBeenCalledWith(2);
+      expect(screen.getByText("Next")).toBeInTheDocument();
+      expect(screen.getByText("Previous")).toBeInTheDocument();
     });
 
     it("should disable previous button on first page", () => {
@@ -494,21 +503,25 @@ describe("ReportsOverview Component", () => {
   });
 
   describe("Component Props", () => {
-    it("should handle undefined optional callbacks", () => {
-      const propsWithoutCallbacks = {
+    it("should handle empty additional params", () => {
+      const propsWithEmptyParams = {
         ...defaultProps,
-        onPageChange: undefined,
-        onPerPageChange: undefined,
+        additionalParams: {},
       };
 
       expect(() =>
-        render(<ReportsOverview {...propsWithoutCallbacks} />),
+        render(<ReportsOverview {...propsWithEmptyParams} />),
       ).not.toThrow();
     });
 
     it("should use default values for optional props", () => {
       const minimalProps = {
         reports: mockReports,
+        currentPage: 1,
+        totalPages: 1,
+        perPage: 10,
+        perPageOptions: [10, 20, 50],
+        basePath: "/test",
       };
 
       expect(() => render(<ReportsOverview {...minimalProps} />)).not.toThrow();

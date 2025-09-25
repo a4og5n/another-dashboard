@@ -1,24 +1,13 @@
 /**
- * Reports Overview Dashboard Coexport function ReportsOverview(rawProps: ReportsTableProps) {
-  // Parse props with schema to apply validation and default values
-  const {
-    reports,
-    loading,
-    error,
-    currentPage,
-    totalPages,
-    perPage,
-    perPageOptions,
-    onPageChange,
-    onPerPageChange,
-  } = reportsTablePropsSchema.parse(rawProps);
-
-  if (loading) {plays campaign reports with metrics cards and report list
+ * Reports Overview Dashboard Component
+ * Displays campaign reports with metrics cards and report list
  *
  * Issue #129: Reports dashboard component implementation
  * Following established patterns from audiences-overview.tsx
  * Implements component reuse strategy with MetricCard and Table
  */
+
+"use client";
 
 import {
   Table,
@@ -36,38 +25,28 @@ import { PaginationControls } from "@/components/dashboard/shared/pagination-con
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { FileText, BarChart3 } from "lucide-react";
 import Link from "next/link";
-import type { ReportsTableProps } from "@/types";
-import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports";
-import { formatDateShort } from "@/utils";
+import { formatDateShort, usePaginationHandlers } from "@/utils";
+import type { ReportsOverviewProps } from "@/types";
 
-/**
- * Gets status badge for sent campaigns
- */
-function getStatusBadge() {
-  return <Badge variant="default">Sent</Badge>;
-}
-
-export function ReportsOverview(rawProps: ReportsTableProps) {
-  // Parse props with schema to apply validation and default values
-  const {
-    reports,
-    loading,
-    error,
-    currentPage,
-    totalPages,
-    perPage,
-    perPageOptions,
-    onPageChange,
-    onPerPageChange,
-  } = reportsTablePropsSchema.parse({
-    // Ensure all required fields are present with proper defaults
-    loading: false,
-    error: null,
-    currentPage: 1,
-    totalPages: 1,
-    perPage: 10,
-    perPageOptions: [10, 20, 50],
-    ...rawProps, // Override with provided props
+export function ReportsOverview({
+  reports,
+  loading = false,
+  error = null,
+  currentPage,
+  totalPages,
+  perPage,
+  perPageOptions,
+  basePath,
+  additionalParams,
+}: ReportsOverviewProps) {
+  // Create pagination handlers using the utilities
+  const { handlePageChange, handlePerPageChange } = usePaginationHandlers({
+    basePath,
+    currentParams: {
+      page: currentPage,
+      perPage,
+      additionalParams,
+    },
   });
 
   if (loading) {
@@ -172,7 +151,9 @@ export function ReportsOverview(rawProps: ReportsTableProps) {
                           {report.list_name}
                         </Link>
                       </TableCell>
-                      <TableCell>{getStatusBadge()}</TableCell>
+                      <TableCell>
+                        <Badge variant="default">Sent</Badge>
+                      </TableCell>
                       <TableCell className="text-right">
                         {report.emails_sent.toLocaleString()}
                       </TableCell>
@@ -210,12 +191,12 @@ export function ReportsOverview(rawProps: ReportsTableProps) {
           <PerPageSelector
             value={perPage}
             options={perPageOptions}
-            onChange={onPerPageChange || (() => {})}
+            onChange={handlePerPageChange}
           />
           <PaginationControls
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={onPageChange || (() => {})}
+            onPageChange={handlePageChange}
           />
         </div>
       )}

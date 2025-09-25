@@ -17,6 +17,7 @@ import type {
   ReportOpenListSuccess,
 } from "@/types/mailchimp";
 import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp/audience-query.schema";
+import { CampaignsPageQuerySchema } from "@/schemas/mailchimp/campaign-query.schema";
 import type { CampaignReport } from "@/schemas/mailchimp/common/campaign-report.schema";
 
 export type MailchimpCampaignReport = CampaignReport;
@@ -164,31 +165,57 @@ export class MailchimpService extends BaseApiService {
   /**
    * Get all campaign reports
    */
-  async getCampaignReports(params?: ReportListQuery): Promise<
+  async getCampaignReports(rawParams?: {
+    page?: string;
+    perPage?: string;
+    type?: string;
+    before_send_time?: string;
+    since_send_time?: string;
+    fields?: string;
+    exclude_fields?: string;
+    count?: string | number;
+    offset?: string | number;
+    folder_id?: string;
+    member_id?: string;
+    list_id?: string;
+    sort_field?: string;
+    sort_dir?: string;
+  }): Promise<
     ApiResponse<{
       reports: MailchimpCampaignReport[];
       total_items: number;
     }>
   > {
-    // Convert ReportListQuery to base service format
-    const queryParams: Record<string, string | number | boolean | string[]> =
-      {};
-    if (params) {
-      if (params.fields) queryParams.fields = params.fields;
-      if (params.exclude_fields)
-        queryParams.exclude_fields = params.exclude_fields;
-      if (params.count) queryParams.count = params.count;
-      if (params.offset) queryParams.offset = params.offset;
-      if (params.type) queryParams.type = params.type;
-      if (params.before_send_time)
-        queryParams.before_send_time = params.before_send_time;
-      if (params.since_send_time)
-        queryParams.since_send_time = params.since_send_time;
-      if (params.folder_id) queryParams.folder_id = params.folder_id;
-      if (params.member_id) queryParams.member_id = params.member_id;
-      if (params.list_id) queryParams.list_id = params.list_id;
-      if (params.sort_field) queryParams.sort_field = params.sort_field;
-      if (params.sort_dir) queryParams.sort_dir = params.sort_dir;
+    // Parse and validate parameters using campaign query schema
+    const campaignQueryDefaults = CampaignsPageQuerySchema.parse({});
+    const currentPage = parseInt(rawParams?.page || "1");
+    const pageSize = parseInt(
+      rawParams?.perPage || campaignQueryDefaults.perPage.toString(),
+    );
+
+    // Convert raw params to API query format
+    const queryParams: Record<string, string | number | boolean | string[]> = {
+      count: pageSize,
+      offset: (currentPage - 1) * pageSize,
+    };
+
+    if (rawParams) {
+      if (rawParams.fields) queryParams.fields = rawParams.fields;
+      if (rawParams.exclude_fields)
+        queryParams.exclude_fields = rawParams.exclude_fields;
+      if (rawParams.type) queryParams.type = rawParams.type;
+      if (rawParams.before_send_time)
+        queryParams.before_send_time = rawParams.before_send_time;
+      if (rawParams.since_send_time)
+        queryParams.since_send_time = rawParams.since_send_time;
+      if (rawParams.folder_id) queryParams.folder_id = rawParams.folder_id;
+      if (rawParams.member_id) queryParams.member_id = rawParams.member_id;
+      if (rawParams.list_id) queryParams.list_id = rawParams.list_id;
+      if (rawParams.sort_field) queryParams.sort_field = rawParams.sort_field;
+      if (rawParams.sort_dir) queryParams.sort_dir = rawParams.sort_dir;
+      // Override defaults if provided
+      if (rawParams.count) queryParams.count = rawParams.count;
+      if (rawParams.offset) queryParams.offset = rawParams.offset;
     }
 
     return this.get("/reports", queryParams);

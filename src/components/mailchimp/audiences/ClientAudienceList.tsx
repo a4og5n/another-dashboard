@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
 import { AudienceList } from "./AudienceList";
+import { useStaticPaginationHandlers } from "@/utils/pagination";
 import type { MailchimpList } from "@/services";
 
 interface ClientAudienceListProps {
@@ -20,13 +20,8 @@ export function ClientAudienceList({
   ClientAudienceListProps,
   "audiences" | "totalCount" | "currentPage" | "pageSize"
 >) {
-  const handlePageChange = useCallback(() => {
-    // No-op: pagination is now static
-  }, []);
-
-  const handlePageSizeChange = useCallback(() => {
-    // No-op: page size is now static
-  }, []);
+  const { handlePageChange, handlePerPageChange } =
+    useStaticPaginationHandlers();
 
   return (
     <AudienceList
@@ -37,7 +32,7 @@ export function ClientAudienceList({
       currentPage={currentPage}
       pageSize={pageSize}
       onPageChange={handlePageChange}
-      onPageSizeChange={handlePageSizeChange}
+      onPageSizeChange={handlePerPageChange}
       className=""
     />
   );
