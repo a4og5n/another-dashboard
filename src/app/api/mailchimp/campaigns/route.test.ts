@@ -379,7 +379,6 @@ describe("Mailchimp campaigns API route", () => {
     const service = services.getMailchimpService();
     try {
       // Using any to bypass type checking for this test case
-      // @ts-expect-error - Testing invalid type
       await service.getCampaignReports({ type: "invalidtype" });
       throw new Error("Expected error not thrown");
     } catch (err) {

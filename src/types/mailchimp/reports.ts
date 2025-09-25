@@ -98,7 +98,12 @@ import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
  */
 export interface ReportsOverviewProps {
   reports: MailchimpCampaignReport[];
-  totalItems: number;
   loading?: boolean;
   error?: string | null;
+  currentPage: number;
+  totalPages: number;
+  perPage: number;
+  perPageOptions: number[];
+  basePath: string;
+  additionalParams?: Record<string, string | undefined>;
 }
