@@ -28,7 +28,7 @@ async function CampaignOpensPageContent({
   const cleanSearchParams = processOpenListSearchParams(rawSearchParams);
 
   // Fetch campaign open list data
-  const response = await getMailchimpCampaignOpenList(id, rawSearchParams);
+  const response = await getMailchimpCampaignOpenList(id, cleanSearchParams);
 
   // Handle error states
   if (!response.success) {
