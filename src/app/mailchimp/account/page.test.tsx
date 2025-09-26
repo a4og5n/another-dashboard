@@ -89,14 +89,8 @@ describe("Account Component Tests", () => {
       expect(screen.getByText("3.0%")).toBeInTheDocument(); // Bounce rate
     });
 
-    it("shows loading skeleton when loading prop is true", () => {
-      const { container } = render(
-        <AccountOverview account={null} loading={true} />,
-      );
-
-      const skeletons = container.querySelectorAll(".animate-pulse");
-      expect(skeletons.length).toBeGreaterThan(0);
-    });
+    // Note: Loading skeleton test removed as loading prop has been deprecated.
+    // Loading states are now handled at the parent level with Suspense boundaries.
   });
 
   describe("Error Handling", () => {
@@ -117,9 +111,7 @@ describe("Account Component Tests", () => {
     it("shows fallback when account is null", () => {
       render(<AccountOverview account={null} />);
 
-      expect(
-        screen.getByText("Unable to load account information"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("No account data provided")).toBeInTheDocument();
     });
   });
 
@@ -194,12 +186,8 @@ describe("Account Component Tests", () => {
       expect(renderResult.container).toBeInTheDocument();
     });
 
-    it("should not have accessibility violations in loading state", async () => {
-      const { renderResult } = await renderWithA11y(
-        <AccountOverview account={null} loading={true} />,
-      );
-      expect(renderResult.container).toBeInTheDocument();
-    });
+    // Note: Loading state accessibility test removed as loading prop has been deprecated.
+    // Loading states are now handled at the parent level with Suspense boundaries.
 
     it("should not have accessibility violations in error state", async () => {
       const { renderResult } = await renderWithA11y(

@@ -5,3 +5,4 @@
 
 export * from "@/skeletons/mailchimp/MailchimpDashboardSkeleton";
 export * from "@/skeletons/mailchimp/AccountOverviewSkeleton";
+export * from "@/skeletons/mailchimp/AudienceStatsSkeleton";

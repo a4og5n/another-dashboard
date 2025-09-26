@@ -9,6 +9,7 @@
 
 import { Suspense } from "react";
 import { AccountOverview } from "@/components/mailchimp/account";
+import { AccountOverviewSkeleton } from "@/skeletons/mailchimp";
 import { DashboardLayout } from "@/components/layout";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { getMailchimpService } from "@/services";
@@ -20,49 +21,50 @@ async function AccountPageContent() {
   // Fetch account data from Mailchimp service - let errors bubble up naturally
   const response = await mailchimp.getApiRoot();
 
+  // Handle service-level errors only
   if (!response.success) {
-    return <div>Error: {response.error || "Failed to load audiences"}</div>;
+    return (
+      <AccountOverview
+        error={response.error || "Failed to load account data"}
+        account={null}
+      />
+    );
   }
 
-  if (!response.data) {
-    return <div>Error: No audience data received</div>;
-  }
-
-  const account = response.data;
-
-  return <AccountOverview account={account} loading={false} />;
+  // Pass data to component - let component handle prop validation
+  return <AccountOverview account={response.data || null} />;
 }
 
 export default function AccountPage() {
   return (
-    <Suspense fallback={<AccountOverview account={null} loading={true} />}>
-      <DashboardLayout>
-        <div className="space-y-6">
-          {/* Breadcrumb Navigation */}
-          <BreadcrumbNavigation
-            items={[
-              { label: "Dashboard", href: "/" },
-              { label: "Mailchimp", href: "/mailchimp" },
-              { label: "Account", isCurrent: true },
-            ]}
-          />
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Breadcrumb Navigation */}
+        <BreadcrumbNavigation
+          items={[
+            { label: "Dashboard", href: "/" },
+            { label: "Mailchimp", href: "/mailchimp" },
+            { label: "Account", isCurrent: true },
+          ]}
+        />
 
-          {/* Page Header */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Account Information
-            </h1>
-            <p className="text-muted-foreground">
-              View your Mailchimp account details, contact information, and
-              industry benchmarks
-            </p>
-          </div>
-
-          {/* Main Content */}
-          <AccountPageContent />
+        {/* Page Header */}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Account Information
+          </h1>
+          <p className="text-muted-foreground">
+            View your Mailchimp account details, contact information, and
+            industry benchmarks
+          </p>
         </div>
-      </DashboardLayout>
-    </Suspense>
+
+        {/* Main Content */}
+        <Suspense fallback={<AccountOverviewSkeleton />}>
+          <AccountPageContent />
+        </Suspense>
+      </div>
+    </DashboardLayout>
   );
 }
 

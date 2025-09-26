@@ -41,6 +41,5 @@ export interface MailchimpAudiencesQuery {
  */
 export interface AudienceStatsProps {
   stats: AudienceStats;
-  loading?: boolean;
   className?: string;
 }
