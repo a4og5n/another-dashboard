@@ -21,49 +21,47 @@ async function AccountPageContent() {
   const response = await mailchimp.getApiRoot();
 
   if (!response.success) {
-    throw new Error(response.error || "Failed to load account information");
+    return <div>Error: {response.error || "Failed to load audiences"}</div>;
   }
 
   if (!response.data) {
-    throw new Error("No account data received");
+    return <div>Error: No audience data received</div>;
   }
 
   const account = response.data;
 
-  return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation */}
-        <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Account", isCurrent: true },
-          ]}
-        />
-
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Account Information
-          </h1>
-          <p className="text-muted-foreground">
-            View your Mailchimp account details, contact information, and
-            industry benchmarks
-          </p>
-        </div>
-
-        {/* Account Overview */}
-        <AccountOverview account={account} loading={false} />
-      </div>
-    </DashboardLayout>
-  );
+  return <AccountOverview account={account} loading={false} />;
 }
 
 export default function AccountPage() {
   return (
     <Suspense fallback={<AccountOverview account={null} loading={true} />}>
-      <AccountPageContent />
+      <DashboardLayout>
+        <div className="space-y-6">
+          {/* Breadcrumb Navigation */}
+          <BreadcrumbNavigation
+            items={[
+              { label: "Dashboard", href: "/" },
+              { label: "Mailchimp", href: "/mailchimp" },
+              { label: "Account", isCurrent: true },
+            ]}
+          />
+
+          {/* Page Header */}
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Account Information
+            </h1>
+            <p className="text-muted-foreground">
+              View your Mailchimp account details, contact information, and
+              industry benchmarks
+            </p>
+          </div>
+
+          {/* Main Content */}
+          <AccountPageContent />
+        </div>
+      </DashboardLayout>
     </Suspense>
   );
 }

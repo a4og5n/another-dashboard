@@ -60,7 +60,7 @@ async function CampaignsPageContent({ searchParams }: CampaignsPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Reports Overview */}
+      {/* Campaign Reports */}
       <ReportsOverview
         reports={reports}
         currentPage={currentPage}
@@ -91,7 +91,7 @@ export default function CampaignsPage({ searchParams }: CampaignsPageProps) {
           ]}
         />
 
-        {/* Header */}
+        {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Campaigns</h1>
@@ -102,7 +102,7 @@ export default function CampaignsPage({ searchParams }: CampaignsPageProps) {
           </div>
         </div>
 
-        {/* Dynamic Content */}
+        {/* Main Content */}
         <Suspense fallback={<div>Loading campaigns...</div>}>
           <CampaignsPageContent searchParams={searchParams} />
         </Suspense>

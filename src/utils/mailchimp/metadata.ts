@@ -94,3 +94,38 @@ export async function generateCampaignReportMetadata({
 }): Promise<Metadata> {
   return generateCampaignMetadata({ params, pageType: "report" });
 }
+
+/**
+ * Generates metadata specifically for campaign opens pages
+ * @param params - Object containing the campaign ID
+ * @returns Next.js Metadata object for the opens page
+ */
+export async function generateCampaignOpensMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
+  // Fetch campaign report for metadata
+  const response = await getMailchimpCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Opens - Campaign Not Found",
+      description: "The requested campaign could not be found.",
+    };
+  }
+
+  const report = response.data;
+
+  return {
+    title: `${report.campaign_title} - Opens`,
+    description: `View all members who opened ${report.campaign_title}. Total opens: ${report.opens.opens_total.toLocaleString()}`,
+    openGraph: {
+      title: `${report.campaign_title} - Campaign Opens`,
+      description: `${report.opens.opens_total.toLocaleString()} total opens from ${report.emails_sent.toLocaleString()} recipients`,
+      type: "website",
+    },
+  };
+}
