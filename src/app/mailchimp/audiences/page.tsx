@@ -39,10 +39,10 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Statistics Overview */}
+      {/* Audience Statistics */}
       <AudienceStats stats={stats} loading={false} />
 
-      {/* Main Content */}
+      {/* Audience List */}
       <ClientAudienceList
         audiences={audiences}
         totalCount={totalCount}
@@ -66,7 +66,7 @@ export default function AudiencesPage({ searchParams }: AudiencesPageProps) {
           ]}
         />
 
-        {/* Header */}
+        {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Audiences</h1>
@@ -76,7 +76,7 @@ export default function AudiencesPage({ searchParams }: AudiencesPageProps) {
           </div>
         </div>
 
-        {/* Dynamic Content */}
+        {/* Main Content */}
         <Suspense fallback={<div>Loading audience management...</div>}>
           <AudiencesPageContent searchParams={searchParams} />
         </Suspense>

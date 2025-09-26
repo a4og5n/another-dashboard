@@ -7,8 +7,10 @@
  * Converted to server component for better performance and SEO
  */
 
-import { CampaignOpensTable } from "./CampaignOpensTable";
-import { CampaignOpensEmpty } from "./CampaignOpensEmpty";
+import {
+  CampaignOpensTable,
+  CampaignOpensEmpty,
+} from "@/components/dashboard/reports";
 import type { CampaignOpensProps } from "@/types/components/dashboard/reports";
 
 export function CampaignOpens({
@@ -17,21 +19,29 @@ export function CampaignOpens({
   campaignId,
   perPageOptions = [10, 20, 50],
 }: CampaignOpensProps) {
-  // Check if there are no opens (total_items is 0)
-  if (opensData.total_items === 0) {
-    return <CampaignOpensEmpty campaignId={campaignId} />;
-  }
-
-  // Server component - no client-side state or navigation logic needed
-  // Navigation is handled via forms and links in the table component
-  const baseUrl = `/mailchimp/campaigns/${campaignId}/report/opens`;
-
   return (
-    <CampaignOpensTable
-      opensData={opensData}
-      currentParams={currentParams}
-      perPageOptions={perPageOptions}
-      baseUrl={baseUrl}
-    />
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Campaign Opens</h1>
+        <p className="text-muted-foreground">
+          {opensData.total_items > 0
+            ? `Members who opened this campaign - ${opensData.total_items} total opens`
+            : "Campaign opens data"}
+        </p>
+      </div>
+
+      {/* Check if there are no opens (total_items is 0) */}
+      {opensData.total_items === 0 ? (
+        <CampaignOpensEmpty campaignId={campaignId} />
+      ) : (
+        <CampaignOpensTable
+          opensData={opensData}
+          currentParams={currentParams}
+          perPageOptions={perPageOptions}
+          baseUrl={`/mailchimp/campaigns/${campaignId}/report/opens`}
+        />
+      )}
+    </div>
   );
 }

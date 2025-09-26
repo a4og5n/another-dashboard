@@ -13,41 +13,38 @@ import {
   CampaignReportDetail,
   CampaignReportLoading,
 } from "@/components/dashboard";
-import { BreadcrumbNavigation } from "@/components/layout";
-import { CampaignReportPageProps } from "@/types/mailchimp";
-import { generateCampaignReportMetadata } from "@/utils";
 
-export default async function CampaignReportPage({
+import { generateCampaignReportMetadata } from "@/utils";
+import { BreadcrumbNavigation } from "@/components/layout";
+import { isDev } from "@/lib/config";
+import type { CampaignReportPageProps } from "@/types/mailchimp";
+
+async function CampaignReportPageContent({
   params,
   searchParams,
 }: CampaignReportPageProps) {
   const { id } = await params;
-  const { fields, exclude_fields } = await searchParams;
+  const rawSearchParams = await searchParams;
 
   // Fetch campaign report data
-  const response = await getMailchimpCampaignReport(id, {
-    fields,
-    exclude_fields,
-  });
+  const response = await getMailchimpCampaignReport(id, rawSearchParams);
 
   // Handle error states
-  if (!response.success || !response.data) {
-    // Check if this is a "not found" error
-    if (
-      response.error?.toLowerCase().includes("not found") ||
-      response.error?.includes("404") ||
-      response.error?.toLowerCase().includes("invalid campaign id")
-    ) {
-      notFound();
-    }
-
+  if (!response.success) {
     // Log the error for debugging but use notFound for a better user experience
-    console.error(`Error fetching campaign report ${id}:`, response.error);
+    if (isDev) {
+      console.error(`Error fetching campaign report ${id}:`, response.error);
+    }
     notFound();
   }
 
-  const report = response.data;
+  return <CampaignReportDetail report={response.data!} />;
+}
 
+export default function CampaignReportPage({
+  params,
+  searchParams,
+}: CampaignReportPageProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Breadcrumb Navigation */}
@@ -55,19 +52,25 @@ export default async function CampaignReportPage({
         items={[
           { label: "Dashboard", href: "/mailchimp" },
           { label: "Campaigns", href: "/mailchimp/campaigns" },
-          { label: report.campaign_title, isCurrent: true },
+          { label: "Report", isCurrent: true },
         ]}
       />
 
       {/* Main Content */}
       <div className="container mx-auto pb-8 px-6">
         <Suspense fallback={<CampaignReportLoading />}>
-          <CampaignReportDetail report={report} />
+          <CampaignReportPageContent
+            params={params}
+            searchParams={searchParams}
+          />
         </Suspense>
       </div>
     </div>
   );
 }
+
+// Force dynamic rendering to prevent build-time API calls
+export const dynamic = "force-dynamic";
 
 // Generate metadata for the page using the utility function
 export const generateMetadata = generateCampaignReportMetadata;

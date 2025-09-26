@@ -7,11 +7,7 @@
  */
 
 import { redirect } from "next/navigation";
-
-interface CampaignDetailPageProps {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ fields?: string; exclude_fields?: string }>;
-}
+import type { CampaignDetailPageProps } from "@/types/mailchimp/campaign-detail-page-props";
 
 export default async function CampaignDetailPage({
   params,

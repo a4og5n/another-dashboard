@@ -7,6 +7,7 @@ export * from "@/types/mailchimp/report-open-list";
 export * from "@/types/mailchimp/campaign-report-page-props";
 export * from "@/types/mailchimp/campaign-opens-page-props";
 export * from "@/types/mailchimp/campaigns-page-props";
+export * from "@/types/mailchimp/campaign-detail-page-props";
 export * from "@/types/mailchimp/audiences-page-props";
 export * from "@/types/mailchimp/campaign";
 export * from "@/types/mailchimp/list";

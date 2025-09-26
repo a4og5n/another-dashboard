@@ -52,3 +52,9 @@ export default function Page() {
     </DashboardLayout>
   );
 }
+
+export const metadata = {
+  title: "Mailchimp Dashboard",
+  description:
+    "Choose a section to manage your Mailchimp data - account settings, audiences, and campaigns",
+};
