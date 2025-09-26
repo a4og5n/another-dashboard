@@ -225,23 +225,8 @@ describe("AccountOverview", () => {
     });
   });
 
-  describe("Loading State", () => {
-    it("shows loading skeleton when loading is true", () => {
-      const { container } = render(
-        <AccountOverview account={null} loading={true} />,
-      );
-
-      // Check for skeleton elements by CSS class
-      const skeletons = container.querySelectorAll(".animate-pulse");
-      expect(skeletons.length).toBeGreaterThan(0);
-    });
-
-    it("does not show account data when loading", () => {
-      render(<AccountOverview account={mockAccountData} loading={true} />);
-
-      expect(screen.queryByText("Test Company")).not.toBeInTheDocument();
-    });
-  });
+  // Note: Loading state tests removed as loading prop has been deprecated.
+  // Loading states are now handled at the parent level with Suspense boundaries.
 
   describe("Error State", () => {
     it("displays error message when error is provided", () => {
@@ -326,12 +311,8 @@ describe("AccountOverview", () => {
       expect(renderResult.container).toBeInTheDocument();
     });
 
-    it("should not have accessibility violations in loading state", async () => {
-      const { renderResult } = await renderWithA11y(
-        <AccountOverview account={null} loading={true} />,
-      );
-      expect(renderResult.container).toBeInTheDocument();
-    });
+    // Note: Loading state accessibility test removed as loading prop has been deprecated.
+    // Loading states are now handled at the parent level with Suspense boundaries.
 
     it("should not have accessibility violations in error state", async () => {
       const { renderResult } = await renderWithA11y(

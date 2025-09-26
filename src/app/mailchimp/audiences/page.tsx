@@ -1,11 +1,10 @@
 import { Suspense } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { BreadcrumbNavigation } from "@/components/layout";
-import { ClientAudienceList } from "@/components/mailchimp/audiences/ClientAudienceList";
-import { AudienceStats } from "@/components/mailchimp/audiences/AudienceStats";
+import { AudienceOverview } from "@/components/mailchimp/audiences/AudienceOverview";
+import { AudienceStatsSkeleton } from "@/skeletons/mailchimp";
 import { getMailchimpService } from "@/services";
 import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp/audience-query.schema";
-import { calculateAudienceStats } from "@/utils/mailchimp";
 import type { AudiencesPageProps } from "@/types/mailchimp";
 
 async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
@@ -18,38 +17,30 @@ async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
   // Pass raw params to service - let service handle parsing/validation
   const response = await mailchimp.getLists(params);
 
-  // Handle expected API failures as return values, not exceptions
-  if (!response.success) {
-    return <div>Error: {response.error || "Failed to load audiences"}</div>;
-  }
-
-  if (!response.data) {
-    return <div>Error: No audience data received</div>;
-  }
-
-  // Calculate audience statistics and extract data using utility function
-  const { stats, audiences, totalCount } = calculateAudienceStats(
-    response.data,
-  );
-
   // Parse pagination params for UI components (same logic as service)
   const queryDefaults = MailchimpAudienceQuerySchema.parse({});
   const currentPage = parseInt(params.page || "1");
   const pageSize = parseInt(params.limit || queryDefaults.count.toString());
 
-  return (
-    <div className="space-y-6">
-      {/* Audience Statistics */}
-      <AudienceStats stats={stats} loading={false} />
-
-      {/* Audience List */}
-      <ClientAudienceList
-        audiences={audiences}
-        totalCount={totalCount}
+  // Handle service-level errors only
+  if (!response.success) {
+    return (
+      <AudienceOverview
+        error={response.error || "Failed to load audiences"}
+        responseData={null}
         currentPage={currentPage}
         pageSize={pageSize}
       />
-    </div>
+    );
+  }
+
+  // Pass data to component - let component handle prop validation
+  return (
+    <AudienceOverview
+      responseData={response.data || null}
+      currentPage={currentPage}
+      pageSize={pageSize}
+    />
   );
 }
 
@@ -77,7 +68,7 @@ export default function AudiencesPage({ searchParams }: AudiencesPageProps) {
         </div>
 
         {/* Main Content */}
-        <Suspense fallback={<div>Loading audience management...</div>}>
+        <Suspense fallback={<AudienceStatsSkeleton />}>
           <AudiencesPageContent searchParams={searchParams} />
         </Suspense>
       </div>

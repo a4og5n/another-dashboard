@@ -4,35 +4,12 @@ import { Users, TrendingUp, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AudienceStatsProps } from "@/types/mailchimp/audience";
 
-export function AudienceStats({
-  stats,
-  loading = false,
-  className,
-}: AudienceStatsProps) {
+export function AudienceStats({ stats, className }: AudienceStatsProps) {
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
     return num.toLocaleString();
   };
-
-  if (loading) {
-    return (
-      <div className={cn("space-y-6", className)}>
-        {/* Loading skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-4 bg-muted rounded mb-2"></div>
-                <div className="h-8 bg-muted rounded mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   const totalMembers = stats.total_members;
   const totalAudiences = stats.total_audiences;

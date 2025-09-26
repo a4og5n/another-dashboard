@@ -161,7 +161,7 @@ const MockAudiencePage = () => (
       </div>
 
       {/* Statistics Overview */}
-      <AudienceStats stats={mockStats} loading={false} />
+      <AudienceStats stats={mockStats} />
 
       {/* Main Content */}
       <ClientAudienceList
@@ -425,7 +425,7 @@ describe("Audiences Page Integration", () => {
 describe("Page Component Props Validation", () => {
   it("validates expected component props are handled correctly", () => {
     // Test that our mock components handle the expected props
-    const statsComponent = <AudienceStats stats={mockStats} loading={false} />;
+    const statsComponent = <AudienceStats stats={mockStats} />;
 
     const audienceListComponent = (
       <ClientAudienceList

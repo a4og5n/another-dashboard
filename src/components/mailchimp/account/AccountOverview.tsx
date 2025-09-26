@@ -9,28 +9,21 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AccountOverviewSkeleton } from "@/skeletons/mailchimp";
 import { PricingPlanBadge } from "@/components/ui/pricing-plan-badge";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { Building2, Mail, Users, Calendar, Globe } from "lucide-react";
 import type { AccountOverviewProps } from "@/types/components";
 import { formatDateLongSafe } from "@/utils";
 
-export function AccountOverview({
-  account,
-  loading = false,
-  error,
-}: AccountOverviewProps) {
-  if (loading) {
-    return <AccountOverviewSkeleton />;
+export function AccountOverview({ account, error }: AccountOverviewProps) {
+  // Handle service-level errors passed from parent
+  if (error) {
+    return <DashboardInlineError error={error} />;
   }
 
-  if (error || !account) {
-    return (
-      <DashboardInlineError
-        error={error || "Unable to load account information"}
-      />
-    );
+  // Handle prop validation - no account data provided
+  if (!account) {
+    return <DashboardInlineError error="No account data provided" />;
   }
 
   return (

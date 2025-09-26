@@ -6,6 +6,5 @@ import type { MailchimpRoot } from "@/types/mailchimp";
  */
 export interface AccountOverviewProps {
   account: MailchimpRoot | null;
-  loading?: boolean;
   error?: string;
 }
