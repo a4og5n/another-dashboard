@@ -242,9 +242,7 @@ describe("AccountOverview", () => {
     it("displays generic error when account is null without specific error", () => {
       render(<AccountOverview account={null} />);
 
-      expect(
-        screen.getByText("Unable to load account information"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("No account data provided")).toBeInTheDocument();
     });
 
     it("does not show account data when there is an error", () => {

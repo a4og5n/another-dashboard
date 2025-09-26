@@ -111,9 +111,7 @@ describe("Account Component Tests", () => {
     it("shows fallback when account is null", () => {
       render(<AccountOverview account={null} />);
 
-      expect(
-        screen.getByText("Unable to load account information"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("No account data provided")).toBeInTheDocument();
     });
   });
 

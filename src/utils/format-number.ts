@@ -4,8 +4,12 @@
  * @returns Formatted number string with appropriate suffix
  */
 export function formatNumber(num: number): string {
-  if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`;
-  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
-  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
+  const absNum = Math.abs(num);
+  const sign = num < 0 ? "-" : "";
+
+  if (absNum >= 1_000_000_000)
+    return `${sign}${(absNum / 1_000_000_000).toFixed(1)}B`;
+  if (absNum >= 1_000_000) return `${sign}${(absNum / 1_000_000).toFixed(1)}M`;
+  if (absNum >= 1_000) return `${sign}${(absNum / 1_000).toFixed(1)}K`;
   return num.toLocaleString();
 }

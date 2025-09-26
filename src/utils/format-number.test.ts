@@ -32,6 +32,6 @@ describe("formatNumber", () => {
   it("handles edge cases", () => {
     expect(formatNumber(-1000)).toBe("-1.0K");
     expect(formatNumber(-1_000_000)).toBe("-1.0M");
-    expect(formatNumber(0.5)).toBe("1"); // toLocaleString rounds
+    expect(formatNumber(0.5)).toBe("0.5"); // toLocaleString preserves decimal
   });
 });
