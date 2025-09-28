@@ -219,4 +219,3 @@ export const CampaignReportSchema = z.object({
   delivery_status: ReportDeliveryStatusSchema,
   _links: z.array(MailchimpLinkSchema).optional(),
 });
-

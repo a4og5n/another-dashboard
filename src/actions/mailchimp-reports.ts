@@ -198,9 +198,7 @@ export async function getMailchimpReports(params: unknown) {
  * @param queryParams - Optional query parameters for field filtering
  * @returns Success response with campaign report data or error response
  */
-export async function getMailchimpCampaignReport(
-  campaignId: unknown,
-) {
+export async function getMailchimpCampaignReport(campaignId: unknown) {
   try {
     // Validate path parameters
     const validatedId = validateCampaignReportId(campaignId);

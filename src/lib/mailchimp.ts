@@ -50,7 +50,7 @@ function formatError(error: any): string {
  * Simple wrapper for SDK calls with consistent error handling
  */
 export async function mailchimpCall<T>(
-  sdkCall: () => Promise<T>
+  sdkCall: () => Promise<T>,
 ): Promise<ApiResponse<T>> {
   try {
     const data = await sdkCall();

@@ -118,7 +118,7 @@ describe("Reports Page Service Integration", () => {
       const service = mailchimpService;
       service.getCampaignReports({
         page: "2",
-        perPage: "20"
+        perPage: "20",
       });
 
       expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
@@ -160,9 +160,9 @@ describe("Reports Page Service Integration", () => {
 
       const service = mailchimpService;
 
-      await expect(service.getCampaignReports({ perPage: "10" })).rejects.toThrow(
-        "Network error",
-      );
+      await expect(
+        service.getCampaignReports({ perPage: "10" }),
+      ).rejects.toThrow("Network error");
     });
   });
 

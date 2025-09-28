@@ -22,7 +22,6 @@ import type {
   MailchimpRootErrorResponse,
 } from "@/types/mailchimp";
 
-
 /**
  * Transform array-based query parameters to comma-separated strings for API
  */

@@ -145,29 +145,33 @@ export function AudienceOverview({
                       <TableCell>
                         <div className="flex items-center space-x-1">
                           <Users className="h-3 w-3 text-muted-foreground" />
-                          <span>{formatNumber(audience.stats.member_count)}</span>
+                          <span>
+                            {formatNumber(audience.stats.member_count)}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge 
-                          variant={audience.visibility === 'pub' ? 'default' : 'secondary'}
+                        <Badge
+                          variant={
+                            audience.visibility === "pub"
+                              ? "default"
+                              : "secondary"
+                          }
                           className="text-xs"
                         >
                           <Eye className="h-3 w-3 mr-1" />
-                          {audience.visibility === 'pub' ? 'Public' : 'Private'}
+                          {audience.visibility === "pub" ? "Public" : "Private"}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        {audience.stats.open_rate 
-                          ? (audience.stats.open_rate * 100).toFixed(1) + '%'
-                          : 'N/A'
-                        }
+                        {audience.stats.open_rate
+                          ? (audience.stats.open_rate * 100).toFixed(1) + "%"
+                          : "N/A"}
                       </TableCell>
                       <TableCell className="text-right">
-                        {audience.stats.click_rate 
-                          ? (audience.stats.click_rate * 100).toFixed(1) + '%'
-                          : 'N/A'
-                        }
+                        {audience.stats.click_rate
+                          ? (audience.stats.click_rate * 100).toFixed(1) + "%"
+                          : "N/A"}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {formatDateShort(audience.date_created)}

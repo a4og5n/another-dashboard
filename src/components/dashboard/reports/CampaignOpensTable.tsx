@@ -231,7 +231,7 @@ export function CampaignOpensTable({
               <Eye className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">
-                  {total_opens?.toLocaleString() ?? '0'}
+                  {total_opens?.toLocaleString() ?? "0"}
                 </p>
                 <p className="text-xs text-muted-foreground">Total Opens</p>
               </div>
@@ -257,7 +257,7 @@ export function CampaignOpensTable({
               <Clock className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">
-                  {total_proxy_excluded_opens?.toLocaleString() ?? '0'}
+                  {total_proxy_excluded_opens?.toLocaleString() ?? "0"}
                 </p>
                 <p className="text-xs text-muted-foreground">Proxy Excluded</p>
               </div>

@@ -28,7 +28,7 @@ interface UserMenuProps {
 
 export function UserMenu({ user, displayName, initials }: UserMenuProps) {
   const menuId = useId();
-  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

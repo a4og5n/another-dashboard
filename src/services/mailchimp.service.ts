@@ -8,16 +8,20 @@
 // SDK interop requires any types for proper functioning
 
 import { mailchimp, mailchimpCall, type ApiResponse } from "@/lib/mailchimp";
-import type { CampaignReport, ReportListSuccess, ReportDetailSuccess } from "@/types/mailchimp";
-import type { 
+import type {
+  CampaignReport,
+  ReportListSuccess,
+  ReportDetailSuccess,
+} from "@/types/mailchimp";
+import type {
   AudiencesPageSearchParams,
   CampaignsPageSearchParams,
-  MailchimpRoot
+  MailchimpRoot,
 } from "@/types/mailchimp";
 import {
   MailchimpAudienceQuerySchema,
   ReportListQueryInternalSchema,
-  OpenListQueryParamsSchema
+  OpenListQueryParamsSchema,
 } from "@/schemas/mailchimp";
 
 // Re-export the campaign report type for external use
@@ -29,25 +33,33 @@ export class MailchimpService {
   /**
    * Audience/List Operations
    */
-  async getAudiences(params: AudiencesPageSearchParams): Promise<ApiResponse<unknown>> {
+  async getAudiences(
+    params: AudiencesPageSearchParams,
+  ): Promise<ApiResponse<unknown>> {
     // Transform page params to Mailchimp API format
     const transformedParams = {
       count: params.limit ? parseInt(params.limit, 10) : 10,
-      offset: params.page ? (parseInt(params.page, 10) - 1) * (params.limit ? parseInt(params.limit, 10) : 10) : 0,
+      offset: params.page
+        ? (parseInt(params.page, 10) - 1) *
+          (params.limit ? parseInt(params.limit, 10) : 10)
+        : 0,
       // Note: Other params like search, visibility, sync_status are not supported by the API
       // They would need to be handled through client-side filtering
     };
-    
+
     // Validate transformed parameters using schema
-    const validationResult = MailchimpAudienceQuerySchema.safeParse(transformedParams);
+    const validationResult =
+      MailchimpAudienceQuerySchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,
-        error: `Invalid audience query parameters: ${validationResult.error.message}`
+        error: `Invalid audience query parameters: ${validationResult.error.message}`,
       };
     }
-    
-    return mailchimpCall(() => (mailchimp as any).lists.getAllLists(validationResult.data));
+
+    return mailchimpCall(() =>
+      (mailchimp as any).lists.getAllLists(validationResult.data),
+    );
   }
 
   async getAudience(listId: string): Promise<ApiResponse<unknown>> {
@@ -68,46 +80,74 @@ export class MailchimpService {
   /**
    * Campaign Report Operations
    */
-  async getCampaignReports(params: CampaignsPageSearchParams): Promise<ApiResponse<ReportListSuccess>> {
+  async getCampaignReports(
+    params: CampaignsPageSearchParams,
+  ): Promise<ApiResponse<ReportListSuccess>> {
     // Transform page params to Mailchimp API format
     const transformedParams = {
       count: params.perPage ? parseInt(params.perPage, 10) : 10,
-      offset: params.page ? (parseInt(params.page, 10) - 1) * (params.perPage ? parseInt(params.perPage, 10) : 10) : 0,
-      type: params.type as "regular" | "plaintext" | "absplit" | "rss" | "variate" | undefined,
+      offset: params.page
+        ? (parseInt(params.page, 10) - 1) *
+          (params.perPage ? parseInt(params.perPage, 10) : 10)
+        : 0,
+      type: params.type as
+        | "regular"
+        | "plaintext"
+        | "absplit"
+        | "rss"
+        | "variate"
+        | undefined,
       before_send_time: params.before_send_time,
       since_send_time: params.since_send_time,
     };
-    
+
     // Validate transformed parameters using schema
-    const validationResult = ReportListQueryInternalSchema.safeParse(transformedParams);
+    const validationResult =
+      ReportListQueryInternalSchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,
-        error: `Invalid campaign reports query parameters: ${validationResult.error.message}`
+        error: `Invalid campaign reports query parameters: ${validationResult.error.message}`,
       };
     }
-    
-    return mailchimpCall(() => (mailchimp as any).reports.getAllCampaignReports(validationResult.data));
+
+    return mailchimpCall(() =>
+      (mailchimp as any).reports.getAllCampaignReports(validationResult.data),
+    );
   }
 
-  async getCampaignReport(campaignId: string): Promise<ApiResponse<ReportDetailSuccess>> {
-    return mailchimpCall(() => (mailchimp as any).reports.getCampaignReport(campaignId));
+  async getCampaignReport(
+    campaignId: string,
+  ): Promise<ApiResponse<ReportDetailSuccess>> {
+    return mailchimpCall(() =>
+      (mailchimp as any).reports.getCampaignReport(campaignId),
+    );
   }
 
-  async getCampaignOpenList(campaignId: string, params?: unknown): Promise<ApiResponse<unknown>> {
+  async getCampaignOpenList(
+    campaignId: string,
+    params?: unknown,
+  ): Promise<ApiResponse<unknown>> {
     // Validate parameters if provided
     if (params !== undefined) {
       const validationResult = OpenListQueryParamsSchema.safeParse(params);
       if (!validationResult.success) {
         return {
           success: false,
-          error: `Invalid campaign open list query parameters: ${validationResult.error.message}`
+          error: `Invalid campaign open list query parameters: ${validationResult.error.message}`,
         };
       }
-      return mailchimpCall(() => (mailchimp as any).reports.getCampaignOpenDetails(campaignId, validationResult.data));
+      return mailchimpCall(() =>
+        (mailchimp as any).reports.getCampaignOpenDetails(
+          campaignId,
+          validationResult.data,
+        ),
+      );
     }
-    
-    return mailchimpCall(() => (mailchimp as any).reports.getCampaignOpenDetails(campaignId, params));
+
+    return mailchimpCall(() =>
+      (mailchimp as any).reports.getCampaignOpenDetails(campaignId, params),
+    );
   }
 
   /**

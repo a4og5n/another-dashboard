@@ -36,12 +36,17 @@ async function CampaignsPageContent({ searchParams }: CampaignsPageProps) {
   }
 
   // Extract reports data and pagination params using utility function
-  const reportsData = response.data as { reports?: MailchimpCampaignReport[]; total_items?: number };
+  const reportsData = response.data as {
+    reports?: MailchimpCampaignReport[];
+    total_items?: number;
+  };
   const reports: MailchimpCampaignReport[] = reportsData.reports || [];
   const totalCount = reportsData.total_items || reports.length;
 
   // Parse pagination params for UI components (same logic as service)
-  const validationResult = validateCampaignsPageParams(params as Record<string, string | undefined>);
+  const validationResult = validateCampaignsPageParams(
+    params as Record<string, string | undefined>,
+  );
   const currentPage = validationResult.success ? validationResult.data.page : 1;
   const perPage = validationResult.success
     ? validationResult.data.perPage

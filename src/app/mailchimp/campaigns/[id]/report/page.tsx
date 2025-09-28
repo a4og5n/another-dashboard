@@ -39,7 +39,9 @@ async function CampaignReportPageContent({
     notFound();
   }
 
-  return <CampaignReportDetail report={response.data as MailchimpCampaignReport} />;
+  return (
+    <CampaignReportDetail report={response.data as MailchimpCampaignReport} />
+  );
 }
 
 export default function CampaignReportPage({
