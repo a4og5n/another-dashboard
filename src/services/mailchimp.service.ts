@@ -43,7 +43,10 @@ export class MailchimpService {
     params: AudiencesPageSearchParams,
   ): Promise<ApiResponse<MailchimpAudienceSuccess>> {
     // Transform page params to Mailchimp API format, let schema handle defaults
-    const transformedParams = transformPaginationParams(params.page, params.limit);
+    const transformedParams = transformPaginationParams(
+      params.page,
+      params.limit,
+    );
 
     // Validate transformed parameters using schema (applies defaults)
     const validationResult =
@@ -136,7 +139,9 @@ export class MailchimpService {
   /**
    * System Operations
    */
-  async getApiRoot(params?: MailchimpRootQuery): Promise<ApiResponse<MailchimpRoot>> {
+  async getApiRoot(
+    params?: MailchimpRootQuery,
+  ): Promise<ApiResponse<MailchimpRoot>> {
     // Validate parameters if provided
     if (params !== undefined) {
       const validationResult = MailchimpRootQuerySchema.safeParse(params);
@@ -146,7 +151,9 @@ export class MailchimpService {
           error: `Invalid API root query parameters: ${validationResult.error.message}`,
         };
       }
-      return mailchimpCall(() => (mailchimp as any).root.getRoot(validationResult.data));
+      return mailchimpCall(() =>
+        (mailchimp as any).root.getRoot(validationResult.data),
+      );
     }
 
     return mailchimpCall(() => (mailchimp as any).root.getRoot());
