@@ -8,6 +8,36 @@
 import { z } from "zod";
 import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp/audience-query.schema";
 import { CampaignsPageQuerySchema } from "@/schemas/mailchimp/campaign-query.schema";
+import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
+/**
+ * Transforms page-based pagination parameters to Mailchimp API offset-based format
+ * Used by service layer for converting URL params to API params
+ *
+ * @param page - Page number (1-based) as string
+ * @param limit - Items per page as string
+ * @returns Object with count and offset properties for Mailchimp API
+ *
+ * @example
+ * ```ts
+ * const params = transformPaginationParams("2", "25");
+ * // Returns: { count: 25, offset: 25 }
+ * ```
+ */
+function transformPaginationParams(
+  page?: string,
+  limit?: string,
+): { count?: number; offset?: number } {
+  const parsedLimit = limit ? parseInt(limit, 10) : undefined;
+  const parsedPage = page ? parseInt(page, 10) : undefined;
+
+  return {
+    ...(parsedLimit && { count: parsedLimit }),
+    ...(parsedPage && {
+      offset: (parsedPage - 1) * (parsedLimit || 10), // Use 10 as fallback for offset calculation
+    }),
+  };
+}
+import type { CampaignsPageSearchParams } from "@/types/mailchimp";
 
 /**
  * Date validation helper for YYYY-MM-DD format
@@ -93,3 +123,39 @@ export function validateCampaignsPageParams(
     data: result.data,
   };
 }
+
+/**
+ * Transform campaign reports page parameters to Mailchimp API format
+ * Combines pagination transformation with campaign-specific filters
+ *
+ * @param params - Campaign reports page search parameters
+ * @returns Object with API-ready parameters
+ *
+ * @example
+ * ```typescript
+ * const params = { page: "2", perPage: "25", type: "regular", before_send_time: "2024-01-01" };
+ * const result = transformCampaignReportsParams(params);
+ * // Returns: { count: 25, offset: 25, type: "regular", before_send_time: "2024-01-01" }
+ * ```
+ */
+export function transformCampaignReportsParams(
+  params: CampaignsPageSearchParams,
+) {
+  return {
+    ...transformPaginationParams(params.page, params.perPage),
+    ...(params.type &&
+      REPORT_TYPES.includes(params.type as (typeof REPORT_TYPES)[number]) && {
+        type: params.type as (typeof REPORT_TYPES)[number],
+      }),
+    ...(params.before_send_time && {
+      before_send_time: params.before_send_time,
+    }),
+    ...(params.since_send_time && { since_send_time: params.since_send_time }),
+  };
+}
+
+/**
+ * Export the server-compatible transformPaginationParams function
+ * for use in service layer and other server-side code
+ */
+export { transformPaginationParams };

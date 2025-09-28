@@ -8,27 +8,13 @@
 
 import mailchimp from "@mailchimp/mailchimp_marketing";
 import { env } from "@/lib/config";
+import type { ApiResponse } from "@/types/api-errors";
 
 // Configure the Mailchimp SDK once
 mailchimp.setConfig({
   apiKey: env.MAILCHIMP_API_KEY,
   server: env.MAILCHIMP_SERVER_PREFIX || "us1",
 });
-
-/**
- * Simple response wrapper for consistency
- */
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  statusCode?: number;
-  rateLimit?: {
-    remaining: number;
-    resetTime: Date;
-    limit?: number;
-  };
-}
 
 /**
  * Simple error formatter for SDK responses

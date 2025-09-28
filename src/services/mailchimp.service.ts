@@ -7,7 +7,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // SDK interop requires any types for proper functioning
 
-import { mailchimp, mailchimpCall, type ApiResponse } from "@/lib/mailchimp";
+import { mailchimp, mailchimpCall } from "@/lib/mailchimp";
+import type { ApiResponse } from "@/types/api-errors";
+import { transformCampaignReportsParams } from "@/utils/mailchimp/query-params";
+import { transformPaginationParams } from "@/utils/mailchimp/query-params";
 import type {
   CampaignReport,
   ReportListSuccess,
@@ -17,11 +20,14 @@ import type {
   AudiencesPageSearchParams,
   CampaignsPageSearchParams,
   MailchimpRoot,
+  MailchimpRootQuery,
+  MailchimpAudienceSuccess,
 } from "@/types/mailchimp";
 import {
   MailchimpAudienceQuerySchema,
   ReportListQueryInternalSchema,
   OpenListQueryParamsSchema,
+  MailchimpRootQuerySchema,
 } from "@/schemas/mailchimp";
 
 // Re-export the campaign report type for external use
@@ -35,19 +41,14 @@ export class MailchimpService {
    */
   async getAudiences(
     params: AudiencesPageSearchParams,
-  ): Promise<ApiResponse<unknown>> {
-    // Transform page params to Mailchimp API format
-    const transformedParams = {
-      count: params.limit ? parseInt(params.limit, 10) : 10,
-      offset: params.page
-        ? (parseInt(params.page, 10) - 1) *
-          (params.limit ? parseInt(params.limit, 10) : 10)
-        : 0,
-      // Note: Other params like search, visibility, sync_status are not supported by the API
-      // They would need to be handled through client-side filtering
-    };
+  ): Promise<ApiResponse<MailchimpAudienceSuccess>> {
+    // Transform page params to Mailchimp API format, let schema handle defaults
+    const transformedParams = transformPaginationParams(
+      params.page,
+      params.limit,
+    );
 
-    // Validate transformed parameters using schema
+    // Validate transformed parameters using schema (applies defaults)
     const validationResult =
       MailchimpAudienceQuerySchema.safeParse(transformedParams);
     if (!validationResult.success) {
@@ -83,25 +84,10 @@ export class MailchimpService {
   async getCampaignReports(
     params: CampaignsPageSearchParams,
   ): Promise<ApiResponse<ReportListSuccess>> {
-    // Transform page params to Mailchimp API format
-    const transformedParams = {
-      count: params.perPage ? parseInt(params.perPage, 10) : 10,
-      offset: params.page
-        ? (parseInt(params.page, 10) - 1) *
-          (params.perPage ? parseInt(params.perPage, 10) : 10)
-        : 0,
-      type: params.type as
-        | "regular"
-        | "plaintext"
-        | "absplit"
-        | "rss"
-        | "variate"
-        | undefined,
-      before_send_time: params.before_send_time,
-      since_send_time: params.since_send_time,
-    };
+    // Transform page params to Mailchimp API format, let schema handle defaults
+    const transformedParams = transformCampaignReportsParams(params);
 
-    // Validate transformed parameters using schema
+    // Validate transformed parameters using schema (applies defaults)
     const validationResult =
       ReportListQueryInternalSchema.safeParse(transformedParams);
     if (!validationResult.success) {
@@ -153,8 +139,24 @@ export class MailchimpService {
   /**
    * System Operations
    */
-  async getApiRoot(params?: unknown): Promise<ApiResponse<MailchimpRoot>> {
-    return mailchimpCall(() => (mailchimp as any).root.getRoot(params));
+  async getApiRoot(
+    params?: MailchimpRootQuery,
+  ): Promise<ApiResponse<MailchimpRoot>> {
+    // Validate parameters if provided
+    if (params !== undefined) {
+      const validationResult = MailchimpRootQuerySchema.safeParse(params);
+      if (!validationResult.success) {
+        return {
+          success: false,
+          error: `Invalid API root query parameters: ${validationResult.error.message}`,
+        };
+      }
+      return mailchimpCall(() =>
+        (mailchimp as any).root.getRoot(validationResult.data),
+      );
+    }
+
+    return mailchimpCall(() => (mailchimp as any).root.getRoot());
   }
 
   async healthCheck(): Promise<ApiResponse<unknown>> {
