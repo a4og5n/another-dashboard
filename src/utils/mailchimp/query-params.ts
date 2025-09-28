@@ -14,7 +14,7 @@ import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
  * Used by service layer for converting URL params to API params
  *
  * @param page - Page number (1-based) as string
- * @param limit - Items per page as string  
+ * @param limit - Items per page as string
  * @returns Object with count and offset properties for Mailchimp API
  *
  * @example
@@ -138,13 +138,18 @@ export function validateCampaignsPageParams(
  * // Returns: { count: 25, offset: 25, type: "regular", before_send_time: "2024-01-01" }
  * ```
  */
-export function transformCampaignReportsParams(params: CampaignsPageSearchParams) {
+export function transformCampaignReportsParams(
+  params: CampaignsPageSearchParams,
+) {
   return {
     ...transformPaginationParams(params.page, params.perPage),
-    ...(params.type && REPORT_TYPES.includes(params.type as any) && {
-      type: params.type as typeof REPORT_TYPES[number]
+    ...(params.type &&
+      REPORT_TYPES.includes(params.type as (typeof REPORT_TYPES)[number]) && {
+        type: params.type as (typeof REPORT_TYPES)[number],
+      }),
+    ...(params.before_send_time && {
+      before_send_time: params.before_send_time,
     }),
-    ...(params.before_send_time && { before_send_time: params.before_send_time }),
     ...(params.since_send_time && { since_send_time: params.since_send_time }),
   };
 }
