@@ -123,7 +123,7 @@ describe("Reports Page Service Integration", () => {
 
       expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
         perPage: "20",
-        offset: 20,
+        page: "2",
       });
     });
 

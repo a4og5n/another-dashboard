@@ -4,6 +4,9 @@
  * Handles error formatting and provides consistent API responses
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// SDK interop requires any types for proper functioning
+
 import { mailchimp, mailchimpCall, type ApiResponse } from "@/lib/mailchimp";
 import type { CampaignReport, ReportListSuccess, ReportDetailSuccess } from "@/types/mailchimp";
 import type { 
