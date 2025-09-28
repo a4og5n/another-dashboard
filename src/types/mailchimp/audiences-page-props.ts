@@ -6,18 +6,23 @@
  */
 
 /**
+ * Search parameters type for audiences page
+ */
+export interface AudiencesPageSearchParams {
+  page?: string;
+  limit?: string;
+  sort?: string;
+  order?: string;
+  search?: string;
+  visibility?: string;
+  sync_status?: string;
+}
+
+/**
  * Props interface for Audiences Page component
  * Based on the MailchimpAudienceQuerySchema parameters with adaptations
  * for Next.js page components using searchParams pattern
  */
 export interface AudiencesPageProps {
-  searchParams: Promise<{
-    page?: string;
-    limit?: string;
-    sort?: string;
-    order?: string;
-    search?: string;
-    visibility?: string;
-    sync_status?: string;
-  }>;
+  searchParams: Promise<AudiencesPageSearchParams>;
 }

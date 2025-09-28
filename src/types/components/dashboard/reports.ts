@@ -5,7 +5,7 @@
  * Following project guidelines to define shared types in /src/types
  */
 
-import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
+import type { MailchimpCampaignReport } from "@/types/mailchimp";
 import type { LucideIcon } from "lucide-react";
 import type {
   ReportDeliveryStatus,

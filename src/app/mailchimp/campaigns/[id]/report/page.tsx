@@ -13,6 +13,7 @@ import {
   CampaignReportDetail,
   CampaignReportLoading,
 } from "@/components/dashboard";
+import type { MailchimpCampaignReport } from "@/types/mailchimp";
 
 import { generateCampaignReportMetadata } from "@/utils";
 import { BreadcrumbNavigation } from "@/components/layout";
@@ -24,10 +25,10 @@ async function CampaignReportPageContent({
   searchParams,
 }: CampaignReportPageProps) {
   const { id } = await params;
-  const rawSearchParams = await searchParams;
+  await searchParams; // Keep for type compatibility
 
   // Fetch campaign report data
-  const response = await getMailchimpCampaignReport(id, rawSearchParams);
+  const response = await getMailchimpCampaignReport(id);
 
   // Handle error states
   if (!response.success) {
@@ -38,7 +39,7 @@ async function CampaignReportPageContent({
     notFound();
   }
 
-  return <CampaignReportDetail report={response.data!} />;
+  return <CampaignReportDetail report={response.data as MailchimpCampaignReport} />;
 }
 
 export default function CampaignReportPage({

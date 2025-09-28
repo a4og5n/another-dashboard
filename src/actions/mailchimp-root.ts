@@ -8,7 +8,7 @@
  */
 "use server";
 
-import { MailchimpService } from "@/services/mailchimp.service";
+import { mailchimpService } from "@/services/mailchimp.service";
 import {
   MailchimpRootQuerySchema,
   MailchimpRootQueryInternalSchema,
@@ -22,14 +22,6 @@ import type {
   MailchimpRootErrorResponse,
 } from "@/types/mailchimp";
 
-let mailchimpService: MailchimpService;
-
-function getMailchimpService(): MailchimpService {
-  if (!mailchimpService) {
-    mailchimpService = new MailchimpService();
-  }
-  return mailchimpService;
-}
 
 /**
  * Transform array-based query parameters to comma-separated strings for API
@@ -73,9 +65,8 @@ export async function getApiRoot(
     // Validate API format parameters
     const validatedApiQuery = MailchimpRootQuerySchema.parse(apiQuery);
 
-    // Get service instance and fetch data
-    const service = getMailchimpService();
-    const response = await service.getApiRoot(validatedApiQuery);
+    // Get API root data
+    const response = await mailchimpService.getApiRoot(validatedApiQuery);
 
     if (response.success && response.data) {
       // Parse and validate successful response

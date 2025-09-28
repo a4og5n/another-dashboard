@@ -7,11 +7,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getMailchimpService } from "@/services";
+import { mailchimpService } from "@/services";
 
 // Mock the Mailchimp service
 vi.mock("@/services", () => ({
-  getMailchimpService: vi.fn(),
+  mailchimpService: {
+    getCampaignReports: vi.fn(),
+  },
 }));
 
 describe("Reports Page Service Integration", () => {
@@ -80,8 +82,8 @@ describe("Reports Page Service Integration", () => {
   };
 
   beforeEach(() => {
-    vi.mocked(getMailchimpService).mockReturnValue(
-      mockMailchimpService as unknown as ReturnType<typeof getMailchimpService>,
+    vi.mocked(mailchimpService.getCampaignReports).mockImplementation(
+      mockMailchimpService.getCampaignReports,
     );
     vi.clearAllMocks();
   });
@@ -97,15 +99,13 @@ describe("Reports Page Service Integration", () => {
         data: mockReportsData,
       });
 
-      const service = getMailchimpService();
+      const service = mailchimpService;
       service.getCampaignReports({
-        count: 10,
-        offset: 0,
+        perPage: "10",
       });
 
       expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
-        count: 10,
-        offset: 0,
+        perPage: "10",
       });
     });
 
@@ -115,14 +115,14 @@ describe("Reports Page Service Integration", () => {
         data: mockReportsData,
       });
 
-      const service = getMailchimpService();
+      const service = mailchimpService;
       service.getCampaignReports({
-        count: 20,
-        offset: 20, // page 2
+        page: "2",
+        perPage: "20"
       });
 
       expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
-        count: 20,
+        perPage: "20",
         offset: 20,
       });
     });
@@ -133,8 +133,8 @@ describe("Reports Page Service Integration", () => {
         data: mockReportsData,
       });
 
-      const service = getMailchimpService();
-      const result = await service.getCampaignReports({ count: 10 });
+      const service = mailchimpService;
+      const result = await service.getCampaignReports({ perPage: "10" });
 
       expect(result.success).toBe(true);
       expect(result.data?.reports).toHaveLength(1);
@@ -146,8 +146,8 @@ describe("Reports Page Service Integration", () => {
         error: "API request failed",
       });
 
-      const service = getMailchimpService();
-      const result = await service.getCampaignReports({ count: 10 });
+      const service = mailchimpService;
+      const result = await service.getCampaignReports({ perPage: "10" });
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("API request failed");
@@ -158,9 +158,9 @@ describe("Reports Page Service Integration", () => {
         new Error("Network error"),
       );
 
-      const service = getMailchimpService();
+      const service = mailchimpService;
 
-      await expect(service.getCampaignReports({ count: 10 })).rejects.toThrow(
+      await expect(service.getCampaignReports({ perPage: "10" })).rejects.toThrow(
         "Network error",
       );
     });
@@ -173,18 +173,16 @@ describe("Reports Page Service Integration", () => {
         data: mockReportsData,
       });
 
-      const service = getMailchimpService();
+      const service = mailchimpService;
       service.getCampaignReports({
-        count: 10,
-        offset: 0,
+        perPage: "10",
         type: "regular",
         before_send_time: "2023-12-01T00:00:00Z",
         since_send_time: "2023-01-01T00:00:00Z",
       });
 
       expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
-        count: 10,
-        offset: 0,
+        perPage: "10",
         type: "regular",
         before_send_time: "2023-12-01T00:00:00Z",
         since_send_time: "2023-01-01T00:00:00Z",
@@ -197,15 +195,13 @@ describe("Reports Page Service Integration", () => {
         data: { reports: [], total_items: 0 },
       });
 
-      const service = getMailchimpService();
+      const service = mailchimpService;
       service.getCampaignReports({
-        count: 1,
-        offset: 0,
+        perPage: "1",
       });
 
       expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
-        count: 1,
-        offset: 0,
+        perPage: "1",
       });
     });
   });
@@ -217,8 +213,8 @@ describe("Reports Page Service Integration", () => {
         data: mockReportsData,
       });
 
-      const service = getMailchimpService();
-      const result = await service.getCampaignReports({ count: 1 });
+      const service = mailchimpService;
+      const result = await service.getCampaignReports({ perPage: "1" });
 
       expect(result.success).toBe(true);
       const report = result.data?.reports[0];
@@ -236,8 +232,8 @@ describe("Reports Page Service Integration", () => {
         data: { reports: [], total_items: 0 },
       });
 
-      const service = getMailchimpService();
-      const result = await service.getCampaignReports({ count: 10 });
+      const service = mailchimpService;
+      const result = await service.getCampaignReports({ perPage: "10" });
 
       expect(result.success).toBe(true);
       expect(result.data?.reports).toEqual([]);

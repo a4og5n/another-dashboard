@@ -1,40 +1,35 @@
-import { Suspense } from "react";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { BreadcrumbNavigation } from "@/components/layout";
 import { AudienceOverview } from "@/components/mailchimp/audiences/AudienceOverview";
-import { AudienceStatsSkeleton } from "@/skeletons/mailchimp";
-import { getMailchimpService } from "@/services";
-import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp/audience-query.schema";
+import { AudienceOverviewSkeleton } from "@/skeletons/mailchimp";
 import type { AudiencesPageProps } from "@/types/mailchimp";
+import { BreadcrumbNavigation } from "@/components/layout";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { mailchimpService } from "@/services/mailchimp.service";
+import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp/audience-query.schema";
+import { Suspense } from "react";
 
 async function AudiencesPageContent({ searchParams }: AudiencesPageProps) {
   // Await searchParams as required by Next.js 15
   const params = await searchParams;
 
-  // Get Mailchimp service and fetch audiences directly
-  const mailchimp = getMailchimpService();
+  // Use service layer for better architecture
+  const response = await mailchimpService.getAudiences(params);
 
-  // Pass raw params to service - let service handle parsing/validation
-  const response = await mailchimp.getLists(params);
-
-  // Parse pagination params for UI components (same logic as service)
-  const queryDefaults = MailchimpAudienceQuerySchema.parse({});
-  const currentPage = parseInt(params.page || "1");
-  const pageSize = parseInt(params.limit || queryDefaults.count.toString());
-
-  // Handle service-level errors only
+  // Handle errors
   if (!response.success) {
     return (
       <AudienceOverview
         error={response.error || "Failed to load audiences"}
         responseData={null}
-        currentPage={currentPage}
-        pageSize={pageSize}
       />
     );
   }
 
-  // Pass data to component - let component handle prop validation
+  // Parse pagination params for UI
+  const queryDefaults = MailchimpAudienceQuerySchema.parse({});
+  const currentPage = parseInt(params.page || "1");
+  const pageSize = parseInt(params.limit || queryDefaults.count.toString());
+
+  // Pass data to component
   return (
     <AudienceOverview
       responseData={response.data || null}
@@ -68,7 +63,7 @@ export default function AudiencesPage({ searchParams }: AudiencesPageProps) {
         </div>
 
         {/* Main Content */}
-        <Suspense fallback={<AudienceStatsSkeleton />}>
+        <Suspense fallback={<AudienceOverviewSkeleton />}>
           <AudiencesPageContent searchParams={searchParams} />
         </Suspense>
       </div>

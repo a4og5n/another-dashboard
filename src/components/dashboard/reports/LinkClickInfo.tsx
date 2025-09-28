@@ -5,7 +5,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MousePointer, TrendingUp } from "lucide-react";
-import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
+import type { MailchimpCampaignReport } from "@/types/mailchimp";
 
 interface LinkClickInfoProps {
   report: MailchimpCampaignReport;

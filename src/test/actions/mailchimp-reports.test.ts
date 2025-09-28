@@ -8,11 +8,13 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { getMailchimpReports } from "@/actions/mailchimp-reports";
-import { getMailchimpService } from "@/services";
+import { mailchimpService } from "@/services";
 
 // Mock the Mailchimp service
 vi.mock("@/services", () => ({
-  getMailchimpService: vi.fn(),
+  mailchimpService: {
+    getCampaignReports: vi.fn(),
+  },
 }));
 
 describe("Mailchimp Reports Action", () => {
@@ -21,8 +23,8 @@ describe("Mailchimp Reports Action", () => {
   };
 
   beforeEach(() => {
-    vi.mocked(getMailchimpService).mockReturnValue(
-      mockMailchimpService as unknown as ReturnType<typeof getMailchimpService>,
+    vi.mocked(mailchimpService.getCampaignReports).mockImplementation(
+      mockMailchimpService.getCampaignReports,
     );
     vi.clearAllMocks();
   });

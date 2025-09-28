@@ -7,24 +7,22 @@
  * Implements Next.js best practices for error handling and layout consistency
  */
 
-import { Suspense } from "react";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { BreadcrumbNavigation } from "@/components/layout";
-import { ReportsOverview } from "@/components/dashboard/reports-overview";
-import { getMailchimpService, type MailchimpCampaignReport } from "@/services";
-import { CAMPAIGNS_PER_PAGE_OPTIONS } from "@/schemas/mailchimp/campaign-query.schema";
-import { validateCampaignsPageParams } from "@/utils/mailchimp/query-params";
 import type { CampaignsPageProps } from "@/types/mailchimp/campaigns-page-props";
+import { CAMPAIGNS_PER_PAGE_OPTIONS } from "@/schemas/mailchimp/campaign-query.schema";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { mailchimpService } from "@/services/mailchimp.service";
+import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import { ReportsOverview } from "@/components/dashboard/reports-overview";
+import { Suspense } from "react";
+import { validateCampaignsPageParams } from "@/utils/mailchimp/query-params";
 
 async function CampaignsPageContent({ searchParams }: CampaignsPageProps) {
   // Await searchParams as required by Next.js 15
   const params = await searchParams;
 
-  // Get Mailchimp service and fetch reports directly
-  const mailchimp = getMailchimpService();
-
-  // Pass raw params to service - let service handle parsing/validation
-  const response = await mailchimp.getCampaignReports(params);
+  // Use service layer for better architecture
+  const response = await mailchimpService.getCampaignReports(params);
 
   // Handle expected API failures as return values, not exceptions
   if (!response.success) {
@@ -38,12 +36,12 @@ async function CampaignsPageContent({ searchParams }: CampaignsPageProps) {
   }
 
   // Extract reports data and pagination params using utility function
-  const reportsData = response.data;
+  const reportsData = response.data as { reports?: MailchimpCampaignReport[]; total_items?: number };
   const reports: MailchimpCampaignReport[] = reportsData.reports || [];
   const totalCount = reportsData.total_items || reports.length;
 
   // Parse pagination params for UI components (same logic as service)
-  const validationResult = validateCampaignsPageParams(params);
+  const validationResult = validateCampaignsPageParams(params as Record<string, string | undefined>);
   const currentPage = validationResult.success ? validationResult.data.page : 1;
   const perPage = validationResult.success
     ? validationResult.data.perPage

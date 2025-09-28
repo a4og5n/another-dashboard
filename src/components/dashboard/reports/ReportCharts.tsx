@@ -21,7 +21,7 @@ import {
   Bar,
 } from "recharts";
 import { TrendingUp, Clock } from "lucide-react";
-import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
+import type { MailchimpCampaignReport } from "@/types/mailchimp";
 import type {
   ReportTimeseries,
   ReportTimewarp,
