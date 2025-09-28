@@ -1,6 +1,6 @@
 "use client";
 
-import { ListList } from "./ListList";
+import { ListList } from "@/components/mailchimp/lists/ListList";
 import { useStaticPaginationHandlers } from "@/utils/pagination";
 import type { MailchimpList } from "@/services";
 
