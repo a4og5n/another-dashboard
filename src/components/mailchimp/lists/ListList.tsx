@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AudienceCard } from "@/components/mailchimp/audiences";
+import { ListCard } from "./ListCard";
 import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { TableSkeleton } from "@/skeletons";
@@ -9,8 +9,8 @@ import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MailchimpList } from "@/services";
 
-interface AudienceListProps {
-  audiences: MailchimpList[];
+interface ListListProps {
+  lists: MailchimpList[];
   totalCount: number;
   loading?: boolean;
   error?: string | null;
@@ -21,8 +21,8 @@ interface AudienceListProps {
   className?: string;
 }
 
-export function AudienceList({
-  audiences,
+export function ListList({
+  lists,
   totalCount,
   loading = false,
   error = null,
@@ -32,8 +32,8 @@ export function AudienceList({
   onPageSizeChange,
   className,
 }: Pick<
-  AudienceListProps,
-  | "audiences"
+  ListListProps,
+  | "lists"
   | "totalCount"
   | "loading"
   | "error"
@@ -51,7 +51,7 @@ export function AudienceList({
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Users className="h-5 w-5" />
-            <span>Audiences</span>
+            <span>Lists</span>
             {totalCount > 0 && (
               <Badge variant="secondary" className="ml-2">
                 {totalCount.toLocaleString()}
@@ -65,11 +65,7 @@ export function AudienceList({
         {/* Content */}
         {loading ? (
           <div className="space-y-4">
-            <TableSkeleton
-              rows={6}
-              columns={1}
-              data-testid="audiences-skeleton"
-            />
+            <TableSkeleton rows={6} columns={1} data-testid="lists-skeleton" />
           </div>
         ) : error ? (
           <div
@@ -78,33 +74,27 @@ export function AudienceList({
             aria-live="polite"
           >
             <Users className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="font-semibold text-lg mb-2">
-              Error Loading Audiences
-            </h3>
+            <h3 className="font-semibold text-lg mb-2">Error Loading Lists</h3>
             <p className="text-muted-foreground mb-4 max-w-md">{error}</p>
           </div>
-        ) : audiences.length === 0 ? (
+        ) : lists.length === 0 ? (
           <div
             className="flex flex-col items-center justify-center py-12 text-center"
             role="status"
             aria-live="polite"
           >
             <Users className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="font-semibold text-lg mb-2">No audiences found</h3>
+            <h3 className="font-semibold text-lg mb-2">No lists found</h3>
             <p className="text-muted-foreground mb-4 max-w-md">
-              Create your first audience to start building your email lists.
+              Create your first list to start building your email lists.
             </p>
           </div>
         ) : (
           <>
             {/* Grid View */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {audiences.map((audience) => (
-                <AudienceCard
-                  key={audience.id}
-                  audience={audience}
-                  className=""
-                />
+              {lists.map((list) => (
+                <ListCard key={list.id} list={list} className="" />
               ))}
             </div>
 
@@ -120,7 +110,7 @@ export function AudienceList({
                   <div className="text-sm text-muted-foreground">
                     Showing {(currentPage - 1) * pageSize + 1} to{" "}
                     {Math.min(currentPage * pageSize, totalCount)} of{" "}
-                    {totalCount.toLocaleString()} audiences
+                    {totalCount.toLocaleString()} lists
                   </div>
                 </div>
 
@@ -138,4 +128,4 @@ export function AudienceList({
   );
 }
 
-AudienceList.displayName = "AudienceList";
+ListList.displayName = "ListList";

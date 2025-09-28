@@ -5,12 +5,12 @@ import { Users, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MailchimpList } from "@/services";
 
-interface AudienceCardProps {
-  audience: MailchimpList;
+interface ListCardProps {
+  list: MailchimpList;
   className?: string;
 }
 
-export function AudienceCard({ audience, className }: AudienceCardProps) {
+export function ListCard({ list, className }: ListCardProps) {
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
@@ -30,7 +30,7 @@ export function AudienceCard({ audience, className }: AudienceCardProps) {
   };
 
   const getGrowthIndicator = () => {
-    const openRate = audience.stats?.open_rate;
+    const openRate = list.stats?.open_rate;
     if (openRate === undefined) return null;
 
     const isPositive = openRate > 20; // 20% open rate as threshold
@@ -52,22 +52,19 @@ export function AudienceCard({ audience, className }: AudienceCardProps) {
         className,
       )}
       role="article"
-      aria-labelledby={`audience-${audience.id}-title`}
+      aria-labelledby={`list-${list.id}-title`}
     >
       <CardHeader>
         <CardTitle
-          id={`audience-${audience.id}-title`}
+          id={`list-${list.id}-title`}
           className="flex items-start justify-between"
         >
           <div className="flex-1 min-w-0">
-            <h3
-              className="font-semibold text-lg truncate"
-              title={audience.name}
-            >
-              {audience.name}
+            <h3 className="font-semibold text-lg truncate" title={list.name}>
+              {list.name}
             </h3>
             <div className="flex items-center gap-2 mt-1">
-              {getVisibilityBadge(audience.visibility)}
+              {getVisibilityBadge(list.visibility)}
             </div>
           </div>
         </CardTitle>
@@ -83,7 +80,7 @@ export function AudienceCard({ audience, className }: AudienceCardProps) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-2xl font-bold">
-                {formatNumber(audience.stats?.member_count || 0)}
+                {formatNumber(list.stats?.member_count || 0)}
               </span>
               {getGrowthIndicator()}
             </div>
@@ -94,4 +91,4 @@ export function AudienceCard({ audience, className }: AudienceCardProps) {
   );
 }
 
-AudienceCard.displayName = "AudienceCard";
+ListCard.displayName = "ListCard";

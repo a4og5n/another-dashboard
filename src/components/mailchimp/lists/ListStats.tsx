@@ -4,7 +4,7 @@ import { Users, TrendingUp, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AudienceStatsProps } from "@/types/mailchimp/audience";
 
-export function AudienceStats({ stats, className }: AudienceStatsProps) {
+export function ListStats({ stats, className }: AudienceStatsProps) {
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
@@ -12,7 +12,7 @@ export function AudienceStats({ stats, className }: AudienceStatsProps) {
   };
 
   const totalMembers = stats.total_members;
-  const totalAudiences = stats.total_audiences;
+  const totalLists = stats.total_audiences;
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -23,11 +23,9 @@ export function AudienceStats({ stats, className }: AudienceStatsProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Total Audiences
+                  Total Lists
                 </p>
-                <p className="text-2xl font-bold">
-                  {formatNumber(totalAudiences)}
-                </p>
+                <p className="text-2xl font-bold">{formatNumber(totalLists)}</p>
               </div>
               <Users className="h-8 w-8 text-blue-600" />
             </div>
@@ -51,7 +49,7 @@ export function AudienceStats({ stats, className }: AudienceStatsProps) {
               <TrendingUp className="h-8 w-8 text-green-600" />
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Across all audiences
+              Across all lists
             </p>
           </CardContent>
         </Card>
@@ -85,4 +83,4 @@ export function AudienceStats({ stats, className }: AudienceStatsProps) {
   );
 }
 
-AudienceStats.displayName = "AudienceStats";
+ListStats.displayName = "ListStats";

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
-import { AudienceList } from "./AudienceList";
+import { ListList } from "./ListList";
 import type { MailchimpList } from "@/services";
 
-const mockAudiences: MailchimpList[] = [
+const mockLists: MailchimpList[] = [
   {
     id: "list1",
     name: "Newsletter Subscribers",
@@ -80,7 +80,7 @@ const mockAudiences: MailchimpList[] = [
 ];
 
 const defaultProps = {
-  audiences: mockAudiences,
+  lists: mockLists,
   totalCount: 2,
   loading: false,
   error: null,
@@ -90,22 +90,22 @@ const defaultProps = {
   onPageSizeChange: vi.fn(),
 };
 
-describe("AudienceList", () => {
+describe("ListList", () => {
   describe("Basic Rendering", () => {
     it("renders the main card with title", () => {
-      render(<AudienceList {...defaultProps} />);
+      render(<ListList {...defaultProps} />);
 
-      expect(screen.getByText("Audiences")).toBeInTheDocument();
+      expect(screen.getByText("Lists")).toBeInTheDocument();
     });
 
     it("displays total count badge when audiences exist", () => {
-      render(<AudienceList {...defaultProps} />);
+      render(<ListList {...defaultProps} />);
 
       expect(screen.getByText("2")).toBeInTheDocument(); // Total count badge
     });
 
-    it("renders all audience cards in grid layout", () => {
-      render(<AudienceList {...defaultProps} />);
+    it("renders all list cards in grid layout", () => {
+      render(<ListList {...defaultProps} />);
 
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
       expect(screen.getByText("Product Updates")).toBeInTheDocument();
@@ -118,18 +118,18 @@ describe("AudienceList", () => {
     });
 
     it("uses correct semantic structure", () => {
-      render(<AudienceList {...defaultProps} />);
+      render(<ListList {...defaultProps} />);
 
       // Should have proper heading
-      expect(screen.getByText("Audiences")).toBeInTheDocument();
-      // Should have individual audience cards with role="article"
+      expect(screen.getByText("Lists")).toBeInTheDocument();
+      // Should have individual list cards with role="article"
       expect(screen.getAllByRole("article")).toHaveLength(2);
     });
   });
 
   describe("Loading State", () => {
     it("shows loading skeleton when loading is true", () => {
-      render(<AudienceList {...defaultProps} loading={true} />);
+      render(<ListList {...defaultProps} loading={true} />);
 
       expect(
         screen.queryByText("Newsletter Subscribers"),
@@ -137,24 +137,22 @@ describe("AudienceList", () => {
       expect(screen.queryByText("Product Updates")).not.toBeInTheDocument();
 
       // Should show skeleton with proper test id
-      expect(screen.getByTestId("audiences-skeleton")).toBeInTheDocument();
+      expect(screen.getByTestId("lists-skeleton")).toBeInTheDocument();
     });
 
     it("shows skeleton with correct parameters", () => {
-      render(<AudienceList {...defaultProps} loading={true} />);
+      render(<ListList {...defaultProps} loading={true} />);
 
-      const skeleton = screen.getByTestId("audiences-skeleton");
+      const skeleton = screen.getByTestId("lists-skeleton");
       expect(skeleton).toBeInTheDocument();
     });
   });
 
   describe("Error State", () => {
     it("displays error message when error is provided", () => {
-      render(
-        <AudienceList {...defaultProps} error="Failed to load audiences" />,
-      );
+      render(<ListList {...defaultProps} error="Failed to load audiences" />);
 
-      expect(screen.getByText("Error Loading Audiences")).toBeInTheDocument();
+      expect(screen.getByText("Error Loading Lists")).toBeInTheDocument();
       expect(screen.getByText("Failed to load audiences")).toBeInTheDocument();
       expect(
         screen.queryByText("Newsletter Subscribers"),
@@ -162,14 +160,14 @@ describe("AudienceList", () => {
     });
 
     it("has proper accessibility attributes for error state", () => {
-      render(<AudienceList {...defaultProps} error="API Error" />);
+      render(<ListList {...defaultProps} error="API Error" />);
 
       const errorContainer = screen.getByRole("alert");
       expect(errorContainer).toHaveAttribute("aria-live", "polite");
     });
 
     it("shows proper error icon", () => {
-      render(<AudienceList {...defaultProps} error="Test error" />);
+      render(<ListList {...defaultProps} error="Test error" />);
 
       // Icon should be present (Users icon)
       const icons = document.querySelectorAll("svg");
@@ -179,25 +177,25 @@ describe("AudienceList", () => {
 
   describe("Empty State", () => {
     it("displays empty state when no audiences are provided", () => {
-      render(<AudienceList {...defaultProps} audiences={[]} />);
+      render(<ListList {...defaultProps} lists={[]} />);
 
-      expect(screen.getByText("No audiences found")).toBeInTheDocument();
+      expect(screen.getByText("No lists found")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Create your first audience to start building your email lists.",
+          "Create your first list to start building your email lists.",
         ),
       ).toBeInTheDocument();
     });
 
     it("has proper accessibility attributes for empty state", () => {
-      render(<AudienceList {...defaultProps} audiences={[]} />);
+      render(<ListList {...defaultProps} lists={[]} />);
 
       const emptyContainer = screen.getByRole("status");
       expect(emptyContainer).toHaveAttribute("aria-live", "polite");
     });
 
     it("shows empty state icon", () => {
-      render(<AudienceList {...defaultProps} audiences={[]} />);
+      render(<ListList {...defaultProps} lists={[]} />);
 
       // Should show Users icon
       const icons = document.querySelectorAll("svg");
@@ -208,7 +206,7 @@ describe("AudienceList", () => {
   describe("Pagination", () => {
     it("shows pagination when there are multiple pages", () => {
       render(
-        <AudienceList
+        <ListList
           {...defaultProps}
           totalCount={50}
           pageSize={20}
@@ -223,7 +221,7 @@ describe("AudienceList", () => {
 
     it("hides pagination when there's only one page", () => {
       render(
-        <AudienceList
+        <ListList
           {...defaultProps}
           totalCount={10}
           pageSize={20}
@@ -237,7 +235,7 @@ describe("AudienceList", () => {
 
     it("displays correct pagination information", () => {
       render(
-        <AudienceList
+        <ListList
           {...defaultProps}
           totalCount={50}
           pageSize={20}
@@ -246,13 +244,13 @@ describe("AudienceList", () => {
       );
 
       expect(
-        screen.getByText(/Showing 21 to 40 of 50 audiences/),
+        screen.getByText(/Showing 21 to 40 of 50 lists/),
       ).toBeInTheDocument();
     });
 
     it("handles last page calculations correctly", () => {
       render(
-        <AudienceList
+        <ListList
           {...defaultProps}
           totalCount={45}
           pageSize={20}
@@ -261,14 +259,14 @@ describe("AudienceList", () => {
       );
 
       expect(
-        screen.getByText(/Showing 41 to 45 of 45 audiences/),
+        screen.getByText(/Showing 41 to 45 of 45 lists/),
       ).toBeInTheDocument();
     });
   });
 
   describe("Grid Layout", () => {
     it("always uses grid layout (no list toggle)", () => {
-      render(<AudienceList {...defaultProps} />);
+      render(<ListList {...defaultProps} />);
 
       // Should always have grid layout - look for the specific grid container
       const gridContainer = document.querySelector(
@@ -284,18 +282,16 @@ describe("AudienceList", () => {
 
   describe("Simplified UI", () => {
     it("does not show search functionality", () => {
-      render(<AudienceList {...defaultProps} />);
+      render(<ListList {...defaultProps} />);
 
       expect(
-        screen.queryByPlaceholderText("Search audiences..."),
+        screen.queryByPlaceholderText("Search lists..."),
       ).not.toBeInTheDocument();
-      expect(
-        screen.queryByLabelText("Search audiences"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Search lists")).not.toBeInTheDocument();
     });
 
     it("does not show filter dropdowns", () => {
-      render(<AudienceList {...defaultProps} />);
+      render(<ListList {...defaultProps} />);
 
       expect(screen.queryByText("Visibility")).not.toBeInTheDocument();
       expect(screen.queryByText("Status")).not.toBeInTheDocument();
@@ -303,16 +299,14 @@ describe("AudienceList", () => {
     });
 
     it("does not show New Audience button", () => {
-      render(<AudienceList {...defaultProps} />);
+      render(<ListList {...defaultProps} />);
 
-      expect(screen.queryByText("New Audience")).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("Create First Audience"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("New List")).not.toBeInTheDocument();
+      expect(screen.queryByText("Create First List")).not.toBeInTheDocument();
     });
 
     it("does not show filter indicator", () => {
-      render(<AudienceList {...defaultProps} />);
+      render(<ListList {...defaultProps} />);
 
       expect(
         screen.queryByText("Active filters applied"),
@@ -324,7 +318,7 @@ describe("AudienceList", () => {
   describe("Accessibility", () => {
     it("should not have accessibility violations with audiences", async () => {
       const { renderResult } = await renderWithA11y(
-        <AudienceList {...defaultProps} />,
+        <ListList {...defaultProps} />,
       );
 
       await expectNoA11yViolations(renderResult.container);
@@ -332,7 +326,7 @@ describe("AudienceList", () => {
 
     it("should not have accessibility violations in loading state", async () => {
       const { renderResult } = await renderWithA11y(
-        <AudienceList {...defaultProps} loading={true} />,
+        <ListList {...defaultProps} loading={true} />,
       );
 
       await expectNoA11yViolations(renderResult.container);
@@ -340,7 +334,7 @@ describe("AudienceList", () => {
 
     it("should not have accessibility violations in empty state", async () => {
       const { renderResult } = await renderWithA11y(
-        <AudienceList {...defaultProps} audiences={[]} />,
+        <ListList {...defaultProps} lists={[]} />,
       );
 
       await expectNoA11yViolations(renderResult.container);
@@ -348,7 +342,7 @@ describe("AudienceList", () => {
 
     it("should not have accessibility violations in error state", async () => {
       const { renderResult } = await renderWithA11y(
-        <AudienceList {...defaultProps} error="Test error" />,
+        <ListList {...defaultProps} error="Test error" />,
       );
 
       await expectNoA11yViolations(renderResult.container);
@@ -358,7 +352,7 @@ describe("AudienceList", () => {
   describe("Props and Behavior", () => {
     it("applies custom className correctly", () => {
       const { container } = render(
-        <AudienceList {...defaultProps} className="custom-class" />,
+        <ListList {...defaultProps} className="custom-class" />,
       );
 
       expect(container.firstChild).toHaveClass("custom-class");
@@ -367,7 +361,7 @@ describe("AudienceList", () => {
     it("handles page change calls correctly", async () => {
       const onPageChange = vi.fn();
       render(
-        <AudienceList
+        <ListList
           {...defaultProps}
           totalCount={50}
           onPageChange={onPageChange}
@@ -381,7 +375,7 @@ describe("AudienceList", () => {
     it("handles page size change calls correctly", async () => {
       const onPageSizeChange = vi.fn();
       render(
-        <AudienceList
+        <ListList
           {...defaultProps}
           totalCount={50}
           onPageSizeChange={onPageSizeChange}
@@ -393,24 +387,20 @@ describe("AudienceList", () => {
     });
 
     it("has correct displayName", () => {
-      expect(AudienceList.displayName).toBe("AudienceList");
+      expect(ListList.displayName).toBe("ListList");
     });
   });
 
   describe("Edge Cases", () => {
     it("handles zero total count", () => {
-      render(<AudienceList {...defaultProps} totalCount={0} />);
+      render(<ListList {...defaultProps} totalCount={0} />);
 
       expect(screen.queryByText("0")).not.toBeInTheDocument(); // Badge should not show for zero
     });
 
     it("handles single audience correctly", () => {
       render(
-        <AudienceList
-          {...defaultProps}
-          audiences={[mockAudiences[0]]}
-          totalCount={1}
-        />,
+        <ListList {...defaultProps} lists={[mockLists[0]]} totalCount={1} />,
       );
 
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
@@ -418,7 +408,7 @@ describe("AudienceList", () => {
     });
 
     it("handles large numbers in formatting", () => {
-      render(<AudienceList {...defaultProps} totalCount={1000000} />);
+      render(<ListList {...defaultProps} totalCount={1000000} />);
 
       expect(screen.getByText("1,000,000")).toBeInTheDocument();
     });

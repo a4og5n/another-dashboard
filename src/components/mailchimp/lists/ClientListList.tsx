@@ -1,31 +1,31 @@
 "use client";
 
-import { AudienceList } from "@/components/mailchimp/audiences";
+import { ListList } from "./ListList";
 import { useStaticPaginationHandlers } from "@/utils/pagination";
 import type { MailchimpList } from "@/services";
 
-interface ClientAudienceListProps {
-  audiences: MailchimpList[];
+interface ClientListListProps {
+  lists: MailchimpList[];
   totalCount: number;
   currentPage: number;
   pageSize: number;
 }
 
-export function ClientAudienceList({
-  audiences,
+export function ClientListList({
+  lists,
   totalCount,
   currentPage,
   pageSize,
 }: Pick<
-  ClientAudienceListProps,
-  "audiences" | "totalCount" | "currentPage" | "pageSize"
+  ClientListListProps,
+  "lists" | "totalCount" | "currentPage" | "pageSize"
 >) {
   const { handlePageChange, handlePerPageChange } =
     useStaticPaginationHandlers();
 
   return (
-    <AudienceList
-      audiences={audiences}
+    <ListList
+      lists={lists}
       totalCount={totalCount}
       loading={false}
       error={null}

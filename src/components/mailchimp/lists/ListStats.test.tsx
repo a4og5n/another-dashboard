@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
-import { AudienceStats } from "./AudienceStats";
-import type { AudienceStats as AudienceStatsType } from "@/types/mailchimp/audience";
+import { ListStats } from "./ListStats";
+import type { AudienceStats as ListStatsType } from "@/types/mailchimp/audience";
 
-const mockStats: AudienceStatsType = {
+const mockStats: ListStatsType = {
   total_audiences: 3,
   total_members: 5250,
   audiences_by_visibility: {
@@ -13,18 +13,18 @@ const mockStats: AudienceStatsType = {
   },
 };
 
-describe("AudienceStats", () => {
+describe("ListStats", () => {
   describe("Basic Rendering", () => {
     it("renders all three stat cards", () => {
-      render(<AudienceStats stats={mockStats} />);
+      render(<ListStats stats={mockStats} />);
 
-      expect(screen.getByText("Total Audiences")).toBeInTheDocument();
+      expect(screen.getByText("Total Lists")).toBeInTheDocument();
       expect(screen.getByText("Total Members")).toBeInTheDocument();
       expect(screen.getByText("Visibility")).toBeInTheDocument();
     });
 
     it("displays correct stat values", () => {
-      render(<AudienceStats stats={mockStats} />);
+      render(<ListStats stats={mockStats} />);
 
       expect(screen.getByText("3")).toBeInTheDocument(); // total audiences
       expect(screen.getByText("5.3K")).toBeInTheDocument(); // total members formatted
@@ -33,15 +33,15 @@ describe("AudienceStats", () => {
     });
 
     it("displays proper card descriptions", () => {
-      render(<AudienceStats stats={mockStats} />);
+      render(<ListStats stats={mockStats} />);
 
       expect(screen.getByText("Active email lists")).toBeInTheDocument();
-      expect(screen.getByText("Across all audiences")).toBeInTheDocument();
+      expect(screen.getByText("Across all lists")).toBeInTheDocument();
       expect(screen.getByText("Public / Private")).toBeInTheDocument();
     });
 
     it("displays icons correctly", () => {
-      render(<AudienceStats stats={mockStats} />);
+      render(<ListStats stats={mockStats} />);
 
       // Icons are rendered as SVG elements with specific classes
       const icons = document.querySelectorAll("svg");
@@ -57,7 +57,7 @@ describe("AudienceStats", () => {
         total_members: 2500000,
       };
 
-      render(<AudienceStats stats={largeStats} />);
+      render(<ListStats stats={largeStats} />);
 
       expect(screen.getByText("1.5M")).toBeInTheDocument();
       expect(screen.getByText("2.5M")).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe("AudienceStats", () => {
         total_members: 25000,
       };
 
-      render(<AudienceStats stats={thousandStats} />);
+      render(<ListStats stats={thousandStats} />);
 
       expect(screen.getByText("1.5K")).toBeInTheDocument();
       expect(screen.getByText("25.0K")).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe("AudienceStats", () => {
         total_members: 125,
       };
 
-      render(<AudienceStats stats={smallStats} />);
+      render(<ListStats stats={smallStats} />);
 
       expect(screen.getByText("5")).toBeInTheDocument();
       expect(screen.getByText("125")).toBeInTheDocument();
@@ -92,7 +92,7 @@ describe("AudienceStats", () => {
 
   describe("Visibility Display", () => {
     it("shows public and private counts with proper formatting", () => {
-      render(<AudienceStats stats={mockStats} />);
+      render(<ListStats stats={mockStats} />);
 
       // Check for the inline format: "2/1" (public/private)
       const visibilityCard = screen.getByText("Visibility").closest(".p-6");
@@ -111,7 +111,7 @@ describe("AudienceStats", () => {
         },
       };
 
-      render(<AudienceStats stats={zeroStats} />);
+      render(<ListStats stats={zeroStats} />);
 
       // Both counts should show as "0"
       const visibilityCard = screen.getByText("Visibility").closest(".p-6");
@@ -124,7 +124,7 @@ describe("AudienceStats", () => {
 
   describe("Grid Layout", () => {
     it("uses correct grid classes for responsive layout", () => {
-      const { container } = render(<AudienceStats stats={mockStats} />);
+      const { container } = render(<ListStats stats={mockStats} />);
 
       const gridContainer = container.querySelector(".grid");
       expect(gridContainer).toHaveClass("grid-cols-1");
@@ -136,7 +136,7 @@ describe("AudienceStats", () => {
   describe("Accessibility", () => {
     it("should not have accessibility violations", async () => {
       const { renderResult } = await renderWithA11y(
-        <AudienceStats stats={mockStats} />,
+        <ListStats stats={mockStats} />,
       );
 
       await expectNoA11yViolations(renderResult.container);
@@ -146,10 +146,10 @@ describe("AudienceStats", () => {
     // Loading states are now handled at the parent level with Suspense boundaries.
 
     it("has proper semantic structure", () => {
-      render(<AudienceStats stats={mockStats} />);
+      render(<ListStats stats={mockStats} />);
 
       // Should have cards with proper text content
-      expect(screen.getByText("Total Audiences")).toBeInTheDocument();
+      expect(screen.getByText("Total Lists")).toBeInTheDocument();
       expect(screen.getByText("Total Members")).toBeInTheDocument();
       expect(screen.getByText("Visibility")).toBeInTheDocument();
     });
@@ -159,17 +159,17 @@ describe("AudienceStats", () => {
     it("handles missing or undefined stats gracefully", () => {
       const incompleteStats = {
         ...mockStats,
-      } as AudienceStatsType;
+      } as ListStatsType;
 
       // Should not crash when rendering with the stats
       expect(() => {
-        render(<AudienceStats stats={incompleteStats} />);
+        render(<ListStats stats={incompleteStats} />);
       }).not.toThrow();
     });
 
     it("applies custom className correctly", () => {
       const { container } = render(
-        <AudienceStats stats={mockStats} className="custom-class" />,
+        <ListStats stats={mockStats} className="custom-class" />,
       );
 
       expect(container.firstChild).toHaveClass("custom-class");
@@ -179,14 +179,14 @@ describe("AudienceStats", () => {
   describe("Component Props", () => {
     it("accepts and applies className prop", () => {
       const { container } = render(
-        <AudienceStats stats={mockStats} className="test-class" />,
+        <ListStats stats={mockStats} className="test-class" />,
       );
 
       expect(container.firstChild).toHaveClass("test-class");
     });
 
     it("has correct displayName", () => {
-      expect(AudienceStats.displayName).toBe("AudienceStats");
+      expect(ListStats.displayName).toBe("ListStats");
     });
   });
 });

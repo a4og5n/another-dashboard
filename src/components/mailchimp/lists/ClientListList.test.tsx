@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
-import { ClientAudienceList } from "./ClientAudienceList";
+import { ClientListList } from "./ClientListList";
 import type { MailchimpList } from "@/services";
 
-const mockAudiences: MailchimpList[] = [
+const mockLists: MailchimpList[] = [
   {
     id: "list1",
     name: "Newsletter Subscribers",
@@ -80,62 +80,58 @@ const mockAudiences: MailchimpList[] = [
 ];
 
 const defaultProps = {
-  audiences: mockAudiences,
+  lists: mockLists,
   totalCount: 2,
   currentPage: 1,
   pageSize: 20,
 };
 
-describe("ClientAudienceList", () => {
+describe("ClientListList", () => {
   describe("Basic Rendering", () => {
-    it("renders the AudienceList component", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+    it("renders the ListList component", () => {
+      render(<ClientListList {...defaultProps} />);
 
-      expect(screen.getByText("Audiences")).toBeInTheDocument();
+      expect(screen.getByText("Lists")).toBeInTheDocument();
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
       expect(screen.getByText("Product Updates")).toBeInTheDocument();
     });
 
-    it("passes all props correctly to AudienceList", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+    it("passes all props correctly to ListList", () => {
+      render(<ClientListList {...defaultProps} />);
 
-      // Check that audience data is displayed (proves props are passed)
+      // Check that list data is displayed (proves props are passed)
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
       expect(screen.getByText("Product Updates")).toBeInTheDocument();
       expect(screen.getByText("2")).toBeInTheDocument(); // Total count badge
     });
 
     it("always sets loading to false", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       // Should not show loading skeleton
-      expect(
-        screen.queryByTestId("audiences-skeleton"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("lists-skeleton")).not.toBeInTheDocument();
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
     });
 
     it("always sets error to null", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       // Should not show error state
-      expect(
-        screen.queryByText("Error Loading Audiences"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Error Loading Lists")).not.toBeInTheDocument();
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
     });
   });
 
   describe("Simplified Static Behavior", () => {
     it("provides no-op handlers for filters", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       // Component should render successfully with no-op handlers
-      expect(screen.getByText("Audiences")).toBeInTheDocument();
+      expect(screen.getByText("Lists")).toBeInTheDocument();
     });
 
     it("provides no-op handlers for pagination", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       // Should render pagination if multiple pages exist
       const paginationTest = {
@@ -144,7 +140,7 @@ describe("ClientAudienceList", () => {
         pageSize: 20,
       };
 
-      render(<ClientAudienceList {...paginationTest} />);
+      render(<ClientListList {...paginationTest} />);
       expect(screen.getByText(/Showing/)).toBeInTheDocument();
     });
 
@@ -153,7 +149,7 @@ describe("ClientAudienceList", () => {
       const pushSpy = vi.fn();
       window.history.pushState = pushSpy;
 
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       // No URL manipulation should occur during rendering
       expect(pushSpy).not.toHaveBeenCalled();
@@ -163,11 +159,11 @@ describe("ClientAudienceList", () => {
   });
 
   describe("Props Handling", () => {
-    it("handles different audience counts", () => {
+    it("handles different list counts", () => {
       render(
-        <ClientAudienceList
+        <ClientListList
           {...defaultProps}
-          audiences={[mockAudiences[0]]}
+          lists={[mockLists[0]]}
           totalCount={1}
         />,
       );
@@ -178,14 +174,12 @@ describe("ClientAudienceList", () => {
     });
 
     it("handles empty audiences array", () => {
-      render(
-        <ClientAudienceList {...defaultProps} audiences={[]} totalCount={0} />,
-      );
+      render(<ClientListList {...defaultProps} lists={[]} totalCount={0} />);
 
-      expect(screen.getByText("No audiences found")).toBeInTheDocument();
+      expect(screen.getByText("No lists found")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Create your first audience to start building your email lists.",
+          "Create your first list to start building your email lists.",
         ),
       ).toBeInTheDocument();
     });
@@ -198,7 +192,7 @@ describe("ClientAudienceList", () => {
         currentPage: 5,
       };
 
-      render(<ClientAudienceList {...largeProps} />);
+      render(<ClientListList {...largeProps} />);
 
       expect(screen.getByText("1,000")).toBeInTheDocument(); // Total count badge
     });
@@ -211,7 +205,7 @@ describe("ClientAudienceList", () => {
         currentPage: 3,
       };
 
-      render(<ClientAudienceList {...smallPageProps} />);
+      render(<ClientListList {...smallPageProps} />);
 
       expect(screen.getByText(/Showing 21 to 30 of 100/)).toBeInTheDocument();
     });
@@ -219,28 +213,28 @@ describe("ClientAudienceList", () => {
 
   describe("Handler Functions", () => {
     it("creates stable handler functions", () => {
-      const { rerender } = render(<ClientAudienceList {...defaultProps} />);
+      const { rerender } = render(<ClientListList {...defaultProps} />);
 
       // Component should render consistently across re-renders
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
 
-      rerender(<ClientAudienceList {...defaultProps} />);
+      rerender(<ClientListList {...defaultProps} />);
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
     });
 
     it("handlers are no-ops and do not cause errors", () => {
       expect(() => {
-        render(<ClientAudienceList {...defaultProps} />);
+        render(<ClientListList {...defaultProps} />);
       }).not.toThrow();
 
       // Component should work without any interactive handlers
-      expect(screen.getByText("Audiences")).toBeInTheDocument();
+      expect(screen.getByText("Lists")).toBeInTheDocument();
     });
   });
 
-  describe("Integration with AudienceList", () => {
-    it("displays audience cards in grid layout", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+  describe("Integration with ListList", () => {
+    it("displays list cards in grid layout", () => {
+      render(<ClientListList {...defaultProps} />);
 
       // Should show grid layout
       const gridContainer = document.querySelector(".grid-cols-1");
@@ -250,20 +244,20 @@ describe("ClientAudienceList", () => {
     });
 
     it("shows proper status badges", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       // Status badges have been removed for MVP (no database sync)
     });
 
     it("shows proper visibility badges", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       expect(screen.getByText("Public")).toBeInTheDocument(); // list1 visibility
       expect(screen.getByText("Private")).toBeInTheDocument(); // list2 visibility
     });
 
     it("formats member counts correctly", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       expect(screen.getByText("1.3K")).toBeInTheDocument(); // list1 member count
       expect(screen.getByText("850")).toBeInTheDocument(); // list2 member count
@@ -279,7 +273,7 @@ describe("ClientAudienceList", () => {
         currentPage: 2,
       };
 
-      render(<ClientAudienceList {...paginatedProps} />);
+      render(<ClientListList {...paginatedProps} />);
 
       expect(screen.getByText(/Showing 21 to 40 of 60/)).toBeInTheDocument();
     });
@@ -292,7 +286,7 @@ describe("ClientAudienceList", () => {
         currentPage: 1,
       };
 
-      render(<ClientAudienceList {...singlePageProps} />);
+      render(<ClientListList {...singlePageProps} />);
 
       expect(screen.queryByText(/Showing/)).not.toBeInTheDocument();
     });
@@ -301,7 +295,7 @@ describe("ClientAudienceList", () => {
   describe("Accessibility", () => {
     it("should not have accessibility violations", async () => {
       const { renderResult } = await renderWithA11y(
-        <ClientAudienceList {...defaultProps} />,
+        <ClientListList {...defaultProps} />,
       );
 
       await expectNoA11yViolations(renderResult.container);
@@ -309,49 +303,49 @@ describe("ClientAudienceList", () => {
 
     it("should not have accessibility violations with empty state", async () => {
       const { renderResult } = await renderWithA11y(
-        <ClientAudienceList {...defaultProps} audiences={[]} totalCount={0} />,
+        <ClientListList {...defaultProps} lists={[]} totalCount={0} />,
       );
 
       await expectNoA11yViolations(renderResult.container);
     });
 
     it("maintains proper focus management", () => {
-      render(<ClientAudienceList {...defaultProps} />);
+      render(<ClientListList {...defaultProps} />);
 
       // Should have proper semantic structure for screen readers
-      expect(screen.getAllByRole("article")).toHaveLength(2); // Two audience cards
+      expect(screen.getAllByRole("article")).toHaveLength(2); // Two list cards
     });
   });
 
   describe("Performance Considerations", () => {
-    it("renders efficiently with large audience lists", () => {
-      const manyAudiences = Array.from({ length: 100 }, (_, i) => ({
-        ...mockAudiences[0],
+    it("renders efficiently with large list lists", () => {
+      const manyLists = Array.from({ length: 100 }, (_, i) => ({
+        ...mockLists[0],
         id: `list-${i}`,
-        name: `Audience ${i + 1}`,
+        name: `List ${i + 1}`,
       }));
 
       const largeProps = {
-        audiences: manyAudiences.slice(0, 20), // Simulate pagination
+        lists: manyLists.slice(0, 20), // Simulate pagination
         totalCount: 100,
         currentPage: 1,
         pageSize: 20,
       };
 
       expect(() => {
-        render(<ClientAudienceList {...largeProps} />);
+        render(<ClientListList {...largeProps} />);
       }).not.toThrow();
 
-      expect(screen.getByText("Audience 1")).toBeInTheDocument();
+      expect(screen.getByText("List 1")).toBeInTheDocument();
       expect(screen.getByText("100")).toBeInTheDocument(); // Total count
     });
 
     it("handles rapid re-renders gracefully", () => {
-      const { rerender } = render(<ClientAudienceList {...defaultProps} />);
+      const { rerender } = render(<ClientListList {...defaultProps} />);
 
       // Simulate multiple re-renders
       for (let i = 1; i <= 5; i++) {
-        rerender(<ClientAudienceList {...defaultProps} currentPage={i} />);
+        rerender(<ClientListList {...defaultProps} currentPage={i} />);
       }
 
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
@@ -360,19 +354,17 @@ describe("ClientAudienceList", () => {
 
   describe("Edge Cases", () => {
     it("handles zero total count", () => {
-      render(
-        <ClientAudienceList {...defaultProps} audiences={[]} totalCount={0} />,
-      );
+      render(<ClientListList {...defaultProps} lists={[]} totalCount={0} />);
 
-      expect(screen.getByText("No audiences found")).toBeInTheDocument();
+      expect(screen.getByText("No lists found")).toBeInTheDocument();
     });
 
     it("handles mismatched audiences and totalCount", () => {
-      // Edge case: fewer audiences than totalCount (due to pagination)
+      // Edge case: fewer lists than totalCount (due to pagination)
       render(
-        <ClientAudienceList
+        <ClientListList
           {...defaultProps}
-          audiences={[mockAudiences[0]]}
+          lists={[mockLists[0]]}
           totalCount={50}
         />,
       );
@@ -383,7 +375,7 @@ describe("ClientAudienceList", () => {
 
     it("handles invalid page numbers gracefully", () => {
       expect(() => {
-        render(<ClientAudienceList {...defaultProps} currentPage={0} />);
+        render(<ClientListList {...defaultProps} currentPage={0} />);
       }).not.toThrow();
 
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();

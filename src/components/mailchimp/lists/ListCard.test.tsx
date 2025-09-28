@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
-import { AudienceCard } from "./AudienceCard";
+import { ListCard } from "./ListCard";
 import type { MailchimpList } from "@/services";
 
-const mockAudience: MailchimpList = {
+const mockList: MailchimpList = {
   id: "list123",
   name: "Newsletter Subscribers",
   date_created: "2025-01-01T00:00:00Z",
@@ -41,40 +41,40 @@ const mockAudience: MailchimpList = {
   list_rating: 4,
 };
 
-describe("AudienceCard", () => {
+describe("ListCard", () => {
   describe("Basic Rendering", () => {
-    it("renders the audience name", () => {
-      render(<AudienceCard audience={mockAudience} />);
+    it("renders the list name", () => {
+      render(<ListCard list={mockList} />);
 
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
     });
 
     it("displays the correct member count", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       expect(screen.getByText("1.3K")).toBeInTheDocument(); // Formatted member count
       expect(screen.getByText("Total Members")).toBeInTheDocument();
     });
 
     it("shows visibility badge", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       expect(screen.getByText("Public")).toBeInTheDocument(); // Visibility badge
     });
 
     it("has proper semantic structure", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       const article = screen.getByRole("article");
       expect(article).toBeInTheDocument();
       expect(article).toHaveAttribute(
         "aria-labelledby",
-        `audience-${mockAudience.id}-title`,
+        `list-${mockList.id}-title`,
       );
     });
 
     it("applies hover effects correctly", () => {
-      const { container } = render(<AudienceCard audience={mockAudience} />);
+      const { container } = render(<ListCard list={mockList} />);
 
       const card = container.firstChild;
       expect(card).toHaveClass("hover:shadow-md");
@@ -84,18 +84,14 @@ describe("AudienceCard", () => {
   });
 
   describe("Visibility Badges", () => {
-    it("displays 'Public' badge for public audiences", () => {
-      render(
-        <AudienceCard audience={{ ...mockAudience, visibility: "pub" }} />,
-      );
+    it("displays 'Public' badge for public lists", () => {
+      render(<ListCard list={{ ...mockList, visibility: "pub" }} />);
 
       expect(screen.getByText("Public")).toBeInTheDocument();
     });
 
-    it("displays 'Private' badge for private audiences", () => {
-      render(
-        <AudienceCard audience={{ ...mockAudience, visibility: "prv" }} />,
-      );
+    it("displays 'Private' badge for private lists", () => {
+      render(<ListCard list={{ ...mockList, visibility: "prv" }} />);
 
       expect(screen.getByText("Private")).toBeInTheDocument();
     });
@@ -103,45 +99,45 @@ describe("AudienceCard", () => {
 
   describe("Number Formatting", () => {
     it("formats large member counts correctly", () => {
-      const largeAudience = {
-        ...mockAudience,
-        stats: { ...mockAudience.stats, member_count: 1500000 },
+      const largeList = {
+        ...mockList,
+        stats: { ...mockList.stats, member_count: 1500000 },
       };
 
-      render(<AudienceCard audience={largeAudience} />);
+      render(<ListCard list={largeList} />);
 
       expect(screen.getByText("1.5M")).toBeInTheDocument();
     });
 
     it("formats thousands correctly", () => {
-      const thousandAudience = {
-        ...mockAudience,
-        stats: { ...mockAudience.stats, member_count: 25000 },
+      const thousandList = {
+        ...mockList,
+        stats: { ...mockList.stats, member_count: 25000 },
       };
 
-      render(<AudienceCard audience={thousandAudience} />);
+      render(<ListCard list={thousandList} />);
 
       expect(screen.getByText("25.0K")).toBeInTheDocument();
     });
 
     it("displays small numbers without formatting", () => {
-      const smallAudience = {
-        ...mockAudience,
-        stats: { ...mockAudience.stats, member_count: 125 },
+      const smallList = {
+        ...mockList,
+        stats: { ...mockList.stats, member_count: 125 },
       };
 
-      render(<AudienceCard audience={smallAudience} />);
+      render(<ListCard list={smallList} />);
 
       expect(screen.getByText("125")).toBeInTheDocument();
     });
 
     it("handles zero member count", () => {
-      const zeroAudience = {
-        ...mockAudience,
-        stats: { ...mockAudience.stats, member_count: 0 },
+      const zeroList = {
+        ...mockList,
+        stats: { ...mockList.stats, member_count: 0 },
       };
 
-      render(<AudienceCard audience={zeroAudience} />);
+      render(<ListCard list={zeroList} />);
 
       expect(screen.getByText("0")).toBeInTheDocument();
     });
@@ -149,43 +145,43 @@ describe("AudienceCard", () => {
 
   describe("Growth Indicator", () => {
     it("shows positive growth indicator for high engagement", () => {
-      const highEngagementAudience = {
-        ...mockAudience,
+      const highEngagementList = {
+        ...mockList,
         stats: {
-          ...mockAudience.stats,
+          ...mockList.stats,
           open_rate: 75.0, // High open rate (>20% threshold)
         },
       };
 
-      render(<AudienceCard audience={highEngagementAudience} />);
+      render(<ListCard list={highEngagementList} />);
 
       expect(screen.getByText("75.0%")).toBeInTheDocument();
     });
 
     it("shows negative growth indicator for low engagement", () => {
-      const lowEngagementAudience = {
-        ...mockAudience,
+      const lowEngagementList = {
+        ...mockList,
         stats: {
-          ...mockAudience.stats,
+          ...mockList.stats,
           open_rate: 15.0, // Low open rate (<20% threshold)
         },
       };
 
-      render(<AudienceCard audience={lowEngagementAudience} />);
+      render(<ListCard list={lowEngagementList} />);
 
       expect(screen.getByText("15.0%")).toBeInTheDocument();
     });
 
     it("handles missing engagement rate gracefully", () => {
-      const noEngagementAudience = {
-        ...mockAudience,
+      const noEngagementList = {
+        ...mockList,
         stats: {
-          ...mockAudience.stats,
+          ...mockList.stats,
           open_rate: undefined,
         },
       };
 
-      render(<AudienceCard audience={noEngagementAudience} />);
+      render(<ListCard list={noEngagementList} />);
 
       // Should not crash and should still show member count
       expect(screen.getByText("1.3K")).toBeInTheDocument();
@@ -194,7 +190,7 @@ describe("AudienceCard", () => {
 
   describe("Simplified UI - Removed Elements", () => {
     it("does not show action buttons (edit, archive, stats)", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       expect(screen.queryByLabelText(/Edit/i)).not.toBeInTheDocument();
       expect(screen.queryByLabelText(/Archive/i)).not.toBeInTheDocument();
@@ -204,7 +200,7 @@ describe("AudienceCard", () => {
     });
 
     it("does not show list rating", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       expect(screen.queryByText("List Rating")).not.toBeInTheDocument();
       expect(screen.queryByText("4/5")).not.toBeInTheDocument();
@@ -212,28 +208,28 @@ describe("AudienceCard", () => {
     });
 
     it("does not show unsubscribed count", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       expect(screen.queryByText("25")).not.toBeInTheDocument(); // unsubscribe count
       expect(screen.queryByText("Unsubscribed")).not.toBeInTheDocument();
     });
 
     it("does not show cleaned count", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       expect(screen.queryByText("5")).not.toBeInTheDocument(); // cleaned count
       expect(screen.queryByText("Cleaned")).not.toBeInTheDocument();
     });
 
     it("does not show contact information", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       expect(screen.queryByText("Test Company")).not.toBeInTheDocument();
       expect(screen.queryByText("Test City, TS")).not.toBeInTheDocument();
     });
 
     it("does not show created date", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       expect(screen.queryByText(/Created:/)).not.toBeInTheDocument();
       expect(screen.queryByText(/Last synced:/)).not.toBeInTheDocument();
@@ -241,7 +237,7 @@ describe("AudienceCard", () => {
     });
 
     it("does not show additional stats sections", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       // Should not have multiple bordered sections
       const borderedSections = document.querySelectorAll(".border-t");
@@ -250,13 +246,13 @@ describe("AudienceCard", () => {
   });
 
   describe("Title and Name Display", () => {
-    it("truncates long audience names properly", () => {
-      const longNameAudience = {
-        ...mockAudience,
+    it("truncates long list names properly", () => {
+      const longNameList = {
+        ...mockList,
         name: "Very Long Audience Name That Should Be Truncated In The UI",
       };
 
-      render(<AudienceCard audience={longNameAudience} />);
+      render(<ListCard list={longNameList} />);
 
       const titleElement = screen.getByTitle(
         "Very Long Audience Name That Should Be Truncated In The UI",
@@ -266,7 +262,7 @@ describe("AudienceCard", () => {
     });
 
     it("has proper heading structure", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       const heading = screen.getByRole("heading", { level: 3 });
       expect(heading).toBeInTheDocument();
@@ -276,7 +272,7 @@ describe("AudienceCard", () => {
 
   describe("Icons and Visual Elements", () => {
     it("displays the Users icon for member count", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       // Users icon should be present
       const icons = document.querySelectorAll("svg");
@@ -284,7 +280,7 @@ describe("AudienceCard", () => {
     });
 
     it("displays appropriate growth trend icons", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       // Should have trend icons when engagement rate is available
       const trendIcons = document.querySelectorAll("svg");
@@ -295,31 +291,29 @@ describe("AudienceCard", () => {
   describe("Accessibility", () => {
     it("should not have accessibility violations", async () => {
       const { renderResult } = await renderWithA11y(
-        <AudienceCard audience={mockAudience} />,
+        <ListCard list={mockList} />,
       );
 
       await expectNoA11yViolations(renderResult.container);
     });
 
     it("has proper ARIA attributes", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       const article = screen.getByRole("article");
       expect(article).toHaveAttribute(
         "aria-labelledby",
-        `audience-${mockAudience.id}-title`,
+        `list-${mockList.id}-title`,
       );
     });
 
     it("has proper heading hierarchy", () => {
-      render(<AudienceCard audience={mockAudience} />);
+      render(<ListCard list={mockList} />);
 
       const heading = screen.getByRole("heading", { level: 3 });
       expect(heading).toBeInTheDocument();
       // The ID is on the CardTitle parent, not the h3 heading
-      const cardTitle = document.querySelector(
-        `#audience-${mockAudience.id}-title`,
-      );
+      const cardTitle = document.querySelector(`#list-${mockList.id}-title`);
       expect(cardTitle).toBeInTheDocument();
     });
   });
@@ -327,22 +321,22 @@ describe("AudienceCard", () => {
   describe("Props and Behavior", () => {
     it("applies custom className correctly", () => {
       const { container } = render(
-        <AudienceCard audience={mockAudience} className="custom-class" />,
+        <ListCard list={mockList} className="custom-class" />,
       );
 
       expect(container.firstChild).toHaveClass("custom-class");
     });
 
     it("has correct displayName", () => {
-      expect(AudienceCard.displayName).toBe("AudienceCard");
+      expect(ListCard.displayName).toBe("ListCard");
     });
   });
 
   describe("Edge Cases", () => {
-    it("handles audience with minimal data", () => {
-      const minimalAudience: MailchimpList = {
+    it("handles list with minimal data", () => {
+      const minimalList: MailchimpList = {
         id: "minimal",
-        name: "Minimal Audience",
+        name: "Minimal List",
         date_created: "2025-01-01T00:00:00Z",
         visibility: "pub" as const,
         stats: {
@@ -376,10 +370,10 @@ describe("AudienceCard", () => {
       };
 
       expect(() => {
-        render(<AudienceCard audience={minimalAudience} />);
+        render(<ListCard list={minimalList} />);
       }).not.toThrow();
 
-      expect(screen.getByText("Minimal Audience")).toBeInTheDocument();
+      expect(screen.getByText("Minimal List")).toBeInTheDocument();
       expect(screen.getByText("0")).toBeInTheDocument();
     });
   });
