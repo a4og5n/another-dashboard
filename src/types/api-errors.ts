@@ -1,5 +1,20 @@
 // Custom error classes for API error handling
 
+/**
+ * Generic API response wrapper for consistency across all API calls
+ */
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  statusCode?: number;
+  rateLimit?: {
+    remaining: number;
+    resetTime: Date;
+    limit?: number;
+  };
+}
+
 export class BadRequestError extends Error {
   statusCode: number;
   constructor(message: string) {

@@ -128,6 +128,9 @@ export function useStaticPaginationHandlers() {
   };
 }
 
+// Note: transformPaginationParams has been moved to @/utils/mailchimp/query-params
+// to be server-compatible (this file is client-side only due to useRouter usage)
+
 /**
  * Type definitions for pagination handlers
  */
