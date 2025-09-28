@@ -8,8 +8,9 @@ export interface AudienceOverviewProps {
     lists?: MailchimpList[];
     total_items?: number;
   } | null;
-  currentPage: number;
-  pageSize: number;
+  currentPage?: number;
+  pageSize?: number;
   error?: string | null;
+  loading?: boolean;
   className?: string;
 }

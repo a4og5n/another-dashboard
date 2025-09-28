@@ -1,18 +1,8 @@
 /**
  * Server actions for Mailchimp Campaigns API
- *
- * - Validates input using Zod schemas
- * - Provides centralized error handling via MailchimpApiError
- * - Exports validation and error classes for use in API routes
- *
- * @see src/schemas/mailchimp-campaigns.ts for input validation
- * @see src/app/api/mailchimp/campaigns/route.ts for API usage
+ * Simplified to use SDK directly for MVP approach
  */
-/**
- * Centralized validation for Mailchimp campaigns API query parameters
- * Uses strict Zod schema from src/schemas/mailchimp-campaigns.ts
- * Throws ValidationError on failure
- */
+
 import { mailchimpCampaignsQuerySchema } from "@/schemas/mailchimp-campaigns";
 import { MailchimpCampaignsQuery } from "@/types/mailchimp-campaigns";
 

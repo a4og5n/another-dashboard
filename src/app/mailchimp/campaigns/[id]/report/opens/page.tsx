@@ -18,6 +18,7 @@ import { BreadcrumbNavigation } from "@/components/layout";
 import { generateCampaignOpensMetadata } from "@/utils/mailchimp/metadata";
 import { isDev } from "@/lib/config";
 import type { CampaignOpensPageProps } from "@/types/mailchimp/campaign-opens-page-props";
+import type { ReportOpenListSuccess } from "@/types/mailchimp/report-open-list";
 
 async function CampaignOpensPageContent({
   params,
@@ -41,7 +42,7 @@ async function CampaignOpensPageContent({
 
   return (
     <CampaignOpens
-      opensData={response.data!}
+      opensData={response.data as ReportOpenListSuccess}
       currentParams={cleanSearchParams}
       campaignId={id}
     />

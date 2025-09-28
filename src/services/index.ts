@@ -1,78 +1,50 @@
 /**
- * API Services Index
- * Central export point for all API services
+ * Services Index - Simplified for MVP
+ * Just re-export the simple mailchimp setup
  */
 
-export { BaseApiService, ApiServiceFactory } from "@/services/base-api.service";
-export type {
-  ApiResponse,
-  RateLimitInfo,
-  HttpClientConfig,
-} from "@/services/base-api.service";
+// Export new service layer
+export {
+  MailchimpService,
+  mailchimpService,
+} from "@/services/mailchimp.service";
 
-export { MailchimpService } from "@/services/mailchimp.service";
-export type { MailchimpCampaignReport } from "@/services/mailchimp.service";
+// Re-export simple Mailchimp SDK setup for backward compatibility
+export { mailchimp, mailchimpCall, type ApiResponse } from "@/lib/mailchimp";
 
+// Keep auth service export for compatibility
 export { AuthService, authService } from "@/services/auth.service";
 
-// Re-export these types from their new location for backward compatibility
+// Re-export types for backward compatibility
 export type { MailchimpList, MailchimpListsQuery } from "@/types/mailchimp";
 
-// Service factory instances
-import { MailchimpService } from "@/services/mailchimp.service";
-import { ApiServiceFactory } from "@/services/base-api.service";
-import type { ServiceName, ServiceInstance } from "@/types/services";
+// Export campaign report type for backward compatibility
+export type { CampaignReport as MailchimpCampaignReport } from "@/types/mailchimp";
 
 /**
- * Get Mailchimp service instance (singleton)
- */
-export const getMailchimpService = () => {
-  return ApiServiceFactory.getInstance(
-    "mailchimp",
-    () => new MailchimpService(),
-  );
-};
-
-/**
- * Service registry for type safety and IDE support
- */
-export const services = {
-  mailchimp: getMailchimpService,
-} as const;
-
-/**
- * Helper to get any service by name
- */
-export function getService<T extends ServiceName>(name: T): ServiceInstance<T> {
-  return services[name]() as ServiceInstance<T>;
-}
-
-/**
- * Health check all services
+ * Health check all services - simplified
  */
 export async function healthCheckAllServices() {
-  const results = await Promise.allSettled(
-    Object.entries(services).map(async ([name, factory]) => {
-      const service = factory();
-      const result = await service.healthCheck();
-      return { name, result };
-    }),
-  );
-
-  return results.map((result, index) => {
-    const serviceName = Object.keys(services)[index];
-
-    if (result.status === "fulfilled") {
-      return {
-        service: serviceName,
-        ...result.value.result,
-      };
-    } else {
-      return {
-        service: serviceName,
+  try {
+    // Import the service from the export above
+    const { mailchimpService: service } = await import(
+      "@/services/mailchimp.service"
+    );
+    const result = await service.healthCheck();
+    return [
+      {
+        service: "mailchimp",
+        success: result.success,
+        error: result.error,
+      },
+    ];
+  } catch (error) {
+    return [
+      {
+        service: "mailchimp",
         success: false,
-        error: result.reason?.message || "Unknown error",
-      };
-    }
-  });
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+    ];
+  }
 }

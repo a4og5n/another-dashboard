@@ -219,9 +219,3 @@ export const CampaignReportSchema = z.object({
   delivery_status: ReportDeliveryStatusSchema,
   _links: z.array(MailchimpLinkSchema).optional(),
 });
-
-/**
- * TypeScript type for campaign report data
- * Derived from the Zod schema for consistency
- */
-export type CampaignReport = z.infer<typeof CampaignReportSchema>;

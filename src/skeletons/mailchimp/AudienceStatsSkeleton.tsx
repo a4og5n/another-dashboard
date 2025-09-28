@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/skeletons";
 
-export function AudienceStatsSkeleton() {
+export function AudienceOverviewSkeleton() {
   return (
     <div className="space-y-6">
       {/* Loading skeleton for audience stats */}

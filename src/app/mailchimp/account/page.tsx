@@ -7,19 +7,16 @@
  * Uses direct service calls following audiences page pattern
  */
 
-import { Suspense } from "react";
 import { AccountOverview } from "@/components/mailchimp/account";
 import { AccountOverviewSkeleton } from "@/skeletons/mailchimp";
-import { DashboardLayout } from "@/components/layout";
 import { BreadcrumbNavigation } from "@/components/layout";
-import { getMailchimpService } from "@/services";
+import { DashboardLayout } from "@/components/layout";
+import { mailchimpService } from "@/services/mailchimp.service";
+import { Suspense } from "react";
 
 async function AccountPageContent() {
-  // Get Mailchimp service and fetch account data directly
-  const mailchimp = getMailchimpService();
-
-  // Fetch account data from Mailchimp service - let errors bubble up naturally
-  const response = await mailchimp.getApiRoot();
+  // Use service layer for better architecture
+  const response = await mailchimpService.getApiRoot();
 
   // Handle service-level errors only
   if (!response.success) {
@@ -32,7 +29,7 @@ async function AccountPageContent() {
   }
 
   // Pass data to component - let component handle prop validation
-  return <AccountOverview account={response.data || null} />;
+  return <AccountOverview account={response.data!} />;
 }
 
 export default function AccountPage() {

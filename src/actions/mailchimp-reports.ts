@@ -22,7 +22,7 @@ import type {
   ReportDetailPathParams,
   ReportDetailQueryParams,
 } from "@/types/mailchimp/report-detail";
-import { getMailchimpService } from "@/services";
+import { mailchimpService } from "@/services/mailchimp.service";
 
 /**
  * Custom error class for Mailchimp reports API validation errors
@@ -139,9 +139,6 @@ export async function getMailchimpReports(params: unknown) {
     // Validate input parameters
     const validatedParams = validateMailchimpReportsQuery(params);
 
-    // Get Mailchimp service and fetch reports
-    const mailchimp = getMailchimpService();
-
     // Convert fields and exclude_fields to strings if they are arrays
     const serviceParams = {
       ...validatedParams,
@@ -157,7 +154,7 @@ export async function getMailchimpReports(params: unknown) {
         : undefined,
     };
 
-    const response = await mailchimp.getCampaignReports(serviceParams);
+    const response = await mailchimpService.getCampaignReports(serviceParams);
 
     if (!response.success) {
       return {
@@ -201,25 +198,13 @@ export async function getMailchimpReports(params: unknown) {
  * @param queryParams - Optional query parameters for field filtering
  * @returns Success response with campaign report data or error response
  */
-export async function getMailchimpCampaignReport(
-  campaignId: unknown,
-  queryParams?: unknown,
-) {
+export async function getMailchimpCampaignReport(campaignId: unknown) {
   try {
     // Validate path parameters
     const validatedId = validateCampaignReportId(campaignId);
 
-    // Validate query parameters
-    const validatedQueryParams = queryParams
-      ? validateReportDetailQueryParams(queryParams)
-      : {};
-
-    // Get Mailchimp service and fetch single campaign report
-    const mailchimp = getMailchimpService();
-    const response = await mailchimp.getCampaignReport(
-      validatedId,
-      validatedQueryParams,
-    );
+    // Get single campaign report
+    const response = await mailchimpService.getCampaignReport(validatedId);
 
     if (!response.success) {
       return {

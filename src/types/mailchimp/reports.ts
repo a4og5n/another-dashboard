@@ -89,15 +89,11 @@ export type ReportType = (typeof REPORT_TYPES)[number];
 export type CampaignReportType = (typeof CAMPAIGN_REPORT_TYPES)[number];
 export type DeliveryStatusType = (typeof DELIVERY_STATUS_TYPES)[number];
 
-// Import service type temporarily for MVP compatibility
-import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
-
 /**
  * Component prop types
- * Note: Using service types for now until full schema integration
  */
 export interface ReportsOverviewProps {
-  reports: MailchimpCampaignReport[];
+  reports: CampaignReport[];
   loading?: boolean;
   error?: string | null;
   currentPage: number;

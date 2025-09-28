@@ -10,7 +10,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
-import type { MailchimpCampaignReport } from "@/services";
+import type { MailchimpCampaignReport } from "@/types/mailchimp";
 
 // Mock Next.js router
 vi.mock("next/navigation", () => ({

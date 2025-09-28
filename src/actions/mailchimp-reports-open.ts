@@ -20,7 +20,7 @@ import type {
   OpenListPathParams,
   OpenListQueryParams,
 } from "@/types/mailchimp/report-open-list";
-import { getMailchimpService } from "@/services";
+import { mailchimpService } from "@/services/mailchimp.service";
 
 /**
  * Custom error class for Mailchimp campaign open list API validation errors
@@ -123,9 +123,6 @@ export async function getMailchimpCampaignOpenList(
       ? validateOpenListQueryParams(queryParams)
       : {};
 
-    // Get Mailchimp service and fetch campaign open list
-    const mailchimp = getMailchimpService();
-
     // Convert fields and exclude_fields to strings if they are arrays
     const serviceParams = {
       ...validatedQueryParams,
@@ -141,7 +138,7 @@ export async function getMailchimpCampaignOpenList(
         : undefined,
     };
 
-    const response = await mailchimp.getCampaignOpenList(
+    const response = await mailchimpService.getCampaignOpenList(
       validatedCampaignId,
       serviceParams,
     );

@@ -6,24 +6,20 @@
  * Tests server action validation, error handling, and data transformation
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { getMailchimpReports } from "@/actions/mailchimp-reports";
-import { getMailchimpService } from "@/services";
+import { mailchimpService } from "@/services/mailchimp.service";
 
-// Mock the Mailchimp service
-vi.mock("@/services", () => ({
-  getMailchimpService: vi.fn(),
+// Mock the Mailchimp service at the correct path
+vi.mock("@/services/mailchimp.service", () => ({
+  mailchimpService: {
+    getCampaignReports: vi.fn(),
+  },
 }));
 
 describe("Mailchimp Reports Action", () => {
-  const mockMailchimpService = {
-    getCampaignReports: vi.fn(),
-  };
-
   beforeEach(() => {
-    vi.mocked(getMailchimpService).mockReturnValue(
-      mockMailchimpService as unknown as ReturnType<typeof getMailchimpService>,
-    );
     vi.clearAllMocks();
   });
 
@@ -38,9 +34,12 @@ describe("Mailchimp Reports Action", () => {
         data: {
           reports: [],
           total_items: 0,
+          _links: [],
         },
       };
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockResponse);
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
+        mockResponse as any,
+      );
 
       const result = await getMailchimpReports({
         count: 20,
@@ -49,7 +48,9 @@ describe("Mailchimp Reports Action", () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
+      expect(
+        vi.mocked(mailchimpService.getCampaignReports),
+      ).toHaveBeenCalledWith({
         count: 20,
         offset: 0,
         type: "regular",
@@ -62,15 +63,20 @@ describe("Mailchimp Reports Action", () => {
         data: {
           reports: [],
           total_items: 0,
+          _links: [],
         },
       };
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockResponse);
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
+        mockResponse as any,
+      );
 
       const result = await getMailchimpReports({});
 
       expect(result.success).toBe(true);
       // Schema applies defaults, so empty object becomes { count: 10, offset: 0 }
-      expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
+      expect(
+        vi.mocked(mailchimpService.getCampaignReports),
+      ).toHaveBeenCalledWith({
         count: 10,
         offset: 0,
       });
@@ -117,9 +123,11 @@ describe("Mailchimp Reports Action", () => {
     it("should accept valid date parameters", async () => {
       const mockResponse = {
         success: true,
-        data: { reports: [], total_items: 0 },
+        data: { reports: [], total_items: 0, _links: [] },
       };
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockResponse);
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
+        mockResponse as any,
+      );
 
       const result = await getMailchimpReports({
         before_send_time: "2023-12-01T00:00:00Z",
@@ -136,7 +144,7 @@ describe("Mailchimp Reports Action", () => {
         {
           id: "campaign123",
           campaign_title: "Test Campaign",
-          type: "regular",
+          type: "regular" as const,
           list_id: "list123",
           list_is_active: true,
           list_name: "Test List",
@@ -171,7 +179,9 @@ describe("Mailchimp Reports Action", () => {
             open_rate: 0.22,
             click_rate: 0.08,
             bounce_rate: 0.02,
-            unsubscribe_rate: 0.005,
+            unopen_rate: 0.78,
+            unsub_rate: 0.005,
+            abuse_rate: 0.001,
           },
           list_stats: {
             sub_rate: 0.1,
@@ -182,9 +192,19 @@ describe("Mailchimp Reports Action", () => {
           delivery_status: {
             enabled: true,
             can_cancel: false,
-            status: "sent",
+            status: "delivered" as const,
             emails_sent: 100,
             emails_canceled: 0,
+          },
+          share_report: {
+            share_url: "https://example.com/share/123",
+            share_password: "password123",
+          },
+          ecommerce: {
+            total_orders: 5,
+            total_spent: 125.0,
+            total_revenue: 125.0,
+            currency_code: "USD",
           },
         },
       ];
@@ -194,10 +214,13 @@ describe("Mailchimp Reports Action", () => {
         data: {
           reports: mockReports,
           total_items: 1,
+          _links: [],
         },
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockResponse);
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
+        mockResponse as any,
+      );
 
       const result = await getMailchimpReports({ count: 10 });
 
@@ -213,7 +236,7 @@ describe("Mailchimp Reports Action", () => {
         error: "API request failed",
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
         mockErrorResponse,
       );
 
@@ -224,7 +247,7 @@ describe("Mailchimp Reports Action", () => {
     });
 
     it("should handle service exceptions", async () => {
-      mockMailchimpService.getCampaignReports.mockRejectedValue(
+      vi.mocked(mailchimpService.getCampaignReports).mockRejectedValue(
         new Error("Network error"),
       );
 
@@ -235,9 +258,9 @@ describe("Mailchimp Reports Action", () => {
     });
 
     it("should handle unexpected service response format", async () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue({
         success: true,
-        data: null, // Unexpected format
+        data: null as any, // Unexpected format
       });
 
       const result = await getMailchimpReports({ count: 10 });
@@ -254,10 +277,13 @@ describe("Mailchimp Reports Action", () => {
         data: {
           reports: [],
           total_items: 0,
+          _links: [],
         },
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockResponse);
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
+        mockResponse as any,
+      );
 
       const result = await getMailchimpReports({ count: 10 });
 
@@ -274,7 +300,7 @@ describe("Mailchimp Reports Action", () => {
         error: "Service unavailable",
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
         mockErrorResponse,
       );
 
@@ -289,7 +315,7 @@ describe("Mailchimp Reports Action", () => {
       const mockReport = {
         id: "campaign123",
         campaign_title: "Full Campaign",
-        type: "regular",
+        type: "regular" as const,
         list_id: "list123",
         list_is_active: true,
         list_name: "Full List",
@@ -325,7 +351,9 @@ describe("Mailchimp Reports Action", () => {
           open_rate: 0.28,
           click_rate: 0.1,
           bounce_rate: 0.015,
-          unsubscribe_rate: 0.008,
+          unopen_rate: 0.72,
+          unsub_rate: 0.008,
+          abuse_rate: 0.002,
         },
         list_stats: {
           sub_rate: 0.15,
@@ -380,10 +408,13 @@ describe("Mailchimp Reports Action", () => {
         data: {
           reports: [mockReport],
           total_items: 1,
+          _links: [],
         },
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockResponse);
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
+        mockResponse as any,
+      );
 
       const result = await getMailchimpReports({ count: 1 });
 
@@ -419,10 +450,13 @@ describe("Mailchimp Reports Action", () => {
         data: {
           reports: [],
           total_items: 0,
+          _links: [],
         },
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockResponse);
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
+        mockResponse as any,
+      );
 
       const result = await getMailchimpReports({ count: 10 });
 
@@ -435,7 +469,7 @@ describe("Mailchimp Reports Action", () => {
       const largeReportArray = Array.from({ length: 1000 }, (_, i) => ({
         id: `campaign${i}`,
         campaign_title: `Campaign ${i}`,
-        type: "regular",
+        type: "regular" as const,
         list_id: `list${i}`,
         list_is_active: true,
         list_name: `List ${i}`,
@@ -470,7 +504,9 @@ describe("Mailchimp Reports Action", () => {
           open_rate: 0.22,
           click_rate: 0.08,
           bounce_rate: 0.02,
-          unsubscribe_rate: 0.005,
+          unopen_rate: 0.78,
+          unsub_rate: 0.005,
+          abuse_rate: 0.001,
         },
         list_stats: {
           sub_rate: 0.1,
@@ -485,6 +521,16 @@ describe("Mailchimp Reports Action", () => {
           emails_sent: 100 * i,
           emails_canceled: 0,
         },
+        share_report: {
+          share_url: `https://example.com/share/${i}`,
+          share_password: `password${i}`,
+        },
+        ecommerce: {
+          total_orders: i,
+          total_spent: i * 10.0,
+          total_revenue: i * 10.0,
+          currency_code: "USD",
+        },
       }));
 
       const mockResponse = {
@@ -492,10 +538,13 @@ describe("Mailchimp Reports Action", () => {
         data: {
           reports: largeReportArray,
           total_items: 1000,
+          _links: [],
         },
       };
 
-      mockMailchimpService.getCampaignReports.mockResolvedValue(mockResponse);
+      vi.mocked(mailchimpService.getCampaignReports).mockResolvedValue(
+        mockResponse as any,
+      );
 
       const result = await getMailchimpReports({ count: 1000 });
 
@@ -505,7 +554,7 @@ describe("Mailchimp Reports Action", () => {
     });
 
     it("should handle timeout scenarios", async () => {
-      mockMailchimpService.getCampaignReports.mockImplementation(
+      vi.mocked(mailchimpService.getCampaignReports).mockImplementation(
         () =>
           new Promise((_, reject) => {
             setTimeout(() => reject(new Error("Request timeout")), 100);

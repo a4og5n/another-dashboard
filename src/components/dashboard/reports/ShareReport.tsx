@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Share2, Lock, Globe } from "lucide-react";
-import type { MailchimpCampaignReport } from "@/services/mailchimp.service";
+import type { MailchimpCampaignReport } from "@/types/mailchimp";
 
 interface ShareReportProps {
   report: MailchimpCampaignReport;

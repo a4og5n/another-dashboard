@@ -212,7 +212,7 @@ export function CampaignOpensTable({
 
   // Initialize the table
   const table = useReactTable({
-    data: members,
+    data: members || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     // Disable built-in pagination and sorting since we handle both server-side
@@ -231,7 +231,7 @@ export function CampaignOpensTable({
               <Eye className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">
-                  {total_opens.toLocaleString()}
+                  {total_opens?.toLocaleString() ?? "0"}
                 </p>
                 <p className="text-xs text-muted-foreground">Total Opens</p>
               </div>
@@ -257,7 +257,7 @@ export function CampaignOpensTable({
               <Clock className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">
-                  {total_proxy_excluded_opens.toLocaleString()}
+                  {total_proxy_excluded_opens?.toLocaleString() ?? "0"}
                 </p>
                 <p className="text-xs text-muted-foreground">Proxy Excluded</p>
               </div>
@@ -294,8 +294,8 @@ export function CampaignOpensTable({
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
+                {table.getRowModel()?.rows?.length ? (
+                  table.getRowModel()?.rows?.map((row) => (
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}

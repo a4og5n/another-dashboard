@@ -6,7 +6,7 @@
  *
  * Following established component patterns and using shadcn/ui components
  */
-import React from "react";
+import React, { useId } from "react";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import {
   DropdownMenu,
@@ -27,10 +27,13 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user, displayName, initials }: UserMenuProps) {
+  const menuId = useId();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
+          id={menuId}
           className="relative h-8 w-8 rounded-full bg-transparent border-0 p-0 cursor-pointer hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           type="button"
           aria-label="User menu"
