@@ -6,7 +6,7 @@
  * Following project guidelines to extract reusable utilities
  */
 
-import { getMailchimpCampaignReport } from "@/actions/mailchimp-reports";
+import { mailchimpService } from "@/services/mailchimp.service";
 import { Metadata } from "next";
 import type { MailchimpCampaignReport } from "@/types/mailchimp";
 
@@ -27,7 +27,7 @@ export async function generateCampaignMetadata({
   const { id } = await params;
 
   // Fetch campaign report for metadata
-  const response = await getMailchimpCampaignReport(id);
+  const response = await mailchimpService.getCampaignReport(id);
 
   if (!response.success || !response.data) {
     return {
@@ -109,7 +109,7 @@ export async function generateCampaignOpensMetadata({
   const { id } = await params;
 
   // Fetch campaign report for metadata
-  const response = await getMailchimpCampaignReport(id);
+  const response = await mailchimpService.getCampaignReport(id);
 
   if (!response.success || !response.data) {
     return {

@@ -251,7 +251,7 @@ export interface AbSplitCardProps {
   className?: string;
 }
 
-export type ReportsTableProps = {
+export type ReportsOverviewTableProps = {
   /** Array of campaign reports to display - properly typed */
   reports: ReportsOverviewProps["reports"];
 } & Partial<z.infer<typeof reportsTablePropsSchema>>;

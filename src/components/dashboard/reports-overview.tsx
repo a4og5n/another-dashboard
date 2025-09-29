@@ -130,7 +130,7 @@ export function ReportsOverview({
                     <TableRow key={report.id}>
                       <TableCell className="font-medium max-w-xs">
                         <Link
-                          href={`/mailchimp/campaigns/${report.id}`}
+                          href={`/mailchimp/reports/${report.id}`}
                           className="truncate hover:underline"
                           title={report.campaign_title}
                         >
@@ -168,9 +168,7 @@ export function ReportsOverview({
                       </TableCell>
                       <TableCell className="text-center">
                         <Button variant="outline" size="sm" asChild>
-                          <Link
-                            href={`/mailchimp/campaigns/${report.id}/report`}
-                          >
+                          <Link href={`/mailchimp/reports/${report.id}/report`}>
                             <BarChart3 className="h-3 w-3 mr-1" />
                             View Report
                           </Link>

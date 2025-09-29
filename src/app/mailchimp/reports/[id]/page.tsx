@@ -8,7 +8,7 @@
 
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getMailchimpCampaignReport } from "@/actions/mailchimp-reports";
+import { mailchimpService } from "@/services/mailchimp.service";
 import {
   CampaignReportDetail,
   CampaignReportLoading,
@@ -28,7 +28,7 @@ async function CampaignReportPageContent({
   await searchParams; // Keep for type compatibility
 
   // Fetch campaign report data
-  const response = await getMailchimpCampaignReport(id);
+  const response = await mailchimpService.getCampaignReport(id);
 
   // Handle error states
   if (!response.success) {
@@ -54,7 +54,7 @@ export default function CampaignReportPage({
       <BreadcrumbNavigation
         items={[
           { label: "Dashboard", href: "/mailchimp" },
-          { label: "Campaigns", href: "/mailchimp/campaigns" },
+          { label: "Reports", href: "/mailchimp/reports" },
           { label: "Report", isCurrent: true },
         ]}
       />

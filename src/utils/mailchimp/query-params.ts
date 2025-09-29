@@ -9,6 +9,7 @@ import { z } from "zod";
 import { MailchimpAudienceQuerySchema } from "@/schemas/mailchimp/audience-query.schema";
 import { CampaignsPageQuerySchema } from "@/schemas/mailchimp/campaign-query.schema";
 import { REPORT_TYPES } from "@/schemas/mailchimp/report-list-query.schema";
+import type { ReportsPageSearchParams } from "@/types/mailchimp";
 /**
  * Transforms page-based pagination parameters to Mailchimp API offset-based format
  * Used by service layer for converting URL params to API params
@@ -37,7 +38,6 @@ function transformPaginationParams(
     }),
   };
 }
-import type { CampaignsPageSearchParams } from "@/types/mailchimp";
 
 /**
  * Date validation helper for YYYY-MM-DD format
@@ -90,15 +90,15 @@ export function transformQueryParams(
 }
 
 /**
- * Validation function for campaigns page query parameters
+ * Validation function for reports page query parameters
  * Returns result object following Next.js best practices for expected errors
  *
- * @param params - URL search parameters from campaigns page
+ * @param params - URL search parameters from reports page
  * @returns Success object with validated data or error object with message
  *
  * @example
  * ```typescript
- * const result = validateCampaignsPageParams({ page: "1", perPage: "10" });
+ * const result = validateReportsPageParams({ page: "1", perPage: "10" });
  * if (result.success) {
  *   console.log(result.data.page); // 1 (number)
  * } else {
@@ -106,7 +106,7 @@ export function transformQueryParams(
  * }
  * ```
  */
-export function validateCampaignsPageParams(
+export function validateReportsPageParams(
   params: Record<string, string | undefined>,
 ) {
   const result = CampaignsPageQuerySchema.safeParse(params);
@@ -114,7 +114,7 @@ export function validateCampaignsPageParams(
   if (!result.success) {
     return {
       success: false as const,
-      error: `Invalid campaigns page parameters: ${result.error.issues.map((issue) => issue.message).join(", ")}`,
+      error: `Invalid reports page parameters: ${result.error.issues.map((issue) => issue.message).join(", ")}`,
     };
   }
 
@@ -139,7 +139,7 @@ export function validateCampaignsPageParams(
  * ```
  */
 export function transformCampaignReportsParams(
-  params: CampaignsPageSearchParams,
+  params: ReportsPageSearchParams,
 ) {
   return {
     ...transformPaginationParams(params.page, params.perPage),

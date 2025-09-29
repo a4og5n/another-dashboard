@@ -94,7 +94,7 @@ export function OpensCard({ opens, campaignId }: OpensCardProps) {
 
         {/* View Details Button */}
         <div className="pt-2 border-t">
-          <Link href={`/mailchimp/campaigns/${campaignId}/report/opens`}>
+          <Link href={`/mailchimp/reports/${campaignId}/opens`}>
             <Button variant="outline" className="w-full" size="sm">
               <ExternalLink className="h-3 w-3 mr-2" />
               View Opens Details

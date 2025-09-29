@@ -199,7 +199,7 @@ describe("ReportsOverview Component", () => {
     totalPages: 2,
     perPage: 10,
     perPageOptions: [10, 20, 50],
-    basePath: "/mailchimp/campaigns",
+    basePath: "/mailchimp/reports",
     additionalParams: {},
   };
 
@@ -320,7 +320,7 @@ describe("ReportsOverview Component", () => {
       });
       expect(campaignLink).toHaveAttribute(
         "href",
-        "/mailchimp/campaigns/campaign123",
+        "/mailchimp/reports/campaign123",
       );
       expect(campaignLink).toHaveClass("hover:underline");
     });
@@ -340,10 +340,10 @@ describe("ReportsOverview Component", () => {
 
       expect(
         screen.getByRole("link", { name: "Newsletter Campaign" }),
-      ).toHaveAttribute("href", "/mailchimp/campaigns/campaign123");
+      ).toHaveAttribute("href", "/mailchimp/reports/campaign123");
       expect(
         screen.getByRole("link", { name: "Product Launch" }),
-      ).toHaveAttribute("href", "/mailchimp/campaigns/campaign456");
+      ).toHaveAttribute("href", "/mailchimp/reports/campaign456");
     });
 
     it("should render all list links correctly", () => {

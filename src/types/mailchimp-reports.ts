@@ -1,7 +1,7 @@
 /**
- * TypeScript type for Mailchimp campaigns API query parameters
+ * TypeScript type for Mailchimp reports API query parameters
  *
- * Inferred from Zod schema in src/schemas/mailchimp-campaigns.ts
+ * Inferred from Zod schema in src/schemas/mailchimp-reports.ts
  *
  * Parameters:
  *   - fields?: string[]
@@ -17,14 +17,14 @@
  * Reference: https://mailchimp.com/developer/marketing/api/reports/list-campaign-reports/
  */
 import { z } from "zod";
-import { mailchimpCampaignsQuerySchema } from "@/schemas/mailchimp-campaigns";
+import { mailchimpReportsQuerySchema } from "@/schemas/mailchimp-reports";
 
-export type MailchimpCampaignsQueryBase = z.infer<
-  typeof mailchimpCampaignsQuerySchema
+export type MailchimpReportsQueryBase = z.infer<
+  typeof mailchimpReportsQuerySchema
 >;
 
-export interface MailchimpCampaignsQuery
-  extends Omit<MailchimpCampaignsQueryBase, "fields" | "exclude_fields"> {
+export interface MailchimpReportsQuery
+  extends Omit<MailchimpReportsQueryBase, "fields" | "exclude_fields"> {
   fields?: string[];
   exclude_fields?: string[];
 }

@@ -1,5 +1,5 @@
 /**
- * Zod schema for Mailchimp campaigns API query parameters
+ * Zod schema for Mailchimp reports API query parameters
  *
  * Strictly validates all supported parameters for GET /reports (list campaign reports):
  *   - fields: Comma-separated list of fields to include in response (string, optional)
@@ -15,11 +15,11 @@
  * Reference: https://mailchimp.com/developer/marketing/api/reports/list-campaign-reports/
  *
  * Example:
- *   mailchimpCampaignsQuerySchema.parse({ count: "10", type: "regular" })
+ *   mailchimpReportsQuerySchema.parse({ count: "10", type: "regular" })
  */
 import { z } from "zod";
 
-export const mailchimpCampaignsQuerySchema = z.object({
+export const mailchimpReportsQuerySchema = z.object({
   fields: z
     .string()
     .optional()

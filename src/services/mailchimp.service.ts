@@ -19,7 +19,7 @@ import type {
 import type {
   AudiencesPageSearchParams,
   ListsPageSearchParams,
-  CampaignsPageSearchParams,
+  ReportsPageSearchParams,
   MailchimpRoot,
   MailchimpRootQuery,
   MailchimpAudienceSuccess,
@@ -108,7 +108,7 @@ export class MailchimpService {
    * Campaign Report Operations
    */
   async getCampaignReports(
-    params: CampaignsPageSearchParams,
+    params: ReportsPageSearchParams,
   ): Promise<ApiResponse<ReportListSuccess>> {
     // Transform page params to Mailchimp API format, let schema handle defaults
     const transformedParams = transformCampaignReportsParams(params);
