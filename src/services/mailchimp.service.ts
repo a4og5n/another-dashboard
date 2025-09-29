@@ -18,6 +18,7 @@ import type {
 } from "@/types/mailchimp";
 import type {
   AudiencesPageSearchParams,
+  ListsPageSearchParams,
   CampaignsPageSearchParams,
   MailchimpRoot,
   MailchimpRootQuery,
@@ -25,6 +26,7 @@ import type {
 } from "@/types/mailchimp";
 import {
   MailchimpAudienceQuerySchema,
+  MailchimpListQuerySchema,
   ReportListQueryInternalSchema,
   OpenListQueryParamsSchema,
   MailchimpRootQuerySchema,
@@ -55,6 +57,30 @@ export class MailchimpService {
       return {
         success: false,
         error: `Invalid audience query parameters: ${validationResult.error.message}`,
+      };
+    }
+
+    return mailchimpCall(() =>
+      (mailchimp as any).lists.getAllLists(validationResult.data),
+    );
+  }
+
+  async getLists(
+    params: ListsPageSearchParams,
+  ): Promise<ApiResponse<MailchimpAudienceSuccess>> {
+    // Transform page params to Mailchimp API format, let schema handle defaults
+    const transformedParams = transformPaginationParams(
+      params.page,
+      params.limit,
+    );
+
+    // Validate transformed parameters using schema (applies defaults)
+    const validationResult =
+      MailchimpListQuerySchema.safeParse(transformedParams);
+    if (!validationResult.success) {
+      return {
+        success: false,
+        error: `Invalid list query parameters: ${validationResult.error.message}`,
       };
     }
 
