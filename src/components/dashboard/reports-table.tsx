@@ -14,16 +14,16 @@ import { CampaignStatusBadge } from "@/components/ui/campaign-status-badge";
 import { Mail } from "lucide-react";
 import { CampaignsArraySchema } from "@/schemas/campaign";
 import type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
-import type { CampaignsTableProps } from "@/types/components/dashboard/campaigns-table";
+import type { ReportsTableProps } from "@/types/components/dashboard/reports-table";
 import { formatDateShort } from "@/utils";
 
-export function CampaignsTable({
+export function ReportsTable({
   campaigns,
   loading = false,
   dateRange,
   onDateRangeChange,
   onPresetSelect,
-}: CampaignsTableProps) {
+}: ReportsTableProps) {
   // Validate campaigns prop
   /**
    * Validated campaigns array. Only valid campaigns will be rendered.
@@ -45,7 +45,7 @@ export function CampaignsTable({
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Mail className="h-5 w-5" />
-            <span>Recent Campaigns</span>
+            <span>Recent Reports</span>
           </div>
           <DateFilterPopover
             dateRange={dateRange}
@@ -62,7 +62,7 @@ export function CampaignsTable({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Campaign</TableHead>
+                  <TableHead>Report</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Emails Sent</TableHead>
                   {/* ...existing code... */}
@@ -104,11 +104,11 @@ export function CampaignsTable({
                   aria-hidden="true"
                 />
                 <span className="font-semibold text-lg mb-2">
-                  No campaigns found
+                  No reports found
                 </span>
                 <span>
-                  Connect your Mailchimp account to view campaigns or adjust
-                  your filters.
+                  Connect your Mailchimp account to view reports or adjust your
+                  filters.
                 </span>
                 <Button
                   variant="outline"

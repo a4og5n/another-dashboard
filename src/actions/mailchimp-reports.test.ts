@@ -1,11 +1,11 @@
 /**
- * Unit tests for validateMailchimpCampaignsQuery
+ * Unit tests for validateMailchimpReportsQuery
  */
 import { describe, it, expect } from "vitest";
 import {
-  validateMailchimpCampaignsQuery,
+  validateMailchimpReportsQuery,
   ValidationError,
-} from "./mailchimp-campaigns";
+} from "./mailchimp-reports";
 
 const validParams = {
   fields: "id,type",
@@ -24,9 +24,9 @@ const invalidParams = {
   type: "invalidtype" as unknown,
 };
 
-describe("validateMailchimpCampaignsQuery", () => {
+describe("validateMailchimpReportsQuery", () => {
   it("parses valid params and transforms fields/exclude_fields to arrays", () => {
-    const result = validateMailchimpCampaignsQuery(validParams);
+    const result = validateMailchimpReportsQuery(validParams);
     expect(result.fields).toEqual(["id", "type"]);
     expect(result.exclude_fields).toEqual(["settings"]);
     expect(result.count).toBe(10);
@@ -37,13 +37,13 @@ describe("validateMailchimpCampaignsQuery", () => {
   });
 
   it("throws ValidationError for invalid params", () => {
-    expect(() => validateMailchimpCampaignsQuery(invalidParams)).toThrow(
+    expect(() => validateMailchimpReportsQuery(invalidParams)).toThrow(
       ValidationError,
     );
   });
 
   it("handles missing optional params", () => {
-    const result = validateMailchimpCampaignsQuery({ count: "5" });
+    const result = validateMailchimpReportsQuery({ count: "5" });
     expect(result.count).toBe(5);
     expect(result.fields).toBeUndefined();
     expect(result.exclude_fields).toBeUndefined();
@@ -51,7 +51,7 @@ describe("validateMailchimpCampaignsQuery", () => {
   });
 
   it("trims and splits fields/exclude_fields correctly", () => {
-    const result = validateMailchimpCampaignsQuery({
+    const result = validateMailchimpReportsQuery({
       fields: "id, type ,name ",
       exclude_fields: " settings ,data ",
     });
@@ -59,28 +59,28 @@ describe("validateMailchimpCampaignsQuery", () => {
     expect(result.exclude_fields).toEqual(["settings", "data"]);
   });
   it("accepts count at boundaries (0 and 1000)", () => {
-    expect(validateMailchimpCampaignsQuery({ count: "0" }).count).toBe(0);
-    expect(validateMailchimpCampaignsQuery({ count: "1000" }).count).toBe(1000);
+    expect(validateMailchimpReportsQuery({ count: "0" }).count).toBe(0);
+    expect(validateMailchimpReportsQuery({ count: "1000" }).count).toBe(1000);
   });
 
   it("throws ValidationError for count > 1000 or non-numeric", () => {
-    expect(() => validateMailchimpCampaignsQuery({ count: "1001" })).toThrow(
+    expect(() => validateMailchimpReportsQuery({ count: "1001" })).toThrow(
       ValidationError,
     );
-    expect(() => validateMailchimpCampaignsQuery({ count: "abc" })).toThrow(
+    expect(() => validateMailchimpReportsQuery({ count: "abc" })).toThrow(
       ValidationError,
     );
   });
 
   it("accepts offset at boundary (0)", () => {
-    expect(validateMailchimpCampaignsQuery({ offset: "0" }).offset).toBe(0);
+    expect(validateMailchimpReportsQuery({ offset: "0" }).offset).toBe(0);
   });
 
   it("throws ValidationError for offset < 0 or non-numeric", () => {
-    expect(() => validateMailchimpCampaignsQuery({ offset: "-1" })).toThrow(
+    expect(() => validateMailchimpReportsQuery({ offset: "-1" })).toThrow(
       ValidationError,
     );
-    expect(() => validateMailchimpCampaignsQuery({ offset: "xyz" })).toThrow(
+    expect(() => validateMailchimpReportsQuery({ offset: "xyz" })).toThrow(
       ValidationError,
     );
   });
@@ -95,15 +95,15 @@ describe("validateMailchimpCampaignsQuery", () => {
       "variate",
     ];
     types.forEach((type) => {
-      expect(validateMailchimpCampaignsQuery({ type }).type).toBe(type);
+      expect(validateMailchimpReportsQuery({ type }).type).toBe(type);
     });
   });
 
   it("throws ValidationError for invalid type values", () => {
-    expect(() => validateMailchimpCampaignsQuery({ type: "foo" })).toThrow(
+    expect(() => validateMailchimpReportsQuery({ type: "foo" })).toThrow(
       ValidationError,
     );
-    expect(() => validateMailchimpCampaignsQuery({ type: "" })).toThrow(
+    expect(() => validateMailchimpReportsQuery({ type: "" })).toThrow(
       ValidationError,
     );
   });
@@ -113,16 +113,16 @@ describe("validateMailchimpCampaignsQuery", () => {
       before_send_time: "2023-01-01T00:00:00Z",
       since_send_time: "2023-01-01T00:00:00Z",
     };
-    expect(validateMailchimpCampaignsQuery(params).before_send_time).toBe(
+    expect(validateMailchimpReportsQuery(params).before_send_time).toBe(
       params.before_send_time,
     );
-    expect(validateMailchimpCampaignsQuery(params).since_send_time).toBe(
+    expect(validateMailchimpReportsQuery(params).since_send_time).toBe(
       params.since_send_time,
     );
   });
 
   it("accepts empty string for optional fields (should be undefined)", () => {
-    const result = validateMailchimpCampaignsQuery({
+    const result = validateMailchimpReportsQuery({
       fields: "",
       exclude_fields: "",
     });
@@ -131,7 +131,7 @@ describe("validateMailchimpCampaignsQuery", () => {
   });
 
   it("ignores unexpected extra params", () => {
-    const result = validateMailchimpCampaignsQuery({ count: "5", foo: "bar" });
+    const result = validateMailchimpReportsQuery({ count: "5", foo: "bar" });
     expect(result.count).toBe(5);
     // extra params are not present in the returned type
   });
