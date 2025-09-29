@@ -29,7 +29,7 @@ describe("ReportsTable", () => {
 
   it("renders improved empty state for invalid campaigns data", () => {
     render(<ReportsTable campaigns={invalidCampaigns} />);
-    expect(screen.getByText("No campaigns found")).toBeInTheDocument();
+    expect(screen.getByText("No reports found")).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
     expect(
       screen.getByRole("button", { name: /connect mailchimp/i }),
@@ -38,7 +38,7 @@ describe("ReportsTable", () => {
 
   it("renders improved empty state if campaigns is undefined", () => {
     render(<ReportsTable campaigns={undefined} />);
-    expect(screen.getByText("No campaigns found")).toBeInTheDocument();
+    expect(screen.getByText("No reports found")).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
     expect(
       screen.getByRole("button", { name: /connect mailchimp/i }),
