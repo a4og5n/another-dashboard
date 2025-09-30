@@ -8,7 +8,7 @@
 
 import { validateOpenListQueryParams } from "@/actions/mailchimp-reports-open";
 import { isDev } from "@/lib/config";
-import type { OpenListQueryParams } from "@/types/mailchimp/report-open-list";
+import type { OpenListQueryParams } from "@/types/mailchimp/report-open-details";
 
 /**
  * Processes and validates raw search parameters for campaign opens pages

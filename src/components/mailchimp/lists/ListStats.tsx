@@ -2,9 +2,9 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, TrendingUp, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { AudienceStatsProps } from "@/types/mailchimp/audience";
+import type { ListStatsProps } from "@/types/components/mailchimp/list";
 
-export function ListStats({ stats, className }: AudienceStatsProps) {
+export function ListStats({ stats, className }: ListStatsProps) {
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;

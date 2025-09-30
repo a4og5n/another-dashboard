@@ -153,6 +153,11 @@ Before starting any development work, always review:
 - **Error response strategy**: Compare fields to shared error schema, extend with `.extend({ ... })` if needed, or create custom schema if fundamentally different
 - **API naming consistency**: Always use the same object/property names as the API when defining Zod schemas and TypeScript types
 - **Enum pattern**: Define as constant array (e.g., `export const VISIBILITY = ["pub", "prv"] as const;`) and use in `z.enum(VISIBILITY)`
+- **DateTime validation**:
+  - Use `z.iso.datetime({ offset: true })` for ISO 8601 datetime strings with timezone support (recommended for API dates)
+  - Use `z.iso.datetime()` for strict UTC-only datetime strings (`YYYY-MM-DDTHH:MM:SSZ`)
+  - Use `z.string()` only for basic string validation without datetime format enforcement
+  - **Deprecated**: Never use `z.string().datetime()` (enforced by architectural tests)
 
 ### Component Development
 
@@ -211,7 +216,7 @@ The codebase includes automated tests to enforce architectural patterns and prev
 
 #### Deprecated Declarations Detection (enforced by `deprecated-declarations.test.ts`):
 
-- **No deprecated Zod methods**: Prevents usage of `z.string().datetime()` (use `z.string()` instead)
+- **No deprecated Zod methods**: Prevents usage of `z.string().datetime()` (use `z.iso.datetime({ offset: true })` for ISO 8601 datetime validation, or `z.string()` for basic string validation)
 - **No deprecated React patterns**: Warns about `React.FC` usage (prefer regular function components)
 - **No deprecated lifecycle methods**: Prevents usage of deprecated React lifecycle methods
 - **No deprecated Node.js APIs**: Prevents usage of deprecated Node.js APIs

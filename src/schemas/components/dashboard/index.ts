@@ -4,3 +4,4 @@
  */
 
 export * from "@/schemas/components/dashboard/reports";
+export * from "@/schemas/components/dashboard/campaigns";

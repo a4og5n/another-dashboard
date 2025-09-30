@@ -38,7 +38,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-import type { ReportOpenListMember } from "@/types/mailchimp/report-open-list";
+import type { ReportOpenListMember } from "@/types/mailchimp/report-open-details";
 import type { CampaignOpensTableProps } from "@/types/mailchimp/campaign-opens-page-props";
 
 export function CampaignOpensTable({

@@ -29,8 +29,8 @@ export const OpenListQueryParamsSchema = z
     exclude_fields: z.string().optional(),
     count: z.number().min(1).max(1000).default(10).optional(),
     offset: z.number().min(0).default(0).optional(),
-    since: z.string().optional(), // ISO 8601 timestamp for filtering opens after this time
+    since: z.iso.datetime({ offset: true }).optional(), // ISO 8601 timestamp for filtering opens after this time
     sort_field: z.string().optional(),
     sort_dir: z.enum(SORT_DIRECTIONS).optional(),
   })
-  .strip();
+  .strict(); // Reject unknown properties for input validation

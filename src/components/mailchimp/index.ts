@@ -4,4 +4,3 @@
  */
 
 export * from "@/components/mailchimp/account";
-export * from "@/components/mailchimp/audiences";

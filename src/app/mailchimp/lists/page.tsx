@@ -4,7 +4,7 @@ import type { ListsPageProps } from "@/types/mailchimp/lists-page-props";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { mailchimpService } from "@/services/mailchimp.service";
-import { MailchimpListQuerySchema } from "@/schemas/mailchimp/list-query.schema";
+import { MailchimpListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
 import { Suspense } from "react";
 
 async function ListsPageContent({ searchParams }: ListsPageProps) {
@@ -25,7 +25,7 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
   }
 
   // Parse pagination params for UI
-  const queryDefaults = MailchimpListQuerySchema.parse({});
+  const queryDefaults = MailchimpListParamsSchema.parse({});
   const currentPage = parseInt(params.page || "1");
   const pageSize = parseInt(params.limit || queryDefaults.count.toString());
 

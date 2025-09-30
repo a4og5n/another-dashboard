@@ -17,19 +17,17 @@ import type {
   ReportDetailSuccess,
 } from "@/types/mailchimp";
 import type {
-  AudiencesPageSearchParams,
   ListsPageSearchParams,
   ReportsPageSearchParams,
   MailchimpRoot,
   MailchimpRootQuery,
-  MailchimpAudienceSuccess,
+  MailchimpListResponse,
 } from "@/types/mailchimp";
 import {
-  MailchimpAudienceQuerySchema,
-  MailchimpListQuerySchema,
-  ReportListQueryInternalSchema,
+  MailchimpListParamsSchema,
+  ReportListParamsInternalSchema,
   OpenListQueryParamsSchema,
-  MailchimpRootQuerySchema,
+  MailchimpRootParamsSchema,
 } from "@/schemas/mailchimp";
 
 // Re-export the campaign report type for external use
@@ -39,35 +37,12 @@ export type { CampaignReport as MailchimpCampaignReport };
 
 export class MailchimpService {
   /**
-   * Audience/List Operations
+   * List Operations
    */
-  async getAudiences(
-    params: AudiencesPageSearchParams,
-  ): Promise<ApiResponse<MailchimpAudienceSuccess>> {
-    // Transform page params to Mailchimp API format, let schema handle defaults
-    const transformedParams = transformPaginationParams(
-      params.page,
-      params.limit,
-    );
-
-    // Validate transformed parameters using schema (applies defaults)
-    const validationResult =
-      MailchimpAudienceQuerySchema.safeParse(transformedParams);
-    if (!validationResult.success) {
-      return {
-        success: false,
-        error: `Invalid audience query parameters: ${validationResult.error.message}`,
-      };
-    }
-
-    return mailchimpCall(() =>
-      (mailchimp as any).lists.getAllLists(validationResult.data),
-    );
-  }
 
   async getLists(
     params: ListsPageSearchParams,
-  ): Promise<ApiResponse<MailchimpAudienceSuccess>> {
+  ): Promise<ApiResponse<MailchimpListResponse>> {
     // Transform page params to Mailchimp API format, let schema handle defaults
     const transformedParams = transformPaginationParams(
       params.page,
@@ -76,7 +51,7 @@ export class MailchimpService {
 
     // Validate transformed parameters using schema (applies defaults)
     const validationResult =
-      MailchimpListQuerySchema.safeParse(transformedParams);
+      MailchimpListParamsSchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,
@@ -89,7 +64,7 @@ export class MailchimpService {
     );
   }
 
-  async getAudience(listId: string): Promise<ApiResponse<unknown>> {
+  async getList(listId: string): Promise<ApiResponse<unknown>> {
     return mailchimpCall(() => (mailchimp as any).lists.getList(listId));
   }
 
@@ -115,7 +90,7 @@ export class MailchimpService {
 
     // Validate transformed parameters using schema (applies defaults)
     const validationResult =
-      ReportListQueryInternalSchema.safeParse(transformedParams);
+      ReportListParamsInternalSchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,
@@ -170,7 +145,7 @@ export class MailchimpService {
   ): Promise<ApiResponse<MailchimpRoot>> {
     // Validate parameters if provided
     if (params !== undefined) {
-      const validationResult = MailchimpRootQuerySchema.safeParse(params);
+      const validationResult = MailchimpRootParamsSchema.safeParse(params);
       if (!validationResult.success) {
         return {
           success: false,

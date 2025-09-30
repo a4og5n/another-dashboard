@@ -2,7 +2,7 @@ import { z } from "zod";
 import { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 const oneOpen = z.object({
-  timestamp: z.string(), //The date and time recorded for the action in ISO 8601 format.
+  timestamp: z.iso.datetime({ offset: true }), //The date and time recorded for the action in ISO 8601 format.
   is_proxy_open: z.boolean(),
 });
 
@@ -32,7 +32,7 @@ const mergeField = z.record(
   ]),
 );
 
-export const CampaignListMemberReportSchema = z.object({
+export const ReportListMemberSchema = z.object({
   campaign_id: z.string(),
   list_id: z.string(),
   list_is_active: z.boolean(),

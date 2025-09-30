@@ -18,7 +18,7 @@ import { BreadcrumbNavigation } from "@/components/layout";
 import { generateCampaignOpensMetadata } from "@/utils/mailchimp/metadata";
 import { isDev } from "@/lib/config";
 import type { CampaignOpensPageProps } from "@/types/mailchimp/campaign-opens-page-props";
-import type { ReportOpenListSuccess } from "@/types/mailchimp/report-open-list";
+import type { ReportOpenListSuccess } from "@/types/mailchimp/report-open-details";
 
 async function CampaignOpensPageContent({
   params,

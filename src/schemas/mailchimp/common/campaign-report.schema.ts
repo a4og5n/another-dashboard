@@ -59,7 +59,7 @@ export const ReportOpensSchema = z.object({
   proxy_excluded_unique_opens: z.number().min(0).optional(),
   open_rate: z.number(),
   proxy_excluded_open_rate: z.number().optional(),
-  last_open: z.string(), // ISO 8601 format
+  last_open: z.iso.datetime({ offset: true }), // ISO 8601 format
 });
 
 /**
@@ -70,7 +70,7 @@ export const ReportClicksSchema = z.object({
   unique_clicks: z.number().min(0),
   unique_subscriber_clicks: z.number().min(0),
   click_rate: z.number(),
-  last_click: z.string(), // ISO 8601 format
+  last_click: z.iso.datetime({ offset: true }), // ISO 8601 format
 });
 
 /**
@@ -117,7 +117,7 @@ export const ReportAbSplitDataSchema = z.object({
   forwards: z.number().min(0),
   forwards_opens: z.number().min(0),
   opens: z.number().min(0),
-  last_open: z.string(),
+  last_open: z.iso.datetime({ offset: true }),
   unique_opens: z.number().min(0),
 });
 
@@ -136,10 +136,10 @@ export const ReportTimewarpSchema = z.array(
   z.object({
     gmt_offset: z.number(),
     opens: z.number().min(0),
-    last_open: z.string(), // ISO 8601 format
+    last_open: z.iso.datetime({ offset: true }), // ISO 8601 format
     unique_opens: z.number().min(0),
     clicks: z.number().min(0),
-    last_click: z.string(), // ISO 8601 format
+    last_click: z.iso.datetime({ offset: true }), // ISO 8601 format
     unique_clicks: z.number().min(0),
     bounces: z.number().min(0),
   }),
@@ -150,7 +150,7 @@ export const ReportTimewarpSchema = z.array(
  */
 export const ReportTimeseriesSchema = z.array(
   z.object({
-    timestamp: z.string(), // ISO 8601 format
+    timestamp: z.iso.datetime({ offset: true }), // ISO 8601 format
     emails_sent: z.number().min(0),
     unique_opens: z.number().min(0),
     proxy_excluded_unique_opens: z.number().min(0),
@@ -202,8 +202,8 @@ export const CampaignReportSchema = z.object({
   emails_sent: z.number().min(0),
   abuse_reports: z.number().min(0),
   unsubscribed: z.number().min(0),
-  send_time: z.string(), // ISO 8601 format
-  rss_last_send: z.string().optional(), // ISO 8601 format
+  send_time: z.iso.datetime({ offset: true }), // ISO 8601 format
+  rss_last_send: z.iso.datetime({ offset: true }).optional(), // ISO 8601 format
   bounces: ReportBouncesSchema,
   forwards: ReportForwardsSchema,
   opens: ReportOpensSchema,

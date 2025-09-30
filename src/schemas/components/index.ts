@@ -4,3 +4,4 @@
  */
 
 export * from "@/schemas/components/dashboard";
+export * from "@/schemas/components/reports-page-params.schema";

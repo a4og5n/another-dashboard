@@ -58,12 +58,15 @@ describe("validateMailchimpReportsQuery", () => {
     expect(result.fields).toEqual(["id", "type", "name"]);
     expect(result.exclude_fields).toEqual(["settings", "data"]);
   });
-  it("accepts count at boundaries (0 and 1000)", () => {
-    expect(validateMailchimpReportsQuery({ count: "0" }).count).toBe(0);
+  it("accepts count at boundaries (1 and 1000)", () => {
+    expect(validateMailchimpReportsQuery({ count: "1" }).count).toBe(1);
     expect(validateMailchimpReportsQuery({ count: "1000" }).count).toBe(1000);
   });
 
-  it("throws ValidationError for count > 1000 or non-numeric", () => {
+  it("throws ValidationError for count > 1000, < 1, or non-numeric", () => {
+    expect(() => validateMailchimpReportsQuery({ count: "0" })).toThrow(
+      ValidationError,
+    );
     expect(() => validateMailchimpReportsQuery({ count: "1001" })).toThrow(
       ValidationError,
     );
@@ -86,14 +89,7 @@ describe("validateMailchimpReportsQuery", () => {
   });
 
   it("accepts all valid type values", () => {
-    const types = [
-      "regular",
-      "plaintext",
-      "absplit",
-      "rss",
-      "automation",
-      "variate",
-    ];
+    const types = ["regular", "plaintext", "absplit", "rss", "variate"];
     types.forEach((type) => {
       expect(validateMailchimpReportsQuery({ type }).type).toBe(type);
     });

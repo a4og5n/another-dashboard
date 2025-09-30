@@ -10,9 +10,9 @@
 
 import { mailchimpService } from "@/services/mailchimp.service";
 import {
-  MailchimpRootQuerySchema,
-  MailchimpRootQueryInternalSchema,
-} from "@/schemas/mailchimp/root-query.schema";
+  MailchimpRootParamsSchema,
+  MailchimpRootParamsInternalSchema,
+} from "@/schemas/mailchimp/root-params.schema";
 import { MailchimpRootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
 import { mailchimpRootErrorResponseSchema } from "@/schemas/mailchimp/root-error-response.schema";
 import type {
@@ -56,13 +56,13 @@ export async function getApiRoot(
 ): Promise<MailchimpRoot | MailchimpRootErrorResponse> {
   try {
     // Validate and parse input parameters (internal format with arrays)
-    const validatedQuery = MailchimpRootQueryInternalSchema.parse(query);
+    const validatedQuery = MailchimpRootParamsInternalSchema.parse(query);
 
     // Transform to API format (strings)
     const apiQuery = transformQueryParams(validatedQuery);
 
     // Validate API format parameters
-    const validatedApiQuery = MailchimpRootQuerySchema.parse(apiQuery);
+    const validatedApiQuery = MailchimpRootParamsSchema.parse(apiQuery);
 
     // Get API root data
     const response = await mailchimpService.getApiRoot(validatedApiQuery);

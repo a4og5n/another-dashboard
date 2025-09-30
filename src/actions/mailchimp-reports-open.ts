@@ -7,19 +7,19 @@
  * - Exports validation and error classes for use in API routes
  * - Follows established patterns from mailchimp-reports.ts
  *
- * @see src/schemas/mailchimp/report-open-list-params.schema.ts for input validation
- * @see src/types/mailchimp/report-open-list.ts for TypeScript types
+ * @see src/schemas/mailchimp/report-open-details-params.schema.ts for input validation
+ * @see src/types/mailchimp/report-open-details.ts for TypeScript types
  */
 
 import { z } from "zod";
 import {
   OpenListPathParamsSchema,
   OpenListQueryParamsSchema,
-} from "@/schemas/mailchimp/report-open-list-params.schema";
+} from "@/schemas/mailchimp/report-open-details-params.schema";
 import type {
   OpenListPathParams,
   OpenListQueryParams,
-} from "@/types/mailchimp/report-open-list";
+} from "@/types/mailchimp/report-open-details";
 import { mailchimpService } from "@/services/mailchimp.service";
 
 /**

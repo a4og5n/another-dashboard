@@ -7,8 +7,8 @@
  */
 import { z } from "zod";
 import {
-  ReportListQuerySchema,
-  ReportListQueryInternalSchema,
+  ReportListParamsSchema,
+  ReportListParamsInternalSchema,
   ReportListSuccessSchema,
   reportListErrorResponseSchema,
   CampaignReportSchema,
@@ -34,9 +34,9 @@ import {
 /**
  * Report query parameter types
  */
-export type ReportListQuery = z.infer<typeof ReportListQuerySchema>;
+export type ReportListQuery = z.infer<typeof ReportListParamsSchema>;
 export type ReportListQueryInternal = z.infer<
-  typeof ReportListQueryInternalSchema
+  typeof ReportListParamsInternalSchema
 >;
 
 /**

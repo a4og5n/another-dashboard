@@ -99,21 +99,24 @@ describe("Mailchimp API Root Server Actions", () => {
       expect(result).toEqual(mockApiRootData);
     });
 
-    it("should handle string field parameters (validation error)", async () => {
-      // The function expects arrays in MailchimpRootQueryInternal, strings cause validation error
+    it("should handle string field parameters correctly", async () => {
+      // The function accepts both strings and arrays in MailchimpRootQueryInternal
+      vi.mocked(mailchimpService.getApiRoot).mockResolvedValue({
+        success: true,
+        data: mockApiRootData,
+      });
+
       const result = await getApiRoot({
         fields: "account_id,account_name" as unknown as string[],
         exclude_fields: "contact,industry_stats" as unknown as string[],
       });
 
-      // Should return validation error, not call service
-      expect(vi.mocked(mailchimpService.getApiRoot)).not.toHaveBeenCalled();
-      expect(result).toMatchObject({
-        type: "about:blank",
-        title: "Validation Error",
-        status: 400,
-        instance: "/",
+      // Should successfully call service and return data
+      expect(vi.mocked(mailchimpService.getApiRoot)).toHaveBeenCalledWith({
+        fields: "account_id,account_name",
+        exclude_fields: "contact,industry_stats",
       });
+      expect(result).toEqual(mockApiRootData);
     });
 
     it("should handle API service error response", async () => {

@@ -22,7 +22,7 @@ import type {
 import type {
   ReportOpenListSuccess,
   OpenListQueryParams,
-} from "@/types/mailchimp/report-open-list";
+} from "@/types/mailchimp/report-open-details";
 import { ReportBouncesSchema } from "@/schemas/mailchimp/common/campaign-report.schema";
 import { z } from "zod";
 import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports";
