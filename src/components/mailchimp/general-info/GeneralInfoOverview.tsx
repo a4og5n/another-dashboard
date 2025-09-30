@@ -1,8 +1,8 @@
 /**
- * Mailchimp Account Overview Component
- * Displays account information from the API Root endpoint
+ * Mailchimp General Info Overview Component
+ * Displays general information from the API Root endpoint
  *
- * Issue #121: Account Overview UI components
+ * Issue #121: General Info Overview UI components
  * Uses data from: @/actions/mailchimp-root.ts
  * Uses types from: @/types/mailchimp/root.ts
  */
@@ -12,18 +12,21 @@ import { Badge } from "@/components/ui/badge";
 import { PricingPlanBadge } from "@/components/ui/pricing-plan-badge";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { Building2, Mail, Users, Calendar, Globe } from "lucide-react";
-import type { AccountOverviewProps } from "@/types/components";
+import type { GeneralInfoOverviewProps } from "@/types/components";
 import { formatDateLongSafe } from "@/utils";
 
-export function AccountOverview({ account, error }: AccountOverviewProps) {
+export function GeneralInfoOverview({
+  generalInfo,
+  error,
+}: GeneralInfoOverviewProps) {
   // Handle service-level errors passed from parent
   if (error) {
     return <DashboardInlineError error={error} />;
   }
 
-  // Handle prop validation - no account data provided
-  if (!account) {
-    return <DashboardInlineError error="No account data provided" />;
+  // Handle prop validation - no general info data provided
+  if (!generalInfo) {
+    return <DashboardInlineError error="No general info data provided" />;
   }
 
   return (
@@ -37,18 +40,18 @@ export function AccountOverview({ account, error }: AccountOverviewProps) {
         <CardContent>
           <div className="space-y-2">
             <div>
-              <p className="text-2xl font-bold">{account.account_name}</p>
+              <p className="text-2xl font-bold">{generalInfo.account_name}</p>
               <p className="text-xs text-muted-foreground">
-                Account ID: {account.account_id}
+                Account ID: {generalInfo.account_id}
               </p>
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="h-3 w-3 text-muted-foreground" />
-              <p className="text-sm">{account.email}</p>
+              <p className="text-sm">{generalInfo.email}</p>
             </div>
             <div className="flex items-center space-x-2">
-              <PricingPlanBadge planType={account.pricing_plan_type} />
-              {account.pro_enabled && (
+              <PricingPlanBadge planType={generalInfo.pricing_plan_type} />
+              {generalInfo.pro_enabled && (
                 <Badge variant="default" className="bg-orange-600">
                   Pro
                 </Badge>
@@ -68,15 +71,15 @@ export function AccountOverview({ account, error }: AccountOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-1">
-            <p className="font-medium">{account.contact.company}</p>
+            <p className="font-medium">{generalInfo.contact.company}</p>
             <div className="text-sm text-muted-foreground">
-              <p>{account.contact.addr1}</p>
-              {account.contact.addr2 && <p>{account.contact.addr2}</p>}
+              <p>{generalInfo.contact.addr1}</p>
+              {generalInfo.contact.addr2 && <p>{generalInfo.contact.addr2}</p>}
               <p>
-                {account.contact.city}, {account.contact.state}{" "}
-                {account.contact.zip}
+                {generalInfo.contact.city}, {generalInfo.contact.state}{" "}
+                {generalInfo.contact.zip}
               </p>
-              <p>{account.contact.country}</p>
+              <p>{generalInfo.contact.country}</p>
             </div>
           </div>
         </CardContent>
@@ -90,7 +93,7 @@ export function AccountOverview({ account, error }: AccountOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {account.total_subscribers.toLocaleString()}
+            {generalInfo.total_subscribers.toLocaleString()}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
             Total subscribers
@@ -111,22 +114,22 @@ export function AccountOverview({ account, error }: AccountOverviewProps) {
             <div className="space-y-2">
               <p className="text-sm font-medium">Member Since</p>
               <p className="text-xl font-bold">
-                {formatDateLongSafe(account.member_since)}
+                {formatDateLongSafe(generalInfo.member_since)}
               </p>
             </div>
-            {account.first_payment && (
+            {generalInfo.first_payment && (
               <div className="space-y-2">
                 <p className="text-sm font-medium">First Payment</p>
                 <p className="text-xl font-bold">
-                  {formatDateLongSafe(account.first_payment)}
+                  {formatDateLongSafe(generalInfo.first_payment)}
                 </p>
               </div>
             )}
-            {account.last_login && (
+            {generalInfo.last_login && (
               <div className="space-y-2">
                 <p className="text-sm font-medium">Last Login</p>
                 <p className="text-xl font-bold">
-                  {formatDateLongSafe(account.last_login)}
+                  {formatDateLongSafe(generalInfo.last_login)}
                 </p>
               </div>
             )}
@@ -141,7 +144,7 @@ export function AccountOverview({ account, error }: AccountOverviewProps) {
             Industry Benchmarks
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Average performance metrics for the {account.account_industry}{" "}
+            Average performance metrics for the {generalInfo.account_industry}{" "}
             industry
           </p>
         </CardHeader>
@@ -149,19 +152,19 @@ export function AccountOverview({ account, error }: AccountOverviewProps) {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center">
               <p className="text-2xl font-bold text-blue-600">
-                {(account.industry_stats.open_rate * 100).toFixed(1)}%
+                {(generalInfo.industry_stats.open_rate * 100).toFixed(1)}%
               </p>
               <p className="text-sm text-muted-foreground">Open Rate</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">
-                {(account.industry_stats.click_rate * 100).toFixed(1)}%
+                {(generalInfo.industry_stats.click_rate * 100).toFixed(1)}%
               </p>
               <p className="text-sm text-muted-foreground">Click Rate</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-orange-600">
-                {(account.industry_stats.bounce_rate * 100).toFixed(1)}%
+                {(generalInfo.industry_stats.bounce_rate * 100).toFixed(1)}%
               </p>
               <p className="text-sm text-muted-foreground">Bounce Rate</p>
             </div>
