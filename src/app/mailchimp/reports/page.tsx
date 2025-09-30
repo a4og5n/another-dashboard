@@ -9,7 +9,7 @@
 
 import { BreadcrumbNavigation } from "@/components/layout";
 import type { ReportsPageProps } from "@/types/mailchimp/reports-page-props";
-import { CAMPAIGNS_PER_PAGE_OPTIONS } from "@/schemas/mailchimp/campaign-query.schema";
+import { REPORTS_PER_PAGE_OPTIONS } from "@/schemas/components/reports-page-params.schema";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { mailchimpService } from "@/services/mailchimp.service";
 import type { MailchimpCampaignReport } from "@/types/mailchimp";
@@ -50,7 +50,7 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
   const currentPage = validationResult.success ? validationResult.data.page : 1;
   const perPage = validationResult.success
     ? validationResult.data.perPage
-    : CAMPAIGNS_PER_PAGE_OPTIONS[0];
+    : REPORTS_PER_PAGE_OPTIONS[0];
   const reportType = validationResult.success
     ? validationResult.data.type
     : undefined;
@@ -69,7 +69,7 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
         currentPage={currentPage}
         totalPages={Math.max(1, Math.ceil(totalCount / perPage))}
         perPage={perPage}
-        perPageOptions={[...CAMPAIGNS_PER_PAGE_OPTIONS]}
+        perPageOptions={[...REPORTS_PER_PAGE_OPTIONS]}
         basePath="/mailchimp/reports"
         additionalParams={{
           type: reportType,

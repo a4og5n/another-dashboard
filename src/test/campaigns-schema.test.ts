@@ -1,4 +1,4 @@
-import { CampaignsArraySchema } from "@/schemas/campaign";
+import { CampaignsArraySchema } from "@/schemas/components/dashboard/campaigns";
 
 describe("CampaignsArraySchema validation", () => {
   it("validates a correct campaigns array", () => {

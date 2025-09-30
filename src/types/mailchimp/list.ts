@@ -40,3 +40,16 @@ export interface MailchimpListsQuery {
   sort_field?: "date_created" | "member_count";
   sort_dir?: "ASC" | "DESC";
 }
+
+/**
+ * Aggregate dashboard statistics for lists overview
+ * Used for dashboard components showing totals across all lists
+ */
+export interface DashboardListStats {
+  total_audiences: number; // Total number of lists
+  total_members: number; // Total members across all lists
+  audiences_by_visibility: {
+    pub: number; // Number of public lists
+    prv: number; // Number of private lists
+  };
+}

@@ -1,4 +1,4 @@
-import type { MailchimpList } from "@/services";
+import type { MailchimpList, DashboardListStats } from "@/types/mailchimp/list";
 
 /**
  * Props for ListOverview component
@@ -11,6 +11,13 @@ export interface ListOverviewProps {
   currentPage?: number;
   pageSize?: number;
   error?: string | null;
-  loading?: boolean;
+  className?: string;
+}
+
+/**
+ * Props for ListStats component
+ */
+export interface ListStatsProps {
+  stats: DashboardListStats;
   className?: string;
 }

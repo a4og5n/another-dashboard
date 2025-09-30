@@ -24,4 +24,4 @@ export const ReportDetailQueryParamsSchema = z
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),
   })
-  .strip();
+  .strict(); // Reject unknown properties for input validation

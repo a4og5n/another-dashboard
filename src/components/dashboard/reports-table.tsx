@@ -12,7 +12,7 @@ import { TableSkeleton } from "@/skeletons";
 import { DateFilterPopover } from "@/components/ui/date-filter-popover";
 import { CampaignStatusBadge } from "@/components/ui/campaign-status-badge";
 import { Mail } from "lucide-react";
-import { CampaignsArraySchema } from "@/schemas/campaign";
+import { CampaignsArraySchema } from "@/schemas/components/dashboard/campaigns";
 import type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
 import type { ReportsTableProps } from "@/types/components/dashboard/reports-table";
 import { formatDateShort } from "@/utils";

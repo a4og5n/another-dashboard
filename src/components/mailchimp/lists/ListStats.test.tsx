@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
 import { ListStats } from "./ListStats";
-import type { AudienceStats as ListStatsType } from "@/types/mailchimp/audience";
+import type { DashboardListStats as ListStatsType } from "@/types/mailchimp/list";
 
 const mockStats: ListStatsType = {
   total_audiences: 3,

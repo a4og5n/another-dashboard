@@ -1,10 +1,9 @@
 import { z } from "zod";
 
 /**
- * MailchimpAudienceQuerySchema
+ * MailchimpListParamsSchema
  * Zod schema for Mailchimp Lists API query parameters
  *
- * Issues #95, #96: Removed unsupported query parameters to match official API
  * Based on: https://mailchimp.com/developer/marketing/api/lists/
  * Follows PRD guideline: "Always use the same object/property names as the API"
  *
@@ -14,7 +13,7 @@ import { z } from "zod";
  * - count: number of records to return (1-1000)
  * - offset: number of records to skip
  */
-export const MailchimpAudienceQuerySchema = z
+export const MailchimpListParamsSchema = z
   .object({
     // Field selection (API expects comma-separated strings)
     fields: z.string().optional(),
@@ -30,9 +29,9 @@ export const MailchimpAudienceQuerySchema = z
  * Alternative schema for actions/internal use where fields are arrays
  * Transforms string fields to arrays for service layer consumption
  */
-export const MailchimpAudienceQueryInternalSchema =
-  MailchimpAudienceQuerySchema.extend({
-    // Keep the same string type to match MailchimpAudiencesQuery interface
+export const MailchimpListParamsInternalSchema =
+  MailchimpListParamsSchema.extend({
+    // Keep the same string type to match MailchimpListsQuery interface
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),
   }).strict(); // Also reject unknown properties in internal schema

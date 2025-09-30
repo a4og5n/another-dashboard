@@ -57,13 +57,13 @@ export const MailchimpRootSuccessSchema = z.object({
   username: z.string(),
   avatar_url: z.string(),
   role: z.string(),
-  first_payment: z.string(),
+  first_payment: z.iso.datetime({ offset: true }),
   account_timezone: z.string(),
   account_industry: z.string(),
-  last_login: z.string(),
+  last_login: z.iso.datetime({ offset: true }),
 
-  // ISO 8601 date string
-  member_since: z.string(), // ISO 8601 format
+  // ISO 8601 datetime with timezone support
+  member_since: z.iso.datetime({ offset: true }), // ISO 8601 format with timezone
 
   // Enum field
   pricing_plan_type: z.enum(PRICING_PLAN_TYPES),

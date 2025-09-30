@@ -36,12 +36,12 @@ vi.mock("@/components/dashboard/shared/dashboard-error", () => ({
 }));
 
 // Import the components we want to test
-import { AudienceStats } from "@/components/mailchimp/audiences/AudienceStats";
-import { ClientAudienceList } from "@/components/mailchimp/audiences/ClientAudienceList";
-import type { MailchimpList } from "@/services";
-import type { AudienceStats as AudienceStatsType } from "@/types/mailchimp/audience";
+import { ListStats } from "@/components/mailchimp/lists/ListStats";
+import { ClientListList } from "@/components/mailchimp/lists/ClientListList";
+import type { MailchimpList } from "@/types/mailchimp/list";
+import type { DashboardListStats as ListStatsType } from "@/types/mailchimp/list";
 
-const mockAudiences: MailchimpList[] = [
+const mockLists: MailchimpList[] = [
   {
     id: "list1",
     name: "Newsletter Subscribers",
@@ -116,7 +116,7 @@ const mockAudiences: MailchimpList[] = [
   },
 ];
 
-const mockStats: AudienceStatsType = {
+const mockStats: ListStatsType = {
   total_audiences: 2,
   total_members: 2100, // 1250 + 850
   audiences_by_visibility: {
@@ -145,7 +145,7 @@ const MockAudiencePage = () => (
             <span>/</span>
           </li>
           <li className="inline-flex items-center gap-1.5">
-            <span aria-current="page">Audiences</span>
+            <span aria-current="page">Lists</span>
           </li>
         </ol>
       </nav>
@@ -153,19 +153,19 @@ const MockAudiencePage = () => (
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Audiences</h1>
+          <h1 className="text-3xl font-bold">Lists</h1>
           <p className="text-muted-foreground">
-            Manage your Mailchimp audiences and monitor their performance
+            Manage your Mailchimp lists and monitor their performance
           </p>
         </div>
       </div>
 
       {/* Statistics Overview */}
-      <AudienceStats stats={mockStats} />
+      <ListStats stats={mockStats} />
 
       {/* Main Content */}
-      <ClientAudienceList
-        audiences={mockAudiences}
+      <ClientListList
+        lists={mockLists}
         totalCount={2}
         currentPage={1}
         pageSize={20}
@@ -174,7 +174,7 @@ const MockAudiencePage = () => (
   </div>
 );
 
-describe("Audiences Page Integration", () => {
+describe("Lists Page Integration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -186,7 +186,7 @@ describe("Audiences Page Integration", () => {
       expect(screen.getByTestId("dashboard-layout")).toBeInTheDocument();
       // Check for the main heading specifically to avoid confusion with breadcrumb
       expect(
-        screen.getByRole("heading", { level: 1, name: "Audiences" }),
+        screen.getByRole("heading", { level: 1, name: "Lists" }),
       ).toBeInTheDocument();
     });
 
@@ -195,20 +195,20 @@ describe("Audiences Page Integration", () => {
 
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
       expect(screen.getByText("Mailchimp")).toBeInTheDocument();
-      // Use getAllByText to handle multiple instances of "Audiences"
-      const audienceTexts = screen.getAllByText("Audiences");
-      expect(audienceTexts.length).toBeGreaterThan(0);
+      // Use getAllByText to handle multiple instances of "Lists"
+      const listTexts = screen.getAllByText("Lists");
+      expect(listTexts.length).toBeGreaterThan(0);
     });
 
     it("displays page header", () => {
       render(<MockAudiencePage />);
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-        "Audiences",
+        "Lists",
       );
       expect(
         screen.getByText(
-          "Manage your Mailchimp audiences and monitor their performance",
+          "Manage your Mailchimp lists and monitor their performance",
         ),
       ).toBeInTheDocument();
     });
@@ -218,16 +218,16 @@ describe("Audiences Page Integration", () => {
     it("shows audience statistics overview", () => {
       render(<MockAudiencePage />);
 
-      expect(screen.getByText("Total Audiences")).toBeInTheDocument();
+      expect(screen.getByText("Total Lists")).toBeInTheDocument();
       expect(screen.getAllByText("Total Members").length).toBeGreaterThan(0);
       expect(screen.getByText("Visibility")).toBeInTheDocument();
 
       // Check calculated values - use getAllByText for the number "2" which appears multiple times
-      const totalAudiences = screen.getAllByText("2").find((el) => {
+      const totalLists = screen.getAllByText("2").find((el) => {
         const parent = el.closest('[data-slot="card-content"]');
-        return parent && parent.textContent?.includes("Total Audiences");
+        return parent && parent.textContent?.includes("Total Lists");
       });
-      expect(totalAudiences).toBeInTheDocument();
+      expect(totalLists).toBeInTheDocument();
       expect(screen.getByText("2.1K")).toBeInTheDocument(); // Total members (1250 + 850)
     });
 
@@ -294,11 +294,11 @@ describe("Audiences Page Integration", () => {
       render(<MockAudiencePage />);
 
       // Check calculated statistics - use more specific selectors
-      const totalAudiences = screen.getAllByText("2").find((el) => {
+      const totalLists = screen.getAllByText("2").find((el) => {
         const parent = el.closest('[data-slot="card-content"]');
-        return parent && parent.textContent?.includes("Total Audiences");
+        return parent && parent.textContent?.includes("Total Lists");
       });
-      expect(totalAudiences).toBeInTheDocument(); // total_audiences
+      expect(totalLists).toBeInTheDocument(); // total_lists
       expect(screen.getByText("2.1K")).toBeInTheDocument(); // total_members (1250 + 850)
     });
   });
@@ -323,12 +323,12 @@ describe("Audiences Page Integration", () => {
       // Simple sum: 1250 + 850 = 2100 -> 2.1K
       expect(screen.getByText("2.1K")).toBeInTheDocument();
 
-      // Simple count: 2 total audiences - use specific selector
-      const totalAudiences = screen.getAllByText("2").find((el) => {
+      // Simple count: 2 total lists - use specific selector
+      const totalLists = screen.getAllByText("2").find((el) => {
         const parent = el.closest('[data-slot="card-content"]');
-        return parent && parent.textContent?.includes("Total Audiences");
+        return parent && parent.textContent?.includes("Total Lists");
       });
-      expect(totalAudiences).toBeInTheDocument();
+      expect(totalLists).toBeInTheDocument();
 
       // Simple categorization: visibility card should be present
       expect(screen.getByText("Visibility")).toBeInTheDocument();
@@ -366,11 +366,11 @@ describe("Audiences Page Integration", () => {
       render(<MockAudiencePage />);
 
       // Should have all component parts working together
-      expect(screen.getByText("Total Audiences")).toBeInTheDocument(); // AudienceStats
+      expect(screen.getByText("Total Lists")).toBeInTheDocument(); // ListStats
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-        "Audiences",
+        "Lists",
       ); // Page header
-      expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument(); // AudienceCard
+      expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument(); // ListCard
     });
 
     it("maintains consistent styling across components", () => {
@@ -425,11 +425,11 @@ describe("Audiences Page Integration", () => {
 describe("Page Component Props Validation", () => {
   it("validates expected component props are handled correctly", () => {
     // Test that our mock components handle the expected props
-    const statsComponent = <AudienceStats stats={mockStats} />;
+    const statsComponent = <ListStats stats={mockStats} />;
 
     const audienceListComponent = (
-      <ClientAudienceList
-        audiences={mockAudiences}
+      <ClientListList
+        lists={mockLists}
         totalCount={2}
         currentPage={1}
         pageSize={20}

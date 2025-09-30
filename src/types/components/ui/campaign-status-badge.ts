@@ -1,23 +1,26 @@
-import { MAILCHIMP_CAMPAIGN_STATUS } from "@/schemas/mailchimp/campaign-list-response.schema";
-
 /**
- * Type definitions for CampaignStatusBadge component
+ * Campaign status types for status badge component
  */
 
 /**
- * Campaign status type that includes official Mailchimp statuses plus any string for flexibility
+ * Official Mailchimp campaign status values
+ * Based on Mailchimp API documentation
  */
 export type CampaignStatus =
-  | (typeof MAILCHIMP_CAMPAIGN_STATUS)[number]
-  | string;
+  | "sent"
+  | "sending"
+  | "schedule"
+  | "save"
+  | "paused"
+  | "draft"
+  | "canceled";
 
+/**
+ * Props for CampaignStatusBadge component
+ */
 export interface CampaignStatusBadgeProps {
-  /**
-   * Campaign status from Mailchimp API
-   */
+  /** Campaign status from Mailchimp API */
   status: string;
-  /**
-   * Additional CSS classes to apply to the badge
-   */
+  /** Optional additional CSS classes */
   className?: string;
 }

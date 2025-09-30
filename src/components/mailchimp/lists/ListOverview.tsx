@@ -18,59 +18,29 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { TableSkeleton } from "@/skeletons";
 import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import { Users, Eye, Settings } from "lucide-react";
+import { Users, Eye } from "lucide-react";
 import Link from "next/link";
 import { formatDateShort, useStaticPaginationHandlers } from "@/utils";
 import { formatNumber } from "@/utils";
-import { MailchimpListQuerySchema } from "@/schemas/mailchimp/list-query.schema";
+import { MailchimpListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
 import type { ListOverviewProps } from "@/types/components/mailchimp";
 
 export function ListOverview({
   responseData,
   currentPage = 1,
-  pageSize = MailchimpListQuerySchema.parse({}).count,
+  pageSize = MailchimpListParamsSchema.parse({}).count,
   error = null,
-  loading = false,
 }: ListOverviewProps) {
   // Hooks must be called at the top, before any early returns
   const { handlePageChange, handlePerPageChange } =
     useStaticPaginationHandlers();
 
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Users className="h-5 w-5" />
-            <span>Lists</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TableSkeleton
-            rows={pageSize}
-            columns={7}
-            data-testid="table-skeleton"
-          />
-        </CardContent>
-      </Card>
-    );
-  }
-
   // Handle service-level errors passed from parent
   if (error) {
-    return (
-      <Card>
-        <CardContent className="text-center py-8">
-          <p className="text-red-600 font-medium">Error loading lists</p>
-          <p className="text-sm text-muted-foreground mt-1">{error}</p>
-        </CardContent>
-      </Card>
-    );
+    return <DashboardInlineError error={error} />;
   }
 
   // Handle prop validation - no response data provided
@@ -120,12 +90,11 @@ export function ListOverview({
                 <TableHeader>
                   <TableRow>
                     <TableHead>List Name</TableHead>
-                    <TableHead>Members</TableHead>
+                    <TableHead className="text-right">Members</TableHead>
                     <TableHead>Visibility</TableHead>
                     <TableHead className="text-right">Open Rate</TableHead>
                     <TableHead className="text-right">Click Rate</TableHead>
                     <TableHead className="text-right">Created</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -140,11 +109,8 @@ export function ListOverview({
                           {list.name}
                         </Link>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-1">
-                          <Users className="h-3 w-3 text-muted-foreground" />
-                          <span>{formatNumber(list.stats.member_count)}</span>
-                        </div>
+                      <TableCell className="text-right">
+                        <span>{formatNumber(list.stats.member_count)}</span>
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -169,14 +135,6 @@ export function ListOverview({
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {formatDateShort(list.date_created)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button variant="outline" size="sm" asChild>
-                          <Link href={`/mailchimp/lists/${list.id}/settings`}>
-                            <Settings className="h-3 w-3 mr-1" />
-                            Manage
-                          </Link>
-                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

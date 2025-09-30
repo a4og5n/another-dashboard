@@ -8,8 +8,8 @@
 
 import { describe, it, expect } from "vitest";
 import {
-  ReportListQuerySchema,
-  ReportListQueryInternalSchema,
+  ReportListParamsSchema,
+  ReportListParamsInternalSchema,
   ReportListSuccessSchema,
   reportListErrorResponseSchema,
   CampaignReportSchema,
@@ -22,7 +22,7 @@ import {
 } from "@/schemas/mailchimp";
 
 describe("Reports Schema Tests", () => {
-  describe("ReportListQuerySchema", () => {
+  describe("ReportListParamsSchema", () => {
     it("should validate valid query parameters", () => {
       const validQuery = {
         fields: "campaign_title,type,emails_sent",
@@ -34,7 +34,7 @@ describe("Reports Schema Tests", () => {
         since_send_time: "2023-01-01T00:00:00Z",
       };
 
-      const result = ReportListQuerySchema.safeParse(validQuery);
+      const result = ReportListParamsSchema.safeParse(validQuery);
       expect(result.success).toBe(true);
       if (result.success && result.data) {
         expect(result.data.count).toBe(20);
@@ -45,7 +45,7 @@ describe("Reports Schema Tests", () => {
     it("should handle minimal query parameters", () => {
       const minimalQuery = {};
 
-      const result = ReportListQuerySchema.safeParse(minimalQuery);
+      const result = ReportListParamsSchema.safeParse(minimalQuery);
       expect(result.success).toBe(true);
     });
 
@@ -54,7 +54,7 @@ describe("Reports Schema Tests", () => {
 
       validTypes.forEach((type) => {
         const query = { type };
-        const result = ReportListQuerySchema.safeParse(query);
+        const result = ReportListParamsSchema.safeParse(query);
         expect(result.success).toBe(true);
       });
     });
@@ -62,27 +62,29 @@ describe("Reports Schema Tests", () => {
     it("should reject invalid campaign types", () => {
       const invalidQuery = { type: "invalid_type" };
 
-      const result = ReportListQuerySchema.safeParse(invalidQuery);
+      const result = ReportListParamsSchema.safeParse(invalidQuery);
       expect(result.success).toBe(false);
     });
 
     it("should validate count boundaries", () => {
       // Valid count
-      expect(ReportListQuerySchema.safeParse({ count: 50 }).success).toBe(true);
+      expect(ReportListParamsSchema.safeParse({ count: 50 }).success).toBe(
+        true,
+      );
 
       // Invalid count (too high)
-      expect(ReportListQuerySchema.safeParse({ count: 1001 }).success).toBe(
+      expect(ReportListParamsSchema.safeParse({ count: 1001 }).success).toBe(
         false,
       );
 
       // Invalid count (negative)
-      expect(ReportListQuerySchema.safeParse({ count: -1 }).success).toBe(
+      expect(ReportListParamsSchema.safeParse({ count: -1 }).success).toBe(
         false,
       );
     });
   });
 
-  describe("ReportListQueryInternalSchema", () => {
+  describe("ReportListParamsInternalSchema", () => {
     it("should include additional internal fields", () => {
       const internalQuery = {
         fields: ["campaign_title", "type"],
@@ -92,7 +94,7 @@ describe("Reports Schema Tests", () => {
         type: "regular" as const,
       };
 
-      const result = ReportListQueryInternalSchema.safeParse(internalQuery);
+      const result = ReportListParamsInternalSchema.safeParse(internalQuery);
       expect(result.success).toBe(true);
       if (result.success && result.data) {
         expect(result.data.count).toBe(25);

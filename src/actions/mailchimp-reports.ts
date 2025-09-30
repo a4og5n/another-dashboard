@@ -3,7 +3,7 @@
  * Simplified to use SDK directly for MVP approach
  */
 
-import { mailchimpReportsQuerySchema } from "@/schemas/mailchimp-reports";
+import { ReportListParamsSchema } from "@/schemas/mailchimp/reports-params.schema";
 import { MailchimpReportsQuery } from "@/types/mailchimp-reports";
 
 /**
@@ -40,7 +40,7 @@ export class ValidationError extends Error {
 export function validateMailchimpReportsQuery(
   params: unknown,
 ): MailchimpReportsQuery {
-  const result = mailchimpReportsQuerySchema.safeParse(params);
+  const result = ReportListParamsSchema.safeParse(params);
   if (!result.success) {
     throw new ValidationError(
       "Invalid Mailchimp reports query parameters",
@@ -50,6 +50,10 @@ export function validateMailchimpReportsQuery(
 
   // Transform fields and exclude_fields from string to arrays
   const data = result.data;
+
+  if (!data) {
+    throw new ValidationError("Validation succeeded but data is undefined");
+  }
 
   // Create a new object with the transformed data
   const transformedData: MailchimpReportsQuery = {
