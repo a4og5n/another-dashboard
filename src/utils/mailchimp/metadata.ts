@@ -8,7 +8,7 @@
 
 import { mailchimpService } from "@/services/mailchimp.service";
 import { Metadata } from "next";
-import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import type { CampaignReport } from "@/types/mailchimp";
 
 /**
  * Generates metadata for campaign-related pages based on campaign ID
@@ -36,7 +36,7 @@ export async function generateCampaignMetadata({
     };
   }
 
-  const report = response.data as MailchimpCampaignReport;
+  const report = response.data as CampaignReport;
 
   // Create metadata based on page type
   switch (pageType) {
@@ -118,7 +118,7 @@ export async function generateCampaignOpensMetadata({
     };
   }
 
-  const report = response.data as MailchimpCampaignReport;
+  const report = response.data as CampaignReport;
 
   return {
     title: `${report.campaign_title} - Opens`,

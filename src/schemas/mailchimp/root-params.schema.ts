@@ -12,7 +12,7 @@ import { z } from "zod";
  * - fields: comma-separated list of fields to return, supports dot notation for sub-objects
  * - exclude_fields: comma-separated list of fields to exclude, supports dot notation for sub-objects
  */
-export const MailchimpRootParamsSchema = z
+export const RootParamsSchema = z
   .object({
     // Field selection (API expects comma-separated strings)
     fields: z.string().optional(),
@@ -24,8 +24,7 @@ export const MailchimpRootParamsSchema = z
  * Alternative schema for actions/internal use where fields are arrays
  * Transforms string fields to arrays for service layer consumption
  */
-export const MailchimpRootParamsInternalSchema =
-  MailchimpRootParamsSchema.extend({
-    fields: z.union([z.string(), z.array(z.string())]).optional(),
-    exclude_fields: z.union([z.string(), z.array(z.string())]).optional(),
-  }).strict(); // Also reject unknown properties in internal schema
+export const RootParamsInternalSchema = RootParamsSchema.extend({
+  fields: z.union([z.string(), z.array(z.string())]).optional(),
+  exclude_fields: z.union([z.string(), z.array(z.string())]).optional(),
+}).strict(); // Also reject unknown properties in internal schema

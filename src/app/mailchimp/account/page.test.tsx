@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { renderWithA11y } from "@/test/axe-helper";
 import { AccountOverview } from "@/components/mailchimp/account";
-import type { MailchimpRoot } from "@/types/mailchimp";
+import type { Root } from "@/types/mailchimp";
 
 // Mock DashboardLayout component
 vi.mock("@/components/layout/dashboard-layout", () => ({
@@ -20,7 +20,7 @@ vi.mock("@/components/layout/dashboard-layout", () => ({
 
 // Component test data
 
-const mockAccountData: MailchimpRoot = {
+const mockAccountData: Root = {
   account_id: "test-account-123",
   login_id: "user123",
   account_name: "Test Company",

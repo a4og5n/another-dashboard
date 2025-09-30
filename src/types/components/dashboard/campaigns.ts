@@ -2,7 +2,7 @@
  * Types for Mailchimp dashboard components
  */
 
-export interface MailchimpDashboardCampaign {
+export interface DashboardCampaign {
   id: string;
   title: string;
   status: string;

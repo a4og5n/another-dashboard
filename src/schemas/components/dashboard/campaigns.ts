@@ -4,7 +4,7 @@ import { z } from "zod";
  * Schema for dashboard campaign data
  * Simplified version for dashboard display components
  */
-export const MailchimpDashboardCampaignSchema = z.object({
+export const DashboardCampaignSchema = z.object({
   id: z.string(),
   title: z.string(),
   status: z.string(),
@@ -16,4 +16,4 @@ export const MailchimpDashboardCampaignSchema = z.object({
  * Schema for array of dashboard campaigns
  * Used by reports table and other dashboard components
  */
-export const CampaignsArraySchema = z.array(MailchimpDashboardCampaignSchema);
+export const CampaignsArraySchema = z.array(DashboardCampaignSchema);

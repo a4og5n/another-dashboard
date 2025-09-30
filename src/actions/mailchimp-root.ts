@@ -10,25 +10,23 @@
 
 import { mailchimpService } from "@/services/mailchimp.service";
 import {
-  MailchimpRootParamsSchema,
-  MailchimpRootParamsInternalSchema,
+  RootParamsSchema,
+  RootParamsInternalSchema,
 } from "@/schemas/mailchimp/root-params.schema";
-import { MailchimpRootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
-import { mailchimpRootErrorResponseSchema } from "@/schemas/mailchimp/root-error-response.schema";
+import { RootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
+import { rootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
 import type {
-  MailchimpRoot,
-  MailchimpRootQuery,
-  MailchimpRootQueryInternal,
-  MailchimpRootErrorResponse,
+  Root,
+  RootQuery,
+  RootQueryInternal,
+  RootErrorResponse,
 } from "@/types/mailchimp";
 
 /**
  * Transform array-based query parameters to comma-separated strings for API
  */
-function transformQueryParams(
-  params: MailchimpRootQueryInternal,
-): MailchimpRootQuery {
-  const result: MailchimpRootQuery = {};
+function transformQueryParams(params: RootQueryInternal): RootQuery {
+  const result: RootQuery = {};
 
   if (params.fields) {
     result.fields = Array.isArray(params.fields)
@@ -49,31 +47,31 @@ function transformQueryParams(
  * Fetch Mailchimp API Root data with field selection
  *
  * @param query - Query parameters for field selection
- * @returns Promise<MailchimpRoot | MailchimpRootErrorResponse>
+ * @returns Promise<Root | RootErrorResponse>
  */
 export async function getApiRoot(
-  query: MailchimpRootQueryInternal = {},
-): Promise<MailchimpRoot | MailchimpRootErrorResponse> {
+  query: RootQueryInternal = {},
+): Promise<Root | RootErrorResponse> {
   try {
     // Validate and parse input parameters (internal format with arrays)
-    const validatedQuery = MailchimpRootParamsInternalSchema.parse(query);
+    const validatedQuery = RootParamsInternalSchema.parse(query);
 
     // Transform to API format (strings)
     const apiQuery = transformQueryParams(validatedQuery);
 
     // Validate API format parameters
-    const validatedApiQuery = MailchimpRootParamsSchema.parse(apiQuery);
+    const validatedApiQuery = RootParamsSchema.parse(apiQuery);
 
     // Get API root data
     const response = await mailchimpService.getApiRoot(validatedApiQuery);
 
     if (response.success && response.data) {
       // Parse and validate successful response
-      const validatedData = MailchimpRootSuccessSchema.parse(response.data);
+      const validatedData = RootSuccessSchema.parse(response.data);
       return validatedData;
     } else {
       // Handle API error response
-      const errorResponse: MailchimpRootErrorResponse = {
+      const errorResponse: RootErrorResponse = {
         type: "about:blank",
         title: "API Root Error",
         detail: response.error || "Failed to fetch API root data",
@@ -82,13 +80,13 @@ export async function getApiRoot(
       };
 
       // Validate error response structure
-      return mailchimpRootErrorResponseSchema.parse(errorResponse);
+      return rootErrorSchema.parse(errorResponse);
     }
   } catch (error) {
     console.error("Mailchimp API Root error:", error);
 
     // Return structured error response
-    const errorResponse: MailchimpRootErrorResponse = {
+    const errorResponse: RootErrorResponse = {
       type: "about:blank",
       title: "Validation Error",
       detail: error instanceof Error ? error.message : "Unknown error occurred",
@@ -96,7 +94,7 @@ export async function getApiRoot(
       instance: "/",
     };
 
-    return mailchimpRootErrorResponseSchema.parse(errorResponse);
+    return rootErrorSchema.parse(errorResponse);
   }
 }
 

@@ -6,25 +6,23 @@
  * All types now properly inferred from corresponding schemas
  */
 import { z } from "zod";
-import { mailchimpErrorResponseSchema } from "@/schemas/mailchimp/common/error-response.schema";
+import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
 import {
-  MailchimpLinkSchema,
+  LinkSchema,
   HTTP_METHODS,
 } from "@/schemas/mailchimp/common/link.schema";
 
 /**
  * Mailchimp Error Response Type
- * Inferred from error response schema - includes all 5 fields
+ * Inferred from error schema - includes all 5 fields
  */
-export type MailchimpErrorResponse = z.infer<
-  typeof mailchimpErrorResponseSchema
->;
+export type ErrorResponse = z.infer<typeof errorSchema>;
 
 /**
  * Mailchimp Link Type
  * Inferred from common link schema
  */
-export type MailchimpLink = z.infer<typeof MailchimpLinkSchema>;
+export type Link = z.infer<typeof LinkSchema>;
 
 /**
  * HTTP Method Type

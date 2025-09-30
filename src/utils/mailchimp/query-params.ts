@@ -6,9 +6,9 @@
  */
 
 import { z } from "zod";
-import { MailchimpListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
+import { ListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
 import { ReportsPageParamsSchema } from "@/schemas/components/reports-page-params.schema";
-import { REPORT_TYPES } from "@/schemas/mailchimp/reports-params.schema";
+import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports-params.schema";
 import type { ReportsPageSearchParams } from "@/types/mailchimp";
 /**
  * Transforms page-based pagination parameters to Mailchimp API offset-based format
@@ -82,9 +82,7 @@ export const validDate = (val: string): boolean => {
  * // result.fields = ["id", "name", "stats.member_count"]
  * ```
  */
-export function transformQueryParams(
-  params: z.infer<typeof MailchimpListParamsSchema>,
-) {
+export function transformQueryParams(params: z.infer<typeof ListParamsSchema>) {
   // Return params as is - don't convert to arrays to match type expectations
   return params;
 }
@@ -144,8 +142,10 @@ export function transformCampaignReportsParams(
   return {
     ...transformPaginationParams(params.page, params.perPage),
     ...(params.type &&
-      REPORT_TYPES.includes(params.type as (typeof REPORT_TYPES)[number]) && {
-        type: params.type as (typeof REPORT_TYPES)[number],
+      REPORT_QUERY_TYPES.includes(
+        params.type as (typeof REPORT_QUERY_TYPES)[number],
+      ) && {
+        type: params.type as (typeof REPORT_QUERY_TYPES)[number],
       }),
     ...(params.before_send_time && {
       before_send_time: params.before_send_time,

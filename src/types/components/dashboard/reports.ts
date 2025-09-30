@@ -5,7 +5,7 @@
  * Following project guidelines to define shared types in /src/types
  */
 
-import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import type { CampaignReport } from "@/types/mailchimp";
 import type { LucideIcon } from "lucide-react";
 import type {
   ReportDeliveryStatus,
@@ -23,7 +23,7 @@ import type {
   ReportOpenListSuccess,
   OpenListQueryParams,
 } from "@/types/mailchimp/report-open-details";
-import { ReportBouncesSchema } from "@/schemas/mailchimp/common/campaign-report.schema";
+import { ReportBouncesSchema } from "@/schemas/mailchimp/common/report.schema";
 import { z } from "zod";
 import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports";
 
@@ -32,7 +32,7 @@ import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports"
  */
 export interface CampaignReportDetailProps {
   /** The campaign report data to display */
-  report: MailchimpCampaignReport;
+  report: CampaignReport;
 }
 
 /**
@@ -40,7 +40,7 @@ export interface CampaignReportDetailProps {
  */
 export interface ReportHeaderProps {
   /** The campaign report data to display in the header */
-  report: MailchimpCampaignReport;
+  report: CampaignReport;
 }
 
 /**
@@ -48,7 +48,7 @@ export interface ReportHeaderProps {
  */
 export interface ReportMetricsProps {
   /** The campaign report data to display metrics for */
-  report: MailchimpCampaignReport;
+  report: CampaignReport;
 }
 
 /**
@@ -56,7 +56,7 @@ export interface ReportMetricsProps {
  */
 export interface ReportChartsProps {
   /** The campaign report data to visualize in charts */
-  report: MailchimpCampaignReport;
+  report: CampaignReport;
 }
 
 /**

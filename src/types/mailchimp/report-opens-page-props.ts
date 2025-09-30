@@ -1,8 +1,8 @@
 /**
- * Mailchimp Campaign Opens Page Props Types
- * TypeScript type definitions for campaign opens page component props
+ * Mailchimp Report Opens Page Props Types
+ * TypeScript type definitions for report opens page component props
  *
- * Issue #135: Campaign opens list page props types
+ * Issue #135: Report opens list page props types
  * Follows PRD guideline: "Define shared types in /src/types (no inline definitions)"
  */
 
@@ -12,9 +12,9 @@ import type {
 } from "@/types/mailchimp";
 
 /**
- * Props interface for Campaign Opens Page component
+ * Props interface for Report Opens Page component
  */
-export interface CampaignOpensPageProps {
+export interface ReportOpensPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{
     fields?: string;
@@ -28,9 +28,9 @@ export interface CampaignOpensPageProps {
 }
 
 /**
- * Props interface for Campaign Opens Table component
+ * Props interface for Report Opens Table component
  */
-export interface CampaignOpensTableProps {
+export interface ReportOpensTableProps {
   opensData: ReportOpenListSuccess;
   currentParams: OpenListQueryParams & { count: number; offset: number };
   perPageOptions?: number[];

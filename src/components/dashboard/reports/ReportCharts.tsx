@@ -21,14 +21,14 @@ import {
   Bar,
 } from "recharts";
 import { TrendingUp, Clock } from "lucide-react";
-import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import type { CampaignReport } from "@/types/mailchimp";
 import type {
   ReportTimeseries,
   ReportTimewarp,
 } from "@/types/mailchimp/reports";
 
 interface ReportChartsProps {
-  report: MailchimpCampaignReport;
+  report: CampaignReport;
 }
 
 // Helper functions moved to when they're needed

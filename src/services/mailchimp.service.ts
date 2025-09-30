@@ -12,26 +12,26 @@ import type { ApiResponse } from "@/types/api-errors";
 import { transformCampaignReportsParams } from "@/utils/mailchimp/query-params";
 import { transformPaginationParams } from "@/utils/mailchimp/query-params";
 import type {
-  CampaignReport,
+  Report,
   ReportListSuccess,
-  ReportDetailSuccess,
+  ReportSuccess,
 } from "@/types/mailchimp";
 import type {
   ListsPageSearchParams,
   ReportsPageSearchParams,
-  MailchimpRoot,
-  MailchimpRootQuery,
-  MailchimpListResponse,
+  Root,
+  RootQuery,
+  ListsSuccess,
 } from "@/types/mailchimp";
 import {
-  MailchimpListParamsSchema,
+  ListParamsSchema,
   ReportListParamsInternalSchema,
   OpenListQueryParamsSchema,
-  MailchimpRootParamsSchema,
+  RootParamsSchema,
 } from "@/schemas/mailchimp";
 
-// Re-export the campaign report type for external use
-export type { CampaignReport as MailchimpCampaignReport };
+// Re-export the report type for external use
+export type { Report as CampaignReport };
 
 // Using types from @/types/mailchimp instead of inline definitions
 
@@ -42,7 +42,7 @@ export class MailchimpService {
 
   async getLists(
     params: ListsPageSearchParams,
-  ): Promise<ApiResponse<MailchimpListResponse>> {
+  ): Promise<ApiResponse<ListsSuccess>> {
     // Transform page params to Mailchimp API format, let schema handle defaults
     const transformedParams = transformPaginationParams(
       params.page,
@@ -50,8 +50,7 @@ export class MailchimpService {
     );
 
     // Validate transformed parameters using schema (applies defaults)
-    const validationResult =
-      MailchimpListParamsSchema.safeParse(transformedParams);
+    const validationResult = ListParamsSchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,
@@ -105,7 +104,7 @@ export class MailchimpService {
 
   async getCampaignReport(
     campaignId: string,
-  ): Promise<ApiResponse<ReportDetailSuccess>> {
+  ): Promise<ApiResponse<ReportSuccess>> {
     return mailchimpCall(() =>
       (mailchimp as any).reports.getCampaignReport(campaignId),
     );
@@ -140,12 +139,10 @@ export class MailchimpService {
   /**
    * System Operations
    */
-  async getApiRoot(
-    params?: MailchimpRootQuery,
-  ): Promise<ApiResponse<MailchimpRoot>> {
+  async getApiRoot(params?: RootQuery): Promise<ApiResponse<Root>> {
     // Validate parameters if provided
     if (params !== undefined) {
-      const validationResult = MailchimpRootParamsSchema.safeParse(params);
+      const validationResult = RootParamsSchema.safeParse(params);
       if (!validationResult.success) {
         return {
           success: false,

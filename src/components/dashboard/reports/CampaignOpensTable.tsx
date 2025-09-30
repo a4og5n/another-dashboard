@@ -39,14 +39,14 @@ import {
   ArrowDown,
 } from "lucide-react";
 import type { ReportOpenListMember } from "@/types/mailchimp/report-open-details";
-import type { CampaignOpensTableProps } from "@/types/mailchimp/campaign-opens-page-props";
+import type { ReportOpensTableProps } from "@/types/mailchimp/report-opens-page-props";
 
 export function CampaignOpensTable({
   opensData,
   currentParams,
   perPageOptions = [10, 20, 50],
   baseUrl,
-}: CampaignOpensTableProps) {
+}: ReportOpensTableProps) {
   const { members, total_items, total_opens, total_proxy_excluded_opens } =
     opensData;
   const { count, offset, sort_field, sort_dir } = currentParams;

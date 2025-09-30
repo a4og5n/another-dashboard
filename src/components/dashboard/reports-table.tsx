@@ -13,7 +13,7 @@ import { DateFilterPopover } from "@/components/ui/date-filter-popover";
 import { CampaignStatusBadge } from "@/components/ui/campaign-status-badge";
 import { Mail } from "lucide-react";
 import { CampaignsArraySchema } from "@/schemas/components/dashboard/campaigns";
-import type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
+import type { DashboardCampaign } from "@/types/components/dashboard/campaigns";
 import type { ReportsTableProps } from "@/types/components/dashboard/reports-table";
 import { formatDateShort } from "@/utils";
 
@@ -31,7 +31,7 @@ export function ReportsTable({
    *
    * Validation is performed using centralized Zod schemas for strict type safety.
    */
-  let safeCampaigns: MailchimpDashboardCampaign[] = [];
+  let safeCampaigns: DashboardCampaign[] = [];
   try {
     safeCampaigns = CampaignsArraySchema.parse(campaigns);
   } catch {

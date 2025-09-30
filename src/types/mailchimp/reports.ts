@@ -10,8 +10,8 @@ import {
   ReportListParamsSchema,
   ReportListParamsInternalSchema,
   ReportListSuccessSchema,
-  reportListErrorResponseSchema,
-  CampaignReportSchema,
+  reportListErrorSchema,
+  ReportSchema,
   ReportBouncesSchema,
   ReportForwardsSchema,
   ReportOpensSchema,
@@ -27,7 +27,6 @@ import {
   ReportEcommerceSchema,
   ReportDeliveryStatusSchema,
   REPORT_TYPES,
-  CAMPAIGN_REPORT_TYPES,
   DELIVERY_STATUS_TYPES,
 } from "@/schemas/mailchimp";
 
@@ -43,14 +42,12 @@ export type ReportListQueryInternal = z.infer<
  * Report response types
  */
 export type ReportListSuccess = z.infer<typeof ReportListSuccessSchema>;
-export type ReportListErrorResponse = z.infer<
-  typeof reportListErrorResponseSchema
->;
+export type ReportListErrorResponse = z.infer<typeof reportListErrorSchema>;
 
 /**
- * Individual campaign report type
+ * Individual report type
  */
-export type CampaignReport = z.infer<typeof CampaignReportSchema>;
+export type Report = z.infer<typeof ReportSchema>;
 
 /**
  * Report data structure types
@@ -86,14 +83,13 @@ export type ReportDeliveryStatus = z.infer<typeof ReportDeliveryStatusSchema>;
  * Enum types
  */
 export type ReportType = (typeof REPORT_TYPES)[number];
-export type CampaignReportType = (typeof CAMPAIGN_REPORT_TYPES)[number];
 export type DeliveryStatusType = (typeof DELIVERY_STATUS_TYPES)[number];
 
 /**
  * Component prop types
  */
 export interface ReportsOverviewProps {
-  reports: CampaignReport[];
+  reports: Report[];
   loading?: boolean;
   error?: string | null;
   currentPage: number;

@@ -38,10 +38,10 @@ vi.mock("@/components/dashboard/shared/dashboard-error", () => ({
 // Import the components we want to test
 import { ListStats } from "@/components/mailchimp/lists/ListStats";
 import { ClientListList } from "@/components/mailchimp/lists/ClientListList";
-import type { MailchimpList } from "@/types/mailchimp/list";
+import type { List } from "@/types/mailchimp/list";
 import type { DashboardListStats as ListStatsType } from "@/types/mailchimp/list";
 
-const mockLists: MailchimpList[] = [
+const mockLists: List[] = [
   {
     id: "list1",
     name: "Newsletter Subscribers",

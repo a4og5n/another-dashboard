@@ -16,9 +16,11 @@ export const SORT_DIRECTIONS = ["ASC", "DESC"] as const;
 /**
  * Schema for path parameters (campaign_id)
  */
-export const OpenListPathParamsSchema = z.object({
-  campaign_id: z.string().min(1),
-});
+export const OpenListPathParamsSchema = z
+  .object({
+    campaign_id: z.string().min(1),
+  })
+  .strict();
 
 /**
  * Schema for query parameters (pagination and field filtering)

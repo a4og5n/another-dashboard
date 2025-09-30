@@ -9,30 +9,26 @@ import type { z } from "zod";
 import type {
   RootContactSchema,
   RootIndustryStatsSchema,
-  MailchimpRootSuccessSchema,
+  RootSuccessSchema,
 } from "@/schemas/mailchimp/root-success.schema";
-import type { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
+import type { LinkSchema } from "@/schemas/mailchimp/common/link.schema";
 import type {
-  MailchimpRootParamsSchema,
-  MailchimpRootParamsInternalSchema,
+  RootParamsSchema,
+  RootParamsInternalSchema,
 } from "@/schemas/mailchimp/root-params.schema";
-import type { mailchimpRootErrorResponseSchema } from "@/schemas/mailchimp/root-error-response.schema";
+import type { rootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
 
 // Nested object types
 export type RootContact = z.infer<typeof RootContactSchema>;
 export type RootIndustryStats = z.infer<typeof RootIndustryStatsSchema>;
-export type RootLink = z.infer<typeof MailchimpLinkSchema>;
+export type RootLink = z.infer<typeof LinkSchema>;
 
 // Main API response type
-export type MailchimpRoot = z.infer<typeof MailchimpRootSuccessSchema>;
+export type Root = z.infer<typeof RootSuccessSchema>;
 
 // Query parameter types
-export type MailchimpRootQuery = z.infer<typeof MailchimpRootParamsSchema>;
-export type MailchimpRootQueryInternal = z.infer<
-  typeof MailchimpRootParamsInternalSchema
->;
+export type RootQuery = z.infer<typeof RootParamsSchema>;
+export type RootQueryInternal = z.infer<typeof RootParamsInternalSchema>;
 
 // Error response type
-export type MailchimpRootErrorResponse = z.infer<
-  typeof mailchimpRootErrorResponseSchema
->;
+export type RootErrorResponse = z.infer<typeof rootErrorSchema>;

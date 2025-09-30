@@ -7,10 +7,10 @@
  * Documentation: https://mailchimp.com/developer/marketing/api/open-reports/list-campaign-open-details/
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
-import { mailchimpErrorResponseSchema } from "@/schemas/mailchimp/common/error-response.schema";
+import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
 
 /**
  * Campaign report open list error response schema
  * Extends the common error response schema
  */
-export const OpenListErrorSchema = mailchimpErrorResponseSchema;
+export const OpenListErrorSchema = errorSchema;

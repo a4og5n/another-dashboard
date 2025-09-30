@@ -10,7 +10,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
-import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import type { CampaignReport } from "@/types/mailchimp";
 
 // Mock Next.js router
 vi.mock("next/navigation", () => ({
@@ -44,7 +44,7 @@ vi.mock("next/link", () => ({
 }));
 
 describe("ReportsOverview Component", () => {
-  const mockReports: MailchimpCampaignReport[] = [
+  const mockReports: CampaignReport[] = [
     {
       id: "campaign123",
       campaign_title: "Newsletter Campaign",
