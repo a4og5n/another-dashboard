@@ -10,9 +10,9 @@
 import { z } from "zod";
 
 /**
- * Report type enum values
+ * Report type enum values for query filtering
  */
-export const REPORT_TYPES = [
+export const REPORT_QUERY_TYPES = [
   "regular",
   "plaintext",
   "absplit",
@@ -29,7 +29,7 @@ export const ReportListParamsSchema = z
     exclude_fields: z.string().optional(),
     count: z.coerce.number().min(1).max(1000).default(10).optional(),
     offset: z.coerce.number().min(0).default(0).optional(),
-    type: z.enum(REPORT_TYPES).optional(),
+    type: z.enum(REPORT_QUERY_TYPES).optional(),
     before_send_time: z.iso.datetime({ offset: true }).optional(), // ISO 8601 format
     since_send_time: z.iso.datetime({ offset: true }).optional(), // ISO 8601 format
     folder_id: z.string().optional(),
@@ -38,6 +38,7 @@ export const ReportListParamsSchema = z
     sort_field: z.string().optional(),
     sort_dir: z.enum(["ASC", "DESC"]).optional(),
   })
+  .strict()
   .optional();
 
 /**
@@ -51,7 +52,7 @@ export const ReportListParamsInternalSchema = z
     exclude_fields: z.union([z.string(), z.array(z.string())]).optional(),
     count: z.coerce.number().min(1).max(1000).default(10).optional(),
     offset: z.coerce.number().min(0).default(0).optional(),
-    type: z.enum(REPORT_TYPES).optional(),
+    type: z.enum(REPORT_QUERY_TYPES).optional(),
     before_send_time: z.iso.datetime({ offset: true }).optional(),
     since_send_time: z.iso.datetime({ offset: true }).optional(),
     folder_id: z.string().optional(),
@@ -60,4 +61,5 @@ export const ReportListParamsInternalSchema = z
     sort_field: z.string().optional(),
     sort_dir: z.enum(["ASC", "DESC"]).optional(),
   })
+  .strict()
   .optional();

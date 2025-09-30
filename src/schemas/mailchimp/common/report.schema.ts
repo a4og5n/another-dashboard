@@ -1,18 +1,18 @@
 /**
- * Common Mailchimp Campaign Report Schema
+ * Common Mailchimp Report Schema
  * Extracted from report-list-success.schema.ts for reuse across detail and list endpoints
  *
- * Issue #135: Campaign report foundation schema extraction
+ * Issue #135: Report foundation schema extraction
  * Documentation: https://mailchimp.com/developer/marketing/api/reports/
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
-import { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
+import { LinkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
- * Campaign report type enum values
+ * Report type enum values
  */
-export const CAMPAIGN_REPORT_TYPES = [
+export const REPORT_TYPES = [
   "regular",
   "plain-text",
   "ab_split",
@@ -188,12 +188,12 @@ export const ReportDeliveryStatusSchema = z.object({
 });
 
 /**
- * Schema for individual campaign report (reusable across endpoints)
+ * Schema for individual report (reusable across endpoints)
  */
-export const CampaignReportSchema = z.object({
+export const ReportSchema = z.object({
   id: z.string(),
   campaign_title: z.string(),
-  type: z.enum(CAMPAIGN_REPORT_TYPES),
+  type: z.enum(REPORT_TYPES),
   list_id: z.string(),
   list_is_active: z.boolean(),
   list_name: z.string(),
@@ -217,5 +217,5 @@ export const CampaignReportSchema = z.object({
   share_report: ReportShareReportSchema,
   ecommerce: ReportEcommerceSchema,
   delivery_status: ReportDeliveryStatusSchema,
-  _links: z.array(MailchimpLinkSchema).optional(),
+  _links: z.array(LinkSchema).optional(),
 });

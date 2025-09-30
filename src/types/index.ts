@@ -15,14 +15,7 @@ export * from "@/types/api-errors";
 export * from "@/types/auth";
 
 // Campaign types
-export * from "@/types/campaign-filters";
 export * from "@/types/mailchimp-reports";
-
-// Mailchimp dashboard component types
-export type { MailchimpDashboardCampaign } from "@/types/mailchimp-dashboard";
 
 // All other Mailchimp specific types
 export * from "@/types/mailchimp";
-
-// Service types
-export * from "@/types/services";

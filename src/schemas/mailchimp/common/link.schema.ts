@@ -26,7 +26,7 @@ export const HTTP_METHODS = [
  * Schema for API links (_links array items)
  * Common structure used across all Mailchimp API endpoints
  */
-export const MailchimpLinkSchema = z.object({
+export const LinkSchema = z.object({
   rel: z.string(),
   href: z.string(),
   targetSchema: z.string().optional(),

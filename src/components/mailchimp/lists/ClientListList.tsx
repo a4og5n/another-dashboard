@@ -2,10 +2,10 @@
 
 import { ListList } from "@/components/mailchimp/lists/ListList";
 import { useStaticPaginationHandlers } from "@/utils/pagination";
-import type { MailchimpList } from "@/services";
+import type { List } from "@/services";
 
 interface ClientListListProps {
-  lists: MailchimpList[];
+  lists: List[];
   totalCount: number;
   currentPage: number;
   pageSize: number;

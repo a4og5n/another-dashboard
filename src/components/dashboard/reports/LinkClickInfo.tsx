@@ -5,10 +5,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MousePointer, TrendingUp } from "lucide-react";
-import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import type { CampaignReport } from "@/types/mailchimp";
 
 interface LinkClickInfoProps {
-  report: MailchimpCampaignReport;
+  report: CampaignReport;
 }
 
 export function LinkClickInfo({ report }: LinkClickInfoProps) {

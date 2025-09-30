@@ -10,7 +10,7 @@
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
-import { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
+import { LinkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
  * Schema for account contact information
@@ -46,7 +46,7 @@ export const PRICING_PLAN_TYPES = [
 /**
  * Main API Root response schema
  */
-export const MailchimpRootSuccessSchema = z.object({
+export const RootSuccessSchema = z.object({
   // String fields
   account_id: z.string(),
   login_id: z.string(),
@@ -77,5 +77,5 @@ export const MailchimpRootSuccessSchema = z.object({
   // Object fields
   contact: RootContactSchema,
   industry_stats: RootIndustryStatsSchema,
-  _links: z.array(MailchimpLinkSchema),
+  _links: z.array(LinkSchema),
 });

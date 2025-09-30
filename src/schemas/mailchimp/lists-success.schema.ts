@@ -1,9 +1,10 @@
 /**
- * Mailchimp List Schema
- * Schema for the Mailchimp API lists/audiences endpoint
+ * Mailchimp Lists Success Response Schema
+ * Schema for successful responses from the Mailchimp API lists endpoint
  *
- * Based on Mailchimp API documentation and existing implementation
- * https://mailchimp.com/developer/marketing/api/lists/get-list-info/
+ * Endpoint: GET /lists
+ * Documentation: https://mailchimp.com/developer/marketing/api/lists/get-list-info/
+ * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
 
@@ -62,8 +63,7 @@ export const ListStatsSchema = z.object({
 /**
  * Main list schema
  */
-export const MailchimpListSchema = z.object({
-  // Core documented fields
+export const ListSchema = z.object({
   id: z.string(),
   name: z.string(),
   contact: ListContactSchema,
@@ -78,22 +78,13 @@ export const MailchimpListSchema = z.object({
   notify_on_unsubscribe: z.string().optional(),
   modules: z.array(z.string()).optional(),
   stats: ListStatsSchema,
-
-  // Backward compatibility fields
-  web_id: z.number().optional(),
-  subscribe_url_short: z.string().optional(),
-  subscribe_url_long: z.string().optional(),
-  beamer_address: z.string().optional(),
-  double_optin: z.boolean().optional(),
-  has_welcome: z.boolean().optional(),
-  marketing_permissions: z.boolean().optional(),
 });
 
 /**
- * List response schema
+ * Lists success response schema
  */
-export const MailchimpListResponseSchema = z.object({
-  lists: z.array(MailchimpListSchema),
+export const ListsSuccessSchema = z.object({
+  lists: z.array(ListSchema),
   total_items: z.number(),
   _links: z.array(z.any()).optional(),
 });

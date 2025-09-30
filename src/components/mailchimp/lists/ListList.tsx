@@ -7,10 +7,10 @@ import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector
 import { TableSkeleton } from "@/skeletons";
 import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { MailchimpList } from "@/services";
+import type { List } from "@/services";
 
 interface ListListProps {
-  lists: MailchimpList[];
+  lists: List[];
   totalCount: number;
   loading?: boolean;
   error?: string | null;

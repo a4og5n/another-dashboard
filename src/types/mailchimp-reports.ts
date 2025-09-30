@@ -24,11 +24,9 @@
 import { z } from "zod";
 import { ReportListParamsInternalSchema } from "@/schemas/mailchimp/reports-params.schema";
 
-export type MailchimpReportsQueryBase = z.infer<
-  typeof ReportListParamsInternalSchema
->;
+export type ReportsQueryBase = z.infer<typeof ReportListParamsInternalSchema>;
 
-export interface MailchimpReportsQuery {
+export interface ReportsQuery {
   fields?: string[];
   exclude_fields?: string[];
   count?: number;

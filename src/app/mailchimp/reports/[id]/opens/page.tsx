@@ -17,13 +17,13 @@ import { processOpenListSearchParams } from "@/utils/mailchimp";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { generateCampaignOpensMetadata } from "@/utils/mailchimp/metadata";
 import { isDev } from "@/lib/config";
-import type { CampaignOpensPageProps } from "@/types/mailchimp/campaign-opens-page-props";
+import type { ReportOpensPageProps } from "@/types/mailchimp/report-opens-page-props";
 import type { ReportOpenListSuccess } from "@/types/mailchimp/report-open-details";
 
 async function CampaignOpensPageContent({
   params,
   searchParams,
-}: CampaignOpensPageProps) {
+}: ReportOpensPageProps) {
   const { id } = await params;
   const rawSearchParams = await searchParams;
   const cleanSearchParams = processOpenListSearchParams(rawSearchParams);
@@ -52,7 +52,7 @@ async function CampaignOpensPageContent({
 export default async function CampaignOpensPage({
   params,
   searchParams,
-}: CampaignOpensPageProps) {
+}: ReportOpensPageProps) {
   const { id } = await params;
 
   return (

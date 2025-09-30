@@ -3,10 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { MailchimpList } from "@/services";
+import type { List } from "@/services";
 
 interface ListCardProps {
-  list: MailchimpList;
+  list: List;
   className?: string;
 }
 

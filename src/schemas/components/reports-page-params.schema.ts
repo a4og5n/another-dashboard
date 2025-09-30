@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { REPORT_TYPES } from "@/schemas/mailchimp/reports-params.schema";
+import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports-params.schema";
 
 /**
  * Mailchimp Reports Page Query Parameters Schema
@@ -47,9 +47,10 @@ export const ReportsPageParamsSchema = z.object({
     .optional()
     .refine(
       (val) =>
-        !val || REPORT_TYPES.includes(val as (typeof REPORT_TYPES)[number]),
+        !val ||
+        REPORT_QUERY_TYPES.includes(val as (typeof REPORT_QUERY_TYPES)[number]),
       {
-        message: `Report type must be one of: ${REPORT_TYPES.join(", ")}`,
+        message: `Report type must be one of: ${REPORT_QUERY_TYPES.join(", ")}`,
       },
     ),
   before_send_time: z.string().optional(),

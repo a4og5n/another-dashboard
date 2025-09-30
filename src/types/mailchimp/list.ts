@@ -4,13 +4,13 @@
  */
 import { z } from "zod";
 import type {
-  MailchimpListSchema,
-  MailchimpListResponseSchema,
+  ListSchema,
+  ListsSuccessSchema,
   ListContactSchema,
   ListCampaignDefaultsSchema,
   ListStatsSchema,
   LIST_VISIBILITY,
-} from "@/schemas/mailchimp/list.schema";
+} from "@/schemas/mailchimp/lists-success.schema";
 
 // Nested object types
 export type ListContact = z.infer<typeof ListContactSchema>;
@@ -18,8 +18,8 @@ export type ListCampaignDefaults = z.infer<typeof ListCampaignDefaultsSchema>;
 export type ListStats = z.infer<typeof ListStatsSchema>;
 
 // Main API response types
-export type MailchimpList = z.infer<typeof MailchimpListSchema>;
-export type MailchimpListResponse = z.infer<typeof MailchimpListResponseSchema>;
+export type List = z.infer<typeof ListSchema>;
+export type ListsSuccess = z.infer<typeof ListsSuccessSchema>;
 
 // List visibility type
 export type ListVisibility = (typeof LIST_VISIBILITY)[number];
@@ -27,7 +27,7 @@ export type ListVisibility = (typeof LIST_VISIBILITY)[number];
 /**
  * Query parameters for retrieving lists
  */
-export interface MailchimpListsQuery {
+export interface ListsQuery {
   fields?: string;
   exclude_fields?: string;
   count?: number;

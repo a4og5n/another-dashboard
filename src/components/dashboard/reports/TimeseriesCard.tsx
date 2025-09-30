@@ -27,10 +27,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format, parseISO } from "date-fns";
-import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import type { CampaignReport } from "@/types/mailchimp";
 
 interface TimeseriesCardProps {
-  report: MailchimpCampaignReport;
+  report: CampaignReport;
   className?: string;
 }
 

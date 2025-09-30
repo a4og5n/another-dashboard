@@ -13,17 +13,17 @@ import {
   CampaignReportDetail,
   CampaignReportLoading,
 } from "@/components/dashboard";
-import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import type { CampaignReport } from "@/types/mailchimp";
 
 import { generateCampaignReportMetadata } from "@/utils";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { isDev } from "@/lib/config";
-import type { CampaignReportPageProps } from "@/types/mailchimp";
+import type { ReportPageProps } from "@/types/mailchimp";
 
 async function CampaignReportPageContent({
   params,
   searchParams,
-}: CampaignReportPageProps) {
+}: ReportPageProps) {
   const { id } = await params;
   await searchParams; // Keep for type compatibility
 
@@ -39,15 +39,13 @@ async function CampaignReportPageContent({
     notFound();
   }
 
-  return (
-    <CampaignReportDetail report={response.data as MailchimpCampaignReport} />
-  );
+  return <CampaignReportDetail report={response.data as CampaignReport} />;
 }
 
 export default function CampaignReportPage({
   params,
   searchParams,
-}: CampaignReportPageProps) {
+}: ReportPageProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Breadcrumb Navigation */}

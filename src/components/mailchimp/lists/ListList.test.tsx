@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
 import { ListList } from "./ListList";
-import type { MailchimpList } from "@/services";
+import type { List } from "@/services";
 
-const mockLists: MailchimpList[] = [
+const mockLists: List[] = [
   {
     id: "list1",
     name: "Newsletter Subscribers",

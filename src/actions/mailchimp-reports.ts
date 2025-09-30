@@ -4,7 +4,7 @@
  */
 
 import { ReportListParamsSchema } from "@/schemas/mailchimp/reports-params.schema";
-import { MailchimpReportsQuery } from "@/types/mailchimp-reports";
+import { ReportsQuery } from "@/types/mailchimp-reports";
 
 /**
  * Custom error class for Mailchimp reports API validation errors
@@ -31,15 +31,13 @@ export class ValidationError extends Error {
  * Validates Mailchimp reports API query parameters using Zod schema
  *
  * @param params - Query parameters from request (object)
- * @returns Parsed and typed query object (MailchimpReportsQuery)
+ * @returns Parsed and typed query object (ReportsQuery)
  * @throws ValidationError if validation fails
  *
  * Example:
- *   validateMailchimpReportsQuery({ count: "10", type: "regular" })
+ *   validateReportsQuery({ count: "10", type: "regular" })
  */
-export function validateMailchimpReportsQuery(
-  params: unknown,
-): MailchimpReportsQuery {
+export function validateReportsQuery(params: unknown): ReportsQuery {
   const result = ReportListParamsSchema.safeParse(params);
   if (!result.success) {
     throw new ValidationError(
@@ -56,7 +54,7 @@ export function validateMailchimpReportsQuery(
   }
 
   // Create a new object with the transformed data
-  const transformedData: MailchimpReportsQuery = {
+  const transformedData: ReportsQuery = {
     ...data,
     fields:
       data.fields === undefined

@@ -25,13 +25,13 @@ import { Users, Eye } from "lucide-react";
 import Link from "next/link";
 import { formatDateShort, useStaticPaginationHandlers } from "@/utils";
 import { formatNumber } from "@/utils";
-import { MailchimpListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
+import { ListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
 import type { ListOverviewProps } from "@/types/components/mailchimp";
 
 export function ListOverview({
   responseData,
   currentPage = 1,
-  pageSize = MailchimpListParamsSchema.parse({}).count,
+  pageSize = ListParamsSchema.parse({}).count,
   error = null,
 }: ListOverviewProps) {
   // Hooks must be called at the top, before any early returns

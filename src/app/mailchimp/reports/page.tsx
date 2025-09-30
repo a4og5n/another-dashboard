@@ -12,7 +12,7 @@ import type { ReportsPageProps } from "@/types/mailchimp/reports-page-props";
 import { REPORTS_PER_PAGE_OPTIONS } from "@/schemas/components/reports-page-params.schema";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { mailchimpService } from "@/services/mailchimp.service";
-import type { MailchimpCampaignReport } from "@/types/mailchimp";
+import type { CampaignReport } from "@/types/mailchimp";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
 import { Suspense } from "react";
 import { validateReportsPageParams } from "@/utils/mailchimp/query-params";
@@ -37,10 +37,10 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
 
   // Extract reports data and pagination params using utility function
   const reportsData = response.data as {
-    reports?: MailchimpCampaignReport[];
+    reports?: CampaignReport[];
     total_items?: number;
   };
-  const reports: MailchimpCampaignReport[] = reportsData.reports || [];
+  const reports: CampaignReport[] = reportsData.reports || [];
   const totalCount = reportsData.total_items || reports.length;
 
   // Parse pagination params for UI components (same logic as service)

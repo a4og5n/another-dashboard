@@ -11,8 +11,8 @@ import {
   ReportListParamsSchema,
   ReportListParamsInternalSchema,
   ReportListSuccessSchema,
-  reportListErrorResponseSchema,
-  CampaignReportSchema,
+  reportListErrorSchema,
+  ReportSchema,
   ReportBouncesSchema,
   ReportOpensSchema,
   ReportClicksSchema,
@@ -277,7 +277,7 @@ describe("Reports Schema Tests", () => {
     });
   });
 
-  describe("CampaignReportSchema", () => {
+  describe("ReportSchema", () => {
     it("should validate complete campaign report", () => {
       const campaignReport = {
         id: "campaign123",
@@ -410,7 +410,7 @@ describe("Reports Schema Tests", () => {
         ],
       };
 
-      const result = CampaignReportSchema.safeParse(campaignReport);
+      const result = ReportSchema.safeParse(campaignReport);
       expect(result.success).toBe(true);
     });
 
@@ -420,7 +420,7 @@ describe("Reports Schema Tests", () => {
         // Missing required fields
       };
 
-      const result = CampaignReportSchema.safeParse(incompleteReport);
+      const result = ReportSchema.safeParse(incompleteReport);
       expect(result.success).toBe(false);
     });
   });
@@ -572,7 +572,7 @@ describe("Reports Schema Tests", () => {
         instance: "12345678-1234-1234-1234-123456789012",
       };
 
-      const result = reportListErrorResponseSchema.safeParse(errorResponse);
+      const result = reportListErrorSchema.safeParse(errorResponse);
       expect(result.success).toBe(true);
     });
 
@@ -582,7 +582,7 @@ describe("Reports Schema Tests", () => {
         // Missing status, detail, etc.
       };
 
-      const result = reportListErrorResponseSchema.safeParse(incompleteError);
+      const result = reportListErrorSchema.safeParse(incompleteError);
       expect(result.success).toBe(false);
     });
   });

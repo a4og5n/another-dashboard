@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
 import { ListCard } from "./ListCard";
-import type { MailchimpList } from "@/services";
+import type { List } from "@/services";
 
-const mockList: MailchimpList = {
+const mockList: List = {
   id: "list123",
   name: "Newsletter Subscribers",
   date_created: "2025-01-01T00:00:00Z",
@@ -334,7 +334,7 @@ describe("ListCard", () => {
 
   describe("Edge Cases", () => {
     it("handles list with minimal data", () => {
-      const minimalList: MailchimpList = {
+      const minimalList: List = {
         id: "minimal",
         name: "Minimal List",
         date_created: "2025-01-01T00:00:00Z",

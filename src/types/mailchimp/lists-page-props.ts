@@ -20,7 +20,7 @@ export interface ListsPageSearchParams {
 
 /**
  * Props interface for Lists Page component
- * Based on the MailchimpListParamsSchema parameters with adaptations
+ * Based on the ListParamsSchema parameters with adaptations
  * for Next.js page components using searchParams pattern
  */
 export interface ListsPageProps {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MailchimpLinkSchema } from "@/schemas/mailchimp/common/link.schema";
+import { LinkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 const oneOpen = z.object({
   timestamp: z.iso.datetime({ offset: true }), //The date and time recorded for the action in ISO 8601 format.
@@ -44,5 +44,5 @@ export const ReportListMemberSchema = z.object({
   opens_count: z.number(),
   proxy_excluded_opens_count: z.number(),
   opens: z.array(oneOpen),
-  _links: z.array(MailchimpLinkSchema).optional(),
+  _links: z.array(LinkSchema).optional(),
 });
