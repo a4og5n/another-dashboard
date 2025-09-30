@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/skeletons";
 
-export function AccountOverviewSkeleton() {
+export function GeneralInfoOverviewSkeleton() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {/* Account Information Skeleton */}

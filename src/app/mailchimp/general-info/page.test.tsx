@@ -1,14 +1,14 @@
 /**
- * Account Page Integration Tests
- * Tests for the Mailchimp Account page component
+ * General Info Page Integration Tests
+ * Tests for the Mailchimp General Info page component
  *
- * Issue #123: Account page integration testing
+ * Issue #123: General Info page integration testing
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { renderWithA11y } from "@/test/axe-helper";
-import { AccountOverview } from "@/components/mailchimp/account";
+import { GeneralInfoOverview } from "@/components/mailchimp/general-info";
 import type { Root } from "@/types/mailchimp";
 
 // Mock DashboardLayout component
@@ -63,14 +63,14 @@ const mockAccountData: Root = {
   ],
 };
 
-describe("Account Component Tests", () => {
+describe("General Info Component Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe("AccountOverview Component", () => {
-    it("renders account data correctly", () => {
-      render(<AccountOverview account={mockAccountData} />);
+  describe("GeneralInfoOverview Component", () => {
+    it("renders general info data correctly", () => {
+      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
 
       expect(screen.getByText("Test Company")).toBeInTheDocument();
       expect(screen.getByText("test@example.com")).toBeInTheDocument();
@@ -81,7 +81,7 @@ describe("Account Component Tests", () => {
     });
 
     it("displays industry benchmarks correctly", () => {
-      render(<AccountOverview account={mockAccountData} />);
+      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
 
       expect(screen.getByText("Industry Benchmarks")).toBeInTheDocument();
       expect(screen.getByText("21.0%")).toBeInTheDocument(); // Open rate
@@ -96,27 +96,29 @@ describe("Account Component Tests", () => {
   describe("Error Handling", () => {
     it("displays error message when error prop is provided", () => {
       render(
-        <AccountOverview
-          account={null}
-          error="Failed to load account information"
+        <GeneralInfoOverview
+          generalInfo={null}
+          error="Failed to load general info information"
         />,
       );
 
       expect(
-        screen.getByText("Failed to load account information"),
+        screen.getByText("Failed to load general info information"),
       ).toBeInTheDocument();
       expect(screen.queryByText("Test Company")).not.toBeInTheDocument();
     });
 
-    it("shows fallback when account is null", () => {
-      render(<AccountOverview account={null} />);
+    it("shows fallback when generalInfo is null", () => {
+      render(<GeneralInfoOverview generalInfo={null} />);
 
-      expect(screen.getByText("No account data provided")).toBeInTheDocument();
+      expect(
+        screen.getByText("No general info data provided"),
+      ).toBeInTheDocument();
     });
   });
 
   describe("Data Scenarios", () => {
-    it("handles empty account data gracefully", () => {
+    it("handles empty general info data gracefully", () => {
       const emptyAccount = {
         ...mockAccountData,
         account_name: "",
@@ -124,7 +126,7 @@ describe("Account Component Tests", () => {
         total_subscribers: 0,
       };
 
-      render(<AccountOverview account={emptyAccount} />);
+      render(<GeneralInfoOverview generalInfo={emptyAccount} />);
 
       expect(screen.getByText("Account Details")).toBeInTheDocument();
       expect(screen.getByText("0")).toBeInTheDocument(); // Zero subscribers
@@ -141,7 +143,7 @@ describe("Account Component Tests", () => {
         },
       };
 
-      render(<AccountOverview account={partialAccount} />);
+      render(<GeneralInfoOverview generalInfo={partialAccount} />);
 
       expect(screen.getByText("Test Company")).toBeInTheDocument();
       expect(screen.queryByText("First Payment")).not.toBeInTheDocument();
@@ -154,12 +156,12 @@ describe("Account Component Tests", () => {
         total_subscribers: 999999999,
       };
 
-      render(<AccountOverview account={largeNumberAccount} />);
+      render(<GeneralInfoOverview generalInfo={largeNumberAccount} />);
 
       expect(screen.getByText("999,999,999")).toBeInTheDocument();
     });
 
-    it("handles account with no industry stats", () => {
+    it("handles general info with no industry stats", () => {
       const noStatsAccount = {
         ...mockAccountData,
         industry_stats: {
@@ -169,7 +171,7 @@ describe("Account Component Tests", () => {
         },
       };
 
-      render(<AccountOverview account={noStatsAccount} />);
+      render(<GeneralInfoOverview generalInfo={noStatsAccount} />);
 
       expect(screen.getByText("Test Company")).toBeInTheDocument();
       // Should display 0.0% for all stats
@@ -181,7 +183,7 @@ describe("Account Component Tests", () => {
   describe("Accessibility", () => {
     it("should not have accessibility violations with loaded data", async () => {
       const { renderResult } = await renderWithA11y(
-        <AccountOverview account={mockAccountData} />,
+        <GeneralInfoOverview generalInfo={mockAccountData} />,
       );
       expect(renderResult.container).toBeInTheDocument();
     });
@@ -191,9 +193,9 @@ describe("Account Component Tests", () => {
 
     it("should not have accessibility violations in error state", async () => {
       const { renderResult } = await renderWithA11y(
-        <AccountOverview
-          account={null}
-          error="Failed to load account information"
+        <GeneralInfoOverview
+          generalInfo={null}
+          error="Failed to load general info information"
         />,
       );
       expect(renderResult.container).toBeInTheDocument();
@@ -202,7 +204,7 @@ describe("Account Component Tests", () => {
 
   describe("Component Structure", () => {
     it("renders all required sections", () => {
-      render(<AccountOverview account={mockAccountData} />);
+      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
 
       // Verify all main sections are rendered
       expect(screen.getByText("Account Details")).toBeInTheDocument();

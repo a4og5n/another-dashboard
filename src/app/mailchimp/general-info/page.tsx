@@ -1,38 +1,38 @@
 /**
- * Mailchimp Account Page
- * Displays account information from the API Root endpoint
+ * Mailchimp General Info Page
+ * Displays general information from the API Root endpoint
  *
- * Issue #122: Account navigation and routing
- * Uses components from: @/components/mailchimp/account
+ * Issue #122: General Info navigation and routing
+ * Uses components from: @/components/mailchimp/general-info
  * Uses direct service calls following audiences page pattern
  */
 
-import { AccountOverview } from "@/components/mailchimp/account";
-import { AccountOverviewSkeleton } from "@/skeletons/mailchimp";
+import { GeneralInfoOverview } from "@/components/mailchimp/general-info";
+import { GeneralInfoOverviewSkeleton } from "@/skeletons/mailchimp";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout";
 import { mailchimpService } from "@/services/mailchimp.service";
 import { Suspense } from "react";
 
-async function AccountPageContent() {
+async function GeneralInfoPageContent() {
   // Use service layer for better architecture
   const response = await mailchimpService.getApiRoot();
 
   // Handle service-level errors only
   if (!response.success) {
     return (
-      <AccountOverview
-        error={response.error || "Failed to load account data"}
-        account={null}
+      <GeneralInfoOverview
+        error={response.error || "Failed to load general info data"}
+        generalInfo={null}
       />
     );
   }
 
   // Pass data to component - let component handle prop validation
-  return <AccountOverview account={response.data!} />;
+  return <GeneralInfoOverview generalInfo={response.data!} />;
 }
 
-export default function AccountPage() {
+export default function GeneralInfoPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -41,24 +41,24 @@ export default function AccountPage() {
           items={[
             { label: "Dashboard", href: "/" },
             { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Account", isCurrent: true },
+            { label: "General Info", isCurrent: true },
           ]}
         />
 
         {/* Page Header */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Account Information
+            General Information
           </h1>
           <p className="text-muted-foreground">
-            View your Mailchimp account details, contact information, and
+            View your Mailchimp general information, contact details, and
             industry benchmarks
           </p>
         </div>
 
         {/* Main Content */}
-        <Suspense fallback={<AccountOverviewSkeleton />}>
-          <AccountPageContent />
+        <Suspense fallback={<GeneralInfoOverviewSkeleton />}>
+          <GeneralInfoPageContent />
         </Suspense>
       </div>
     </DashboardLayout>
@@ -69,6 +69,6 @@ export default function AccountPage() {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Account | Mailchimp Dashboard",
-  description: "View your Mailchimp account information and settings",
+  title: "General Info | Mailchimp Dashboard",
+  description: "View your Mailchimp general information and settings",
 };

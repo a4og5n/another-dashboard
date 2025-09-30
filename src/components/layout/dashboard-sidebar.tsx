@@ -50,8 +50,8 @@ const navigation: NavigationItem[] = [
         icon: BarChart3,
       },
       {
-        name: "Account",
-        href: "/mailchimp/account",
+        name: "General Info",
+        href: "/mailchimp/general-info",
         icon: Building2,
       },
       {
