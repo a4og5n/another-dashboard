@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { ListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
+import { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { ReportsPageParamsSchema } from "@/schemas/components/reports-page-params.schema";
 import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports-params.schema";
 import type { ReportsPageSearchParams } from "@/types/mailchimp";
@@ -82,7 +82,9 @@ export const validDate = (val: string): boolean => {
  * // result.fields = ["id", "name", "stats.member_count"]
  * ```
  */
-export function transformQueryParams(params: z.infer<typeof ListParamsSchema>) {
+export function transformQueryParams(
+  params: z.infer<typeof ListsParamsSchema>,
+) {
   // Return params as is - don't convert to arrays to match type expectations
   return params;
 }

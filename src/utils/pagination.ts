@@ -1,23 +1,21 @@
 /**
- * Reusable pagination utilities for consistent URL parameter handling
+ * Client-side pagination utilities using React hooks
  *
  * These utilities provide standardized pagination handlers that can be reused
- * across different components and pages to maintain consistency.
+ * across different client components and pages to maintain consistency.
+ *
+ * Note: For server components, use the utilities from @/utils/pagination-url-builders
  */
 
 "use client";
 
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+import type { PaginationParams } from "@/utils/pagination-url-builders";
+import { buildURLParams } from "@/utils/pagination-url-builders";
 
-export interface PaginationParams {
-  /** Current page number */
-  page?: number;
-  /** Items per page */
-  perPage?: number;
-  /** Additional query parameters to preserve */
-  additionalParams?: Record<string, string | undefined>;
-}
+// Re-export for backward compatibility
+export type { PaginationParams };
 
 export interface PaginationConfig {
   /** Base URL path for navigation */
@@ -77,35 +75,8 @@ export function usePaginationHandlers(config: PaginationConfig) {
   };
 }
 
-/**
- * Builds URLSearchParams from pagination parameters
- *
- * @param params - Pagination parameters
- * @returns URLSearchParams object ready for navigation
- */
-export function buildURLParams(params: PaginationParams): URLSearchParams {
-  const urlParams = new URLSearchParams();
-
-  // Add core pagination params
-  if (params.page && params.page > 1) {
-    urlParams.set("page", params.page.toString());
-  }
-
-  if (params.perPage) {
-    urlParams.set("perPage", params.perPage.toString());
-  }
-
-  // Add additional params, filtering out undefined values
-  if (params.additionalParams) {
-    Object.entries(params.additionalParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        urlParams.set(key, value);
-      }
-    });
-  }
-
-  return urlParams;
-}
+// Re-export buildURLParams for backward compatibility
+export { buildURLParams };
 
 /**
  * Creates no-op pagination handlers for static/non-interactive pagination
@@ -128,8 +99,8 @@ export function useStaticPaginationHandlers() {
   };
 }
 
-// Note: transformPaginationParams has been moved to @/utils/mailchimp/query-params
-// to be server-compatible (this file is client-side only due to useRouter usage)
+// Note: Server-side URL builders have been moved to @/utils/pagination-url-builders
+// This file is client-side only due to useRouter usage
 
 /**
  * Type definitions for pagination handlers

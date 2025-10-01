@@ -1,7 +1,17 @@
 import { z } from "zod";
 
 /**
- * ListParamsSchema
+ * Literal for date_created field
+ */
+export const SORT_FIELD = "date_created" as const;
+
+/**
+ * Sort direction enum values for Lists API
+ */
+export const LISTS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
+
+/**
+ * ListsParamsSchema
  * Zod schema for Mailchimp Lists API query parameters
  *
  * Based on: https://mailchimp.com/developer/marketing/api/lists/
@@ -13,15 +23,21 @@ import { z } from "zod";
  * - count: number of records to return (1-1000)
  * - offset: number of records to skip
  */
-export const ListParamsSchema = z
+export const ListsParamsSchema = z
   .object({
-    // Field selection (API expects comma-separated strings)
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),
-
-    // Pagination parameters
     count: z.coerce.number().int().min(1).max(1000).default(10),
     offset: z.coerce.number().int().min(0).default(0),
+    before_date_created: z.iso.datetime({ offset: true }).optional(),
+    since_date_created: z.iso.datetime({ offset: true }).optional(),
+    before_campaign_last_sent: z.iso.datetime({ offset: true }).optional(),
+    since_campaign_last_sent: z.iso.datetime({ offset: true }).optional(),
+    email: z.email().optional(),
+    sort_field: z.literal(SORT_FIELD).optional(),
+    sort_dir: z.enum(LISTS_SORT_DIRECTIONS).optional(),
+    has_ecommerce_store: z.boolean().optional(),
+    include_total_contacts: z.boolean().optional(),
   })
   .strict(); // Reject unknown properties
 
@@ -29,8 +45,4 @@ export const ListParamsSchema = z
  * Alternative schema for actions/internal use where fields are arrays
  * Transforms string fields to arrays for service layer consumption
  */
-export const ListParamsInternalSchema = ListParamsSchema.extend({
-  // Keep the same string type to match MailchimpListsQuery interface
-  fields: z.string().optional(),
-  exclude_fields: z.string().optional(),
-}).strict(); // Reject unknown properties in internal schema
+export const ListsParamsInternalSchema = ListsParamsSchema;

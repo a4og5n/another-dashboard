@@ -8,3 +8,4 @@ export * from "@/utils/format-number";
 export * from "@/utils/text";
 export * from "@/utils/mailchimp";
 export * from "@/utils/pagination";
+export * from "@/utils/pagination-url-builders";

@@ -11,7 +11,7 @@ import { z } from "zod";
 import {
   OpenListPathParamsSchema,
   OpenListQueryParamsSchema,
-  SORT_DIRECTIONS,
+  OPEN_DETAILS_SORT_DIRECTIONS,
 } from "@/schemas/mailchimp/report-open-details-params.schema";
 import { ReportOpenListSuccessSchema } from "@/schemas/mailchimp/report-open-details-success.schema";
 import { OpenListErrorSchema } from "@/schemas/mailchimp/report-open-details-error.schema";
@@ -27,4 +27,4 @@ export type OpenListError = z.infer<typeof OpenListErrorSchema>;
 export type ReportOpenListMember = z.infer<typeof ReportListMemberSchema>;
 
 // Enum types
-export type SortDirection = (typeof SORT_DIRECTIONS)[number];
+export type SortDirection = (typeof OPEN_DETAILS_SORT_DIRECTIONS)[number];

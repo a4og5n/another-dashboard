@@ -4,7 +4,7 @@
  *
  * Endpoint: GET /lists
  * Documentation: https://mailchimp.com/developer/marketing/api/lists/get-list-info/
- * Follows PRD guideline: "Always use the same object/property names as the API"
+ * Follows PRD guideline: "Always use the same objt/property names as the API"
  */
 import { z } from "zod";
 
@@ -38,26 +38,35 @@ export const ListCampaignDefaultsSchema = z.object({
 });
 
 /**
+ * schema
+ */
+export const ListConstraintsSchema = z.object({
+  may_create: z.boolean(),
+  max_instances: z.number(), // -1 indicates unlimited
+  current_total_instances: z.number(), // -1 indicates unlimited
+});
+
+/**
  * Stats schema
  */
 export const ListStatsSchema = z.object({
-  member_count: z.number(),
-  unsubscribe_count: z.number(),
-  cleaned_count: z.number(),
-  total_contacts: z.number().optional(),
-  member_count_since_send: z.number().optional(),
-  unsubscribe_count_since_send: z.number().optional(),
-  cleaned_count_since_send: z.number().optional(),
-  campaign_count: z.number().optional(),
-  campaign_last_sent: z.string().optional(),
-  merge_field_count: z.number().optional(),
+  member_count: z.number().min(0),
+  total_contacts: z.number().min(0),
+  unsubscribe_count: z.number().min(0),
+  cleaned_count: z.number().min(0),
+  member_count_since_send: z.number().min(0),
+  unsubscribe_count_since_send: z.number().min(0),
+  cleaned_count_since_send: z.number().min(0),
+  campaign_count: z.number().min(0),
+  campaign_last_sent: z.iso.datetime({ offset: true }),
+  merge_field_count: z.number().min(0),
   avg_sub_rate: z.number().optional(),
   avg_unsub_rate: z.number().optional(),
   target_sub_rate: z.number().optional(),
-  open_rate: z.number().optional(),
-  click_rate: z.number().optional(),
-  last_sub_date: z.string().optional(),
-  last_unsub_date: z.string().optional(),
+  open_rate: z.number().min(0).max(100).optional(),
+  click_rate: z.number().min(0).max(100).optional(),
+  last_sub_date: z.iso.datetime({ offset: true }),
+  last_unsub_date: z.iso.datetime({ offset: true }),
 });
 
 /**
@@ -65,19 +74,27 @@ export const ListStatsSchema = z.object({
  */
 export const ListSchema = z.object({
   id: z.string(),
+  web_id: z.number(),
   name: z.string(),
   contact: ListContactSchema,
   permission_reminder: z.string(),
   use_archive_bar: z.boolean(),
-  email_type_option: z.boolean(),
-  visibility: z.enum(LIST_VISIBILITY),
-  date_created: z.string(),
-  list_rating: z.number(),
   campaign_defaults: ListCampaignDefaultsSchema,
   notify_on_subscribe: z.string().optional(),
   notify_on_unsubscribe: z.string().optional(),
+  date_created: z.iso.datetime({ offset: true }),
+  list_rating: z.number().min(0).max(5), // auto-generated activity score (0-5)
+  email_type_option: z.boolean(),
+  subscribe_url_short: z.string(),
+  subscribe_url_long: z.string(),
+  beamer_address: z.string,
+  visibility: z.enum(LIST_VISIBILITY),
+  double_optin: z.boolean(),
+  has_welcome: z.boolean(),
+  marketing_permissions: z.boolean(),
   modules: z.array(z.string()).optional(),
   stats: ListStatsSchema,
+  _links: z.array(z.any()).optional(),
 });
 
 /**
@@ -86,5 +103,6 @@ export const ListSchema = z.object({
 export const ListsSuccessSchema = z.object({
   lists: z.array(ListSchema),
   total_items: z.number(),
+  constraints: ListConstraintsSchema,
   _links: z.array(z.any()).optional(),
 });

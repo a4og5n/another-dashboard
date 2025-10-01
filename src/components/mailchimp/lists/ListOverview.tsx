@@ -2,11 +2,9 @@
  * List Overview Dashboard Component
  * Displays list data in a table format with pagination controls
  *
- * Following established patterns from reports-overview.tsx
- * Implements component reuse strategy with Table and pagination controls
+ * Server component following PRD guideline: "Use [Server Components] by default"
+ * Only pagination UI components are client-side for interactivity
  */
-
-"use client";
 
 import {
   Table,
@@ -18,25 +16,43 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
+import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import { Users, Eye } from "lucide-react";
+import { Users, Eye, Star } from "lucide-react";
 import Link from "next/link";
-import { formatDateShort, useStaticPaginationHandlers } from "@/utils";
-import { formatNumber } from "@/utils";
-import { ListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
+import {
+  formatDateShort,
+  formatNumber,
+  formatPercent,
+  createPageUrlBuilder,
+  createPerPageUrlBuilder,
+} from "@/utils";
+import { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import type { ListOverviewProps } from "@/types/components/mailchimp";
 
 export function ListOverview({
   responseData,
   currentPage = 1,
-  pageSize = ListParamsSchema.parse({}).count,
+  pageSize = ListsParamsSchema.parse({}).count,
   error = null,
 }: ListOverviewProps) {
-  // Hooks must be called at the top, before any early returns
-  const { handlePageChange, handlePerPageChange } =
-    useStaticPaginationHandlers();
+  const defaultPageSize = ListsParamsSchema.parse({}).count;
+
+  // URL builder functions for server-side navigation
+  const createPageUrl = createPageUrlBuilder({
+    basePath: "/mailchimp/lists",
+    currentPage,
+    currentPerPage: pageSize,
+    defaultPerPage: defaultPageSize,
+  });
+
+  const createPerPageUrl = createPerPageUrlBuilder({
+    basePath: "/mailchimp/lists",
+    currentPage,
+    currentPerPage: pageSize,
+    defaultPerPage: defaultPageSize,
+  });
 
   // Handle service-level errors passed from parent
   if (error) {
@@ -92,6 +108,7 @@ export function ListOverview({
                     <TableHead>List Name</TableHead>
                     <TableHead className="text-right">Members</TableHead>
                     <TableHead>Visibility</TableHead>
+                    <TableHead className="text-right">Rating</TableHead>
                     <TableHead className="text-right">Open Rate</TableHead>
                     <TableHead className="text-right">Click Rate</TableHead>
                     <TableHead className="text-right">Created</TableHead>
@@ -124,14 +141,24 @@ export function ListOverview({
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        {list.stats.open_rate
-                          ? (list.stats.open_rate * 100).toFixed(1) + "%"
-                          : "N/A"}
+                        <div className="flex items-center justify-end gap-0.5">
+                          {Array.from({ length: 5 }).map((_, index) => (
+                            <Star
+                              key={index}
+                              className={`h-4 w-4 ${
+                                index < list.list_rating
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          ))}
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        {list.stats.click_rate
-                          ? (list.stats.click_rate * 100).toFixed(1) + "%"
-                          : "N/A"}
+                        {formatPercent(list.stats.open_rate)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatPercent(list.stats.click_rate)}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {formatDateShort(list.date_created)}
@@ -146,17 +173,18 @@ export function ListOverview({
       </Card>
 
       {/* Pagination Controls */}
-      {lists.length > 0 && totalPages > 1 && (
+      {lists.length > 0 && (
         <div className="flex items-center justify-between">
           <PerPageSelector
             value={pageSize}
             options={[10, 25, 50, 100]}
-            onChange={handlePerPageChange}
+            createPerPageUrl={createPerPageUrl}
+            itemName="lists per page"
           />
-          <PaginationControls
+          <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={handlePageChange}
+            createPageUrl={createPageUrl}
           />
         </div>
       )}

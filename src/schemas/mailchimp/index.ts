@@ -15,4 +15,4 @@ export * from "@/schemas/mailchimp/root-params.schema";
 export * from "@/schemas/mailchimp/root-success.schema";
 export * from "@/schemas/mailchimp/lists-success.schema";
 export * from "@/schemas/mailchimp/lists-error.schema";
-export * from "@/schemas/mailchimp/list-params.schema";
+export * from "@/schemas/mailchimp/lists-params.schema";

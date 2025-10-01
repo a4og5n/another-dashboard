@@ -9,9 +9,9 @@
 import { z } from "zod";
 
 /**
- * Sort direction enum values
+ * Sort direction enum values for Open Details Reports API
  */
-export const SORT_DIRECTIONS = ["ASC", "DESC"] as const;
+export const OPEN_DETAILS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
 
 /**
  * Schema for path parameters (campaign_id)
@@ -29,10 +29,10 @@ export const OpenListQueryParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),
-    count: z.number().min(1).max(1000).default(10).optional(),
-    offset: z.number().min(0).default(0).optional(),
-    since: z.iso.datetime({ offset: true }).optional(), // ISO 8601 timestamp for filtering opens after this time
+    count: z.coerce.number().min(1).max(1000).default(10).optional(),
+    offset: z.coerce.number().min(0).default(0).optional(),
+    since: z.iso.datetime({ offset: true }).optional(),
     sort_field: z.string().optional(),
-    sort_dir: z.enum(SORT_DIRECTIONS).optional(),
+    sort_dir: z.enum(OPEN_DETAILS_SORT_DIRECTIONS).optional(),
   })
   .strict(); // Reject unknown properties for input validation
