@@ -1,39 +1,28 @@
+import { BreadcrumbNavigation } from "@/components/layout";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { getRedirectUrlIfNeeded } from "@/utils/pagination-url-builders";
 import { ListOverview } from "@/components/mailchimp/lists/ListOverview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
 import type { ListsPageProps } from "@/types/mailchimp/lists-page-props";
-import { BreadcrumbNavigation } from "@/components/layout";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { mailchimpService } from "@/services/mailchimp.service";
 import { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
-import { Suspense } from "react";
+import { mailchimpService } from "@/services/mailchimp.service";
 import { redirect } from "next/navigation";
-import {
-  shouldRedirectToCleanUrl,
-  buildCleanUrl,
-} from "@/utils/pagination-url-builders";
+import { Suspense } from "react";
 
 async function ListsPageContent({ searchParams }: ListsPageProps) {
-  // Await searchParams as required by Next.js 15
   const params = await searchParams;
 
   // Server-side URL cleanup: redirect if default values are in URL
   const queryDefaults = ListsParamsSchema.parse({});
-  if (
-    shouldRedirectToCleanUrl({
-      basePath: "/mailchimp/lists",
-      currentPage: params.page,
-      currentPerPage: params.perPage,
-      defaultPerPage: queryDefaults.count,
-    })
-  ) {
-    redirect(
-      buildCleanUrl({
-        basePath: "/mailchimp/lists",
-        currentPage: params.page,
-        currentPerPage: params.perPage,
-        defaultPerPage: queryDefaults.count,
-      }),
-    );
+  const redirectUrl = getRedirectUrlIfNeeded({
+    basePath: "/mailchimp/lists",
+    currentPage: params.page,
+    currentPerPage: params.perPage,
+    defaultPerPage: queryDefaults.count,
+  });
+
+  if (redirectUrl) {
+    redirect(redirectUrl);
   }
 
   // Use service layer for better architecture

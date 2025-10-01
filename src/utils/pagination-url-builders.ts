@@ -224,3 +224,32 @@ export function buildCleanUrl(config: UrlCleanupConfig): string {
 
   return `${basePath}${cleanParams.toString() ? `?${cleanParams}` : ""}`;
 }
+
+/**
+ * Evaluates if a redirect is needed and returns the clean URL if so
+ *
+ * @param config - URL cleanup configuration
+ * @returns Clean URL string if redirect is needed, null otherwise
+ *
+ * @example
+ * ```tsx
+ * const redirectUrl = getRedirectUrlIfNeeded({
+ *   basePath: "/mailchimp/lists",
+ *   currentPage: "1",
+ *   currentPerPage: "10",
+ *   defaultPerPage: 10
+ * });
+ *
+ * if (redirectUrl) {
+ *   redirect(redirectUrl);
+ * }
+ * ```
+ */
+export function getRedirectUrlIfNeeded(
+  config: UrlCleanupConfig,
+): string | null {
+  if (shouldRedirectToCleanUrl(config)) {
+    return buildCleanUrl(config);
+  }
+  return null;
+}
