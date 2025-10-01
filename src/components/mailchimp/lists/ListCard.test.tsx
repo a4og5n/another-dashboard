@@ -6,18 +6,27 @@ import type { List } from "@/services";
 
 const mockList: List = {
   id: "list123",
+  web_id: 12345,
   name: "Newsletter Subscribers",
   date_created: "2025-01-01T00:00:00Z",
   visibility: "pub",
   stats: {
     member_count: 1250,
+    total_contacts: 1280,
     unsubscribe_count: 25,
     cleaned_count: 5,
+    member_count_since_send: 50,
+    unsubscribe_count_since_send: 2,
+    cleaned_count_since_send: 1,
     campaign_count: 12,
+    campaign_last_sent: "2025-01-15T10:00:00+00:00",
+    merge_field_count: 5,
     avg_sub_rate: 0.05,
     avg_unsub_rate: 0.02,
-    open_rate: 0.28,
-    click_rate: 0.12,
+    open_rate: 28,
+    click_rate: 12,
+    last_sub_date: "2025-01-20T12:00:00+00:00",
+    last_unsub_date: "2025-01-19T15:30:00+00:00",
   },
   contact: {
     company: "Test Company",
@@ -39,6 +48,13 @@ const mockList: List = {
   notify_on_unsubscribe: "admin@example.com",
   email_type_option: true,
   list_rating: 4,
+  subscribe_url_short: "http://eepurl.com/abc123",
+  subscribe_url_long:
+    "https://example.us1.list-manage.com/subscribe?u=abc&id=123",
+  beamer_address: "list123@inbound.mailchimp.com",
+  double_optin: true,
+  has_welcome: true,
+  marketing_permissions: false,
 };
 
 describe("ListCard", () => {
@@ -336,18 +352,27 @@ describe("ListCard", () => {
     it("handles list with minimal data", () => {
       const minimalList: List = {
         id: "minimal",
+        web_id: 99999,
         name: "Minimal List",
         date_created: "2025-01-01T00:00:00Z",
         visibility: "pub" as const,
         stats: {
           member_count: 0,
+          total_contacts: 0,
           unsubscribe_count: 0,
           cleaned_count: 0,
+          member_count_since_send: 0,
+          unsubscribe_count_since_send: 0,
+          cleaned_count_since_send: 0,
           campaign_count: 0,
+          campaign_last_sent: "2025-01-01T00:00:00+00:00",
+          merge_field_count: 0,
           avg_sub_rate: 0,
           avg_unsub_rate: 0,
           open_rate: 0,
           click_rate: 0,
+          last_sub_date: "2025-01-01T00:00:00+00:00",
+          last_unsub_date: "2025-01-01T00:00:00+00:00",
         },
         contact: {
           company: "Test",
@@ -367,6 +392,13 @@ describe("ListCard", () => {
         },
         email_type_option: true,
         list_rating: 3,
+        subscribe_url_short: "http://eepurl.com/test",
+        subscribe_url_long:
+          "https://example.us1.list-manage.com/subscribe?u=test&id=test",
+        beamer_address: "test@inbound.mailchimp.com",
+        double_optin: false,
+        has_welcome: false,
+        marketing_permissions: false,
       };
 
       expect(() => {

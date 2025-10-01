@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ListCard } from "./ListCard";
-import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
+import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { TableSkeleton } from "@/skeletons";
 import { Users } from "lucide-react";
@@ -114,7 +114,7 @@ export function ListList({
                   </div>
                 </div>
 
-                <PaginationControls
+                <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={onPageChange}

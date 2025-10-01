@@ -21,11 +21,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableSkeleton } from "@/skeletons";
-import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
+import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { FileText, BarChart3 } from "lucide-react";
 import Link from "next/link";
-import { formatDateShort, usePaginationHandlers } from "@/utils";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import {
+  formatDateShort,
+  usePaginationHandlers,
+  buildURLParams,
+} from "@/utils";
 import type { ReportsOverviewProps } from "@/types";
 
 export function ReportsOverview({
@@ -40,14 +46,47 @@ export function ReportsOverview({
   additionalParams,
 }: ReportsOverviewProps) {
   // Create pagination handlers using the utilities
+  const router = useRouter();
+  const defaultPerPage = perPageOptions[0]; // First option is the default
   const { handlePageChange, handlePerPageChange } = usePaginationHandlers({
     basePath,
     currentParams: {
       page: currentPage,
       perPage,
+      defaultPerPage,
       additionalParams,
     },
   });
+
+  // Clean up URL on mount if default values are in the URL
+  useEffect(() => {
+    const urlParams =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search)
+        : null;
+    const shouldCleanup =
+      (currentPage === 1 && urlParams?.has("page")) ||
+      (perPage === defaultPerPage && urlParams?.has("perPage"));
+
+    if (shouldCleanup && urlParams) {
+      const params = buildURLParams({
+        page: currentPage,
+        perPage,
+        defaultPerPage,
+        additionalParams,
+      });
+      router.replace(
+        `${basePath}${params.toString() ? `?${params.toString()}` : ""}`,
+      );
+    }
+  }, [
+    currentPage,
+    perPage,
+    defaultPerPage,
+    basePath,
+    additionalParams,
+    router,
+  ]);
 
   if (loading) {
     return (
@@ -191,7 +230,7 @@ export function ReportsOverview({
             options={perPageOptions}
             onChange={handlePerPageChange}
           />
-          <PaginationControls
+          <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}

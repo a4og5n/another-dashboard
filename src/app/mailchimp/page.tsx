@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 
-export default function Page() {
+export default function MailchimpPage() {
   return (
     <DashboardLayout>
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -15,35 +15,35 @@ export default function Page() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl">
             <Link
-              href="/mailchimp/account"
+              href="/mailchimp/general-info"
               className="flex flex-col items-center p-8 border rounded-lg hover:bg-muted/50 transition-colors"
             >
-              <div className="text-3xl mb-4">👤</div>
-              <h2 className="text-xl font-semibold mb-2">Account</h2>
+              <div className="text-3xl mb-4">ℹ️</div>
+              <h2 className="text-xl font-semibold mb-2">General Info</h2>
               <p className="text-sm text-muted-foreground">
-                Manage your Mailchimp account settings
+                View your Mailchimp account information
               </p>
             </Link>
 
             <Link
-              href="/mailchimp/audiences"
+              href="/mailchimp/lists"
               className="flex flex-col items-center p-8 border rounded-lg hover:bg-muted/50 transition-colors"
             >
-              <div className="text-3xl mb-4">👥</div>
-              <h2 className="text-xl font-semibold mb-2">Audiences</h2>
+              <div className="text-3xl mb-4">📋</div>
+              <h2 className="text-xl font-semibold mb-2">Lists</h2>
               <p className="text-sm text-muted-foreground">
                 View and manage your subscriber lists
               </p>
             </Link>
 
             <Link
-              href="/mailchimp/campaigns"
+              href="/mailchimp/reports"
               className="flex flex-col items-center p-8 border rounded-lg hover:bg-muted/50 transition-colors"
             >
-              <div className="text-3xl mb-4">📧</div>
-              <h2 className="text-xl font-semibold mb-2">Campaigns</h2>
+              <div className="text-3xl mb-4">📊</div>
+              <h2 className="text-xl font-semibold mb-2">Reports</h2>
               <p className="text-sm text-muted-foreground">
-                Create and manage email campaigns
+                View campaign performance and analytics
               </p>
             </Link>
           </div>

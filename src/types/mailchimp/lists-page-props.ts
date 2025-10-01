@@ -10,7 +10,7 @@
  */
 export interface ListsPageSearchParams {
   page?: string;
-  limit?: string;
+  perPage?: string;
   sort?: string;
   order?: string;
   search?: string;
@@ -20,7 +20,7 @@ export interface ListsPageSearchParams {
 
 /**
  * Props interface for Lists Page component
- * Based on the ListParamsSchema parameters with adaptations
+ * Based on the ListsParamsSchema parameters with adaptations
  * for Next.js page components using searchParams pattern
  */
 export interface ListsPageProps {

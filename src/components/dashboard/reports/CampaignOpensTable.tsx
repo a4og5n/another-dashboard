@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PaginationControls } from "@/components/dashboard/shared/pagination-controls";
+import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { formatDateTime } from "@/utils";
 import {
@@ -349,7 +349,7 @@ export function CampaignOpensTable({
             createPerPageUrl={createPerPageUrl}
             itemName="items per page"
           />
-          <PaginationControls
+          <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             createPageUrl={createPageUrl}

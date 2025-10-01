@@ -24,7 +24,7 @@ import type {
   ListsSuccess,
 } from "@/types/mailchimp";
 import {
-  ListParamsSchema,
+  ListsParamsSchema,
   ReportListParamsInternalSchema,
   OpenListQueryParamsSchema,
   RootParamsSchema,
@@ -46,11 +46,11 @@ export class MailchimpService {
     // Transform page params to Mailchimp API format, let schema handle defaults
     const transformedParams = transformPaginationParams(
       params.page,
-      params.limit,
+      params.perPage,
     );
 
     // Validate transformed parameters using schema (applies defaults)
-    const validationResult = ListParamsSchema.safeParse(transformedParams);
+    const validationResult = ListsParamsSchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,

@@ -4,12 +4,37 @@ import type { ListsPageProps } from "@/types/mailchimp/lists-page-props";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { mailchimpService } from "@/services/mailchimp.service";
-import { ListParamsSchema } from "@/schemas/mailchimp/list-params.schema";
+import { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import {
+  shouldRedirectToCleanUrl,
+  buildCleanUrl,
+} from "@/utils/pagination-url-builders";
 
 async function ListsPageContent({ searchParams }: ListsPageProps) {
   // Await searchParams as required by Next.js 15
   const params = await searchParams;
+
+  // Server-side URL cleanup: redirect if default values are in URL
+  const queryDefaults = ListsParamsSchema.parse({});
+  if (
+    shouldRedirectToCleanUrl({
+      basePath: "/mailchimp/lists",
+      currentPage: params.page,
+      currentPerPage: params.perPage,
+      defaultPerPage: queryDefaults.count,
+    })
+  ) {
+    redirect(
+      buildCleanUrl({
+        basePath: "/mailchimp/lists",
+        currentPage: params.page,
+        currentPerPage: params.perPage,
+        defaultPerPage: queryDefaults.count,
+      }),
+    );
+  }
 
   // Use service layer for better architecture
   const response = await mailchimpService.getLists(params);
@@ -25,9 +50,8 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
   }
 
   // Parse pagination params for UI
-  const queryDefaults = ListParamsSchema.parse({});
   const currentPage = parseInt(params.page || "1");
-  const pageSize = parseInt(params.limit || queryDefaults.count.toString());
+  const pageSize = parseInt(params.perPage || queryDefaults.count.toString());
 
   // Pass data to component
   return (

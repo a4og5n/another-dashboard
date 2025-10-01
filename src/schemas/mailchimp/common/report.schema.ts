@@ -57,8 +57,8 @@ export const ReportOpensSchema = z.object({
   proxy_excluded_opens: z.number().min(0).optional(),
   unique_opens: z.number().min(0),
   proxy_excluded_unique_opens: z.number().min(0).optional(),
-  open_rate: z.number(),
-  proxy_excluded_open_rate: z.number().optional(),
+  open_rate: z.number().min(0).max(100), // number between 0 and 100
+  proxy_excluded_open_rate: z.number().min(0).max(100).optional(), // number between 0 and 100
   last_open: z.iso.datetime({ offset: true }), // ISO 8601 format
 });
 
@@ -69,7 +69,7 @@ export const ReportClicksSchema = z.object({
   clicks_total: z.number().min(0),
   unique_clicks: z.number().min(0),
   unique_subscriber_clicks: z.number().min(0),
-  click_rate: z.number(),
+  click_rate: z.number().min(0).max(100), // number between 0 and 100
   last_click: z.iso.datetime({ offset: true }), // ISO 8601 format
 });
 
