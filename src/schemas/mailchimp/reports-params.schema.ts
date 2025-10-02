@@ -22,6 +22,9 @@ export const REPORT_QUERY_TYPES = [
 
 /**
  * Query parameters schema for reports list endpoint
+ *
+ * Note: For developer convenience, server actions can accept fields as arrays and use
+ * convertFieldsToCommaString() utility to transform them to the API's comma-separated format.
  */
 export const ReportListParamsSchema = z
   .object({
@@ -32,29 +35,6 @@ export const ReportListParamsSchema = z
     type: z.enum(REPORT_QUERY_TYPES).optional(),
     before_send_time: z.iso.datetime({ offset: true }).optional(), // ISO 8601 format
     since_send_time: z.iso.datetime({ offset: true }).optional(), // ISO 8601 format
-    folder_id: z.string().optional(),
-    member_id: z.string().optional(),
-    list_id: z.string().optional(),
-    sort_field: z.string().optional(),
-    sort_dir: z.enum(["ASC", "DESC"]).optional(),
-  })
-  .strict()
-  .optional();
-
-/**
- * Internal query schema for service layer processing
- * Note: Using string type for fields and exclude_fields to match Mailchimp API requirements
- * Fields should be comma-separated lists rather than arrays
- */
-export const ReportListParamsInternalSchema = z
-  .object({
-    fields: z.union([z.string(), z.array(z.string())]).optional(),
-    exclude_fields: z.union([z.string(), z.array(z.string())]).optional(),
-    count: z.coerce.number().min(1).max(1000).default(10).optional(),
-    offset: z.coerce.number().min(0).default(0).optional(),
-    type: z.enum(REPORT_QUERY_TYPES).optional(),
-    before_send_time: z.iso.datetime({ offset: true }).optional(),
-    since_send_time: z.iso.datetime({ offset: true }).optional(),
     folder_id: z.string().optional(),
     member_id: z.string().optional(),
     list_id: z.string().optional(),

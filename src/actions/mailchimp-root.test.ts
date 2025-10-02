@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getApiRoot, checkApiRootHealth } from "./mailchimp-root";
-import type { Root, RootErrorResponse } from "@/types/mailchimp";
+import type { RootSuccess, RootError } from "@/types/mailchimp";
 import { mailchimpService } from "@/services/mailchimp.service";
 
 // Mock mailchimpService singleton instance
@@ -18,7 +18,7 @@ vi.mock("@/services/mailchimp.service", () => ({
 }));
 
 describe("Mailchimp API Root Server Actions", () => {
-  const mockApiRootData: Root = {
+  const mockApiRootData: RootSuccess = {
     account_id: "test-account-123",
     login_id: "user123",
     account_name: "Test Company",
@@ -97,7 +97,7 @@ describe("Mailchimp API Root Server Actions", () => {
     });
 
     it("should handle string field parameters correctly", async () => {
-      // The function accepts both strings and arrays in MailchimpRootQueryInternal
+      // The function accepts both strings and arrays in RootParams
       vi.mocked(mailchimpService.getApiRoot).mockResolvedValue({
         success: true,
         data: mockApiRootData,
@@ -151,9 +151,7 @@ describe("Mailchimp API Root Server Actions", () => {
         status: 400,
         instance: "/",
       });
-      expect((result as RootErrorResponse).detail).toContain(
-        "Unrecognized key",
-      );
+      expect((result as RootError).detail).toContain("Unrecognized key");
     });
 
     it("should handle service instantiation errors", async () => {

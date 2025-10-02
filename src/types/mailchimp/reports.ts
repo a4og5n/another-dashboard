@@ -8,7 +8,6 @@
 import { z } from "zod";
 import {
   ReportListParamsSchema,
-  ReportListParamsInternalSchema,
   ReportListSuccessSchema,
   reportListErrorSchema,
   ReportSchema,
@@ -34,9 +33,6 @@ import {
  * Report query parameter types
  */
 export type ReportListQuery = z.infer<typeof ReportListParamsSchema>;
-export type ReportListQueryInternal = z.infer<
-  typeof ReportListParamsInternalSchema
->;
 
 /**
  * Report response types

@@ -157,6 +157,51 @@ export function transformCampaignReportsParams(
 }
 
 /**
+ * Converts field parameters from array or string format to comma-separated strings
+ * Used by server actions to transform developer-friendly arrays to API format
+ *
+ * @param params - Object with optional fields and exclude_fields (string or array)
+ * @returns Object with fields converted to comma-separated strings
+ *
+ * @example
+ * ```typescript
+ * const input = { fields: ["id", "name"], exclude_fields: "meta" };
+ * const result = convertFieldsToCommaString(input);
+ * // Returns: { fields: "id,name", exclude_fields: "meta" }
+ * ```
+ */
+export function convertFieldsToCommaString<
+  T extends {
+    fields?: string | string[];
+    exclude_fields?: string | string[];
+  },
+>(
+  params: T,
+): Omit<T, "fields" | "exclude_fields"> & {
+  fields?: string;
+  exclude_fields?: string;
+} {
+  const result = { ...params } as Omit<T, "fields" | "exclude_fields"> & {
+    fields?: string;
+    exclude_fields?: string;
+  };
+
+  if (params.fields) {
+    result.fields = Array.isArray(params.fields)
+      ? params.fields.join(",")
+      : params.fields;
+  }
+
+  if (params.exclude_fields) {
+    result.exclude_fields = Array.isArray(params.exclude_fields)
+      ? params.exclude_fields.join(",")
+      : params.exclude_fields;
+  }
+
+  return result;
+}
+
+/**
  * Export the server-compatible transformPaginationParams function
  * for use in service layer and other server-side code
  */

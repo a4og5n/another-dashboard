@@ -9,9 +9,9 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { GeneralInfoOverview } from "./GeneralInfoOverview";
 import { renderWithA11y } from "@/test/axe-helper";
-import type { Root } from "@/types/mailchimp";
+import type { RootSuccess } from "@/types/mailchimp";
 
-const mockAccountData: Root = {
+const mockAccountData: RootSuccess = {
   account_id: "test-account-123",
   login_id: "user123",
   account_name: "Test Company",
@@ -324,7 +324,7 @@ describe("GeneralInfoOverview", () => {
 
   describe("Edge Cases", () => {
     it("handles account with minimal data", () => {
-      const minimalAccount: Root = {
+      const minimalAccount: RootSuccess = {
         account_id: "min-account",
         login_id: "min-user",
         account_name: "Minimal Account",
