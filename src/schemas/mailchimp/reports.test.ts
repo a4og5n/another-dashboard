@@ -9,7 +9,6 @@
 import { describe, it, expect } from "vitest";
 import {
   ReportListParamsSchema,
-  ReportListParamsInternalSchema,
   ReportListSuccessSchema,
   reportListErrorSchema,
   ReportSchema,
@@ -84,21 +83,21 @@ describe("Reports Schema Tests", () => {
     });
   });
 
-  describe("ReportListParamsInternalSchema", () => {
-    it("should include additional internal fields", () => {
-      const internalQuery = {
-        fields: ["campaign_title", "type"],
-        exclude_fields: ["_links"],
+  describe("ReportListParamsSchema with string fields", () => {
+    it("should accept comma-separated string fields", () => {
+      const query = {
+        fields: "campaign_title,type",
+        exclude_fields: "_links",
         count: 25,
         offset: 50,
         type: "regular" as const,
       };
 
-      const result = ReportListParamsInternalSchema.safeParse(internalQuery);
+      const result = ReportListParamsSchema.safeParse(query);
       expect(result.success).toBe(true);
       if (result.success && result.data) {
         expect(result.data.count).toBe(25);
-        expect(result.data.fields).toEqual(["campaign_title", "type"]);
+        expect(result.data.fields).toBe("campaign_title,type");
       }
     });
   });

@@ -9,55 +9,27 @@
 "use server";
 
 import { mailchimpService } from "@/services/mailchimp.service";
-import {
-  RootParamsSchema,
-  RootParamsInternalSchema,
-} from "@/schemas/mailchimp/root-params.schema";
+import { RootParamsSchema } from "@/schemas/mailchimp/root-params.schema";
 import { RootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
-import { rootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
-import type {
-  Root,
-  RootQuery,
-  RootQueryInternal,
-  RootErrorResponse,
-} from "@/types/mailchimp";
-
-/**
- * Transform array-based query parameters to comma-separated strings for API
- */
-function transformQueryParams(params: RootQueryInternal): RootQuery {
-  const result: RootQuery = {};
-
-  if (params.fields) {
-    result.fields = Array.isArray(params.fields)
-      ? params.fields.join(",")
-      : params.fields;
-  }
-
-  if (params.exclude_fields) {
-    result.exclude_fields = Array.isArray(params.exclude_fields)
-      ? params.exclude_fields.join(",")
-      : params.exclude_fields;
-  }
-
-  return result;
-}
+import { RootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
+import { convertFieldsToCommaString } from "@/utils/mailchimp";
+import type { RootSuccess, RootError } from "@/types/mailchimp";
 
 /**
  * Fetch Mailchimp API Root data with field selection
  *
- * @param query - Query parameters for field selection
- * @returns Promise<Root | RootErrorResponse>
+ * @param query - Query parameters for field selection (accepts fields as string or array)
+ * @returns Promise<RootSuccess | RootError>
  */
 export async function getApiRoot(
-  query: RootQueryInternal = {},
-): Promise<Root | RootErrorResponse> {
+  query: {
+    fields?: string | string[];
+    exclude_fields?: string | string[];
+  } = {},
+): Promise<RootSuccess | RootError> {
   try {
-    // Validate and parse input parameters (internal format with arrays)
-    const validatedQuery = RootParamsInternalSchema.parse(query);
-
-    // Transform to API format (strings)
-    const apiQuery = transformQueryParams(validatedQuery);
+    // Convert arrays to comma-separated strings
+    const apiQuery = convertFieldsToCommaString(query);
 
     // Validate API format parameters
     const validatedApiQuery = RootParamsSchema.parse(apiQuery);
@@ -71,7 +43,7 @@ export async function getApiRoot(
       return validatedData;
     } else {
       // Handle API error response
-      const errorResponse: RootErrorResponse = {
+      const errorResponse: RootError = {
         type: "about:blank",
         title: "API Root Error",
         detail: response.error || "Failed to fetch API root data",
@@ -80,13 +52,13 @@ export async function getApiRoot(
       };
 
       // Validate error response structure
-      return rootErrorSchema.parse(errorResponse);
+      return RootErrorSchema.parse(errorResponse);
     }
   } catch (error) {
     console.error("Mailchimp API Root error:", error);
 
     // Return structured error response
-    const errorResponse: RootErrorResponse = {
+    const errorResponse: RootError = {
       type: "about:blank",
       title: "Validation Error",
       detail: error instanceof Error ? error.message : "Unknown error occurred",
@@ -94,7 +66,7 @@ export async function getApiRoot(
       instance: "/",
     };
 
-    return rootErrorSchema.parse(errorResponse);
+    return RootErrorSchema.parse(errorResponse);
   }
 }
 

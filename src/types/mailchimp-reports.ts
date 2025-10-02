@@ -4,8 +4,8 @@
  * Inferred from Zod schema in src/schemas/mailchimp/reports-params.schema.ts
  *
  * Parameters:
- *   - fields?: string[]
- *   - exclude_fields?: string[]
+ *   - fields?: string (comma-separated) or string[] (converted by utility)
+ *   - exclude_fields?: string (comma-separated) or string[] (converted by utility)
  *   - count?: number
  *   - offset?: number
  *   - type?: "regular" | "plaintext" | "absplit" | "rss" | "variate"
@@ -22,13 +22,13 @@
  * Reference: https://mailchimp.com/developer/marketing/api/reports/list-campaign-reports/
  */
 import { z } from "zod";
-import { ReportListParamsInternalSchema } from "@/schemas/mailchimp/reports-params.schema";
+import { ReportListParamsSchema } from "@/schemas/mailchimp/reports-params.schema";
 
-export type ReportsQueryBase = z.infer<typeof ReportListParamsInternalSchema>;
+export type ReportsQueryBase = z.infer<typeof ReportListParamsSchema>;
 
 export interface ReportsQuery {
-  fields?: string[];
-  exclude_fields?: string[];
+  fields?: string | string[];
+  exclude_fields?: string | string[];
   count?: number;
   offset?: number;
   type?: "regular" | "plaintext" | "absplit" | "rss" | "variate";

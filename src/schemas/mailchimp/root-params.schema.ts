@@ -11,20 +11,13 @@ import { z } from "zod";
  * Supported parameters:
  * - fields: comma-separated list of fields to return, supports dot notation for sub-objects
  * - exclude_fields: comma-separated list of fields to exclude, supports dot notation for sub-objects
+ *
+ * Note: For developer convenience, server actions can accept fields as arrays and use
+ * convertFieldsToCommaString() utility to transform them to the API's comma-separated format.
  */
 export const RootParamsSchema = z
   .object({
-    // Field selection (API expects comma-separated strings)
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),
   })
   .strict(); // Reject unknown properties
-
-/**
- * Alternative schema for actions/internal use where fields are arrays
- * Transforms string fields to arrays for service layer consumption
- */
-export const RootParamsInternalSchema = RootParamsSchema.extend({
-  fields: z.union([z.string(), z.array(z.string())]).optional(),
-  exclude_fields: z.union([z.string(), z.array(z.string())]).optional(),
-}).strict(); // Also reject unknown properties in internal schema

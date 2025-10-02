@@ -19,13 +19,13 @@ import type {
 import type {
   ListsPageSearchParams,
   ReportsPageSearchParams,
-  Root,
-  RootQuery,
+  RootSuccess,
+  RootParams,
   ListsSuccess,
 } from "@/types/mailchimp";
 import {
   ListsParamsSchema,
-  ReportListParamsInternalSchema,
+  ReportListParamsSchema,
   OpenListQueryParamsSchema,
   RootParamsSchema,
 } from "@/schemas/mailchimp";
@@ -89,7 +89,7 @@ export class MailchimpService {
 
     // Validate transformed parameters using schema (applies defaults)
     const validationResult =
-      ReportListParamsInternalSchema.safeParse(transformedParams);
+      ReportListParamsSchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,
@@ -139,7 +139,7 @@ export class MailchimpService {
   /**
    * System Operations
    */
-  async getApiRoot(params?: RootQuery): Promise<ApiResponse<Root>> {
+  async getApiRoot(params?: RootParams): Promise<ApiResponse<RootSuccess>> {
     // Validate parameters if provided
     if (params !== undefined) {
       const validationResult = RootParamsSchema.safeParse(params);

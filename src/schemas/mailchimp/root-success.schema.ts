@@ -47,35 +47,24 @@ export const PRICING_PLAN_TYPES = [
  * Main API Root response schema
  */
 export const RootSuccessSchema = z.object({
-  // String fields
   account_id: z.string(),
   login_id: z.string(),
   account_name: z.string(),
-  email: z.string(),
+  email: z.email(),
   first_name: z.string(),
   last_name: z.string(),
   username: z.string(),
-  avatar_url: z.string(),
+  avatar_url: z.url(),
   role: z.string(),
+  member_since: z.iso.datetime({ offset: true }),
+  pricing_plan_type: z.enum(PRICING_PLAN_TYPES),
   first_payment: z.iso.datetime({ offset: true }),
   account_timezone: z.string(),
   account_industry: z.string(),
-  last_login: z.iso.datetime({ offset: true }),
-
-  // ISO 8601 datetime with timezone support
-  member_since: z.iso.datetime({ offset: true }), // ISO 8601 format with timezone
-
-  // Enum field
-  pricing_plan_type: z.enum(PRICING_PLAN_TYPES),
-
-  // Boolean field
-  pro_enabled: z.boolean(),
-
-  // Integer field
-  total_subscribers: z.number().int(),
-
-  // Object fields
   contact: RootContactSchema,
+  pro_enabled: z.boolean(),
+  last_login: z.iso.datetime({ offset: true }),
+  total_subscribers: z.number().min(0),
   industry_stats: RootIndustryStatsSchema,
   _links: z.array(LinkSchema),
 });
