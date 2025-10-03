@@ -10,12 +10,12 @@
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
-import { LinkSchema } from "@/schemas/mailchimp/common/link.schema";
+import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
  * Schema for account contact information
  */
-export const RootContactSchema = z.object({
+export const rootContactSchema = z.object({
   company: z.string(),
   addr1: z.string(),
   addr2: z.string(),
@@ -28,7 +28,7 @@ export const RootContactSchema = z.object({
 /**
  * Schema for industry statistics
  */
-export const RootIndustryStatsSchema = z.object({
+export const rootIndustryStatsSchema = z.object({
   open_rate: z.number(),
   bounce_rate: z.number(),
   click_rate: z.number(),
@@ -46,7 +46,7 @@ export const PRICING_PLAN_TYPES = [
 /**
  * Main API Root response schema
  */
-export const RootSuccessSchema = z.object({
+export const rootSuccessSchema = z.object({
   account_id: z.string(),
   login_id: z.string(),
   account_name: z.string(),
@@ -61,10 +61,10 @@ export const RootSuccessSchema = z.object({
   first_payment: z.iso.datetime({ offset: true }),
   account_timezone: z.string(),
   account_industry: z.string(),
-  contact: RootContactSchema,
+  contact: rootContactSchema,
   pro_enabled: z.boolean(),
   last_login: z.iso.datetime({ offset: true }),
   total_subscribers: z.number().min(0),
-  industry_stats: RootIndustryStatsSchema,
-  _links: z.array(LinkSchema),
+  industry_stats: rootIndustryStatsSchema,
+  _links: z.array(linkSchema),
 });

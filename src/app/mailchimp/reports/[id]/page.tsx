@@ -18,7 +18,7 @@ import type { CampaignReport } from "@/types/mailchimp";
 import { generateCampaignReportMetadata } from "@/utils";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { isDev } from "@/lib/config";
-import type { ReportPageProps } from "@/types/mailchimp";
+import type { ReportPageProps } from "@/types/components/mailchimp";
 
 async function CampaignReportPageContent({
   params,

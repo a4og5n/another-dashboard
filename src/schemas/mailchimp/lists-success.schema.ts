@@ -16,7 +16,7 @@ export const LIST_VISIBILITY = ["pub", "prv"] as const;
 /**
  * Contact information schema
  */
-export const ListContactSchema = z.object({
+export const listContactSchema = z.object({
   company: z.string(),
   address1: z.string(),
   address2: z.string().optional(),
@@ -30,7 +30,7 @@ export const ListContactSchema = z.object({
 /**
  * Campaign defaults schema
  */
-export const ListCampaignDefaultsSchema = z.object({
+export const listCampaignDefaultsSchema = z.object({
   from_name: z.string(),
   from_email: z.string(),
   subject: z.string(),
@@ -40,7 +40,7 @@ export const ListCampaignDefaultsSchema = z.object({
 /**
  * schema
  */
-export const ListConstraintsSchema = z.object({
+export const listConstraintsSchema = z.object({
   may_create: z.boolean(),
   max_instances: z.number(), // -1 indicates unlimited
   current_total_instances: z.number(), // -1 indicates unlimited
@@ -49,7 +49,7 @@ export const ListConstraintsSchema = z.object({
 /**
  * Stats schema
  */
-export const ListStatsSchema = z.object({
+export const listStatsSchema = z.object({
   member_count: z.number().min(0),
   total_contacts: z.number().min(0),
   unsubscribe_count: z.number().min(0),
@@ -72,14 +72,14 @@ export const ListStatsSchema = z.object({
 /**
  * Main list schema
  */
-export const ListSchema = z.object({
+export const listSchema = z.object({
   id: z.string(),
   web_id: z.number(),
   name: z.string(),
-  contact: ListContactSchema,
+  contact: listContactSchema,
   permission_reminder: z.string(),
   use_archive_bar: z.boolean(),
-  campaign_defaults: ListCampaignDefaultsSchema,
+  campaign_defaults: listCampaignDefaultsSchema,
   notify_on_subscribe: z.string().optional(),
   notify_on_unsubscribe: z.string().optional(),
   date_created: z.iso.datetime({ offset: true }),
@@ -93,16 +93,16 @@ export const ListSchema = z.object({
   has_welcome: z.boolean(),
   marketing_permissions: z.boolean(),
   modules: z.array(z.string()).optional(),
-  stats: ListStatsSchema,
+  stats: listStatsSchema,
   _links: z.array(z.any()).optional(),
 });
 
 /**
  * Lists success response schema
  */
-export const ListsSuccessSchema = z.object({
-  lists: z.array(ListSchema),
+export const listsSuccessSchema = z.object({
+  lists: z.array(listSchema),
   total_items: z.number(),
-  constraints: ListConstraintsSchema,
+  constraints: listConstraintsSchema,
   _links: z.array(z.any()).optional(),
 });

@@ -8,17 +8,17 @@
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
-import { LinkSchema } from "@/schemas/mailchimp/common/link.schema";
-import { ReportListMemberSchema } from "@/schemas/mailchimp/common/report-list-member.schema";
+import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
+import { reportListMemberSchema } from "@/schemas/mailchimp/common/report-list-member.schema";
 
 /**
  * Main reports list success response schema
  */
-export const ReportOpenListSuccessSchema = z.object({
-  members: z.array(ReportListMemberSchema),
+export const reportOpenListSuccessSchema = z.object({
+  members: z.array(reportListMemberSchema),
   campaign_id: z.string(),
   total_opens: z.number(),
   total_proxy_excluded_opens: z.number(),
   total_items: z.number().min(0),
-  _links: z.array(LinkSchema),
+  _links: z.array(linkSchema),
 });

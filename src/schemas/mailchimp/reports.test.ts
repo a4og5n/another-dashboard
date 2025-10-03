@@ -8,20 +8,20 @@
 
 import { describe, it, expect } from "vitest";
 import {
-  ReportListParamsSchema,
-  ReportListSuccessSchema,
+  reportListParamsSchema,
+  reportListSuccessSchema,
   reportListErrorSchema,
-  ReportSchema,
-  ReportBouncesSchema,
-  ReportOpensSchema,
-  ReportClicksSchema,
-  ReportIndustryStatsSchema,
-  ReportEcommerceSchema,
-  ReportDeliveryStatusSchema,
+  reportSchema,
+  reportBouncesSchema,
+  reportOpensSchema,
+  reportClicksSchema,
+  reportIndustryStatsSchema,
+  reportEcommerceSchema,
+  reportDeliveryStatusSchema,
 } from "@/schemas/mailchimp";
 
 describe("Reports Schema Tests", () => {
-  describe("ReportListParamsSchema", () => {
+  describe("reportListParamsSchema", () => {
     it("should validate valid query parameters", () => {
       const validQuery = {
         fields: "campaign_title,type,emails_sent",
@@ -33,7 +33,7 @@ describe("Reports Schema Tests", () => {
         since_send_time: "2023-01-01T00:00:00Z",
       };
 
-      const result = ReportListParamsSchema.safeParse(validQuery);
+      const result = reportListParamsSchema.safeParse(validQuery);
       expect(result.success).toBe(true);
       if (result.success && result.data) {
         expect(result.data.count).toBe(20);
@@ -44,7 +44,7 @@ describe("Reports Schema Tests", () => {
     it("should handle minimal query parameters", () => {
       const minimalQuery = {};
 
-      const result = ReportListParamsSchema.safeParse(minimalQuery);
+      const result = reportListParamsSchema.safeParse(minimalQuery);
       expect(result.success).toBe(true);
     });
 
@@ -53,7 +53,7 @@ describe("Reports Schema Tests", () => {
 
       validTypes.forEach((type) => {
         const query = { type };
-        const result = ReportListParamsSchema.safeParse(query);
+        const result = reportListParamsSchema.safeParse(query);
         expect(result.success).toBe(true);
       });
     });
@@ -61,29 +61,29 @@ describe("Reports Schema Tests", () => {
     it("should reject invalid campaign types", () => {
       const invalidQuery = { type: "invalid_type" };
 
-      const result = ReportListParamsSchema.safeParse(invalidQuery);
+      const result = reportListParamsSchema.safeParse(invalidQuery);
       expect(result.success).toBe(false);
     });
 
     it("should validate count boundaries", () => {
       // Valid count
-      expect(ReportListParamsSchema.safeParse({ count: 50 }).success).toBe(
+      expect(reportListParamsSchema.safeParse({ count: 50 }).success).toBe(
         true,
       );
 
       // Invalid count (too high)
-      expect(ReportListParamsSchema.safeParse({ count: 1001 }).success).toBe(
+      expect(reportListParamsSchema.safeParse({ count: 1001 }).success).toBe(
         false,
       );
 
       // Invalid count (negative)
-      expect(ReportListParamsSchema.safeParse({ count: -1 }).success).toBe(
+      expect(reportListParamsSchema.safeParse({ count: -1 }).success).toBe(
         false,
       );
     });
   });
 
-  describe("ReportListParamsSchema with string fields", () => {
+  describe("reportListParamsSchema with string fields", () => {
     it("should accept comma-separated string fields", () => {
       const query = {
         fields: "campaign_title,type",
@@ -93,7 +93,7 @@ describe("Reports Schema Tests", () => {
         type: "regular" as const,
       };
 
-      const result = ReportListParamsSchema.safeParse(query);
+      const result = reportListParamsSchema.safeParse(query);
       expect(result.success).toBe(true);
       if (result.success && result.data) {
         expect(result.data.count).toBe(25);
@@ -102,7 +102,7 @@ describe("Reports Schema Tests", () => {
     });
   });
 
-  describe("ReportListSuccessSchema", () => {
+  describe("reportListSuccessSchema", () => {
     it("should validate complete success response", () => {
       const successResponse = {
         reports: [
@@ -247,7 +247,7 @@ describe("Reports Schema Tests", () => {
         ],
       };
 
-      const result = ReportListSuccessSchema.safeParse(successResponse);
+      const result = reportListSuccessSchema.safeParse(successResponse);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.reports).toHaveLength(1);
@@ -271,12 +271,12 @@ describe("Reports Schema Tests", () => {
         ],
       };
 
-      const result = ReportListSuccessSchema.safeParse(emptyResponse);
+      const result = reportListSuccessSchema.safeParse(emptyResponse);
       expect(result.success).toBe(true);
     });
   });
 
-  describe("ReportSchema", () => {
+  describe("reportSchema", () => {
     it("should validate complete campaign report", () => {
       const campaignReport = {
         id: "campaign123",
@@ -409,7 +409,7 @@ describe("Reports Schema Tests", () => {
         ],
       };
 
-      const result = ReportSchema.safeParse(campaignReport);
+      const result = reportSchema.safeParse(campaignReport);
       expect(result.success).toBe(true);
     });
 
@@ -419,13 +419,13 @@ describe("Reports Schema Tests", () => {
         // Missing required fields
       };
 
-      const result = ReportSchema.safeParse(incompleteReport);
+      const result = reportSchema.safeParse(incompleteReport);
       expect(result.success).toBe(false);
     });
   });
 
   describe("Nested Report Schemas", () => {
-    describe("ReportBouncesSchema", () => {
+    describe("reportBouncesSchema", () => {
       it("should validate bounce data", () => {
         const bounces = {
           hard_bounces: 5,
@@ -433,7 +433,7 @@ describe("Reports Schema Tests", () => {
           syntax_errors: 1,
         };
 
-        const result = ReportBouncesSchema.safeParse(bounces);
+        const result = reportBouncesSchema.safeParse(bounces);
         expect(result.success).toBe(true);
       });
 
@@ -444,12 +444,12 @@ describe("Reports Schema Tests", () => {
           syntax_errors: 1,
         };
 
-        const result = ReportBouncesSchema.safeParse(invalidBounces);
+        const result = reportBouncesSchema.safeParse(invalidBounces);
         expect(result.success).toBe(false);
       });
     });
 
-    describe("ReportOpensSchema", () => {
+    describe("reportOpensSchema", () => {
       it("should validate opens data with rates", () => {
         const opens = {
           opens_total: 100,
@@ -461,7 +461,7 @@ describe("Reports Schema Tests", () => {
           last_open: "2023-11-01T10:00:00Z",
         };
 
-        const result = ReportOpensSchema.safeParse(opens);
+        const result = reportOpensSchema.safeParse(opens);
         expect(result.success).toBe(true);
       });
 
@@ -473,12 +473,12 @@ describe("Reports Schema Tests", () => {
           last_open: "2023-11-01T10:00:00Z",
         };
 
-        const result = ReportOpensSchema.safeParse(highRate);
+        const result = reportOpensSchema.safeParse(highRate);
         expect(result.success).toBe(true);
       });
     });
 
-    describe("ReportClicksSchema", () => {
+    describe("reportClicksSchema", () => {
       it("should validate clicks data", () => {
         const clicks = {
           clicks_total: 50,
@@ -488,12 +488,12 @@ describe("Reports Schema Tests", () => {
           last_click: "2023-11-01T12:00:00Z",
         };
 
-        const result = ReportClicksSchema.safeParse(clicks);
+        const result = reportClicksSchema.safeParse(clicks);
         expect(result.success).toBe(true);
       });
     });
 
-    describe("ReportIndustryStatsSchema", () => {
+    describe("reportIndustryStatsSchema", () => {
       it("should validate industry statistics", () => {
         const industryStats = {
           type: "E-commerce",
@@ -505,7 +505,7 @@ describe("Reports Schema Tests", () => {
           abuse_rate: 0.001,
         };
 
-        const result = ReportIndustryStatsSchema.safeParse(industryStats);
+        const result = reportIndustryStatsSchema.safeParse(industryStats);
         expect(result.success).toBe(true);
       });
 
@@ -518,13 +518,13 @@ describe("Reports Schema Tests", () => {
           unsubscribe_rate: 0.005,
         };
 
-        const result = ReportIndustryStatsSchema.safeParse(invalidStats);
+        const result = reportIndustryStatsSchema.safeParse(invalidStats);
         expect(result.success).toBe(false);
       });
     });
   });
 
-  describe("ReportDeliveryStatusSchema", () => {
+  describe("reportDeliveryStatusSchema", () => {
     it("should validate all delivery statuses", () => {
       const validStatuses = [
         "delivering",
@@ -542,7 +542,7 @@ describe("Reports Schema Tests", () => {
           emails_canceled: 0,
         };
 
-        const result = ReportDeliveryStatusSchema.safeParse(deliveryStatus);
+        const result = reportDeliveryStatusSchema.safeParse(deliveryStatus);
         expect(result.success).toBe(true);
       });
     });
@@ -556,7 +556,7 @@ describe("Reports Schema Tests", () => {
         emails_canceled: 0,
       };
 
-      const result = ReportDeliveryStatusSchema.safeParse(invalidStatus);
+      const result = reportDeliveryStatusSchema.safeParse(invalidStatus);
       expect(result.success).toBe(false);
     });
   });
@@ -587,7 +587,7 @@ describe("Reports Schema Tests", () => {
   });
 
   describe("Optional Schemas", () => {
-    describe("ReportEcommerceSchema", () => {
+    describe("reportEcommerceSchema", () => {
       it("should validate ecommerce data", () => {
         const ecommerce = {
           total_orders: 25,
@@ -596,7 +596,7 @@ describe("Reports Schema Tests", () => {
           currency_code: "USD",
         };
 
-        const result = ReportEcommerceSchema.safeParse(ecommerce);
+        const result = reportEcommerceSchema.safeParse(ecommerce);
         expect(result.success).toBe(true);
       });
 
@@ -608,7 +608,7 @@ describe("Reports Schema Tests", () => {
           currency_code: "EUR",
         };
 
-        const result = ReportEcommerceSchema.safeParse(validCurrency);
+        const result = reportEcommerceSchema.safeParse(validCurrency);
         expect(result.success).toBe(true);
       });
     });

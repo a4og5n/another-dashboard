@@ -7,11 +7,11 @@
  * Documentation: https://mailchimp.com/developer/marketing/api/reports/get-campaign-report/
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
-import { ReportSchema } from "@/schemas/mailchimp/common/report.schema";
+import { reportSchema } from "@/schemas/mailchimp/common/report.schema";
 
 /**
  * Report success response schema
- * Reuses the common ReportSchema as the endpoint returns the same structure
- * ReportSchema already includes _links as an array of LinkSchema
+ * Reuses the common reportSchema as the endpoint returns the same structure
+ * reportSchema already includes _links as an array of linkSchema
  */
-export const ReportSuccessSchema = ReportSchema;
+export const reportSuccessSchema = reportSchema;

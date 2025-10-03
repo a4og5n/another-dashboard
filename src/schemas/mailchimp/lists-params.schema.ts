@@ -11,7 +11,7 @@ export const SORT_FIELD = "date_created" as const;
 export const LISTS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
 
 /**
- * ListsParamsSchema
+ * listsParamsSchema
  * Zod schema for Mailchimp Lists API query parameters
  *
  * Based on: https://mailchimp.com/developer/marketing/api/lists/
@@ -23,7 +23,7 @@ export const LISTS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
  * - count: number of records to return (1-1000)
  * - offset: number of records to skip
  */
-export const ListsParamsSchema = z
+export const listsParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),

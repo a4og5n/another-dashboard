@@ -16,18 +16,16 @@ import type {
   ReportListSuccess,
   ReportSuccess,
 } from "@/types/mailchimp";
+import type { RootSuccess, RootParams, ListsSuccess } from "@/types/mailchimp";
 import type {
   ListsPageSearchParams,
   ReportsPageSearchParams,
-  RootSuccess,
-  RootParams,
-  ListsSuccess,
-} from "@/types/mailchimp";
+} from "@/types/components/mailchimp";
 import {
-  ListsParamsSchema,
-  ReportListParamsSchema,
-  OpenListQueryParamsSchema,
-  RootParamsSchema,
+  listsParamsSchema,
+  reportListParamsSchema,
+  openListQueryParamsSchema,
+  rootParamsSchema,
 } from "@/schemas/mailchimp";
 
 // Re-export the report type for external use
@@ -50,7 +48,7 @@ export class MailchimpService {
     );
 
     // Validate transformed parameters using schema (applies defaults)
-    const validationResult = ListsParamsSchema.safeParse(transformedParams);
+    const validationResult = listsParamsSchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,
@@ -89,7 +87,7 @@ export class MailchimpService {
 
     // Validate transformed parameters using schema (applies defaults)
     const validationResult =
-      ReportListParamsSchema.safeParse(transformedParams);
+      reportListParamsSchema.safeParse(transformedParams);
     if (!validationResult.success) {
       return {
         success: false,
@@ -116,7 +114,7 @@ export class MailchimpService {
   ): Promise<ApiResponse<unknown>> {
     // Validate parameters if provided
     if (params !== undefined) {
-      const validationResult = OpenListQueryParamsSchema.safeParse(params);
+      const validationResult = openListQueryParamsSchema.safeParse(params);
       if (!validationResult.success) {
         return {
           success: false,
@@ -142,7 +140,7 @@ export class MailchimpService {
   async getApiRoot(params?: RootParams): Promise<ApiResponse<RootSuccess>> {
     // Validate parameters if provided
     if (params !== undefined) {
-      const validationResult = RootParamsSchema.safeParse(params);
+      const validationResult = rootParamsSchema.safeParse(params);
       if (!validationResult.success) {
         return {
           success: false,

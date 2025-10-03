@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LinkSchema } from "@/schemas/mailchimp/common/link.schema";
+import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 const oneOpen = z.object({
   timestamp: z.iso.datetime({ offset: true }), //The date and time recorded for the action in ISO 8601 format.
@@ -9,7 +9,7 @@ const oneOpen = z.object({
 /**
  * Schema for Mailchimp merge field address type
  */
-const MergeFieldAddressSchema = z.object({
+const mergeFieldAddressSchema = z.object({
   addr1: z.string(),
   addr2: z.string().optional(),
   city: z.string(),
@@ -28,11 +28,11 @@ const mergeField = z.record(
   z.union([
     z.string(), // text, radio, dropdown, date, birthday, zip, phone, url, imageurl
     z.number(), // number
-    MergeFieldAddressSchema, // address
+    mergeFieldAddressSchema, // address
   ]),
 );
 
-export const ReportListMemberSchema = z.object({
+export const reportListMemberSchema = z.object({
   campaign_id: z.string(),
   list_id: z.string(),
   list_is_active: z.boolean(),
@@ -44,5 +44,5 @@ export const ReportListMemberSchema = z.object({
   opens_count: z.number(),
   proxy_excluded_opens_count: z.number(),
   opens: z.array(oneOpen),
-  _links: z.array(LinkSchema).optional(),
+  _links: z.array(linkSchema).optional(),
 });

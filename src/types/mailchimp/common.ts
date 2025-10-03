@@ -8,7 +8,7 @@
 import { z } from "zod";
 import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
 import {
-  LinkSchema,
+  linkSchema,
   HTTP_METHODS,
 } from "@/schemas/mailchimp/common/link.schema";
 
@@ -22,7 +22,7 @@ export type ErrorResponse = z.infer<typeof errorSchema>;
  * Mailchimp Link Type
  * Inferred from common link schema
  */
-export type Link = z.infer<typeof LinkSchema>;
+export type Link = z.infer<typeof linkSchema>;
 
 /**
  * HTTP Method Type

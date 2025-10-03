@@ -6,10 +6,10 @@
  */
 
 import { z } from "zod";
-import { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
-import { ReportsPageParamsSchema } from "@/schemas/components/reports-page-params.schema";
+import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import { reportsPageParamsSchema } from "@/schemas/components/reports-page-params.schema";
 import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports-params.schema";
-import type { ReportsPageSearchParams } from "@/types/mailchimp";
+import type { ReportsPageSearchParams } from "@/types/components/mailchimp";
 /**
  * Transforms page-based pagination parameters to Mailchimp API offset-based format
  * Used by service layer for converting URL params to API params
@@ -83,7 +83,7 @@ export const validDate = (val: string): boolean => {
  * ```
  */
 export function transformQueryParams(
-  params: z.infer<typeof ListsParamsSchema>,
+  params: z.infer<typeof listsParamsSchema>,
 ) {
   // Return params as is - don't convert to arrays to match type expectations
   return params;
@@ -109,7 +109,7 @@ export function transformQueryParams(
 export function validateReportsPageParams(
   params: Record<string, string | undefined>,
 ) {
-  const result = ReportsPageParamsSchema.safeParse(params);
+  const result = reportsPageParamsSchema.safeParse(params);
 
   if (!result.success) {
     return {

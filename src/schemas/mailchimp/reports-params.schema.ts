@@ -26,7 +26,7 @@ export const REPORT_QUERY_TYPES = [
  * Note: For developer convenience, server actions can accept fields as arrays and use
  * convertFieldsToCommaString() utility to transform them to the API's comma-separated format.
  */
-export const ReportListParamsSchema = z
+export const reportListParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),

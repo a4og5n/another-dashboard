@@ -16,28 +16,29 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
+import { Eye, Star, Users } from "lucide-react";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
-import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import { Users, Eye, Star } from "lucide-react";
 import Link from "next/link";
 import {
+  createPageUrlBuilder,
+  createPerPageUrlBuilder,
   formatDateShort,
   formatNumber,
   formatPercent,
-  createPageUrlBuilder,
-  createPerPageUrlBuilder,
 } from "@/utils";
-import { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import type { ListOverviewProps } from "@/types/components/mailchimp";
+import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import { PER_PAGE_OPTIONS } from "@/types/components/ui";
 
 export function ListOverview({
-  responseData,
+  data,
   currentPage = 1,
-  pageSize = ListsParamsSchema.parse({}).count,
+  pageSize = listsParamsSchema.parse({}).count,
   error = null,
 }: ListOverviewProps) {
-  const defaultPageSize = ListsParamsSchema.parse({}).count;
+  const defaultPageSize = listsParamsSchema.parse({}).count;
 
   // URL builder functions for server-side navigation
   const createPageUrl = createPageUrlBuilder({
@@ -60,12 +61,12 @@ export function ListOverview({
   }
 
   // Handle prop validation - no response data provided
-  if (!responseData) {
+  if (!data) {
     return <DashboardInlineError error="No list data provided" />;
   }
 
-  const lists = responseData.lists || [];
-  const totalCount = responseData.total_items || 0;
+  const lists = data.lists || [];
+  const totalCount = data.total_items || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
@@ -177,7 +178,7 @@ export function ListOverview({
         <div className="flex items-center justify-between">
           <PerPageSelector
             value={pageSize}
-            options={[10, 25, 50, 100]}
+            options={[...PER_PAGE_OPTIONS]}
             createPerPageUrl={createPerPageUrl}
             itemName="lists per page"
           />

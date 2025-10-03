@@ -9,9 +9,9 @@
 "use server";
 
 import { mailchimpService } from "@/services/mailchimp.service";
-import { RootParamsSchema } from "@/schemas/mailchimp/root-params.schema";
-import { RootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
-import { RootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
+import { rootParamsSchema } from "@/schemas/mailchimp/root-params.schema";
+import { rootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
+import { rootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
 import { convertFieldsToCommaString } from "@/utils/mailchimp";
 import type { RootSuccess, RootError } from "@/types/mailchimp";
 
@@ -32,14 +32,14 @@ export async function getApiRoot(
     const apiQuery = convertFieldsToCommaString(query);
 
     // Validate API format parameters
-    const validatedApiQuery = RootParamsSchema.parse(apiQuery);
+    const validatedApiQuery = rootParamsSchema.parse(apiQuery);
 
     // Get API root data
     const response = await mailchimpService.getApiRoot(validatedApiQuery);
 
     if (response.success && response.data) {
       // Parse and validate successful response
-      const validatedData = RootSuccessSchema.parse(response.data);
+      const validatedData = rootSuccessSchema.parse(response.data);
       return validatedData;
     } else {
       // Handle API error response
@@ -52,7 +52,7 @@ export async function getApiRoot(
       };
 
       // Validate error response structure
-      return RootErrorSchema.parse(errorResponse);
+      return rootErrorSchema.parse(errorResponse);
     }
   } catch (error) {
     console.error("Mailchimp API Root error:", error);
@@ -66,7 +66,7 @@ export async function getApiRoot(
       instance: "/",
     };
 
-    return RootErrorSchema.parse(errorResponse);
+    return rootErrorSchema.parse(errorResponse);
   }
 }
 
