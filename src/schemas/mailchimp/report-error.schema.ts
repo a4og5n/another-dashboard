@@ -13,4 +13,4 @@ import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
  * Campaign report error response schema
  * Extends the common error response schema
  */
-export const ReportErrorSchema = errorSchema;
+export const reportErrorSchema = errorSchema;

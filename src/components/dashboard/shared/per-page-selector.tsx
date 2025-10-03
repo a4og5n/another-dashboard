@@ -7,11 +7,11 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import React from "react";
-import { PerPageSelectorProps } from "@/types/components/ui";
+import { PerPageSelectorProps, PER_PAGE_OPTIONS } from "@/types/components/ui";
 
 export function PerPageSelector({
   value,
-  options,
+  options = [...PER_PAGE_OPTIONS],
   onChange,
   createPerPageUrl,
   itemName = "campaigns per page",

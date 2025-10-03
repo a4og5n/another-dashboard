@@ -16,7 +16,7 @@ export const OPEN_DETAILS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
 /**
  * Schema for path parameters (campaign_id)
  */
-export const OpenListPathParamsSchema = z
+export const openListPathParamsSchema = z
   .object({
     campaign_id: z.string().min(1),
   })
@@ -25,7 +25,7 @@ export const OpenListPathParamsSchema = z
 /**
  * Schema for query parameters (pagination and field filtering)
  */
-export const OpenListQueryParamsSchema = z
+export const openListQueryParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),

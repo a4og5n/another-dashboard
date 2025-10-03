@@ -17,13 +17,13 @@ import type {
   ReportForwards,
   ReportFacebookLikes,
   ReportListStats,
-  ReportsOverviewProps,
+  Report,
 } from "@/types/mailchimp/reports";
 import type {
   ReportOpenListSuccess,
   OpenListQueryParams,
-} from "@/types/mailchimp/report-open-details";
-import { ReportBouncesSchema } from "@/schemas/mailchimp/common/report.schema";
+} from "@/types/mailchimp";
+import { reportBouncesSchema } from "@/schemas/mailchimp/common/report.schema";
 import { z } from "zod";
 import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports";
 
@@ -111,8 +111,8 @@ export interface ListHealthCardProps {
  */
 
 export type DeliveryIssuesCardProps = {
-  /** Bounce statistics for the campaign, derived from ReportBouncesSchema */
-  bounces: z.infer<typeof ReportBouncesSchema>;
+  /** Bounce statistics for the campaign, derived from reportBouncesSchema */
+  bounces: z.infer<typeof reportBouncesSchema>;
   /** Total number of emails sent in the campaign */
   totalEmails: number;
   /** Optional CSS class name for styling */
@@ -251,9 +251,27 @@ export interface AbSplitCardProps {
   className?: string;
 }
 
+/**
+ * Props for the ReportsOverview component
+ * Server component following ListOverview pattern
+ */
+export interface ReportsOverviewProps {
+  /** Campaign reports data from API response, null if error */
+  data: {
+    reports: Report[];
+    total_items: number;
+  } | null;
+  /** Current page number (validated by parent page component) */
+  currentPage?: number;
+  /** Number of items per page (validated by parent page component) */
+  pageSize?: number;
+  /** Error message if data fetch failed */
+  error?: string | null;
+}
+
 export type ReportsOverviewTableProps = {
   /** Array of campaign reports to display - properly typed */
-  reports: ReportsOverviewProps["reports"];
+  reports: Report[];
 } & Partial<z.infer<typeof reportsTablePropsSchema>>;
 
 /**
@@ -264,7 +282,7 @@ export type ParsedReportsTableProps = z.infer<
   typeof reportsTablePropsSchema
 > & {
   /** Array of campaign reports to display - properly typed */
-  reports: ReportsOverviewProps["reports"];
+  reports: Report[];
 };
 
 /**

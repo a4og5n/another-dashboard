@@ -13,13 +13,13 @@
 
 import { z } from "zod";
 import {
-  OpenListPathParamsSchema,
-  OpenListQueryParamsSchema,
+  openListPathParamsSchema,
+  openListQueryParamsSchema,
 } from "@/schemas/mailchimp/report-open-details-params.schema";
 import type {
   OpenListPathParams,
   OpenListQueryParams,
-} from "@/types/mailchimp/report-open-details";
+} from "@/types/mailchimp";
 import { mailchimpService } from "@/services/mailchimp.service";
 
 /**
@@ -48,7 +48,7 @@ export class ValidationError extends Error {
 export function validateOpenListPathParams(
   params: unknown,
 ): OpenListPathParams {
-  const result = OpenListPathParamsSchema.safeParse(params);
+  const result = openListPathParamsSchema.safeParse(params);
   if (!result.success) {
     throw new ValidationError(
       "Invalid campaign open list path parameters",
@@ -71,7 +71,7 @@ export function validateOpenListPathParams(
 export function validateOpenListQueryParams(
   params: unknown,
 ): OpenListQueryParams {
-  const result = OpenListQueryParamsSchema.safeParse(params);
+  const result = openListQueryParamsSchema.safeParse(params);
   if (!result.success) {
     throw new ValidationError(
       "Invalid campaign open list query parameters",

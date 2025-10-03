@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports-params.schema";
+import { PER_PAGE_OPTIONS } from "@/types/components/ui";
 
 /**
  * Mailchimp Reports Page Query Parameters Schema
@@ -12,14 +13,9 @@ import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports-params.schema";
  */
 
 /**
- * Per-page options for reports table
- */
-export const REPORTS_PER_PAGE_OPTIONS = [10, 20, 50] as const;
-
-/**
  * Schema for reports page URL search parameters
  */
-export const ReportsPageParamsSchema = z.object({
+export const reportsPageParamsSchema = z.object({
   page: z
     .string()
     .optional()
@@ -35,11 +31,9 @@ export const ReportsPageParamsSchema = z.object({
     .transform((val) => parseInt(val, 10))
     .refine(
       (val) =>
-        REPORTS_PER_PAGE_OPTIONS.includes(
-          val as (typeof REPORTS_PER_PAGE_OPTIONS)[number],
-        ),
+        PER_PAGE_OPTIONS.includes(val as (typeof PER_PAGE_OPTIONS)[number]),
       {
-        message: `Per page must be one of: ${REPORTS_PER_PAGE_OPTIONS.join(", ")}`,
+        message: `Per page must be one of: ${PER_PAGE_OPTIONS.join(", ")}`,
       },
     ),
   type: z
@@ -60,4 +54,4 @@ export const ReportsPageParamsSchema = z.object({
 /**
  * Inferred type from the schema
  */
-export type ReportsPageParams = z.infer<typeof ReportsPageParamsSchema>;
+export type ReportsPageParams = z.infer<typeof reportsPageParamsSchema>;

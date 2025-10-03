@@ -22,9 +22,9 @@
  * Reference: https://mailchimp.com/developer/marketing/api/reports/list-campaign-reports/
  */
 import { z } from "zod";
-import { ReportListParamsSchema } from "@/schemas/mailchimp/reports-params.schema";
+import { reportListParamsSchema } from "@/schemas/mailchimp/reports-params.schema";
 
-export type ReportsQueryBase = z.infer<typeof ReportListParamsSchema>;
+export type ReportsQueryBase = z.infer<typeof reportListParamsSchema>;
 
 export interface ReportsQuery {
   fields?: string | string[];

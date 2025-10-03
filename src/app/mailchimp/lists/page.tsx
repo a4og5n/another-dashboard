@@ -1,10 +1,10 @@
 import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { getRedirectUrlIfNeeded } from "@/utils/pagination-url-builders";
-import { ListOverview } from "@/components/mailchimp/lists/ListOverview";
+import { ListOverview } from "@/components/mailchimp/lists/list-overview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
-import type { ListsPageProps } from "@/types/mailchimp";
-import { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import type { ListsPageProps } from "@/types/components/mailchimp";
+import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { mailchimpService } from "@/services/mailchimp.service";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -13,7 +13,7 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
   const params = await searchParams;
 
   // Server-side URL cleanup: redirect if default values are in URL
-  const queryDefaults = ListsParamsSchema.parse({});
+  const queryDefaults = listsParamsSchema.parse({});
   const redirectUrl = getRedirectUrlIfNeeded({
     basePath: "/mailchimp/lists",
     currentPage: params.page,
@@ -33,7 +33,7 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
     return (
       <ListOverview
         error={response.error || "Failed to load lists"}
-        responseData={null}
+        data={null}
       />
     );
   }
@@ -45,7 +45,7 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
   // Pass data to component
   return (
     <ListOverview
-      responseData={response.data || null}
+      data={response.data || null}
       currentPage={currentPage}
       pageSize={pageSize}
     />

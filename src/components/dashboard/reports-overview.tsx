@@ -2,12 +2,13 @@
  * Reports Overview Dashboard Component
  * Displays campaign reports with metrics cards and report list
  *
+ * Server component following PRD guideline: "Use [Server Components] by default"
+ * Only pagination UI components are client-side for interactivity
+ *
  * Issue #129: Reports dashboard component implementation
- * Following established patterns from audiences-overview.tsx
+ * Following established patterns from ListOverview.tsx
  * Implements component reuse strategy with MetricCard and Table
  */
-
-"use client";
 
 import {
   Table,
@@ -17,107 +18,59 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BarChart3, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TableSkeleton } from "@/skeletons";
-import { Pagination } from "@/components/ui/pagination";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
-import { FileText, BarChart3 } from "lucide-react";
+import { Pagination } from "@/components/ui/pagination";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import {
+  createPageUrlBuilder,
+  createPerPageUrlBuilder,
   formatDateShort,
-  usePaginationHandlers,
-  buildURLParams,
 } from "@/utils";
 import type { ReportsOverviewProps } from "@/types";
+import { PER_PAGE_OPTIONS } from "@/types/components/ui";
 
 export function ReportsOverview({
-  reports,
-  loading = false,
+  data,
+  currentPage = 1,
+  pageSize = PER_PAGE_OPTIONS[0],
   error = null,
-  currentPage,
-  totalPages,
-  perPage,
-  perPageOptions,
-  basePath,
-  additionalParams,
 }: ReportsOverviewProps) {
-  // Create pagination handlers using the utilities
-  const router = useRouter();
-  const defaultPerPage = perPageOptions[0]; // First option is the default
-  const { handlePageChange, handlePerPageChange } = usePaginationHandlers({
-    basePath,
-    currentParams: {
-      page: currentPage,
-      perPage,
-      defaultPerPage,
-      additionalParams,
-    },
+  const defaultPageSize = PER_PAGE_OPTIONS[0];
+
+  // URL builder functions for server-side navigation
+  const createPageUrl = createPageUrlBuilder({
+    basePath: "/mailchimp/reports",
+    currentPage,
+    currentPerPage: pageSize,
+    defaultPerPage: defaultPageSize,
   });
 
-  // Clean up URL on mount if default values are in the URL
-  useEffect(() => {
-    const urlParams =
-      typeof window !== "undefined"
-        ? new URLSearchParams(window.location.search)
-        : null;
-    const shouldCleanup =
-      (currentPage === 1 && urlParams?.has("page")) ||
-      (perPage === defaultPerPage && urlParams?.has("perPage"));
-
-    if (shouldCleanup && urlParams) {
-      const params = buildURLParams({
-        page: currentPage,
-        perPage,
-        defaultPerPage,
-        additionalParams,
-      });
-      router.replace(
-        `${basePath}${params.toString() ? `?${params.toString()}` : ""}`,
-      );
-    }
-  }, [
+  const createPerPageUrl = createPerPageUrlBuilder({
+    basePath: "/mailchimp/reports",
     currentPage,
-    perPage,
-    defaultPerPage,
-    basePath,
-    additionalParams,
-    router,
-  ]);
+    currentPerPage: pageSize,
+    defaultPerPage: defaultPageSize,
+  });
 
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <FileText className="h-5 w-5" />
-            <span>Campaign Reports</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TableSkeleton
-            rows={perPage}
-            columns={9}
-            data-testid="table-skeleton"
-          />
-        </CardContent>
-      </Card>
-    );
-  }
-
+  // Handle service-level errors passed from parent
   if (error) {
-    return (
-      <Card>
-        <CardContent className="text-center py-8">
-          <p className="text-red-600 font-medium">Error loading reports</p>
-          <p className="text-sm text-muted-foreground mt-1">{error}</p>
-        </CardContent>
-      </Card>
-    );
+    return <DashboardInlineError error={error} />;
   }
+
+  // Handle prop validation - no response data provided
+  if (!data) {
+    return <DashboardInlineError error="No report data provided" />;
+  }
+
+  // Extract reports and total count from API response
+  const reports = data.reports || [];
+  const totalCount = data.total_items || 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <div className="space-y-6">
@@ -226,14 +179,15 @@ export function ReportsOverview({
       {reports.length > 0 && (
         <div className="flex items-center justify-between">
           <PerPageSelector
-            value={perPage}
-            options={perPageOptions}
-            onChange={handlePerPageChange}
+            value={pageSize}
+            options={[...PER_PAGE_OPTIONS]}
+            createPerPageUrl={createPerPageUrl}
+            itemName="reports per page"
           />
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={handlePageChange}
+            createPageUrl={createPageUrl}
           />
         </div>
       )}

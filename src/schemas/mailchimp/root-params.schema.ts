@@ -15,7 +15,7 @@ import { z } from "zod";
  * Note: For developer convenience, server actions can accept fields as arrays and use
  * convertFieldsToCommaString() utility to transform them to the API's comma-separated format.
  */
-export const RootParamsSchema = z
+export const rootParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),

@@ -7,4 +7,4 @@ import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
  *
  * Issue #118: API Root error responses follow the same RFC 7807 structure as other endpoints
  */
-export const RootErrorSchema = errorSchema;
+export const rootErrorSchema = errorSchema;

@@ -12,7 +12,7 @@ import { z } from "zod";
 /**
  * Schema for path parameters (campaign_id)
  */
-export const ReportPathParamsSchema = z
+export const reportPathParamsSchema = z
   .object({
     campaign_id: z.string().min(1),
   })
@@ -21,7 +21,7 @@ export const ReportPathParamsSchema = z
 /**
  * Schema for query parameters (optional field filtering)
  */
-export const ReportQueryParamsSchema = z
+export const reportQueryParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),

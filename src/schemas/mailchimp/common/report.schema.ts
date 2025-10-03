@@ -7,7 +7,7 @@
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
-import { LinkSchema } from "@/schemas/mailchimp/common/link.schema";
+import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
  * Report type enum values
@@ -35,7 +35,7 @@ export const DELIVERY_STATUS_TYPES = [
 /**
  * Schema for bounces data in reports
  */
-export const ReportBouncesSchema = z.object({
+export const reportBouncesSchema = z.object({
   hard_bounces: z.number().min(0),
   soft_bounces: z.number().min(0),
   syntax_errors: z.number().min(0),
@@ -44,7 +44,7 @@ export const ReportBouncesSchema = z.object({
 /**
  * Schema for forwards data in reports
  */
-export const ReportForwardsSchema = z.object({
+export const reportForwardsSchema = z.object({
   forwards_count: z.number().min(0),
   forwards_opens: z.number().min(0),
 });
@@ -52,7 +52,7 @@ export const ReportForwardsSchema = z.object({
 /**
  * Schema for opens data in reports
  */
-export const ReportOpensSchema = z.object({
+export const reportOpensSchema = z.object({
   opens_total: z.number().min(0),
   proxy_excluded_opens: z.number().min(0).optional(),
   unique_opens: z.number().min(0),
@@ -65,7 +65,7 @@ export const ReportOpensSchema = z.object({
 /**
  * Schema for clicks data in reports
  */
-export const ReportClicksSchema = z.object({
+export const reportClicksSchema = z.object({
   clicks_total: z.number().min(0),
   unique_clicks: z.number().min(0),
   unique_subscriber_clicks: z.number().min(0),
@@ -76,7 +76,7 @@ export const ReportClicksSchema = z.object({
 /**
  * Schema for Facebook likes data in reports
  */
-export const ReportFacebookLikesSchema = z.object({
+export const reportFacebookLikesSchema = z.object({
   recipient_likes: z.number().min(0),
   unique_likes: z.number().min(0),
   facebook_likes: z.number().min(0),
@@ -85,7 +85,7 @@ export const ReportFacebookLikesSchema = z.object({
 /**
  * Schema for industry statistics in reports
  */
-export const ReportIndustryStatsSchema = z.object({
+export const reportIndustryStatsSchema = z.object({
   type: z.string(),
   open_rate: z.number(),
   click_rate: z.number(),
@@ -98,7 +98,7 @@ export const ReportIndustryStatsSchema = z.object({
 /**
  * Schema for list statistics in reports
  */
-export const ReportListStatsSchema = z.object({
+export const reportListStatsSchema = z.object({
   sub_rate: z.number(),
   unsub_rate: z.number(),
   open_rate: z.number(),
@@ -109,7 +109,7 @@ export const ReportListStatsSchema = z.object({
 /**
  * Schema for A/B split test data in reports
  */
-export const ReportAbSplitDataSchema = z.object({
+export const reportAbSplitDataSchema = z.object({
   bounces: z.number().min(0),
   abuse_reports: z.number().min(0),
   unsubs: z.number().min(0),
@@ -124,15 +124,15 @@ export const ReportAbSplitDataSchema = z.object({
 /**
  * Schema for A/B split test results in reports
  */
-export const ReportAbSplitSchema = z.object({
-  a: ReportAbSplitDataSchema,
-  b: ReportAbSplitDataSchema,
+export const reportAbSplitSchema = z.object({
+  a: reportAbSplitDataSchema,
+  b: reportAbSplitDataSchema,
 });
 
 /**
  * Schema for timewarp data in reports
  */
-export const ReportTimewarpSchema = z.array(
+export const reportTimewarpSchema = z.array(
   z.object({
     gmt_offset: z.number(),
     opens: z.number().min(0),
@@ -148,7 +148,7 @@ export const ReportTimewarpSchema = z.array(
 /**
  * Schema for timeseries data in reports
  */
-export const ReportTimeseriesSchema = z.array(
+export const reportTimeseriesSchema = z.array(
   z.object({
     timestamp: z.iso.datetime({ offset: true }), // ISO 8601 format
     emails_sent: z.number().min(0),
@@ -161,7 +161,7 @@ export const ReportTimeseriesSchema = z.array(
 /**
  * Schema for share report data
  */
-export const ReportShareReportSchema = z.object({
+export const reportShareReportSchema = z.object({
   share_url: z.string(),
   share_password: z.string(),
 });
@@ -169,7 +169,7 @@ export const ReportShareReportSchema = z.object({
 /**
  * Schema for ecommerce data in reports
  */
-export const ReportEcommerceSchema = z.object({
+export const reportEcommerceSchema = z.object({
   total_orders: z.number().min(0),
   total_spent: z.number().min(0),
   total_revenue: z.number().min(0),
@@ -179,7 +179,7 @@ export const ReportEcommerceSchema = z.object({
 /**
  * Schema for delivery status in reports
  */
-export const ReportDeliveryStatusSchema = z.object({
+export const reportDeliveryStatusSchema = z.object({
   enabled: z.boolean(),
   can_cancel: z.boolean(),
   status: z.enum(DELIVERY_STATUS_TYPES),
@@ -190,7 +190,7 @@ export const ReportDeliveryStatusSchema = z.object({
 /**
  * Schema for individual report (reusable across endpoints)
  */
-export const ReportSchema = z.object({
+export const reportSchema = z.object({
   id: z.string(),
   campaign_title: z.string(),
   type: z.enum(REPORT_TYPES),
@@ -204,18 +204,18 @@ export const ReportSchema = z.object({
   unsubscribed: z.number().min(0),
   send_time: z.iso.datetime({ offset: true }), // ISO 8601 format
   rss_last_send: z.iso.datetime({ offset: true }).optional(), // ISO 8601 format
-  bounces: ReportBouncesSchema,
-  forwards: ReportForwardsSchema,
-  opens: ReportOpensSchema,
-  clicks: ReportClicksSchema,
-  facebook_likes: ReportFacebookLikesSchema,
-  industry_stats: ReportIndustryStatsSchema,
-  list_stats: ReportListStatsSchema,
-  ab_split: ReportAbSplitSchema.optional(),
-  timewarp: ReportTimewarpSchema.optional(),
-  timeseries: ReportTimeseriesSchema.optional(),
-  share_report: ReportShareReportSchema,
-  ecommerce: ReportEcommerceSchema,
-  delivery_status: ReportDeliveryStatusSchema,
-  _links: z.array(LinkSchema).optional(),
+  bounces: reportBouncesSchema,
+  forwards: reportForwardsSchema,
+  opens: reportOpensSchema,
+  clicks: reportClicksSchema,
+  facebook_likes: reportFacebookLikesSchema,
+  industry_stats: reportIndustryStatsSchema,
+  list_stats: reportListStatsSchema,
+  ab_split: reportAbSplitSchema.optional(),
+  timewarp: reportTimewarpSchema.optional(),
+  timeseries: reportTimeseriesSchema.optional(),
+  share_report: reportShareReportSchema,
+  ecommerce: reportEcommerceSchema,
+  delivery_status: reportDeliveryStatusSchema,
+  _links: z.array(linkSchema).optional(),
 });

@@ -5,4 +5,4 @@
  * Issue #121: General Info Overview UI components
  */
 
-export { GeneralInfoOverview } from "./GeneralInfoOverview";
+export { GeneralInfoOverview } from "./general-info-overview";

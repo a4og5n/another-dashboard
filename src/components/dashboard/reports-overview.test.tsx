@@ -4,6 +4,7 @@
  *
  * Issue #127: Reports component testing
  * Tests rendering, interaction, pagination, and accessibility
+ * Updated for server component pattern following ListOverview.tsx
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -12,19 +13,7 @@ import userEvent from "@testing-library/user-event";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
 import type { CampaignReport } from "@/types/mailchimp";
 
-// Mock Next.js router
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    back: vi.fn(),
-    forward: vi.fn(),
-    refresh: vi.fn(),
-    replace: vi.fn(),
-    prefetch: vi.fn(),
-  }),
-}));
-
-// Mock Next.js Link component
+// Mock Next.js Link component (server components don't need router mock)
 vi.mock("next/link", () => ({
   default: ({
     children,
@@ -192,15 +181,14 @@ describe("ReportsOverview Component", () => {
   ];
 
   const defaultProps = {
-    reports: mockReports,
-    loading: false,
-    error: null,
+    data: {
+      reports: mockReports,
+      total_items: 20,
+      _links: [],
+    },
     currentPage: 1,
-    totalPages: 2,
-    perPage: 10,
-    perPageOptions: [10, 20, 50],
-    basePath: "/mailchimp/reports",
-    additionalParams: {},
+    pageSize: 10,
+    error: null,
   };
 
   beforeEach(() => {
@@ -258,27 +246,11 @@ describe("ReportsOverview Component", () => {
     });
   });
 
-  describe("Loading State", () => {
-    it("should show skeleton loader when loading", () => {
-      render(<ReportsOverview {...defaultProps} loading={true} />);
-
-      expect(screen.getByTestId("table-skeleton")).toBeInTheDocument();
-      expect(screen.getByText("Campaign Reports")).toBeInTheDocument();
-    });
-
-    it("should not show reports table when loading", () => {
-      render(<ReportsOverview {...defaultProps} loading={true} />);
-
-      expect(screen.queryByText("Newsletter Campaign")).not.toBeInTheDocument();
-    });
-  });
-
   describe("Error State", () => {
     it("should display error message when there's an error", () => {
       const errorMessage = "Failed to load reports";
       render(<ReportsOverview {...defaultProps} error={errorMessage} />);
 
-      expect(screen.getByText("Error loading reports")).toBeInTheDocument();
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
     });
 
@@ -293,7 +265,12 @@ describe("ReportsOverview Component", () => {
 
   describe("Empty State", () => {
     it("should show empty state message when no reports", () => {
-      render(<ReportsOverview {...defaultProps} reports={[]} />);
+      render(
+        <ReportsOverview
+          {...defaultProps}
+          data={{ ...defaultProps.data, reports: [] }}
+        />,
+      );
 
       expect(screen.getByText("No campaign reports found")).toBeInTheDocument();
       expect(
@@ -304,7 +281,12 @@ describe("ReportsOverview Component", () => {
     });
 
     it("should not show pagination when no reports", () => {
-      render(<ReportsOverview {...defaultProps} reports={[]} />);
+      render(
+        <ReportsOverview
+          {...defaultProps}
+          data={{ ...defaultProps.data, reports: [] }}
+        />,
+      );
 
       expect(screen.queryByText("Show")).not.toBeInTheDocument();
       expect(screen.queryByText("Previous")).not.toBeInTheDocument();
@@ -363,31 +345,42 @@ describe("ReportsOverview Component", () => {
       render(<ReportsOverview {...defaultProps} />);
 
       expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
-      expect(screen.getByText("Previous")).toBeInTheDocument();
+      // Server component pattern uses links for pagination navigation
       expect(screen.getByText("Next")).toBeInTheDocument();
     });
 
     it("should render pagination controls when there are multiple pages", async () => {
-      render(<ReportsOverview {...defaultProps} totalPages={5} />);
-
-      expect(screen.getByText("Next")).toBeInTheDocument();
-      expect(screen.getByText("Previous")).toBeInTheDocument();
-    });
-
-    it("should disable previous button on first page", () => {
-      render(<ReportsOverview {...defaultProps} currentPage={1} />);
-
-      const previousButton = screen.getByText("Previous");
-      expect(previousButton.closest("button")).toBeDisabled();
-    });
-
-    it("should disable next button on last page", () => {
       render(
-        <ReportsOverview {...defaultProps} currentPage={2} totalPages={2} />,
+        <ReportsOverview
+          {...defaultProps}
+          data={{ ...defaultProps.data, total_items: 50 }}
+        />,
       );
 
-      const nextButton = screen.getByText("Next");
-      expect(nextButton.closest("button")).toBeDisabled();
+      // Verify pagination is rendered
+      expect(screen.getByText(/Page \d+ of \d+/)).toBeInTheDocument();
+    });
+
+    it("should not show previous link on first page", () => {
+      render(<ReportsOverview {...defaultProps} currentPage={1} />);
+
+      // Previous link should not be rendered on first page
+      expect(screen.queryByText("Previous")).not.toBeInTheDocument();
+      expect(screen.getByText("Next")).toBeInTheDocument();
+    });
+
+    it("should not show next link on last page", () => {
+      render(
+        <ReportsOverview
+          {...defaultProps}
+          data={{ ...defaultProps.data, total_items: 20 }}
+          currentPage={2}
+        />,
+      );
+
+      // Next link should not be rendered on last page
+      expect(screen.queryByText("Next")).not.toBeInTheDocument();
+      expect(screen.getByText("Previous")).toBeInTheDocument();
     });
   });
 
@@ -396,26 +389,70 @@ describe("ReportsOverview Component", () => {
       render(<ReportsOverview {...defaultProps} />);
 
       expect(screen.getByText("Show")).toBeInTheDocument();
-      expect(screen.getByText("campaigns per page")).toBeInTheDocument();
+      expect(screen.getByText("reports per page")).toBeInTheDocument();
     });
 
     it("should display current per page value", () => {
-      render(<ReportsOverview {...defaultProps} perPage={20} />);
+      render(
+        <ReportsOverview {...defaultProps} currentPage={1} pageSize={25} />,
+      );
 
-      expect(screen.getByText("20")).toBeInTheDocument();
+      // PerPageSelector renders links for all options (10, 25, 50, 100)
+      // The selected value (25) should have the primary background class
+      const allLinks = screen.getAllByRole("link");
+
+      // Filter for per-page selector links (they have specific styling)
+      const perPageLinks = allLinks.filter((link) => {
+        const text = link.textContent || "";
+        return (
+          ["10", "25", "50", "100"].includes(text) &&
+          (link.className.includes("bg-primary") ||
+            link.className.includes("hover:bg-accent"))
+        );
+      });
+
+      // Find the active one
+      const activeLink = perPageLinks.find((link) =>
+        link.className.includes("bg-primary"),
+      );
+
+      expect(activeLink?.textContent).toBe("25");
     });
 
-    it("should have per page selector with proper attributes", () => {
+    it("should display default per page value", () => {
       render(<ReportsOverview {...defaultProps} />);
 
-      expect(screen.getByRole("combobox")).toBeInTheDocument();
-      expect(screen.getByText("10")).toBeInTheDocument();
+      // PerPageSelector renders links for all options (10, 25, 50, 100)
+      // The default value (10) should have the primary background class
+      const allLinks = screen.getAllByRole("link");
+
+      // Filter for per-page selector links (they have specific styling)
+      const perPageLinks = allLinks.filter((link) => {
+        const text = link.textContent || "";
+        return (
+          ["10", "25", "50", "100"].includes(text) &&
+          (link.className.includes("bg-primary") ||
+            link.className.includes("hover:bg-accent"))
+        );
+      });
+
+      // Find the active one
+      const activeLink = perPageLinks.find((link) =>
+        link.className.includes("bg-primary"),
+      );
+
+      expect(activeLink?.textContent).toBe("10");
     });
   });
 
   describe("Accessibility", () => {
     it("should have proper ARIA labels for empty state", () => {
-      render(<ReportsOverview {...defaultProps} reports={[]} />);
+      render(
+        <ReportsOverview
+          {...defaultProps}
+          data={{ ...defaultProps.data, reports: [] }}
+        />,
+      );
 
       const emptyState = screen.getByRole("status");
       expect(emptyState).toHaveAttribute("aria-live", "polite");
@@ -496,39 +533,37 @@ describe("ReportsOverview Component", () => {
         },
       ];
 
-      render(<ReportsOverview {...defaultProps} reports={edgeCaseReports} />);
+      render(
+        <ReportsOverview
+          {...defaultProps}
+          data={{ ...defaultProps.data, reports: edgeCaseReports }}
+        />,
+      );
 
       expect(screen.getAllByText("0")).toHaveLength(3);
     });
   });
 
   describe("Component Props", () => {
-    it("should handle empty additional params", () => {
-      const propsWithEmptyParams = {
-        ...defaultProps,
-        additionalParams: {},
-      };
-
-      expect(() =>
-        render(<ReportsOverview {...propsWithEmptyParams} />),
-      ).not.toThrow();
-    });
-
     it("should use default values for optional props", () => {
       const minimalProps = {
-        reports: mockReports,
-        currentPage: 1,
-        totalPages: 1,
-        perPage: 10,
-        perPageOptions: [10, 20, 50],
-        basePath: "/test",
+        data: {
+          reports: mockReports,
+          total_items: 10,
+          _links: [],
+        },
       };
 
       expect(() => render(<ReportsOverview {...minimalProps} />)).not.toThrow();
     });
 
     it("should handle totalPages of 1", () => {
-      render(<ReportsOverview {...defaultProps} totalPages={1} />);
+      render(
+        <ReportsOverview
+          {...defaultProps}
+          data={{ ...defaultProps.data, total_items: 5 }}
+        />,
+      );
 
       // Pagination should be hidden when there's only one page
       expect(screen.queryByText("Page 1 of 1")).not.toBeInTheDocument();
@@ -548,7 +583,12 @@ describe("ReportsOverview Component", () => {
       }));
 
       const startTime = performance.now();
-      render(<ReportsOverview {...defaultProps} reports={largeDataset} />);
+      render(
+        <ReportsOverview
+          {...defaultProps}
+          data={{ ...defaultProps.data, reports: largeDataset }}
+        />,
+      );
       const endTime = performance.now();
 
       // Should render within reasonable time (< 1000ms for testing environment)

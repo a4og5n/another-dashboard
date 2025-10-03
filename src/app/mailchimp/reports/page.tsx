@@ -3,81 +3,60 @@
  * Displays reports with server-side data fetching
  *
  * Issue #140: Reports page implementation following App Router patterns
- * Based on audiences/page.tsx pattern with consistent layout and error handling
+ * Based on ListsPage pattern with server-side URL cleanup and proper prop handling
  * Implements Next.js best practices for error handling and layout consistency
  */
 
 import { BreadcrumbNavigation } from "@/components/layout";
-import type { ReportsPageProps } from "@/types/mailchimp/reports-page-props";
-import { REPORTS_PER_PAGE_OPTIONS } from "@/schemas/components/reports-page-params.schema";
+import type { ReportsPageProps } from "@/types/components/mailchimp";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { mailchimpService } from "@/services/mailchimp.service";
-import type { CampaignReport } from "@/types/mailchimp";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
+import { getRedirectUrlIfNeeded } from "@/utils/pagination-url-builders";
+import { PER_PAGE_OPTIONS } from "@/types/components/ui";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { validateReportsPageParams } from "@/utils/mailchimp/query-params";
 
 async function ReportsPageContent({ searchParams }: ReportsPageProps) {
-  // Await searchParams as required by Next.js 15
   const params = await searchParams;
+
+  // Server-side URL cleanup: redirect if default values are in URL
+  const defaultPageSize = PER_PAGE_OPTIONS[0];
+  const redirectUrl = getRedirectUrlIfNeeded({
+    basePath: "/mailchimp/reports",
+    currentPage: params.page,
+    currentPerPage: params.perPage,
+    defaultPerPage: defaultPageSize,
+  });
+
+  if (redirectUrl) {
+    redirect(redirectUrl);
+  }
 
   // Use service layer for better architecture
   const response = await mailchimpService.getCampaignReports(params);
 
-  // Handle expected API failures as return values, not exceptions
+  // Handle errors
   if (!response.success) {
     return (
-      <div>Error: {response.error || "Failed to load campaign reports"}</div>
+      <ReportsOverview
+        error={response.error || "Failed to load campaign reports"}
+        data={null}
+      />
     );
   }
 
-  if (!response.data) {
-    return <div>Error: No campaign data received</div>;
-  }
+  // Parse pagination params for UI
+  const currentPage = parseInt(params.page || "1");
+  const pageSize = parseInt(params.perPage || defaultPageSize.toString());
 
-  // Extract reports data and pagination params using utility function
-  const reportsData = response.data as {
-    reports?: CampaignReport[];
-    total_items?: number;
-  };
-  const reports: CampaignReport[] = reportsData.reports || [];
-  const totalCount = reportsData.total_items || reports.length;
-
-  // Parse pagination params for UI components (same logic as service)
-  const validationResult = validateReportsPageParams(
-    params as Record<string, string | undefined>,
-  );
-  const currentPage = validationResult.success ? validationResult.data.page : 1;
-  const perPage = validationResult.success
-    ? validationResult.data.perPage
-    : REPORTS_PER_PAGE_OPTIONS[0];
-  const reportType = validationResult.success
-    ? validationResult.data.type
-    : undefined;
-  const beforeSendTime = validationResult.success
-    ? validationResult.data.before_send_time
-    : undefined;
-  const sinceSendTime = validationResult.success
-    ? validationResult.data.since_send_time
-    : undefined;
-
+  // Pass data to component
   return (
-    <div className="space-y-6">
-      {/* Campaign Reports */}
-      <ReportsOverview
-        reports={reports}
-        currentPage={currentPage}
-        totalPages={Math.max(1, Math.ceil(totalCount / perPage))}
-        perPage={perPage}
-        perPageOptions={[...REPORTS_PER_PAGE_OPTIONS]}
-        basePath="/mailchimp/reports"
-        additionalParams={{
-          type: reportType,
-          before_send_time: beforeSendTime,
-          since_send_time: sinceSendTime,
-        }}
-      />
-    </div>
+    <ReportsOverview
+      data={response.data || null}
+      currentPage={currentPage}
+      pageSize={pageSize}
+    />
   );
 }
 
