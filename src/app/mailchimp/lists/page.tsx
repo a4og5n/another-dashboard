@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { getRedirectUrlIfNeeded } from "@/utils/pagination-url-builders";
 import { ListOverview } from "@/components/mailchimp/lists/ListOverview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
-import type { ListsPageProps } from "@/types/mailchimp/lists-page-props";
+import type { ListsPageProps } from "@/types/mailchimp";
 import { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { mailchimpService } from "@/services/mailchimp.service";
 import { redirect } from "next/navigation";

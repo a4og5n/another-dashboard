@@ -11,6 +11,7 @@ import type {
   ListStatsSchema,
   LIST_VISIBILITY,
 } from "@/schemas/mailchimp/lists-success.schema";
+import type { ListsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 
 // Nested object types
 export type ListContact = z.infer<typeof ListContactSchema>;
@@ -26,19 +27,35 @@ export type ListVisibility = (typeof LIST_VISIBILITY)[number];
 
 /**
  * Query parameters for retrieving lists
+ * Inferred from ListsParamsSchema
  */
-export interface ListsQuery {
-  fields?: string;
-  exclude_fields?: string;
-  count?: number;
-  offset?: number;
-  before_date_created?: string;
-  since_date_created?: string;
-  before_campaign_last_sent?: string;
-  since_campaign_last_sent?: string;
-  email?: string;
-  sort_field?: "date_created" | "member_count";
-  sort_dir?: "ASC" | "DESC";
+export type ListsParams = z.infer<typeof ListsParamsSchema>;
+
+// Re-export schema and constants for convenience
+export {
+  ListsParamsSchema,
+  SORT_FIELD,
+  LISTS_SORT_DIRECTIONS,
+} from "@/schemas/mailchimp/lists-params.schema";
+
+/**
+ * Search parameters type for lists page
+ * Inferred from ListsParamsSchema with UI-specific pagination fields
+ *
+ * Note: page/perPage are used in the UI and get transformed to count/offset for the API
+ */
+export type ListsPageSearchParams = Partial<
+  z.infer<typeof ListsParamsSchema>
+> & {
+  page?: string;
+  perPage?: string;
+};
+
+/**
+ * Props interface for Lists Page component
+ */
+export interface ListsPageProps {
+  searchParams: Promise<ListsPageSearchParams>;
 }
 
 /**
