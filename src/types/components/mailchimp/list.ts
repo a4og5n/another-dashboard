@@ -1,4 +1,4 @@
-import type { List, DashboardListStats } from "@/types/mailchimp/list";
+import type { List, DashboardListStats } from "@/types/mailchimp/lists";
 
 /**
  * Props for ListOverview component

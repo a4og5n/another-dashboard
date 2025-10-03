@@ -1,6 +1,5 @@
 export * from "@/types/mailchimp/common";
-export * from "@/types/mailchimp/list";
-export * from "@/types/mailchimp/lists-page-props";
+export * from "@/types/mailchimp/lists";
 export * from "@/types/mailchimp/report";
 export * from "@/types/mailchimp/report-open-details";
 export * from "@/types/mailchimp/report-opens-page-props";

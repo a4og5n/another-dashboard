@@ -17,7 +17,7 @@ export type { ApiResponse } from "@/types/api-errors";
 export { AuthService, authService } from "@/services/auth.service";
 
 // Re-export types for backward compatibility
-export type { List, ListsQuery } from "@/types/mailchimp";
+export type { List, ListsParams } from "@/types/mailchimp";
 
 /**
  * Health check all services - simplified

@@ -40,9 +40,3 @@ export const ListsParamsSchema = z
     include_total_contacts: z.boolean().optional(),
   })
   .strict(); // Reject unknown properties
-
-/**
- * Alternative schema for actions/internal use where fields are arrays
- * Transforms string fields to arrays for service layer consumption
- */
-export const ListsParamsInternalSchema = ListsParamsSchema;
