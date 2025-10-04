@@ -6,6 +6,8 @@
  * Following established patterns from existing dashboard components
  */
 
+"use client";
+
 import { BaseMetricCard } from "@/components/dashboard/reports/BaseMetricCard";
 import { Mail } from "lucide-react";
 import type { EmailsSentCardProps } from "@/types/components/dashboard/reports";

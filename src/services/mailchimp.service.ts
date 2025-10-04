@@ -24,6 +24,7 @@ import type {
 import {
   listsParamsSchema,
   reportListParamsSchema,
+  reportPathParamsSchema,
   openListQueryParamsSchema,
   rootParamsSchema,
 } from "@/schemas/mailchimp";
@@ -103,8 +104,21 @@ export class MailchimpService {
   async getCampaignReport(
     campaignId: string,
   ): Promise<ApiResponse<ReportSuccess>> {
+    // Validate campaign_id parameter
+    const validationResult = reportPathParamsSchema.safeParse({
+      campaign_id: campaignId,
+    });
+    if (!validationResult.success) {
+      return {
+        success: false,
+        error: `Invalid campaign report path parameters: ${validationResult.error.message}`,
+      };
+    }
+
     return mailchimpCall(() =>
-      (mailchimp as any).reports.getCampaignReport(campaignId),
+      (mailchimp as any).reports.getCampaignReport(
+        validationResult.data.campaign_id,
+      ),
     );
   }
 

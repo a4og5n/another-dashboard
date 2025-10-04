@@ -7,7 +7,6 @@
  */
 
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import { mailchimpService } from "@/services/mailchimp.service";
 import {
   CampaignReportDetail,
@@ -16,8 +15,7 @@ import {
 import type { CampaignReport } from "@/types/mailchimp";
 
 import { generateCampaignReportMetadata } from "@/utils";
-import { BreadcrumbNavigation } from "@/components/layout";
-import { isDev } from "@/lib/config";
+import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
 import type { ReportPageProps } from "@/types/components/mailchimp";
 
 async function CampaignReportPageContent({
@@ -25,21 +23,34 @@ async function CampaignReportPageContent({
   searchParams,
 }: ReportPageProps) {
   const { id } = await params;
-  await searchParams; // Keep for type compatibility
+  const resolvedSearchParams = await searchParams;
+
+  // Get active tab from search params
+  const validTabs = ["overview", "details"];
+  const tabFromUrl = resolvedSearchParams.tab;
+  const activeTab =
+    tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : "overview";
 
   // Fetch campaign report data
   const response = await mailchimpService.getCampaignReport(id);
 
-  // Handle error states
+  // Handle error states - pass to component for contextual error display
   if (!response.success) {
-    // Log the error for debugging but use notFound for a better user experience
-    if (isDev) {
-      console.error(`Error fetching campaign report ${id}:`, response.error);
-    }
-    notFound();
+    return (
+      <CampaignReportDetail
+        report={null}
+        error={response.error || "Failed to load campaign report"}
+        activeTab={activeTab}
+      />
+    );
   }
 
-  return <CampaignReportDetail report={response.data as CampaignReport} />;
+  return (
+    <CampaignReportDetail
+      report={response.data as CampaignReport}
+      activeTab={activeTab}
+    />
+  );
 }
 
 export default function CampaignReportPage({
@@ -47,18 +58,29 @@ export default function CampaignReportPage({
   searchParams,
 }: ReportPageProps) {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Breadcrumb Navigation */}
-      <BreadcrumbNavigation
-        items={[
-          { label: "Dashboard", href: "/mailchimp" },
-          { label: "Reports", href: "/mailchimp/reports" },
-          { label: "Report", isCurrent: true },
-        ]}
-      />
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Breadcrumb Navigation */}
+        <BreadcrumbNavigation
+          items={[
+            { label: "Dashboard", href: "/" },
+            { label: "Mailchimp", href: "/mailchimp" },
+            { label: "Reports", href: "/mailchimp/reports" },
+            { label: "Report", isCurrent: true },
+          ]}
+        />
 
-      {/* Main Content */}
-      <div className="container mx-auto pb-8 px-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Campaign Report</h1>
+            <p className="text-muted-foreground">
+              View detailed analytics and performance metrics for this campaign
+            </p>
+          </div>
+        </div>
+
+        {/* Main Content */}
         <Suspense fallback={<CampaignReportLoading />}>
           <CampaignReportPageContent
             params={params}
@@ -66,7 +88,7 @@ export default function CampaignReportPage({
           />
         </Suspense>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
 

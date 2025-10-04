@@ -31,8 +31,12 @@ import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports"
  * Props for the CampaignReportDetail component
  */
 export interface CampaignReportDetailProps {
-  /** The campaign report data to display */
-  report: CampaignReport;
+  /** The campaign report data to display, null if error occurred */
+  report: CampaignReport | null;
+  /** Error message if data fetch failed */
+  error?: string;
+  /** Active tab from URL search params (overview or details) */
+  activeTab?: string;
 }
 
 /**
