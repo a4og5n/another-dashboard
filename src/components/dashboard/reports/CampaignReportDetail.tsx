@@ -6,11 +6,6 @@
  * Following established patterns from existing dashboard components
  */
 
-"use client";
-
-import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReportHeader } from "@/components/dashboard/reports/ReportHeader";
 import { ReportCharts } from "@/components/dashboard/reports/ReportCharts";
 import { DeliveryStatusCard } from "@/components/dashboard/reports/DeliveryStatusCard";
@@ -30,46 +25,23 @@ import { SocialEngagementCard } from "@/components/dashboard/reports/SocialEngag
 import { ListPerformanceCard } from "@/components/dashboard/reports/ListPerformanceCard";
 import { ShareReport } from "@/components/dashboard/reports/ShareReport";
 import { LinkClickInfo } from "@/components/dashboard/reports/LinkClickInfo";
+import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
+import { TabNavigation } from "@/components/dashboard/reports/TabNavigation";
 
-export function CampaignReportDetail({ report }: CampaignReportDetailProps) {
-  // Define valid tabs for the component
-  const validTabs = ["overview", "details"];
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export function CampaignReportDetail({
+  report,
+  error,
+  activeTab = "overview",
+}: CampaignReportDetailProps) {
+  // Handle service-level errors passed from parent
+  if (error) {
+    return <DashboardInlineError error={error} />;
+  }
 
-  // Get the current tab from URL search params or use default
-  const tabFromUrl = searchParams.get("tab");
-
-  // Determine the active tab with validation
-  const activeTab =
-    tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : "overview";
-
-  // No longer forcing the default tab into URL when not present
-  // We'll just use the activeTab variable instead
-
-  useEffect(() => {
-    // No initialization needed - we'll handle this in the tab change handler
-  }, []); // Empty dependency array to run only on mount
-
-  // Handle tab changes - update URL when tab changes
-  const handleTabChange = (value: string) => {
-    // Create a new URLSearchParams object with current params
-    const params = new URLSearchParams(searchParams.toString());
-
-    // If it's the default tab (overview), remove the tab parameter
-    // Otherwise, set the tab parameter
-    if (value === "overview") {
-      params.delete("tab");
-    } else {
-      params.set("tab", value);
-    }
-
-    // Update the URL without reloading the page
-    const queryString = params.toString();
-    router.push(queryString ? `?${queryString}` : window.location.pathname, {
-      scroll: false,
-    });
-  };
+  // Handle prop validation - no report data provided
+  if (!report) {
+    return <DashboardInlineError error="No report data provided" />;
+  }
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -77,17 +49,9 @@ export function CampaignReportDetail({ report }: CampaignReportDetailProps) {
       <ReportHeader report={report} />
 
       {/* Tabbed Content */}
-      <Tabs
-        value={activeTab}
-        onValueChange={handleTabChange}
-        className="w-full"
-      >
-        <TabsList className="grid w-full grid-cols-2 max-w-full overflow-x-auto">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="details">Details</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="mt-6">
+      <TabNavigation activeTab={activeTab}>
+        {/* Overview Tab */}
+        <div data-tab="overview" className="mt-6">
           {/* Key Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <EmailsSentCard emailsSent={report.emails_sent} />
@@ -107,9 +71,10 @@ export function CampaignReportDetail({ report }: CampaignReportDetailProps) {
             <OpensCard opens={report.opens} campaignId={report.id} />
             <ClicksCard clicks={report.clicks} />
           </div>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="details" className="mt-6">
+        {/* Details Tab */}
+        <div data-tab="details" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* List Performance Comparison */}
             <ListPerformanceCard listStats={report.list_stats} />
@@ -152,8 +117,8 @@ export function CampaignReportDetail({ report }: CampaignReportDetailProps) {
 
           {/* Timewarp Section */}
           <TimewarpSection timewarp={report.timewarp} />
-        </TabsContent>
-      </Tabs>
+        </div>
+      </TabNavigation>
     </div>
   );
 }

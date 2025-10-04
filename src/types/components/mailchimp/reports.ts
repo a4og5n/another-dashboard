@@ -51,6 +51,7 @@ export interface ReportPageProps {
   searchParams: Promise<{
     fields?: string;
     exclude_fields?: string;
+    tab?: string;
   }>;
 }
 
