@@ -10,8 +10,12 @@
 import { BreadcrumbNavigation } from "@/components/layout";
 import type { ReportsPageProps } from "@/types/components/mailchimp";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
 import { mailchimpService } from "@/services/mailchimp.service";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
+import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { reportListParamsSchema } from "@/schemas/mailchimp";
 import { reportsPageSearchParamsSchema } from "@/schemas/components";
@@ -52,7 +56,33 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
   );
 }
 
-export default function ReportsPage({ searchParams }: ReportsPageProps) {
+export default async function ReportsPage({ searchParams }: ReportsPageProps) {
+  // 1. Check user authentication (Kinde)
+  const { getUser, isAuthenticated } = getKindeServerSession();
+  const isAuthed = await isAuthenticated();
+
+  if (!isAuthed) {
+    redirect("/api/auth/login?post_login_redirect_url=/mailchimp/reports");
+  }
+
+  const user = await getUser();
+  if (!user) {
+    redirect("/api/auth/login");
+  }
+
+  // 2. Check Mailchimp connection
+  const connectionStatus = await validateMailchimpConnection();
+
+  // 3. Show empty state if not connected
+  if (!connectionStatus.isValid) {
+    return (
+      <DashboardLayout>
+        <MailchimpEmptyState error={connectionStatus.error} />
+      </DashboardLayout>
+    );
+  }
+
+  // 4. Show connected page
   return (
     <DashboardLayout>
       <div className="space-y-6">

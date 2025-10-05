@@ -51,7 +51,7 @@
   - All API calls require authenticated Kinde user
   - All API calls require active Mailchimp OAuth connection
 
-### ✅ Phase 5: UI Components & Empty States (Sections 5.1-5.2)
+### ✅ Phase 5: UI Components & Empty States (Complete)
 
 - **Section 5.1**: Empty State Component
   - Created `src/components/mailchimp/mailchimp-empty-state.tsx`
@@ -64,9 +64,18 @@
   - Shows success/error feedback after OAuth callback
   - Auto-dismisses after 5 seconds
   - Manually dismissible by user
+- **Section 5.3**: Update Remaining Pages
+  - Updated `src/app/mailchimp/lists/page.tsx`
+    - Added Kinde authentication check with redirect
+    - Added Mailchimp connection validation
+    - Shows empty state when not connected
+  - Updated `src/app/mailchimp/reports/page.tsx`
+    - Added Kinde authentication check with redirect
+    - Added Mailchimp connection validation
+    - Shows empty state when not connected
 - **Dashboard Integration**:
   - Updated `src/app/mailchimp/page.tsx` with connection validation
-  - Shows empty state if not connected
+  - All Mailchimp pages (`/mailchimp`, `/mailchimp/lists`, `/mailchimp/reports`) now show empty state if not connected
   - Handles OAuth callback parameters
 
 ### ✅ Additional Updates
@@ -81,6 +90,7 @@
 **Commits on branch:**
 
 ```
+e7960b7 docs: update Phase 5 progress in migration document
 3f77ad3 feat: implement Phase 5 Section 5.1-5.2 - OAuth UI components
 3cc0049 feat: complete Phase 4 - OAuth-based Mailchimp service layer
 c7accf1 docs: add OAuth migration progress summary
@@ -100,20 +110,19 @@ fedf48a chore: add .env*.local to gitignore for security
 ✅ Accessibility: All passing
 ✅ No secrets detected
 
-## Next: Phase 5 Section 5.3 - Update Remaining Pages
+## Phase 5 Complete! 🎉
 
-### Remaining Tasks
+All Mailchimp pages now properly handle OAuth connection status:
 
-1. Update `/mailchimp/lists` page to show empty state when not connected
-2. Update `/mailchimp/reports` page to show empty state when not connected
-3. Add connection status badge/indicator in navigation
-4. Add disconnect functionality UI (optional for MVP)
+- Main dashboard shows empty state when not connected
+- Lists page shows empty state when not connected
+- Reports page shows empty state when not connected
+- Success/error banners display OAuth callback feedback
 
-### Files to Modify
+### Optional Enhancements (Not Required for MVP)
 
-- `src/app/mailchimp/lists/page.tsx` - Add empty state handling
-- `src/app/mailchimp/reports/page.tsx` - Add empty state handling
-- Navigation/header components - Add connection status indicator (optional)
+1. Add connection status badge/indicator in navigation
+2. Add disconnect functionality UI in settings
 
 ## Environment Setup
 

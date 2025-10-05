@@ -2,10 +2,14 @@ import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { ListOverview } from "@/components/mailchimp/lists/list-overview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
+import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
 import type { ListsPageProps } from "@/types/components/mailchimp";
 import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { listsPageSearchParamsSchema } from "@/schemas/components";
 import { mailchimpService } from "@/services/mailchimp.service";
+import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { processPageParams } from "@/utils/mailchimp/page-params";
 
@@ -41,7 +45,33 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
   );
 }
 
-export default function ListsPage({ searchParams }: ListsPageProps) {
+export default async function ListsPage({ searchParams }: ListsPageProps) {
+  // 1. Check user authentication (Kinde)
+  const { getUser, isAuthenticated } = getKindeServerSession();
+  const isAuthed = await isAuthenticated();
+
+  if (!isAuthed) {
+    redirect("/api/auth/login?post_login_redirect_url=/mailchimp/lists");
+  }
+
+  const user = await getUser();
+  if (!user) {
+    redirect("/api/auth/login");
+  }
+
+  // 2. Check Mailchimp connection
+  const connectionStatus = await validateMailchimpConnection();
+
+  // 3. Show empty state if not connected
+  if (!connectionStatus.isValid) {
+    return (
+      <DashboardLayout>
+        <MailchimpEmptyState error={connectionStatus.error} />
+      </DashboardLayout>
+    );
+  }
+
+  // 4. Show connected page
   return (
     <DashboardLayout>
       <div className="space-y-6">
