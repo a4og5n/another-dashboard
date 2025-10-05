@@ -52,7 +52,7 @@ export const insertMailchimpConnectionSchema = createInsertSchema(
     kindeUserId: z.string().min(1, "Kinde user ID is required"),
     accessToken: z.string().min(1, "Access token is required"),
     serverPrefix: z.string().regex(/^[a-z]{2,4}\d*$/, "Invalid server prefix"),
-    email: z.string().email().optional(),
+    email: z.email().optional(),
   },
 );
 

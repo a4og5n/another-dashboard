@@ -19,13 +19,10 @@ const envSchema = z.object({
     ),
 
   // Neon Postgres Database (via Vercel)
-  DATABASE_URL: z.string().url("Database connection URL required").optional(),
-  DATABASE_URL_UNPOOLED: z.string().url().optional(), // Direct connection
-  POSTGRES_PRISMA_URL: z
-    .string()
-    .url("Postgres connection URL required")
-    .optional(),
-  POSTGRES_URL: z.string().url().optional(), // Pooled connection
+  DATABASE_URL: z.url("Database connection URL required").optional(),
+  DATABASE_URL_UNPOOLED: z.url().optional(), // Direct connection
+  POSTGRES_PRISMA_URL: z.url("Postgres connection URL required").optional(),
+  POSTGRES_URL: z.url().optional(), // Pooled connection
 
   // Mailchimp OAuth2 Configuration
   MAILCHIMP_CLIENT_ID: z
@@ -37,7 +34,6 @@ const envSchema = z.object({
     .min(1, "Mailchimp Client Secret is required")
     .optional(),
   MAILCHIMP_REDIRECT_URI: z
-    .string()
     .url("Mailchimp Redirect URI must be a valid URL")
     .optional(),
 
@@ -50,7 +46,7 @@ const envSchema = z.object({
   // Google Analytics 4 (Future - Optional for now)
   GA4_SERVICE_ACCOUNT_KEY_PATH: z.string().optional(),
   GA4_PROPERTY_ID: z.string().optional(),
-  GA4_CLIENT_EMAIL: z.string().email().optional(),
+  GA4_CLIENT_EMAIL: z.email().optional(),
 
   // YouTube Analytics API (Future - Optional for now)
   YOUTUBE_API_KEY: z.string().optional(),
@@ -63,13 +59,13 @@ const envSchema = z.object({
   META_ACCESS_TOKEN: z.string().optional(),
 
   // WordPress REST API (Future - Optional for now)
-  WORDPRESS_API_URL: z.string().url().optional(),
+  WORDPRESS_API_URL: z.url().optional(),
   WORDPRESS_USERNAME: z.string().optional(),
   WORDPRESS_APP_PASSWORD: z.string().optional(),
 
   // Google Search Console API (Future - Optional for now)
   GSC_SERVICE_ACCOUNT_KEY_PATH: z.string().optional(),
-  GSC_CLIENT_EMAIL: z.string().email().optional(),
+  GSC_CLIENT_EMAIL: z.email().optional(),
 
   // Performance & Monitoring
   NEXT_PUBLIC_VERCEL_ANALYTICS: z
@@ -91,14 +87,14 @@ const envSchema = z.object({
   // Kinde Authentication
   KINDE_CLIENT_ID: z.string().optional(),
   KINDE_CLIENT_SECRET: z.string().optional(),
-  KINDE_ISSUER_URL: z.string().url().optional(),
-  KINDE_SITE_URL: z.string().url().optional(),
-  KINDE_POST_LOGOUT_REDIRECT_URL: z.string().url().optional(),
-  KINDE_POST_LOGIN_REDIRECT_URL: z.string().url().optional(),
+  KINDE_ISSUER_URL: z.url().optional(),
+  KINDE_SITE_URL: z.url().optional(),
+  KINDE_POST_LOGOUT_REDIRECT_URL: z.url().optional(),
+  KINDE_POST_LOGIN_REDIRECT_URL: z.url().optional(),
   KINDE_GOOGLE_CONNECTION_ID: z.string().optional(),
 
   // Optional: Error tracking (future)
-  SENTRY_DSN: z.string().url().optional(),
+  SENTRY_DSN: z.url().optional(),
 });
 
 /**
