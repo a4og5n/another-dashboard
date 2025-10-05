@@ -1,32 +1,25 @@
 import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { getRedirectUrlIfNeeded } from "@/utils/pagination-url-builders";
 import { ListOverview } from "@/components/mailchimp/lists/list-overview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
 import type { ListsPageProps } from "@/types/components/mailchimp";
 import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import { listsPageSearchParamsSchema } from "@/schemas/components";
 import { mailchimpService } from "@/services/mailchimp.service";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { processPageParams } from "@/utils/mailchimp/page-params";
 
 async function ListsPageContent({ searchParams }: ListsPageProps) {
-  const params = await searchParams;
-
-  // Server-side URL cleanup: redirect if default values are in URL
-  const queryDefaults = listsParamsSchema.parse({});
-  const redirectUrl = getRedirectUrlIfNeeded({
+  // Process params: validate, check redirect, convert to API format
+  const { apiParams, currentPage, pageSize } = await processPageParams({
+    searchParams,
+    uiSchema: listsPageSearchParamsSchema,
+    apiSchema: listsParamsSchema,
     basePath: "/mailchimp/lists",
-    currentPage: params.page,
-    currentPerPage: params.perPage,
-    defaultPerPage: queryDefaults.count,
   });
 
-  if (redirectUrl) {
-    redirect(redirectUrl);
-  }
-
-  // Use service layer for better architecture
-  const response = await mailchimpService.getLists(params);
+  // Fetch lists using API params
+  const response = await mailchimpService.getLists(apiParams);
 
   // Handle errors
   if (!response.success) {
@@ -37,10 +30,6 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
       />
     );
   }
-
-  // Parse pagination params for UI
-  const currentPage = parseInt(params.page || "1");
-  const pageSize = parseInt(params.perPage || queryDefaults.count.toString());
 
   // Pass data to component
   return (
@@ -66,13 +55,11 @@ export default function ListsPage({ searchParams }: ListsPageProps) {
         />
 
         {/* Page Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Lists</h1>
-            <p className="text-muted-foreground">
-              Manage your Mailchimp lists and monitor their performance
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold">Lists</h1>
+          <p className="text-muted-foreground">
+            Manage your Mailchimp lists and monitor their performance
+          </p>
         </div>
 
         {/* Main Content */}

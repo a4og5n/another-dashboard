@@ -14,22 +14,21 @@ import type { ReportsPageSearchParams } from "@/types/components/mailchimp";
  * Transforms page-based pagination parameters to Mailchimp API offset-based format
  * Used by service layer for converting URL params to API params
  *
- * @param page - Page number (1-based) as string
- * @param limit - Items per page as string
+ * @param params - Validated UI search parameters with page and perPage
  * @returns Object with count and offset properties for Mailchimp API
  *
  * @example
  * ```ts
- * const params = transformPaginationParams("2", "25");
+ * const params = transformPaginationParams({ page: "2", perPage: "25" });
  * // Returns: { count: 25, offset: 25 }
  * ```
  */
-function transformPaginationParams(
-  page?: string,
-  limit?: string,
-): { count?: number; offset?: number } {
-  const parsedLimit = limit ? parseInt(limit, 10) : undefined;
-  const parsedPage = page ? parseInt(page, 10) : undefined;
+function transformPaginationParams(params: {
+  page?: string;
+  perPage?: string;
+}): { count?: number; offset?: number } {
+  const parsedLimit = params.perPage ? parseInt(params.perPage, 10) : undefined;
+  const parsedPage = params.page ? parseInt(params.page, 10) : undefined;
 
   return {
     ...(parsedLimit && { count: parsedLimit }),
@@ -142,7 +141,7 @@ export function transformCampaignReportsParams(
   params: ReportsPageSearchParams,
 ) {
   return {
-    ...transformPaginationParams(params.page, params.perPage),
+    ...transformPaginationParams(params),
     ...(params.type &&
       REPORT_QUERY_TYPES.includes(
         params.type as (typeof REPORT_QUERY_TYPES)[number],

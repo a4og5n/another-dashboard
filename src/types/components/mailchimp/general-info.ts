@@ -5,6 +5,6 @@ import type { RootSuccess } from "@/types/mailchimp";
  * Used to display Mailchimp general information from API Root endpoint
  */
 export interface GeneralInfoOverviewProps {
-  generalInfo: RootSuccess | null;
+  data: RootSuccess | null;
   error?: string;
 }

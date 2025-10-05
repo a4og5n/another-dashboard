@@ -1,5 +1,5 @@
 /**
- * Campaign Opens Loading Component
+ * Campaign Opens Skeleton Component
  * Skeleton loading state for campaign opens table
  *
  * Issue #135: Campaign opens table loading component
@@ -9,7 +9,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/skeletons";
 
-export function CampaignOpensLoading() {
+export function CampaignOpensSkeleton() {
   return (
     <div className="space-y-6">
       {/* Table Header */}

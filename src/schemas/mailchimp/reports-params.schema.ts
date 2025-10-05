@@ -30,8 +30,8 @@ export const reportListParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),
-    count: z.coerce.number().min(1).max(1000).default(10).optional(),
-    offset: z.coerce.number().min(0).default(0).optional(),
+    count: z.coerce.number().min(1).max(1000).default(10),
+    offset: z.coerce.number().min(0).default(0),
     type: z.enum(REPORT_QUERY_TYPES).optional(),
     before_send_time: z.iso.datetime({ offset: true }).optional(), // ISO 8601 format
     since_send_time: z.iso.datetime({ offset: true }).optional(), // ISO 8601 format
@@ -41,5 +41,4 @@ export const reportListParamsSchema = z
     sort_field: z.string().optional(),
     sort_dir: z.enum(["ASC", "DESC"]).optional(),
   })
-  .strict()
-  .optional();
+  .strict();
