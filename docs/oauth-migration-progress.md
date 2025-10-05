@@ -51,6 +51,24 @@
   - All API calls require authenticated Kinde user
   - All API calls require active Mailchimp OAuth connection
 
+### ✅ Phase 5: UI Components & Empty States (Sections 5.1-5.2)
+
+- **Section 5.1**: Empty State Component
+  - Created `src/components/mailchimp/mailchimp-empty-state.tsx`
+  - Displays when user hasn't connected Mailchimp account
+  - "Connect Mailchimp" button initiates OAuth flow
+  - User-friendly error messages for all connection issues
+  - Security information about OAuth 2.0
+- **Section 5.2**: Connection Banner
+  - Created `src/components/mailchimp/mailchimp-connection-banner.tsx`
+  - Shows success/error feedback after OAuth callback
+  - Auto-dismisses after 5 seconds
+  - Manually dismissible by user
+- **Dashboard Integration**:
+  - Updated `src/app/mailchimp/page.tsx` with connection validation
+  - Shows empty state if not connected
+  - Handles OAuth callback parameters
+
 ### ✅ Additional Updates
 
 - **Zod 4 migration**: Updated all schemas to use `z.url()` and `z.email()` syntax
@@ -63,6 +81,7 @@
 **Commits on branch:**
 
 ```
+3f77ad3 feat: implement Phase 5 Section 5.1-5.2 - OAuth UI components
 3cc0049 feat: complete Phase 4 - OAuth-based Mailchimp service layer
 c7accf1 docs: add OAuth migration progress summary
 9c9ee08 feat: implement Phase 3 - OAuth2 flow (service and endpoints)
@@ -81,26 +100,20 @@ fedf48a chore: add .env*.local to gitignore for security
 ✅ Accessibility: All passing
 ✅ No secrets detected
 
-## Next: Phase 5 - UI Components & Empty States
+## Next: Phase 5 Section 5.3 - Update Remaining Pages
 
-### Goal
+### Remaining Tasks
 
-Create UI components for OAuth connection flow and handle disconnected states gracefully.
+1. Update `/mailchimp/lists` page to show empty state when not connected
+2. Update `/mailchimp/reports` page to show empty state when not connected
+3. Add connection status badge/indicator in navigation
+4. Add disconnect functionality UI (optional for MVP)
 
-### Key Tasks
+### Files to Modify
 
-1. Create empty state component for when user hasn't connected Mailchimp
-2. Add connection status UI to show active/inactive state
-3. Update page components to show empty states
-4. Add disconnect functionality UI
-5. Create connection success/error notifications
-
-### Files to Create/Modify
-
-- `src/components/mailchimp/mailchimp-empty-state.tsx` - Empty state component
-- `src/components/mailchimp/connection-status.tsx` - Connection status badge
-- Update existing page components to use empty states
-- Add connection management UI
+- `src/app/mailchimp/lists/page.tsx` - Add empty state handling
+- `src/app/mailchimp/reports/page.tsx` - Add empty state handling
+- Navigation/header components - Add connection status indicator (optional)
 
 ## Environment Setup
 
