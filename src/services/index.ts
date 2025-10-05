@@ -9,8 +9,8 @@ export {
   mailchimpService,
 } from "@/services/mailchimp.service";
 
-// Re-export simple Mailchimp SDK setup for backward compatibility
-export { mailchimp, mailchimpCall } from "@/lib/mailchimp";
+// Re-export OAuth-based SDK utilities
+export { getUserMailchimpClient, mailchimpCall } from "@/lib/mailchimp";
 export type { ApiResponse } from "@/types/api-errors";
 
 // Keep auth service export for compatibility

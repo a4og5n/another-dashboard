@@ -1,6 +1,6 @@
 /**
  * Mailchimp API Root Server Actions Tests
- * Comprehensive tests for mailchimp-root server actions
+ * Comprehensive tests for mailchimp-root server actions (OAuth-based)
  *
  * Issue #123: API Root server actions testing
  */
@@ -9,11 +9,29 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getApiRoot, checkApiRootHealth } from "@/actions/mailchimp-root";
 import type { RootSuccess, RootError } from "@/types/mailchimp";
 import { mailchimpService } from "@/services/mailchimp.service";
+import { setupOAuthMocks, resetOAuthMocks } from "@/test/mocks/oauth-mailchimp";
+
+// Setup OAuth mocks (Kinde + database connection)
+setupOAuthMocks();
 
 // Mock mailchimpService singleton instance
 vi.mock("@/services/mailchimp.service", () => ({
   mailchimpService: {
     getApiRoot: vi.fn(),
+    healthCheck: vi.fn().mockResolvedValue({ success: true }),
+  },
+}));
+
+// Mock validation middleware to always return valid
+vi.mock("@/lib/validate-mailchimp-connection", () => ({
+  validateMailchimpConnection: vi.fn().mockResolvedValue({ isValid: true }),
+  getValidationErrorMessage: vi.fn((error) => `Validation error: ${error}`),
+  MAILCHIMP_ERROR_CODES: {
+    NOT_AUTHENTICATED: "user_not_authenticated",
+    NOT_CONNECTED: "mailchimp_not_connected",
+    CONNECTION_INACTIVE: "mailchimp_connection_inactive",
+    TOKEN_INVALID: "mailchimp_token_invalid",
+    VALIDATION_FAILED: "validation_failed",
   },
 }));
 
@@ -63,6 +81,7 @@ describe("Mailchimp API Root Server Actions", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetOAuthMocks();
   });
 
   describe("getApiRoot", () => {

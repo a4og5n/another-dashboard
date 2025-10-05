@@ -1,20 +1,47 @@
 /**
- * Simple Mailchimp SDK Setup
- * Direct SDK usage for MVP - no complex service layers
+ * User-Scoped Mailchimp SDK Setup
+ * Creates Mailchimp client instances per user based on OAuth tokens
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // SDK interop requires any types for proper functioning
 
 import mailchimp from "@mailchimp/mailchimp_marketing";
-import { env } from "@/lib/config";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { mailchimpConnectionRepo } from "@/db/repositories/mailchimp-connection";
 import type { ApiResponse } from "@/types/api-errors";
 
-// Configure the Mailchimp SDK once
-mailchimp.setConfig({
-  apiKey: env.MAILCHIMP_API_KEY,
-  server: env.MAILCHIMP_SERVER_PREFIX || "us1",
-});
+/**
+ * Get user-specific Mailchimp client
+ * Retrieves OAuth token from database and configures SDK
+ */
+export async function getUserMailchimpClient() {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user || !user.id) {
+    throw new Error("User not authenticated");
+  }
+
+  // Get decrypted token from database
+  const connection = await mailchimpConnectionRepo.getDecryptedToken(user.id);
+
+  if (!connection) {
+    throw new Error("Mailchimp not connected. Please connect your account.");
+  }
+
+  if (!connection.isActive) {
+    throw new Error("Mailchimp connection is inactive. Please reconnect.");
+  }
+
+  // Configure client with user's token
+  mailchimp.setConfig({
+    accessToken: connection.accessToken,
+    server: connection.serverPrefix,
+  });
+
+  return mailchimp;
+}
 
 /**
  * Simple error formatter for SDK responses
@@ -33,18 +60,24 @@ function formatError(error: any): string {
 }
 
 /**
- * Simple wrapper for SDK calls with consistent error handling
+ * Wrapper for SDK calls with user-scoped client and error handling
  */
 export async function mailchimpCall<T>(
-  sdkCall: () => Promise<T>,
+  sdkCall: (client: typeof mailchimp) => Promise<T>,
 ): Promise<ApiResponse<T>> {
   try {
-    const data = await sdkCall();
+    const client = await getUserMailchimpClient();
+    const data = await sdkCall(client);
     return { success: true, data };
   } catch (error: any) {
+    // Handle connection errors
+    if (
+      error.message?.includes("not connected") ||
+      error.message?.includes("inactive")
+    ) {
+      return { success: false, error: error.message };
+    }
+
     return { success: false, error: formatError(error) };
   }
 }
-
-// Export the configured SDK instance
-export { mailchimp };

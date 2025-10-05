@@ -1,5 +1,5 @@
 /**
- * Mailchimp General Info Page
+ * Mailchimp General Info Page (OAuth-based)
  * Displays general information from the API Root endpoint
  *
  * Issue #122: General Info navigation and routing
@@ -12,9 +12,24 @@ import { GeneralInfoOverviewSkeleton } from "@/skeletons/mailchimp";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout";
 import { mailchimpService } from "@/services/mailchimp.service";
+import {
+  validateMailchimpConnection,
+  getValidationErrorMessage,
+} from "@/lib/validate-mailchimp-connection";
 import { Suspense } from "react";
 
 async function GeneralInfoPageContent() {
+  // Validate Mailchimp connection before making API call
+  const validation = await validateMailchimpConnection();
+  if (!validation.isValid) {
+    return (
+      <GeneralInfoOverview
+        error={getValidationErrorMessage(validation.error || "")}
+        data={null}
+      />
+    );
+  }
+
   // Use service layer for better architecture
   const response = await mailchimpService.getApiRoot();
 
