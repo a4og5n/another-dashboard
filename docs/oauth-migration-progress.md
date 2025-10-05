@@ -90,6 +90,7 @@
 **Commits on branch:**
 
 ```
+0cbea49 feat: implement Phase 6 - Settings/Integrations page with Mailchimp management
 6daf1b5 feat: complete Phase 5 Section 5.3 - OAuth empty states for lists and reports pages
 e7960b7 docs: update Phase 5 progress in migration document
 3f77ad3 feat: implement Phase 5 Section 5.1-5.2 - OAuth UI components
@@ -120,14 +121,54 @@ All Mailchimp pages now properly handle OAuth connection status:
 - Reports page shows empty state when not connected
 - Success/error banners display OAuth callback feedback
 
-## Next: Phase 6 - Settings/Integrations Page
+## ✅ Phase 6: Settings/Integrations Page (Complete)
 
-Creating a centralized settings page for managing OAuth connections:
+Created centralized settings page for managing OAuth connections:
 
-1. Create `/settings/integrations` page
-2. Build Mailchimp integration card component
-3. Display connection status and metadata
-4. Add disconnect/reconnect functionality
+- **Integrations Page** (`/settings/integrations`):
+  - Server component with Kinde authentication
+  - Fetches Mailchimp connection status from database
+  - Displays connection cards for all integrations
+  - Breadcrumb navigation and page layout
+  - Prepared for future integrations (Google Analytics, YouTube, etc.)
+  - Files: `src/app/settings/integrations/page.tsx`
+
+- **Mailchimp Integration Card**:
+  - Interactive connect/disconnect actions
+  - Shows connection status with badge when connected
+  - Displays account metadata:
+    - Account email
+    - Account ID
+    - Server prefix
+    - Connection timestamp (formatted with date-fns)
+    - Last validation timestamp
+  - "Connect Mailchimp" button initiates OAuth flow
+  - "Refresh Connection" button re-authenticates
+  - "Disconnect" button with confirmation dialog
+  - Toast notifications for success/error feedback
+  - Loading states during async operations
+  - Files: `src/components/settings/mailchimp-integration-card.tsx`, `src/components/settings/index.ts`
+
+## 🚀 Migration Status: Phases 1-6 Complete!
+
+All core OAuth2 functionality has been implemented:
+
+- ✅ Database and encryption infrastructure
+- ✅ OAuth2 authorization flow with CSRF protection
+- ✅ Service layer migrated to user-scoped tokens
+- ✅ Token validation and auto-refresh
+- ✅ Empty states and connection UI
+- ✅ Settings page for connection management
+
+## Next: Phase 7 - Testing & Validation
+
+Final phase to ensure production readiness:
+
+1. **Integration Testing**: Test full OAuth flow end-to-end
+2. **Error Scenarios**: Verify all error cases are handled gracefully
+3. **Security Review**: Audit token storage, encryption, and CSRF protection
+4. **Performance Testing**: Test with multiple concurrent users
+5. **Documentation**: Update README and add deployment guide
 
 ## Environment Setup
 
