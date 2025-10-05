@@ -2,7 +2,10 @@
  * Unit tests for validateReportsQuery
  */
 import { describe, it, expect } from "vitest";
-import { validateReportsQuery, ValidationError } from "./mailchimp-reports";
+import {
+  validateReportsQuery,
+  ValidationError,
+} from "@/actions/mailchimp-reports";
 
 const validParams = {
   fields: "id,type",

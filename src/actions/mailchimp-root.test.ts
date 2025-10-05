@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getApiRoot, checkApiRootHealth } from "./mailchimp-root";
+import { getApiRoot, checkApiRootHealth } from "@/actions/mailchimp-root";
 import type { RootSuccess, RootError } from "@/types/mailchimp";
 import { mailchimpService } from "@/services/mailchimp.service";
 

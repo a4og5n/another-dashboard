@@ -1,5 +1,5 @@
 import { render, screen } from "@/test/test-utils";
-import { ReportsTable } from "./reports-table";
+import { ReportsTable } from "@/components/dashboard";
 
 const validCampaigns = [
   {

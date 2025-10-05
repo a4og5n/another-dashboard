@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { GeneralInfoOverview } from "./general-info-overview";
+import { GeneralInfoOverview } from "@/components/mailchimp/general-info";
 import { renderWithA11y } from "@/test/axe-helper";
 import type { RootSuccess } from "@/types/mailchimp";
 

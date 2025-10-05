@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatNumber } from "./format-number";
+import { formatNumber } from "@/utils";
 
 describe("formatNumber", () => {
   it("formats numbers less than 1000 with locale string", () => {
