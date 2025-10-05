@@ -60,7 +60,6 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.44.6",
     "drizzle-zod": "^0.8.3",
-    "jose": "^6.1.0",
     "lucide-react": "^0.541.0",
     "nanoid": "^5.1.6",
     "next": "15.5.0",

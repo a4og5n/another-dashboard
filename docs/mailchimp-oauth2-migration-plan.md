@@ -86,11 +86,10 @@ pnpm add -D drizzle-kit
 # Alternative: Use standard postgres client (also works with Neon)
 # pnpm add postgres drizzle-orm
 
-# Encryption for tokens
-pnpm add jose  # For JWT and encryption (lightweight, edge-compatible)
-
 # OAuth utilities
 pnpm add nanoid  # For generating secure state parameters
+
+# Note: Token encryption uses Node.js built-in 'crypto' module (no extra dependency needed)
 ```
 
 **Note:** Neon provides `@neondatabase/serverless` which is optimized for edge/serverless environments and works over HTTP. It's compatible with Vercel Edge Runtime.
@@ -395,30 +394,48 @@ DEBUG_API_CALLS=true
 **File: `src/lib/encryption.ts`** (new file)
 
 ```typescript
-import { jwtEncrypt, jwtDecrypt } from "jose";
+import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 import { env } from "@/lib/config";
 
 /**
- * Token Encryption/Decryption using JWT + AES
+ * Token Encryption/Decryption using AES-256-GCM
  * Ensures tokens are encrypted at rest in database
+ * Uses Node.js built-in crypto module (no external dependencies)
  */
 
-// Convert base64 encryption key to Uint8Array
-const SECRET_KEY = new TextEncoder().encode(env.ENCRYPTION_KEY);
+// Convert base64 encryption key to Buffer (32 bytes for AES-256)
+const SECRET_KEY = Buffer.from(env.ENCRYPTION_KEY || "", "base64");
+
+if (SECRET_KEY.length !== 32) {
+  throw new Error(
+    "ENCRYPTION_KEY must be 32 bytes (base64 encoded). Generate with: openssl rand -base64 32",
+  );
+}
 
 /**
  * Encrypt a token (access token, refresh token, etc.)
  * @param plaintext - Token to encrypt
- * @returns Encrypted JWT string
+ * @returns Encrypted string in format: iv:authTag:ciphertext (all base64)
  */
-export async function encryptToken(plaintext: string): Promise<string> {
+export function encryptToken(plaintext: string): string {
   try {
-    const jwt = await new jwtEncrypt({ data: plaintext })
-      .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
-      .setIssuedAt()
-      .encrypt(SECRET_KEY);
+    // Generate random IV (12 bytes is standard for GCM)
+    const iv = randomBytes(12);
 
-    return jwt;
+    // Create cipher with AES-256-GCM
+    const cipher = createCipheriv("aes-256-gcm", SECRET_KEY, iv);
+
+    // Encrypt the plaintext
+    const encrypted = Buffer.concat([
+      cipher.update(plaintext, "utf8"),
+      cipher.final(),
+    ]);
+
+    // Get authentication tag
+    const authTag = cipher.getAuthTag();
+
+    // Return format: iv:authTag:ciphertext (all base64)
+    return `${iv.toString("base64")}:${authTag.toString("base64")}:${encrypted.toString("base64")}`;
   } catch (error) {
     console.error("Token encryption failed:", error);
     throw new Error("Failed to encrypt token");
@@ -427,13 +444,33 @@ export async function encryptToken(plaintext: string): Promise<string> {
 
 /**
  * Decrypt a token
- * @param encrypted - Encrypted JWT string
+ * @param encrypted - Encrypted string in format: iv:authTag:ciphertext
  * @returns Decrypted plaintext token
  */
-export async function decryptToken(encrypted: string): Promise<string> {
+export function decryptToken(encrypted: string): string {
   try {
-    const { payload } = await jwtDecrypt(encrypted, SECRET_KEY);
-    return payload.data as string;
+    // Parse the encrypted string
+    const parts = encrypted.split(":");
+    if (parts.length !== 3) {
+      throw new Error("Invalid encrypted token format");
+    }
+
+    const [ivBase64, authTagBase64, ciphertextBase64] = parts;
+    const iv = Buffer.from(ivBase64, "base64");
+    const authTag = Buffer.from(authTagBase64, "base64");
+    const ciphertext = Buffer.from(ciphertextBase64, "base64");
+
+    // Create decipher
+    const decipher = createDecipheriv("aes-256-gcm", SECRET_KEY, iv);
+    decipher.setAuthTag(authTag);
+
+    // Decrypt
+    const decrypted = Buffer.concat([
+      decipher.update(ciphertext),
+      decipher.final(),
+    ]);
+
+    return decrypted.toString("utf8");
   } catch (error) {
     console.error("Token decryption failed:", error);
     throw new Error("Failed to decrypt token");
@@ -443,15 +480,18 @@ export async function decryptToken(encrypted: string): Promise<string> {
 /**
  * Test encryption/decryption (development only)
  */
-export async function testEncryption() {
+export function testEncryption() {
   if (env.NODE_ENV !== "development") return;
 
   const testToken = "test-token-123-abc";
-  const encrypted = await encryptToken(testToken);
-  const decrypted = await decryptToken(encrypted);
+  const encrypted = encryptToken(testToken);
+  const decrypted = decryptToken(encrypted);
 
   console.assert(testToken === decrypted, "Encryption test failed!");
   console.log("✅ Encryption test passed");
+  console.log(`  Original: ${testToken}`);
+  console.log(`  Encrypted: ${encrypted.substring(0, 50)}...`);
+  console.log(`  Decrypted: ${decrypted}`);
 }
 ```
 
