@@ -1894,10 +1894,9 @@ export function MailchimpIntegrationCard({ connection }: MailchimpIntegrationCar
 
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { db } from "@/db";
-import { mailchimpConnectionRepo } from "./mailchimp-connection.repository";
+import { db, schema } from "@/db";
+import { mailchimpConnectionRepo } from "@/repositories/mailchimp-connection.repository";
 import { eq } from "drizzle-orm";
-import { schema } from "@/db";
 
 describe("MailchimpConnectionRepository", () => {
   const testKindeUserId = "test_kinde_user_123";
@@ -2041,7 +2040,7 @@ describe("MailchimpConnectionRepository", () => {
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
-import { POST } from "./route";
+import { POST } from "@/app/api/auth/mailchimp/authorize/route";
 import { NextRequest } from "next/server";
 
 // Mock Kinde auth
@@ -2095,11 +2094,17 @@ describe("POST /api/auth/mailchimp/authorize", () => {
 
 ---
 
-### Section 7.3: Manual Testing Checklist (1 hour)
+### Section 7.3: Manual Testing Strategy (Hybrid Approach)
 
-**Manual Testing Steps:**
+**Recommendation:** Split manual testing into two phases for optimal risk/speed balance.
 
-1. **OAuth Authorization Flow**
+#### Phase 7.3a: Critical Path Testing (Local) - 30 minutes
+
+**Purpose:** Verify core functionality works before deploying to production.
+
+**Pre-Deployment Critical Tests:**
+
+1. **OAuth Authorization Flow (Happy Path)**
    - [ ] Visit `/mailchimp` (not connected)
    - [ ] See empty state with "Connect Mailchimp" button
    - [ ] Click button → Redirects to Mailchimp login
@@ -2108,36 +2113,83 @@ describe("POST /api/auth/mailchimp/authorize", () => {
    - [ ] See success banner
    - [ ] Dashboard loads with user's Mailchimp data
 
-2. **Settings/Integrations Page**
+2. **Token Encryption Verification**
+   - [ ] Check database via Neon Console or Vercel Dashboard
+   - [ ] Verify `access_token` field is encrypted (format: `[base64]:[base64]:[base64]`)
+   - [ ] Should NOT see plaintext tokens
+
+3. **Settings/Integrations Page**
    - [ ] Visit `/settings/integrations`
    - [ ] See Mailchimp card with "Connected" badge
    - [ ] Verify account email, server prefix displayed
    - [ ] Click "Disconnect" → Confirmation dialog
    - [ ] Confirm → Connection removed
    - [ ] Return to `/mailchimp` → Shows empty state
+   - [ ] Reconnect successfully
 
-3. **Error Handling**
-   - [ ] Start OAuth flow but deny permission
-   - [ ] Redirects to `/mailchimp?error=access_denied`
-   - [ ] See error message banner
-   - [ ] Manually disconnect in Mailchimp dashboard
-   - [ ] Try loading `/mailchimp` → Shows reconnect banner
+**Success Criteria for Deployment:**
 
-4. **CSRF Protection**
-   - [ ] Intercept OAuth callback with invalid state
-   - [ ] Should redirect to error page
+- All 3 critical tests must pass
+- No console errors
+- Database properly storing encrypted tokens
 
-5. **Multi-User Isolation**
-   - [ ] User A connects Mailchimp
-   - [ ] Log out, log in as User B
-   - [ ] User B sees empty state (not User A's connection)
-   - [ ] User B connects own Mailchimp
-   - [ ] Both users see only their own data
+**If Critical Tests Fail:** Fix issues before deploying (prevents production impact)
 
-6. **Token Encryption**
-   - [ ] Check database via Supabase dashboard
-   - [ ] Verify `access_token` field is encrypted (JWT format)
-   - [ ] Should not see plaintext tokens
+**If Critical Tests Pass:** Proceed to Phase 9 (Deployment)
+
+---
+
+#### Phase 7.3b: Comprehensive Testing (Production) - 90 minutes
+
+**Purpose:** Validate production environment and discover edge cases.
+
+**Post-Deployment Comprehensive Tests:**
+
+See detailed checklist in `docs/oauth-manual-testing-checklist.md`:
+
+1. **OAuth Authorization Flow** (Complete suite - 20 min)
+   - Initial connection, callback success, persistence
+
+2. **Settings/Integrations Page** (All scenarios - 10 min)
+   - View status, refresh, disconnect, reconnect
+
+3. **Error Handling** (All error scenarios - 15 min)
+   - User denies access, invalid state (CSRF), missing parameters
+   - Connection failures, expired tokens
+
+4. **Multi-User Isolation** (Critical security test - 15 min)
+   - User A connection, User B isolation, verify separation
+
+5. **Security & Encryption** (In-depth verification - 10 min)
+   - Token encryption, cookie security, no secret leakage
+
+6. **Performance & Reliability** (Production conditions - 10 min)
+   - Token validation caching, connection pooling, concurrent users
+
+7. **Edge Cases** (Uncommon scenarios - 5 min)
+   - Session expiration, browser back button, multiple redirect URIs
+
+8. **Accessibility** (WCAG compliance - 5 min)
+   - Keyboard navigation, screen reader, color contrast
+
+**Success Criteria:**
+
+- All test suites pass in production environment
+- Multi-user isolation verified
+- Production OAuth flow works with production redirect URIs
+- Performance acceptable under real conditions
+
+**Benefits of Hybrid Approach:**
+
+| Benefit                     | Pre-Deployment (Local) | Post-Deployment (Production)              |
+| --------------------------- | ---------------------- | ----------------------------------------- |
+| Catches showstoppers        | ✅ Yes                 | Limited                                   |
+| Tests real environment      | ❌ No                  | ✅ Yes                                    |
+| Easy to debug               | ✅ Yes                 | ❌ No                                     |
+| Validates production config | ❌ No                  | ✅ Yes                                    |
+| User impact risk            | ✅ None                | ⚠️ Minimal (caught critical issues first) |
+
+**Total Time:** 30 min (pre) + 90 min (post) = 2 hours (vs 3 hours all at once)
 
 ---
 
