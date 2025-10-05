@@ -1,4 +1,4 @@
-import { formatPricingPlan, getPricingPlanVariant } from "./pricing-plan";
+import { formatPricingPlan, getPricingPlanVariant } from "@/utils/mailchimp";
 
 describe("Pricing Plan Utils", () => {
   describe("formatPricingPlan", () => {

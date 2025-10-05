@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { CampaignStatusBadge } from "./campaign-status-badge";
+import { CampaignStatusBadge } from "@/components/ui/campaign-status-badge";
 
 describe("CampaignStatusBadge", () => {
   it("renders sent status correctly", () => {

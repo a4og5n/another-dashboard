@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
-import { CampaignOpensEmpty } from "./CampaignOpensEmpty";
+import { CampaignOpensEmpty } from "@/components/dashboard/reports";
 
 describe("CampaignOpensEmpty", () => {
   const mockCampaignId = "test-campaign-123";

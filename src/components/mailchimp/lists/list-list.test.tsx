@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import { expectNoA11yViolations, renderWithA11y } from "@/test/axe-helper";
-import { ListList } from "./list-list";
+import { ListList } from "@/components/mailchimp/lists";
 import type { List } from "@/services";
 
 const mockLists: List[] = [

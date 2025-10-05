@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { PricingPlanBadge } from "./pricing-plan-badge";
+import { PricingPlanBadge } from "@/components/ui/pricing-plan-badge";
 
 describe("PricingPlanBadge", () => {
   it("renders monthly plan correctly", () => {
