@@ -90,6 +90,7 @@
 **Commits on branch:**
 
 ```
+6daf1b5 feat: complete Phase 5 Section 5.3 - OAuth empty states for lists and reports pages
 e7960b7 docs: update Phase 5 progress in migration document
 3f77ad3 feat: implement Phase 5 Section 5.1-5.2 - OAuth UI components
 3cc0049 feat: complete Phase 4 - OAuth-based Mailchimp service layer
@@ -119,10 +120,14 @@ All Mailchimp pages now properly handle OAuth connection status:
 - Reports page shows empty state when not connected
 - Success/error banners display OAuth callback feedback
 
-### Optional Enhancements (Not Required for MVP)
+## Next: Phase 6 - Settings/Integrations Page
 
-1. Add connection status badge/indicator in navigation
-2. Add disconnect functionality UI in settings
+Creating a centralized settings page for managing OAuth connections:
+
+1. Create `/settings/integrations` page
+2. Build Mailchimp integration card component
+3. Display connection status and metadata
+4. Add disconnect/reconnect functionality
 
 ## Environment Setup
 
