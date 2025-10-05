@@ -37,10 +37,7 @@ export { ListPerformanceCard } from "@/components/dashboard/reports/ListPerforma
 
 // Main container components
 export { CampaignReportDetail } from "@/components/dashboard/reports/CampaignReportDetail";
-export { CampaignReportLoading } from "@/components/dashboard/reports/CampaignReportLoading";
 
 // Campaign opens components
 export { CampaignOpensTable } from "@/components/dashboard/reports/CampaignOpensTable";
-export { CampaignOpens } from "@/components/dashboard/reports/CampaignOpensClient";
-export { CampaignOpensLoading } from "@/components/dashboard/reports/CampaignOpensLoading";
 export { CampaignOpensEmpty } from "@/components/dashboard/reports/CampaignOpensEmpty";

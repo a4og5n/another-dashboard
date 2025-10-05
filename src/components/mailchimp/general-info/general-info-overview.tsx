@@ -15,17 +15,14 @@ import { Building2, Mail, Users, Calendar, Globe } from "lucide-react";
 import type { GeneralInfoOverviewProps } from "@/types/components";
 import { formatDateLongSafe } from "@/utils";
 
-export function GeneralInfoOverview({
-  generalInfo,
-  error,
-}: GeneralInfoOverviewProps) {
-  // Handle service-level errors passed from parent
+export function GeneralInfoOverview({ data, error }: GeneralInfoOverviewProps) {
+  // Display service errors from parent
   if (error) {
     return <DashboardInlineError error={error} />;
   }
 
   // Handle prop validation - no general info data provided
-  if (!generalInfo) {
+  if (!data) {
     return <DashboardInlineError error="No general info data provided" />;
   }
 
@@ -40,18 +37,18 @@ export function GeneralInfoOverview({
         <CardContent>
           <div className="space-y-2">
             <div>
-              <p className="text-2xl font-bold">{generalInfo.account_name}</p>
+              <p className="text-2xl font-bold">{data.account_name}</p>
               <p className="text-xs text-muted-foreground">
-                Account ID: {generalInfo.account_id}
+                Account ID: {data.account_id}
               </p>
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="h-3 w-3 text-muted-foreground" />
-              <p className="text-sm">{generalInfo.email}</p>
+              <p className="text-sm">{data.email}</p>
             </div>
             <div className="flex items-center space-x-2">
-              <PricingPlanBadge planType={generalInfo.pricing_plan_type} />
-              {generalInfo.pro_enabled && (
+              <PricingPlanBadge planType={data.pricing_plan_type} />
+              {data.pro_enabled && (
                 <Badge variant="default" className="bg-orange-600">
                   Pro
                 </Badge>
@@ -71,15 +68,14 @@ export function GeneralInfoOverview({
         </CardHeader>
         <CardContent>
           <div className="space-y-1">
-            <p className="font-medium">{generalInfo.contact.company}</p>
+            <p className="font-medium">{data.contact.company}</p>
             <div className="text-sm text-muted-foreground">
-              <p>{generalInfo.contact.addr1}</p>
-              {generalInfo.contact.addr2 && <p>{generalInfo.contact.addr2}</p>}
+              <p>{data.contact.addr1}</p>
+              {data.contact.addr2 && <p>{data.contact.addr2}</p>}
               <p>
-                {generalInfo.contact.city}, {generalInfo.contact.state}{" "}
-                {generalInfo.contact.zip}
+                {data.contact.city}, {data.contact.state} {data.contact.zip}
               </p>
-              <p>{generalInfo.contact.country}</p>
+              <p>{data.contact.country}</p>
             </div>
           </div>
         </CardContent>
@@ -93,7 +89,7 @@ export function GeneralInfoOverview({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {generalInfo.total_subscribers.toLocaleString()}
+            {data.total_subscribers.toLocaleString()}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
             Total subscribers
@@ -114,22 +110,22 @@ export function GeneralInfoOverview({
             <div className="space-y-2">
               <p className="text-sm font-medium">Member Since</p>
               <p className="text-xl font-bold">
-                {formatDateLongSafe(generalInfo.member_since)}
+                {formatDateLongSafe(data.member_since)}
               </p>
             </div>
-            {generalInfo.first_payment && (
+            {data.first_payment && (
               <div className="space-y-2">
                 <p className="text-sm font-medium">First Payment</p>
                 <p className="text-xl font-bold">
-                  {formatDateLongSafe(generalInfo.first_payment)}
+                  {formatDateLongSafe(data.first_payment)}
                 </p>
               </div>
             )}
-            {generalInfo.last_login && (
+            {data.last_login && (
               <div className="space-y-2">
                 <p className="text-sm font-medium">Last Login</p>
                 <p className="text-xl font-bold">
-                  {formatDateLongSafe(generalInfo.last_login)}
+                  {formatDateLongSafe(data.last_login)}
                 </p>
               </div>
             )}
@@ -144,27 +140,26 @@ export function GeneralInfoOverview({
             Industry Benchmarks
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Average performance metrics for the {generalInfo.account_industry}{" "}
-            industry
+            Average performance metrics for the {data.account_industry} industry
           </p>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center">
               <p className="text-2xl font-bold text-blue-600">
-                {(generalInfo.industry_stats.open_rate * 100).toFixed(1)}%
+                {(data.industry_stats.open_rate * 100).toFixed(1)}%
               </p>
               <p className="text-sm text-muted-foreground">Open Rate</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">
-                {(generalInfo.industry_stats.click_rate * 100).toFixed(1)}%
+                {(data.industry_stats.click_rate * 100).toFixed(1)}%
               </p>
               <p className="text-sm text-muted-foreground">Click Rate</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-orange-600">
-                {(generalInfo.industry_stats.bounce_rate * 100).toFixed(1)}%
+                {(data.industry_stats.bounce_rate * 100).toFixed(1)}%
               </p>
               <p className="text-sm text-muted-foreground">Bounce Rate</p>
             </div>

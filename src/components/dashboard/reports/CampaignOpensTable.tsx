@@ -9,7 +9,6 @@
 "use client";
 
 import React, { useMemo, useCallback } from "react";
-import Link from "next/link";
 import {
   ColumnDef,
   flexRender,
@@ -29,74 +28,55 @@ import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { formatDateTime } from "@/utils";
-import {
-  Mail,
-  Eye,
-  User,
-  Clock,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-} from "lucide-react";
+import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
+import { Mail, Eye, User, Clock } from "lucide-react";
 import type { ReportOpenListMember } from "@/types/mailchimp";
 import type { ReportOpensTableProps } from "@/types/components/mailchimp";
+import { CampaignOpensEmpty } from "./CampaignOpensEmpty";
 
 export function CampaignOpensTable({
   opensData,
-  currentParams,
-  perPageOptions = [10, 20, 50],
+  currentPage,
+  pageSize,
+  perPageOptions = [...PER_PAGE_OPTIONS],
   baseUrl,
+  campaignId,
 }: ReportOpensTableProps) {
   const { members, total_items, total_opens, total_proxy_excluded_opens } =
     opensData;
-  const { count, offset, sort_field, sort_dir } = currentParams;
 
   // Calculate pagination
-  const currentPage = Math.floor(offset / count) + 1;
-  const totalPages = Math.ceil(total_items / count);
+  const totalPages = Math.ceil(total_items / pageSize);
 
   // Helper functions for URL generation
-  const createUrl = useCallback(
-    (params: Record<string, string | number>) => {
-      const searchParams = new URLSearchParams();
-
-      // Set current parameters
-      Object.entries(currentParams).forEach(([key, value]) => {
-        searchParams.set(key, value.toString());
-      });
-
-      // Override with new parameters
-      Object.entries(params).forEach(([key, value]) => {
-        searchParams.set(key, value.toString());
-      });
-
-      return `${baseUrl}?${searchParams.toString()}`;
+  const createPageUrl = useCallback(
+    (page: number) => {
+      const params = new URLSearchParams();
+      // Only add page if not page 1
+      if (page > 1) {
+        params.set("page", page.toString());
+      }
+      // Add perPage if it's not the default
+      if (pageSize !== 10) {
+        params.set("perPage", pageSize.toString());
+      }
+      return `${baseUrl}${params.toString() ? `?${params.toString()}` : ""}`;
     },
-    [baseUrl, currentParams],
+    [baseUrl, pageSize],
   );
 
-  const createSortUrl = useCallback(
-    (sortField: "opens_count", sortDir: "ASC" | "DESC") => {
-      return createUrl({
-        offset: "0", // Reset to first page when sorting
-        sort_field: sortField,
-        sort_dir: sortDir,
-      });
+  const createPerPageUrl = useCallback(
+    (newPerPage: number) => {
+      const params = new URLSearchParams();
+      // Reset to page 1 when changing page size
+      // Only add perPage if it's not the default
+      if (newPerPage !== 10) {
+        params.set("perPage", newPerPage.toString());
+      }
+      return `${baseUrl}${params.toString() ? `?${params.toString()}` : ""}`;
     },
-    [createUrl],
+    [baseUrl],
   );
-
-  const createPageUrl = (page: number) => {
-    const newOffset = (page - 1) * count;
-    return createUrl({ offset: newOffset });
-  };
-
-  const createPerPageUrl = (newPerPage: number) => {
-    return createUrl({
-      offset: "0", // Reset to first page
-      count: newPerPage,
-    });
-  };
 
   // Utility functions
   const getVipBadge = (isVip: boolean) => {
@@ -149,31 +129,11 @@ export function CampaignOpensTable({
       },
       {
         accessorKey: "opens_count",
-        header: () => {
-          const isSorted = sort_field === "opens_count";
-          const isDesc = isSorted && sort_dir === "DESC";
-          const isAsc = isSorted && sort_dir === "ASC";
-          const newDir = isAsc ? "DESC" : "ASC";
-          const sortUrl = createSortUrl("opens_count", newDir);
-
-          return (
-            <div className="text-right">
-              <Link
-                href={sortUrl}
-                className="h-8 px-2 lg:px-3 flex items-center justify-end hover:bg-accent rounded-md"
-              >
-                Opens Count
-                {isDesc ? (
-                  <ArrowDown className="ml-2 h-3 w-3" />
-                ) : isAsc ? (
-                  <ArrowUp className="ml-2 h-3 w-3" />
-                ) : (
-                  <ArrowUpDown className="ml-2 h-3 w-3" />
-                )}
-              </Link>
-            </div>
-          );
-        },
+        header: () => (
+          <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+            Opens Count
+          </div>
+        ),
         cell: ({ row }) => (
           <div className="text-right">
             <span className="font-mono">{row.getValue("opens_count")}</span>
@@ -207,7 +167,7 @@ export function CampaignOpensTable({
         cell: ({ row }) => getVipBadge(row.getValue("vip")),
       },
     ],
-    [sort_field, sort_dir, createSortUrl],
+    [],
   );
 
   // Initialize the table
@@ -220,6 +180,11 @@ export function CampaignOpensTable({
     manualSorting: true,
     pageCount: totalPages,
   });
+
+  // Handle empty state when there are no opens
+  if (total_items === 0) {
+    return <CampaignOpensEmpty campaignId={campaignId} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -344,7 +309,7 @@ export function CampaignOpensTable({
       {total_items > 0 && (
         <div className="flex items-center justify-between">
           <PerPageSelector
-            value={count}
+            value={pageSize}
             options={perPageOptions}
             createPerPageUrl={createPerPageUrl}
             itemName="items per page"

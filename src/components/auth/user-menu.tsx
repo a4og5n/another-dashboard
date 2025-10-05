@@ -34,6 +34,7 @@ export function UserMenu({ user, displayName, initials }: UserMenuProps) {
           className="relative h-8 w-8 rounded-full bg-transparent border-0 p-0 cursor-pointer hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           type="button"
           aria-label="User menu"
+          suppressHydrationWarning
         >
           <Avatar
             src={user.picture || undefined}

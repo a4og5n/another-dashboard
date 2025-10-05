@@ -8,6 +8,10 @@
 
 import { mailchimpService } from "@/services/mailchimp.service";
 import { Metadata } from "next";
+import {
+  reportPageParamsSchema,
+  reportOpensPageParamsSchema,
+} from "@/schemas/components";
 import type { CampaignReport } from "@/types/mailchimp";
 
 /**
@@ -24,7 +28,8 @@ export async function generateCampaignMetadata({
   params: Promise<{ id: string }>;
   pageType?: "report" | "edit" | "analytics" | "general";
 }): Promise<Metadata> {
-  const { id } = await params;
+  const rawParams = await params;
+  const { id } = reportPageParamsSchema.parse(rawParams);
 
   // Fetch campaign report for metadata
   const response = await mailchimpService.getCampaignReport(id);
@@ -106,7 +111,8 @@ export async function generateCampaignOpensMetadata({
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const rawParams = await params;
+  const { id } = reportOpensPageParamsSchema.parse(rawParams);
 
   // Fetch campaign report for metadata
   const response = await mailchimpService.getCampaignReport(id);

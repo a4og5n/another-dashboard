@@ -7,39 +7,53 @@
  */
 
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import { mailchimpService } from "@/services/mailchimp.service";
-import {
-  CampaignReportDetail,
-  CampaignReportLoading,
-} from "@/components/dashboard";
-import type { CampaignReport } from "@/types/mailchimp";
-
-import { generateCampaignReportMetadata } from "@/utils";
+import { CampaignReportDetail } from "@/components/dashboard";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
+import { CampaignReportSkeleton } from "@/skeletons/mailchimp";
+import { generateCampaignReportMetadata, processRouteParams } from "@/utils";
+import type { CampaignReport } from "@/types/mailchimp";
 import type { ReportPageProps } from "@/types/components/mailchimp";
+import {
+  reportPageParamsSchema,
+  reportPageSearchParamsSchema,
+} from "@/schemas/components";
 
 async function CampaignReportPageContent({
   params,
   searchParams,
 }: ReportPageProps) {
-  const { id } = await params;
-  const resolvedSearchParams = await searchParams;
+  // Validate route params and search params
+  const { validatedParams, validatedSearchParams } = await processRouteParams({
+    params,
+    searchParams,
+    paramsSchema: reportPageParamsSchema,
+    searchParamsSchema: reportPageSearchParamsSchema,
+  });
 
-  // Get active tab from search params
-  const validTabs = ["overview", "details"];
-  const tabFromUrl = resolvedSearchParams.tab;
-  const activeTab =
-    tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : "overview";
+  // Get active tab from search params (with default fallback)
+  const activeTab = validatedSearchParams.tab;
 
   // Fetch campaign report data
-  const response = await mailchimpService.getCampaignReport(id);
+  const response = await mailchimpService.getCampaignReport(validatedParams.id);
 
-  // Handle error states - pass to component for contextual error display
+  // Handle error states
   if (!response.success) {
+    // Use notFound() for 404 errors (missing campaign)
+    // Pass other errors to component for inline display
+    const errorMessage = response.error || "Failed to load campaign report";
+    if (
+      errorMessage.toLowerCase().includes("not found") ||
+      errorMessage.toLowerCase().includes("404")
+    ) {
+      notFound();
+    }
+
     return (
       <CampaignReportDetail
         report={null}
-        error={response.error || "Failed to load campaign report"}
+        error={errorMessage}
         activeTab={activeTab}
       />
     );
@@ -71,17 +85,15 @@ export default function CampaignReportPage({
         />
 
         {/* Page Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Campaign Report</h1>
-            <p className="text-muted-foreground">
-              View detailed analytics and performance metrics for this campaign
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold">Campaign Report</h1>
+          <p className="text-muted-foreground">
+            View detailed analytics and performance metrics for this campaign
+          </p>
         </div>
 
         {/* Main Content */}
-        <Suspense fallback={<CampaignReportLoading />}>
+        <Suspense fallback={<CampaignReportSkeleton />}>
           <CampaignReportPageContent
             params={params}
             searchParams={searchParams}
