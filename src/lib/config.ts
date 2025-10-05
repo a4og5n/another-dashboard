@@ -18,30 +18,34 @@ const envSchema = z.object({
         : "http://localhost:3000",
     ),
 
-  // Mailchimp Marketing API (Primary Integration)
-  // In CI/test environments, these can be dummy values for build purposes
-  MAILCHIMP_API_KEY: z
+  // Neon Postgres Database (via Vercel)
+  DATABASE_URL: z.string().url("Database connection URL required").optional(),
+  DATABASE_URL_UNPOOLED: z.string().url().optional(), // Direct connection
+  POSTGRES_PRISMA_URL: z
     .string()
-    .min(1, "Mailchimp API key is required")
-    .default(
-      process.env.NODE_ENV === "test" || process.env.CI === "true"
-        ? "dummy-key-us1"
-        : "",
-    )
-    .refine(
-      (val) => val.includes("-") && val.length > 10,
-      "Mailchimp API key should contain a datacenter suffix (e.g., abc123-us1)",
-    ),
-  MAILCHIMP_SERVER_PREFIX: z
+    .url("Postgres connection URL required")
+    .optional(),
+  POSTGRES_URL: z.string().url().optional(), // Pooled connection
+
+  // Mailchimp OAuth2 Configuration
+  MAILCHIMP_CLIENT_ID: z
     .string()
-    .min(1, "Mailchimp server prefix is required")
-    .default(
-      process.env.NODE_ENV === "test" || process.env.CI === "true" ? "us1" : "",
-    )
-    .refine(
-      (val) => /^[a-z]{2,4}\d*$/.test(val),
-      "Mailchimp server prefix should be like: us1, us19, etc.",
-    ),
+    .min(1, "Mailchimp Client ID is required")
+    .optional(),
+  MAILCHIMP_CLIENT_SECRET: z
+    .string()
+    .min(1, "Mailchimp Client Secret is required")
+    .optional(),
+  MAILCHIMP_REDIRECT_URI: z
+    .string()
+    .url("Mailchimp Redirect URI must be a valid URL")
+    .optional(),
+
+  // Encryption key for tokens (generate with: openssl rand -base64 32)
+  ENCRYPTION_KEY: z
+    .string()
+    .length(44, "Encryption key must be 32 bytes base64 encoded")
+    .optional(),
 
   // Google Analytics 4 (Future - Optional for now)
   GA4_SERVICE_ACCOUNT_KEY_PATH: z.string().optional(),
@@ -129,8 +133,14 @@ function parseEnv(): Env {
       NODE_ENV: process.env.NODE_ENV || "development",
       NEXT_PUBLIC_APP_URL:
         process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
-      MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY || "mock-api-key-us1",
-      MAILCHIMP_SERVER_PREFIX: process.env.MAILCHIMP_SERVER_PREFIX || "us1",
+      DATABASE_URL: process.env.DATABASE_URL,
+      DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
+      POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL,
+      POSTGRES_URL: process.env.POSTGRES_URL,
+      MAILCHIMP_CLIENT_ID: process.env.MAILCHIMP_CLIENT_ID,
+      MAILCHIMP_CLIENT_SECRET: process.env.MAILCHIMP_CLIENT_SECRET,
+      MAILCHIMP_REDIRECT_URI: process.env.MAILCHIMP_REDIRECT_URI,
+      ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
       DEBUG_API_CALLS: process.env.DEBUG_API_CALLS || "true",
       ENABLE_MOCK_DATA: "true",
       NEXT_PUBLIC_VERCEL_ANALYTICS:
@@ -174,8 +184,14 @@ function parseEnv(): Env {
       const fallbackEnv = {
         NODE_ENV: "development",
         NEXT_PUBLIC_APP_URL: "https://localhost:3000",
-        MAILCHIMP_API_KEY: "fallback-key-us1",
-        MAILCHIMP_SERVER_PREFIX: "us1",
+        DATABASE_URL: undefined,
+        DATABASE_URL_UNPOOLED: undefined,
+        POSTGRES_PRISMA_URL: undefined,
+        POSTGRES_URL: undefined,
+        MAILCHIMP_CLIENT_ID: undefined,
+        MAILCHIMP_CLIENT_SECRET: undefined,
+        MAILCHIMP_REDIRECT_URI: undefined,
+        ENCRYPTION_KEY: undefined,
         DEBUG_API_CALLS: true,
         ENABLE_MOCK_DATA: true,
         NEXT_PUBLIC_VERCEL_ANALYTICS: false,
@@ -240,20 +256,10 @@ export const isProd = env.NODE_ENV === "production";
 
 /**
  * Helper function to check if mock data should be used
- * Useful when API keys are not available in development or CI
+ * Useful when database is not available in development or CI
  */
 export const shouldUseMockData =
-  env.ENABLE_MOCK_DATA ||
-  (isDev && !env.MAILCHIMP_API_KEY) ||
-  env.MAILCHIMP_API_KEY === "dummy-key-us1" ||
-  process.env.CI === "true";
-
-/**
- * Helper function to get the Mailchimp API base URL
- */
-export const getMailchimpBaseUrl = () => {
-  return `https://${env.MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0`;
-};
+  env.ENABLE_MOCK_DATA || process.env.CI === "true";
 
 /**
  * Development-only function to log environment status
@@ -265,7 +271,10 @@ export const logEnvStatus = () => {
   console.log(`  - Mode: ${env.NODE_ENV}`);
   console.log(`  - App URL: ${env.NEXT_PUBLIC_APP_URL}`);
   console.log(
-    `  - Mailchimp: ${env.MAILCHIMP_API_KEY ? "✅ Configured" : "❌ Missing"}`,
+    `  - Database: ${env.POSTGRES_PRISMA_URL || env.DATABASE_URL ? "✅ Configured" : "❌ Missing"}`,
+  );
+  console.log(
+    `  - Mailchimp OAuth: ${env.MAILCHIMP_CLIENT_ID ? "✅ Configured" : "❌ Missing"}`,
   );
   console.log(
     `  - Mock Data: ${shouldUseMockData ? "✅ Enabled" : "❌ Disabled"}`,
