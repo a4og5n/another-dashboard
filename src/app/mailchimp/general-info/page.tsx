@@ -18,18 +18,18 @@ async function GeneralInfoPageContent() {
   // Use service layer for better architecture
   const response = await mailchimpService.getApiRoot();
 
-  // Handle service-level errors only
+  // Handle errors
   if (!response.success) {
     return (
       <GeneralInfoOverview
         error={response.error || "Failed to load general info data"}
-        generalInfo={null}
+        data={null}
       />
     );
   }
 
   // Pass data to component - let component handle prop validation
-  return <GeneralInfoOverview generalInfo={response.data!} />;
+  return <GeneralInfoOverview data={response.data!} />;
 }
 
 export default function GeneralInfoPage() {

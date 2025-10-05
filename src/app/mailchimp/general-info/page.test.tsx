@@ -70,7 +70,7 @@ describe("General Info Component Tests", () => {
 
   describe("GeneralInfoOverview Component", () => {
     it("renders general info data correctly", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("Test Company")).toBeInTheDocument();
       expect(screen.getByText("test@example.com")).toBeInTheDocument();
@@ -81,7 +81,7 @@ describe("General Info Component Tests", () => {
     });
 
     it("displays industry benchmarks correctly", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("Industry Benchmarks")).toBeInTheDocument();
       expect(screen.getByText("21.0%")).toBeInTheDocument(); // Open rate
@@ -97,7 +97,7 @@ describe("General Info Component Tests", () => {
     it("displays error message when error prop is provided", () => {
       render(
         <GeneralInfoOverview
-          generalInfo={null}
+          data={null}
           error="Failed to load general info information"
         />,
       );
@@ -109,7 +109,7 @@ describe("General Info Component Tests", () => {
     });
 
     it("shows fallback when generalInfo is null", () => {
-      render(<GeneralInfoOverview generalInfo={null} />);
+      render(<GeneralInfoOverview data={null} />);
 
       expect(
         screen.getByText("No general info data provided"),
@@ -126,7 +126,7 @@ describe("General Info Component Tests", () => {
         total_subscribers: 0,
       };
 
-      render(<GeneralInfoOverview generalInfo={emptyAccount} />);
+      render(<GeneralInfoOverview data={emptyAccount} />);
 
       expect(screen.getByText("Account Details")).toBeInTheDocument();
       expect(screen.getByText("0")).toBeInTheDocument(); // Zero subscribers
@@ -143,7 +143,7 @@ describe("General Info Component Tests", () => {
         },
       };
 
-      render(<GeneralInfoOverview generalInfo={partialAccount} />);
+      render(<GeneralInfoOverview data={partialAccount} />);
 
       expect(screen.getByText("Test Company")).toBeInTheDocument();
       expect(screen.queryByText("First Payment")).not.toBeInTheDocument();
@@ -156,7 +156,7 @@ describe("General Info Component Tests", () => {
         total_subscribers: 999999999,
       };
 
-      render(<GeneralInfoOverview generalInfo={largeNumberAccount} />);
+      render(<GeneralInfoOverview data={largeNumberAccount} />);
 
       expect(screen.getByText("999,999,999")).toBeInTheDocument();
     });
@@ -171,7 +171,7 @@ describe("General Info Component Tests", () => {
         },
       };
 
-      render(<GeneralInfoOverview generalInfo={noStatsAccount} />);
+      render(<GeneralInfoOverview data={noStatsAccount} />);
 
       expect(screen.getByText("Test Company")).toBeInTheDocument();
       // Should display 0.0% for all stats
@@ -183,7 +183,7 @@ describe("General Info Component Tests", () => {
   describe("Accessibility", () => {
     it("should not have accessibility violations with loaded data", async () => {
       const { renderResult } = await renderWithA11y(
-        <GeneralInfoOverview generalInfo={mockAccountData} />,
+        <GeneralInfoOverview data={mockAccountData} />,
       );
       expect(renderResult.container).toBeInTheDocument();
     });
@@ -194,7 +194,7 @@ describe("General Info Component Tests", () => {
     it("should not have accessibility violations in error state", async () => {
       const { renderResult } = await renderWithA11y(
         <GeneralInfoOverview
-          generalInfo={null}
+          data={null}
           error="Failed to load general info information"
         />,
       );
@@ -204,7 +204,7 @@ describe("General Info Component Tests", () => {
 
   describe("Component Structure", () => {
     it("renders all required sections", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       // Verify all main sections are rendered
       expect(screen.getByText("Account Details")).toBeInTheDocument();

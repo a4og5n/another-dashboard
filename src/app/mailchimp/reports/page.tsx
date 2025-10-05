@@ -12,29 +12,25 @@ import type { ReportsPageProps } from "@/types/components/mailchimp";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { mailchimpService } from "@/services/mailchimp.service";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
-import { getRedirectUrlIfNeeded } from "@/utils/pagination-url-builders";
-import { PER_PAGE_OPTIONS } from "@/types/components/ui";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { reportListParamsSchema } from "@/schemas/mailchimp";
+import { reportsPageSearchParamsSchema } from "@/schemas/components";
+import { transformCampaignReportsParams } from "@/utils/mailchimp/query-params";
+import { ReportsOverviewSkeleton } from "@/skeletons/mailchimp";
+import { processPageParams } from "@/utils/mailchimp/page-params";
 
 async function ReportsPageContent({ searchParams }: ReportsPageProps) {
-  const params = await searchParams;
-
-  // Server-side URL cleanup: redirect if default values are in URL
-  const defaultPageSize = PER_PAGE_OPTIONS[0];
-  const redirectUrl = getRedirectUrlIfNeeded({
+  // Process page parameters: validate, redirect if needed, convert to API format
+  const { apiParams, currentPage, pageSize } = await processPageParams({
+    searchParams,
+    uiSchema: reportsPageSearchParamsSchema,
+    apiSchema: reportListParamsSchema,
     basePath: "/mailchimp/reports",
-    currentPage: params.page,
-    currentPerPage: params.perPage,
-    defaultPerPage: defaultPageSize,
+    transformer: transformCampaignReportsParams,
   });
 
-  if (redirectUrl) {
-    redirect(redirectUrl);
-  }
-
-  // Use service layer for better architecture
-  const response = await mailchimpService.getCampaignReports(params);
+  // Get reports
+  const response = await mailchimpService.getCampaignReports(apiParams);
 
   // Handle errors
   if (!response.success) {
@@ -45,10 +41,6 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
       />
     );
   }
-
-  // Parse pagination params for UI
-  const currentPage = parseInt(params.page || "1");
-  const pageSize = parseInt(params.perPage || defaultPageSize.toString());
 
   // Pass data to component
   return (
@@ -74,18 +66,16 @@ export default function ReportsPage({ searchParams }: ReportsPageProps) {
         />
 
         {/* Page Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Reports</h1>
-            <p className="text-muted-foreground">
-              View and analyze your Mailchimp reports and their performance
-              metrics
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold">Reports</h1>
+          <p className="text-muted-foreground">
+            View and analyze your Mailchimp reports and their performance
+            metrics
+          </p>
         </div>
 
         {/* Main Content */}
-        <Suspense fallback={<div>Loading reports...</div>}>
+        <Suspense fallback={<ReportsOverviewSkeleton />}>
           <ReportsPageContent searchParams={searchParams} />
         </Suspense>
       </div>

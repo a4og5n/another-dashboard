@@ -57,7 +57,7 @@ const mockAccountData: RootSuccess = {
 describe("GeneralInfoOverview", () => {
   describe("Basic Rendering", () => {
     it("renders general info information correctly", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("Test Company")).toBeInTheDocument();
       expect(
@@ -69,7 +69,7 @@ describe("GeneralInfoOverview", () => {
     });
 
     it("renders contact information correctly", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("Test Company Inc")).toBeInTheDocument();
       expect(screen.getByText("123 Main St")).toBeInTheDocument();
@@ -79,14 +79,14 @@ describe("GeneralInfoOverview", () => {
     });
 
     it("renders subscriber count with formatting", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("15,000")).toBeInTheDocument();
       expect(screen.getByText("Total subscribers")).toBeInTheDocument();
     });
 
     it("renders industry statistics correctly", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("21.0%")).toBeInTheDocument(); // Open rate
       expect(screen.getByText("8.0%")).toBeInTheDocument(); // Click rate
@@ -100,7 +100,7 @@ describe("GeneralInfoOverview", () => {
   describe("Date Formatting", () => {
     it("formats dates correctly", () => {
       const { container } = render(
-        <GeneralInfoOverview generalInfo={mockAccountData} />,
+        <GeneralInfoOverview data={mockAccountData} />,
       );
 
       // Check for date content in the rendered HTML (dates may vary by timezone)
@@ -118,7 +118,7 @@ describe("GeneralInfoOverview", () => {
         last_login: "",
       };
 
-      render(<GeneralInfoOverview generalInfo={accountWithoutOptionalDates} />);
+      render(<GeneralInfoOverview data={accountWithoutOptionalDates} />);
 
       expect(screen.getByText("Member Since")).toBeInTheDocument();
       expect(screen.queryByText("First Payment")).not.toBeInTheDocument();
@@ -128,7 +128,7 @@ describe("GeneralInfoOverview", () => {
 
   describe("Pricing Plan Variants", () => {
     it("displays correct badge variant for monthly plan", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       const monthlyBadge = screen.getByText("Monthly");
       expect(monthlyBadge).toBeInTheDocument();
@@ -140,7 +140,7 @@ describe("GeneralInfoOverview", () => {
         pricing_plan_type: "pay_as_you_go" as const,
       };
 
-      render(<GeneralInfoOverview generalInfo={payAsYouGoAccount} />);
+      render(<GeneralInfoOverview data={payAsYouGoAccount} />);
 
       expect(screen.getByText("Pay As You Go")).toBeInTheDocument();
     });
@@ -151,7 +151,7 @@ describe("GeneralInfoOverview", () => {
         pricing_plan_type: "forever_free" as const,
       };
 
-      render(<GeneralInfoOverview generalInfo={freeAccount} />);
+      render(<GeneralInfoOverview data={freeAccount} />);
 
       expect(screen.getByText("Forever Free")).toBeInTheDocument();
     });
@@ -159,7 +159,7 @@ describe("GeneralInfoOverview", () => {
 
   describe("Pro Features", () => {
     it("shows Pro badge when pro is enabled", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("Pro")).toBeInTheDocument();
     });
@@ -170,7 +170,7 @@ describe("GeneralInfoOverview", () => {
         pro_enabled: false,
       };
 
-      render(<GeneralInfoOverview generalInfo={nonProAccount} />);
+      render(<GeneralInfoOverview data={nonProAccount} />);
 
       expect(screen.queryByText("Pro")).not.toBeInTheDocument();
     });
@@ -186,7 +186,7 @@ describe("GeneralInfoOverview", () => {
         },
       };
 
-      render(<GeneralInfoOverview generalInfo={accountWithoutAddr2} />);
+      render(<GeneralInfoOverview data={accountWithoutAddr2} />);
 
       expect(screen.getByText("123 Main St")).toBeInTheDocument();
       expect(screen.queryByText("Suite 100")).not.toBeInTheDocument();
@@ -194,7 +194,7 @@ describe("GeneralInfoOverview", () => {
     });
 
     it("displays addr2 when present", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("Suite 100")).toBeInTheDocument();
     });
@@ -202,7 +202,7 @@ describe("GeneralInfoOverview", () => {
 
   describe("Industry Benchmarks", () => {
     it("displays industry name in benchmarks section", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText(/Technology industry/)).toBeInTheDocument();
     });
@@ -217,7 +217,7 @@ describe("GeneralInfoOverview", () => {
         },
       };
 
-      render(<GeneralInfoOverview generalInfo={accountWithDecimalStats} />);
+      render(<GeneralInfoOverview data={accountWithDecimalStats} />);
 
       expect(screen.getByText("25.7%")).toBeInTheDocument();
       expect(screen.getByText("2.3%")).toBeInTheDocument();
@@ -231,7 +231,7 @@ describe("GeneralInfoOverview", () => {
   describe("Error State", () => {
     it("displays error message when error is provided", () => {
       const errorMessage = "Failed to load general info data";
-      render(<GeneralInfoOverview generalInfo={null} error={errorMessage} />);
+      render(<GeneralInfoOverview data={null} error={errorMessage} />);
 
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
       // Error state should not show general info sections
@@ -240,7 +240,7 @@ describe("GeneralInfoOverview", () => {
     });
 
     it("displays generic error when generalInfo is null without specific error", () => {
-      render(<GeneralInfoOverview generalInfo={null} />);
+      render(<GeneralInfoOverview data={null} />);
 
       expect(
         screen.getByText("No general info data provided"),
@@ -248,7 +248,7 @@ describe("GeneralInfoOverview", () => {
     });
 
     it("does not show account data when there is an error", () => {
-      render(<GeneralInfoOverview generalInfo={null} error="API Error" />);
+      render(<GeneralInfoOverview data={null} error="API Error" />);
 
       expect(screen.queryByText("Test Company")).not.toBeInTheDocument();
     });
@@ -257,7 +257,7 @@ describe("GeneralInfoOverview", () => {
   describe("Grid Layout", () => {
     it("uses proper grid layout classes", () => {
       const { container } = render(
-        <GeneralInfoOverview generalInfo={mockAccountData} />,
+        <GeneralInfoOverview data={mockAccountData} />,
       );
 
       const gridContainer = container.querySelector(".grid");
@@ -270,7 +270,7 @@ describe("GeneralInfoOverview", () => {
 
     it("has proper responsive spans for full-width cards", () => {
       const { container } = render(
-        <GeneralInfoOverview generalInfo={mockAccountData} />,
+        <GeneralInfoOverview data={mockAccountData} />,
       );
 
       const fullWidthCards = container.querySelectorAll(
@@ -282,7 +282,7 @@ describe("GeneralInfoOverview", () => {
 
   describe("Semantic Structure", () => {
     it("has proper heading structure", () => {
-      render(<GeneralInfoOverview generalInfo={mockAccountData} />);
+      render(<GeneralInfoOverview data={mockAccountData} />);
 
       expect(screen.getByText("Account Details")).toBeInTheDocument();
       expect(screen.getByText("Contact Information")).toBeInTheDocument();
@@ -293,7 +293,7 @@ describe("GeneralInfoOverview", () => {
 
     it("uses proper ARIA labels and semantic HTML", () => {
       const { container } = render(
-        <GeneralInfoOverview generalInfo={mockAccountData} />,
+        <GeneralInfoOverview data={mockAccountData} />,
       );
 
       // Check for proper card structure
@@ -305,7 +305,7 @@ describe("GeneralInfoOverview", () => {
   describe("Accessibility", () => {
     it("should not have accessibility violations", async () => {
       const { renderResult } = await renderWithA11y(
-        <GeneralInfoOverview generalInfo={mockAccountData} />,
+        <GeneralInfoOverview data={mockAccountData} />,
       );
       // Test passes if no violations are found (renderWithA11y includes assertion)
       expect(renderResult.container).toBeInTheDocument();
@@ -316,7 +316,7 @@ describe("GeneralInfoOverview", () => {
 
     it("should not have accessibility violations in error state", async () => {
       const { renderResult } = await renderWithA11y(
-        <GeneralInfoOverview generalInfo={null} error="Test error" />,
+        <GeneralInfoOverview data={null} error="Test error" />,
       );
       expect(renderResult.container).toBeInTheDocument();
     });
@@ -367,7 +367,7 @@ describe("GeneralInfoOverview", () => {
         ],
       };
 
-      render(<GeneralInfoOverview generalInfo={minimalAccount} />);
+      render(<GeneralInfoOverview data={minimalAccount} />);
 
       expect(screen.getByText("Minimal Account")).toBeInTheDocument();
       expect(screen.getByText("0")).toBeInTheDocument(); // Zero subscribers
@@ -381,7 +381,7 @@ describe("GeneralInfoOverview", () => {
         total_subscribers: 1234567,
       };
 
-      render(<GeneralInfoOverview generalInfo={largeAccount} />);
+      render(<GeneralInfoOverview data={largeAccount} />);
 
       expect(screen.getByText("1,234,567")).toBeInTheDocument();
     });
@@ -396,7 +396,7 @@ describe("GeneralInfoOverview", () => {
         },
       };
 
-      render(<GeneralInfoOverview generalInfo={zeroStatsAccount} />);
+      render(<GeneralInfoOverview data={zeroStatsAccount} />);
 
       // Check that all three stats show 0.0%
       const percentageElements = screen.getAllByText("0.0%");

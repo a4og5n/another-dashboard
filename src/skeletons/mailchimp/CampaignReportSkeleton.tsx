@@ -1,5 +1,5 @@
 /**
- * Campaign Report Loading Component
+ * Campaign Report Skeleton Component
  * Skeleton loading state for campaign report detail pages
  *
  * Issue #135: Agent 3 - Campaign report detail UI components
@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/skeletons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function CampaignReportLoading() {
+export function CampaignReportSkeleton() {
   return (
     <div className="space-y-6">
       {/* Header Loading */}

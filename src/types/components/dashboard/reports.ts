@@ -19,10 +19,6 @@ import type {
   ReportListStats,
   Report,
 } from "@/types/mailchimp/reports";
-import type {
-  ReportOpenListSuccess,
-  OpenListQueryParams,
-} from "@/types/mailchimp";
 import { reportBouncesSchema } from "@/schemas/mailchimp/common/report.schema";
 import { z } from "zod";
 import { reportsTablePropsSchema } from "@/schemas/components/dashboard/reports";
@@ -290,18 +286,14 @@ export type ParsedReportsTableProps = z.infer<
 };
 
 /**
- * Props for the CampaignOpens server component
+ * Props for the CampaignOpensPageContent server component
+ * Following ReportsPage/ListsPage pattern - validation happens internally
  */
 export interface CampaignOpensProps {
-  /** Campaign opens data from the API */
-  opensData: ReportOpenListSuccess;
-  /** Current query parameters including pagination */
-  currentParams: OpenListQueryParams & { count: number; offset: number };
-  /** Campaign ID for URL routing */
-  campaignId: string;
+  /** Raw route params from the URL (will be validated internally) */
+  params: Promise<{ id: string }>;
+  /** Raw search params from the URL (will be validated internally) */
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
   /** Available options for per-page selection */
   perPageOptions?: number[];
 }
-
-// Legacy alias for backward compatibility during migration
-export type CampaignOpensClientProps = CampaignOpensProps;

@@ -10,10 +10,7 @@
  * Follows PRD guideline: "Define shared types in /src/types (no inline definitions)"
  */
 
-import type {
-  ReportOpenListSuccess,
-  OpenListQueryParams,
-} from "@/types/mailchimp";
+import type { ReportOpenListSuccess } from "@/types/mailchimp";
 
 // ============================================================================
 // Reports List Page Props (GET /reports)
@@ -77,10 +74,13 @@ export interface ReportOpensPageProps {
 
 /**
  * Props interface for Report Opens Table component
+ * Note: Mailchimp API accepts sort parameters but does not actually sort the data
  */
 export interface ReportOpensTableProps {
   opensData: ReportOpenListSuccess;
-  currentParams: OpenListQueryParams & { count: number; offset: number };
+  currentPage: number;
+  pageSize: number;
   perPageOptions?: number[];
   baseUrl: string; // Base URL for navigation (replaces callback functions)
+  campaignId: string; // Campaign ID for empty state component
 }

@@ -54,7 +54,8 @@ import { reportListMemberSchema } from "@/schemas/mailchimp/common/report-list-m
 /**
  * Report query parameter types
  */
-export type ReportListQuery = z.infer<typeof reportListParamsSchema>;
+export type ReportListParams = z.infer<typeof reportListParamsSchema>;
+export type ReportListQuery = ReportListParams; // Alias for backwards compatibility
 
 /**
  * Report response types
