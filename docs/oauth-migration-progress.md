@@ -5,6 +5,7 @@
 ## Completed Phases
 
 ### ✅ Phase 1: Foundation & Database Setup
+
 - Neon Postgres database configured via Vercel
 - Drizzle ORM setup with migrations
 - `mailchimp_connections` table created
@@ -12,19 +13,46 @@
 - Files: `src/db/schema.ts`, `src/db/index.ts`, `drizzle.config.ts`
 
 ### ✅ Phase 2: Token Encryption & Management
+
 - AES-256-GCM encryption using Node.js `crypto` module (no external deps)
 - Connection repository with CRUD operations
 - Automatic encryption/decryption on save/read
 - Files: `src/lib/encryption.ts`, `src/db/repositories/mailchimp-connection.ts`
 
 ### ✅ Phase 3: OAuth2 Flow Implementation
+
 - OAuth service with authorization URL generation
 - Three API endpoints: authorize, callback, disconnect
 - CSRF protection with state parameter
 - Secure HTTP-only cookies
 - Files: `src/services/mailchimp-oauth.service.ts`, `src/app/api/auth/mailchimp/*/route.ts`
 
+### ✅ Phase 4: Service Layer Migration
+
+- **Section 4.1**: User-Scoped Mailchimp Client
+  - Migrated `src/lib/mailchimp.ts` from API key to OAuth tokens
+  - Created `getUserMailchimpClient()` for per-user authentication
+  - Updated `mailchimpCall()` to accept client parameter
+  - Modified all service methods to use user-scoped clients
+  - Updated exports in `src/services/index.ts`
+- **Section 4.2**: Token Validation Middleware
+  - Created `src/lib/validate-mailchimp-connection.ts`
+  - Validates user auth, connection status, and token health
+  - Auto-validates tokens hourly via Mailchimp ping endpoint
+  - Auto-deactivates invalid connections
+  - Standardized error codes with user-friendly messages
+  - Applied validation to server actions and page components
+- **Test Coverage**:
+  - Created `src/test/mocks/oauth-mailchimp.ts` for OAuth test utilities
+  - Updated test setup to import OAuth mocks globally
+  - All 376 tests passing (32 test files)
+- **Breaking Changes**:
+  - API key authentication completely removed
+  - All API calls require authenticated Kinde user
+  - All API calls require active Mailchimp OAuth connection
+
 ### ✅ Additional Updates
+
 - **Zod 4 migration**: Updated all schemas to use `z.url()` and `z.email()` syntax
 - **OAuth types/schemas**: Created in proper locations (`@/types`, `@/schemas`)
 - **Removed jose dependency**: Switched to Node.js crypto
@@ -33,7 +61,10 @@
 ## Current Status
 
 **Commits on branch:**
+
 ```
+3cc0049 feat: complete Phase 4 - OAuth-based Mailchimp service layer
+c7accf1 docs: add OAuth migration progress summary
 9c9ee08 feat: implement Phase 3 - OAuth2 flow (service and endpoints)
 d70af31 docs: add OAuth error handling recommendations
 895ded4 feat: add OAuth types/schemas and migrate to Zod 4 syntax
@@ -43,57 +74,38 @@ fedf48a chore: add .env*.local to gitignore for security
 71e9909 feat: implement Phase 1 - database setup for Mailchimp OAuth2 migration
 ```
 
-**Known TypeScript Errors (Expected):**
-```
-src/lib/mailchimp.ts(15,15): error TS2339: Property 'MAILCHIMP_API_KEY' does not exist
-src/lib/mailchimp.ts(16,15): error TS2339: Property 'MAILCHIMP_SERVER_PREFIX' does not exist
-```
-These will be fixed in Phase 4 when we migrate the service layer.
+**All Validation Passing:**
+✅ Type checks: All passing
+✅ Linting: All passing
+✅ Tests: 376/376 passing
+✅ Accessibility: All passing
+✅ No secrets detected
 
-## Next: Phase 4 - Service Layer Migration
+## Next: Phase 5 - UI Components & Empty States
 
 ### Goal
-Update `src/lib/mailchimp.ts` to use OAuth tokens from database instead of API key.
+
+Create UI components for OAuth connection flow and handle disconnected states gracefully.
 
 ### Key Tasks
-1. Remove old API key-based initialization
-2. Add method to get user's Mailchimp connection from database
-3. Decrypt token and initialize client dynamically
-4. Update singleton pattern to per-user pattern
-5. Update all methods to accept `kindeUserId` parameter
-6. Handle cases where user has no connection
 
-### Files to Modify
-- `src/lib/mailchimp.ts` - Main service file
-- Any files importing `mailchimpClient` (need to update usage)
+1. Create empty state component for when user hasn't connected Mailchimp
+2. Add connection status UI to show active/inactive state
+3. Update page components to show empty states
+4. Add disconnect functionality UI
+5. Create connection success/error notifications
 
-### Approach
-From migration plan (Section 4.1):
-```typescript
-// Before (API key):
-const client = mailchimp({ apiKey, server });
+### Files to Create/Modify
 
-// After (OAuth):
-async function getMailchimpClient(kindeUserId: string) {
-  const connection = await mailchimpConnectionRepo.getDecryptedToken(kindeUserId);
-  if (!connection) throw new Error("No Mailchimp connection");
-
-  return mailchimp({
-    accessToken: connection.accessToken,
-    server: connection.serverPrefix
-  });
-}
-```
-
-### Testing Strategy
-- Test connection retrieval
-- Test token decryption
-- Test Mailchimp API calls with OAuth token
-- Test error handling for missing connections
+- `src/components/mailchimp/mailchimp-empty-state.tsx` - Empty state component
+- `src/components/mailchimp/connection-status.tsx` - Connection status badge
+- Update existing page components to use empty states
+- Add connection management UI
 
 ## Environment Setup
 
 ### Required Variables (in .env.local)
+
 ```bash
 # Database
 DATABASE_URL=postgresql://...
