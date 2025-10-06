@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "@/app/api/auth/mailchimp/authorize/route";
+import { oauthStateRepo } from "@/db/repositories/oauth-state";
 
 // Mock Kinde auth
 const mockGetUser = vi.fn();
@@ -9,14 +10,11 @@ vi.mock("@kinde-oss/kinde-auth-nextjs/server", () => ({
   }),
 }));
 
-// Mock cookies
-const mockCookieSet = vi.fn();
-vi.mock("next/headers", () => ({
-  cookies: vi.fn(() =>
-    Promise.resolve({
-      set: mockCookieSet,
-    }),
-  ),
+// Mock OAuth state repository
+vi.mock("@/db/repositories/oauth-state", () => ({
+  oauthStateRepo: {
+    create: vi.fn(),
+  },
 }));
 
 describe("POST /api/auth/mailchimp/authorize", () => {
@@ -31,6 +29,16 @@ describe("POST /api/auth/mailchimp/authorize", () => {
       email: "test@example.com",
     });
 
+    // Mock OAuth state creation
+    vi.mocked(oauthStateRepo.create).mockResolvedValue({
+      id: 1,
+      state: "test_state_123",
+      kindeUserId: "test_user_123",
+      provider: "mailchimp",
+      expiresAt: new Date(),
+      createdAt: new Date(),
+    });
+
     const response = await POST();
     const data = await response.json();
 
@@ -40,15 +48,13 @@ describe("POST /api/auth/mailchimp/authorize", () => {
     expect(data.url).toContain("redirect_uri");
     expect(data.url).toContain("state");
 
-    // Verify cookie was set
-    expect(mockCookieSet).toHaveBeenCalledWith(
-      "mailchimp_oauth_state",
-      expect.any(String),
+    // Verify state was stored in database
+    expect(oauthStateRepo.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        httpOnly: true,
-        sameSite: "lax",
-        maxAge: 600,
-        path: "/",
+        state: expect.any(String),
+        kindeUserId: "test_user_123",
+        provider: "mailchimp",
+        expiresAt: expect.any(Date),
       }),
     );
   });
@@ -63,8 +69,8 @@ describe("POST /api/auth/mailchimp/authorize", () => {
     expect(response.status).toBe(401);
     expect(data.error).toBe("Unauthorized. Please log in first.");
 
-    // Verify cookie was not set
-    expect(mockCookieSet).not.toHaveBeenCalled();
+    // Verify state was not stored
+    expect(oauthStateRepo.create).not.toHaveBeenCalled();
   });
 
   it("should return 401 for user without ID", async () => {
@@ -78,17 +84,17 @@ describe("POST /api/auth/mailchimp/authorize", () => {
     expect(data.error).toBe("Unauthorized. Please log in first.");
   });
 
-  it("should return 500 if authorization URL generation fails", async () => {
+  it("should return 500 if state storage fails", async () => {
     // Mock authenticated user
     mockGetUser.mockResolvedValue({
       id: "test_user_123",
       email: "test@example.com",
     });
 
-    // Mock cookie set to throw error
-    mockCookieSet.mockImplementation(() => {
-      throw new Error("Cookie error");
-    });
+    // Mock OAuth state creation to throw error
+    vi.mocked(oauthStateRepo.create).mockRejectedValue(
+      new Error("Database error"),
+    );
 
     const response = await POST();
     const data = await response.json();
