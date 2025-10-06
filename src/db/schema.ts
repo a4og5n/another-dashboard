@@ -63,6 +63,25 @@ export const selectMailchimpConnectionSchema =
 export type MailchimpConnection = typeof mailchimpConnections.$inferSelect;
 export type NewMailchimpConnection = typeof mailchimpConnections.$inferInsert;
 
+/**
+ * OAuth States (temporary storage for CSRF protection)
+ * Stores OAuth state parameters during the authorization flow
+ */
+export const oauthStates = pgTable("oauth_states", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  state: text("state").notNull().unique(),
+  kindeUserId: text("kinde_user_id").notNull(),
+  provider: text("provider").notNull(), // 'mailchimp', 'google', etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+});
+
+export const insertOAuthStateSchema = createInsertSchema(oauthStates);
+export const selectOAuthStateSchema = createSelectSchema(oauthStates);
+
+export type OAuthState = typeof oauthStates.$inferSelect;
+export type NewOAuthState = typeof oauthStates.$inferInsert;
+
 // Future: Add tables for other integrations (Google Analytics, YouTube, etc.)
 // export const googleAnalyticsConnections = pgTable(...);
 // export const youtubeConnections = pgTable(...);

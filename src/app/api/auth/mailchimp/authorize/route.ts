@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { mailchimpOAuthService } from "@/services/mailchimp-oauth.service";
-import { cookies } from "next/headers";
+import { oauthStateRepo } from "@/db/repositories/oauth-state";
 
 /**
  * POST /api/auth/mailchimp/authorize
@@ -10,7 +10,7 @@ import { cookies } from "next/headers";
  * Flow:
  * 1. Check user is authenticated (Kinde)
  * 2. Generate authorization URL with state parameter
- * 3. Store state in cookie for CSRF verification
+ * 3. Store state in database for CSRF verification (expires in 10 minutes)
  * 4. Return authorization URL to client
  */
 export async function POST() {
@@ -29,14 +29,13 @@ export async function POST() {
     // 2. Generate authorization URL
     const { url, state } = mailchimpOAuthService.generateAuthorizationUrl();
 
-    // 3. Store state in secure HTTP-only cookie for CSRF verification
-    const cookieStore = await cookies();
-    cookieStore.set("mailchimp_oauth_state", state, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 10, // 10 minutes
-      path: "/",
+    // 3. Store state in database for CSRF verification (expires in 10 minutes)
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    await oauthStateRepo.create({
+      state,
+      kindeUserId: user.id,
+      provider: "mailchimp",
+      expiresAt,
     });
 
     // 4. Return authorization URL

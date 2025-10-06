@@ -2,18 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { mailchimpOAuthService } from "@/services/mailchimp-oauth.service";
 import { mailchimpConnectionRepo } from "@/db/repositories/mailchimp-connection";
-import { cookies } from "next/headers";
+import { oauthStateRepo } from "@/db/repositories/oauth-state";
 
 /**
  * GET /api/auth/mailchimp/callback
  * OAuth callback endpoint - Mailchimp redirects here after authorization
  *
  * Flow:
- * 1. Verify CSRF state parameter
- * 2. Exchange authorization code for access token
- * 3. Get account metadata (server prefix, email, etc.)
- * 4. Save encrypted connection to database
- * 5. Redirect to dashboard
+ * 1. Verify required parameters
+ * 2. Verify user is authenticated
+ * 3. Verify CSRF state from database (one-time use)
+ * 4. Exchange authorization code for access token
+ * 5. Get account metadata (server prefix, email, etc.)
+ * 6. Save encrypted connection to database
+ * 7. Redirect to dashboard
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -38,18 +40,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 3. Verify CSRF state
-    const cookieStore = await cookies();
-    const storedState = cookieStore.get("mailchimp_oauth_state")?.value;
-
-    if (!storedState || storedState !== state) {
-      console.error("State mismatch:", { storedState, receivedState: state });
-      return NextResponse.redirect(
-        new URL("/mailchimp?error=invalid_state", request.url),
-      );
-    }
-
-    // 4. Verify user is authenticated
+    // 3. Verify user is authenticated
     const { getUser } = getKindeServerSession();
     const user = await getUser();
 
@@ -59,13 +50,30 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // 4. Verify CSRF state from database
+    const validState = await oauthStateRepo.verifyAndConsume(
+      state,
+      user.id,
+      "mailchimp",
+    );
+
+    if (!validState) {
+      console.error(
+        "OAuth state verification failed - invalid or expired state",
+      );
+      return NextResponse.redirect(
+        new URL("/mailchimp?error=invalid_state", request.url),
+      );
+    }
+
     // 5. Complete OAuth flow (exchange code + get metadata)
     const { accessToken, serverPrefix, metadata } =
       await mailchimpOAuthService.completeOAuthFlow(code);
 
     // 6. Check if connection already exists
-    const existingConnection =
-      await mailchimpConnectionRepo.findByKindeUserId(user.id);
+    const existingConnection = await mailchimpConnectionRepo.findByKindeUserId(
+      user.id,
+    );
 
     if (existingConnection) {
       // Update existing connection
@@ -99,19 +107,12 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // 7. Clear state cookie
-    cookieStore.delete("mailchimp_oauth_state");
-
-    // 8. Redirect to dashboard with success message
+    // 7. Redirect to dashboard with success message
     return NextResponse.redirect(
       new URL("/mailchimp?connected=true", request.url),
     );
   } catch (error) {
     console.error("OAuth callback error:", error);
-
-    // Clear state cookie on error
-    const cookieStore = await cookies();
-    cookieStore.delete("mailchimp_oauth_state");
 
     return NextResponse.redirect(
       new URL("/mailchimp?error=connection_failed", request.url),
