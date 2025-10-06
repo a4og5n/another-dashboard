@@ -14,7 +14,6 @@ import {
   Mail,
   ExternalLink,
   Unplug,
-  RefreshCw,
   CheckCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -149,16 +148,6 @@ export function MailchimpIntegrationCard({
             </div>
 
             <div className="flex gap-2">
-              <Button
-                onClick={handleConnect}
-                disabled={isLoading}
-                variant="outline"
-                size="sm"
-                className="flex-1"
-              >
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Refresh Connection
-              </Button>
               <Button
                 onClick={handleDisconnect}
                 disabled={isLoading}

@@ -92,9 +92,8 @@ const navigation: NavigationItem[] = [
   },
   {
     name: "Settings",
-    href: "/settings",
+    href: "/settings/integrations",
     icon: Settings,
-    disabled: true,
   },
 ];
 

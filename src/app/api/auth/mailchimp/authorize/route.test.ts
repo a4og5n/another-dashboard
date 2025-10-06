@@ -31,7 +31,7 @@ describe("POST /api/auth/mailchimp/authorize", () => {
 
     // Mock OAuth state creation
     vi.mocked(oauthStateRepo.create).mockResolvedValue({
-      id: 1,
+      id: "test_id_123",
       state: "test_state_123",
       kindeUserId: "test_user_123",
       provider: "mailchimp",

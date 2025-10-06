@@ -8,14 +8,15 @@ import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection
 async function MailchimpDashboardContent({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // Check for OAuth callback parameters
-  const connected = searchParams.connected === "true";
-  const error = searchParams.error
-    ? String(searchParams.error)
-    : searchParams.error_description
-      ? String(searchParams.error_description)
+  const params = await searchParams;
+  const connected = params.connected === "true";
+  const error = params.error
+    ? String(params.error)
+    : params.error_description
+      ? String(params.error_description)
       : null;
 
   // Validate Mailchimp connection
@@ -94,7 +95,7 @@ async function MailchimpDashboardContent({
 export default function MailchimpPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   return (
     <DashboardLayout>

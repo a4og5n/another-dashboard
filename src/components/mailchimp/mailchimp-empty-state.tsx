@@ -1,7 +1,7 @@
 /**
- * Mailchimp Empty State Component
- * Shown when user hasn't connected their Mailchimp account
- * Prompts OAuth connection flow
+ * Mailchimp Onboarding Component
+ * Welcoming experience for users connecting their Mailchimp account
+ * Prompts OAuth connection flow with clear benefits
  */
 
 "use client";
@@ -15,7 +15,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Mail, ShieldCheck, ExternalLink } from "lucide-react";
+import {
+  Mail,
+  ShieldCheck,
+  ExternalLink,
+  BarChart3,
+  Users,
+  Zap,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface MailchimpEmptyStateProps {
@@ -24,6 +31,7 @@ interface MailchimpEmptyStateProps {
 
 /**
  * Get user-friendly error message for connection errors
+ * Only shown when there's an actual error (not for initial connection)
  */
 function getErrorMessage(error: string): string {
   const messages: Record<string, string> = {
@@ -33,8 +41,6 @@ function getErrorMessage(error: string): string {
     unauthorized: "Please log in to connect your Mailchimp account.",
     connection_failed: "Failed to establish connection. Please try again.",
     missing_parameters: "Invalid OAuth response. Please try again.",
-    mailchimp_not_connected:
-      "Mailchimp account not connected. Click below to get started.",
     mailchimp_connection_inactive:
       "Your Mailchimp connection is inactive. Please reconnect your account.",
     mailchimp_token_invalid:
@@ -45,10 +51,14 @@ function getErrorMessage(error: string): string {
 }
 
 /**
- * Empty state shown when user hasn't connected Mailchimp
+ * Onboarding experience for connecting Mailchimp
+ * Shows benefits and makes the connection process welcoming
  */
 export function MailchimpEmptyState({ error }: MailchimpEmptyStateProps) {
   const [isConnecting, setIsConnecting] = useState(false);
+
+  // Only show error styling if there's an actual error (not normal "not connected" state)
+  const hasActualError = error && error !== "mailchimp_not_connected";
 
   async function handleConnect() {
     setIsConnecting(true);
@@ -74,23 +84,64 @@ export function MailchimpEmptyState({ error }: MailchimpEmptyStateProps) {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <Card className="w-full max-w-md">
+    <div className="flex items-center justify-center min-h-[60vh] p-4">
+      <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Mail className="h-8 w-8 text-primary" />
           </div>
           <CardTitle className="text-2xl">
-            Connect Your Mailchimp Account
+            {hasActualError
+              ? "Reconnect Your Mailchimp Account"
+              : "Welcome! Let's Get Started"}
           </CardTitle>
           <CardDescription className="text-base mt-2">
-            View campaign analytics, audience insights, and performance metrics
+            {hasActualError
+              ? "We need to reconnect your account to continue"
+              : "Connect your Mailchimp account to unlock powerful insights"}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {error && (
+        <CardContent className="space-y-6">
+          {hasActualError && (
             <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
               {getErrorMessage(error)}
+            </div>
+          )}
+
+          {!hasActualError && (
+            <div className="space-y-3">
+              <p className="text-sm font-medium">
+                What you&apos;ll get access to:
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-start gap-3">
+                  <BarChart3 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium">Campaign Analytics</p>
+                    <p className="text-xs text-muted-foreground">
+                      Track opens, clicks, and engagement metrics
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Users className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium">Audience Insights</p>
+                    <p className="text-xs text-muted-foreground">
+                      Monitor subscriber growth and list health
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Zap className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium">Real-Time Data</p>
+                    <p className="text-xs text-muted-foreground">
+                      Always up-to-date with your latest campaigns
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -104,7 +155,7 @@ export function MailchimpEmptyState({ error }: MailchimpEmptyStateProps) {
               <>Connecting...</>
             ) : (
               <>
-                Connect Mailchimp
+                Connect Mailchimp Account
                 <ExternalLink className="ml-2 h-4 w-4" />
               </>
             )}
