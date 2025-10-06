@@ -1,6 +1,6 @@
 # Mailchimp OAuth2 Migration - Next Steps
 
-**Current Status:** Phases 1-7 Complete ✅
+**Current Status:** Phases 1-8 Complete ✅ | Phase 7.3b Pending (Post-Deployment)
 **Branch:** `feature/mailchimp-oauth2-migration`
 **Updated:** 2025-10-05
 
@@ -17,11 +17,13 @@
 - Empty states and connection UI
 - Settings/Integrations page
 - Comprehensive testing (380 tests passing)
+- **Phase 7.3a**: Critical path testing (pre-deployment) - COMPLETE ✅
+- **Phase 8**: Cleanup & Documentation - COMPLETE ✅
 
 ### 🚀 What's Next
 
-- **Phase 8**: Cleanup & Documentation (2 hours)
 - **Phase 9**: Deployment to Production (1 hour)
+- **Phase 7.3b**: Comprehensive Testing (90 minutes) - ⏳ PENDING - Execute AFTER deployment in production environment
 
 ---
 
@@ -39,9 +41,9 @@ grep -r "MAILCHIMP_SERVER_PREFIX" .
 
 **Files to update:**
 
-- [ ] `.env.local.template` - Remove API key variables
-- [ ] `README.md` - Update authentication section
-- [ ] Any remaining documentation with API key setup
+- [x] `.env.local.template` - Remove API key variables
+- [x] `README.md` - Update authentication section
+- [x] Any remaining documentation with API key setup
 
 ### 8.2: Update CLAUDE.md (45 minutes)
 
@@ -209,19 +211,31 @@ git push origin main
 
 **Phase 8 Complete When:**
 
-- [ ] All documentation updated
-- [ ] No references to old API key auth
-- [ ] Environment templates current
-- [ ] README reflects OAuth flow
+- [x] All documentation updated
+- [x] No references to old API key auth
+- [x] Environment templates current
+- [x] README reflects OAuth flow
+
+**Phase 8 Status:** ✅ COMPLETE
 
 **Phase 9 Complete When:**
 
 - [ ] Deployed to production
 - [ ] OAuth flow works end-to-end
-- [ ] Multi-user tested
 - [ ] No console errors
 - [ ] Database tokens encrypted
 - [ ] Settings page functional
+
+**Phase 7.3b Complete When (Post-Deployment):**
+
+- [ ] Multi-user isolation tested (2+ users)
+- [ ] All error scenarios validated
+- [ ] Security features verified (encryption, CSRF, HTTPS)
+- [ ] Performance acceptable under real conditions
+- [ ] Edge cases tested (session expiration, browser back button, etc.)
+- [ ] Accessibility compliance verified (WCAG 2.1 AA)
+
+See [docs/oauth-manual-testing-checklist.md](oauth-manual-testing-checklist.md) for complete test suite.
 
 ---
 
