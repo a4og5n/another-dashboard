@@ -7,6 +7,7 @@ Based on Next.js App Router best practices: https://nextjs.org/docs/app/getting-
 ### 1. OAuth Service (Services Layer)
 
 **Current approach (in plan):**
+
 ```typescript
 async exchangeCodeForToken(code: string): Promise<OAuthTokenResponse> {
   // ... fetch logic
@@ -18,6 +19,7 @@ async exchangeCodeForToken(code: string): Promise<OAuthTokenResponse> {
 ```
 
 **✅ Recommended approach (return error objects):**
+
 ```typescript
 type Result<T> = { success: true; data: T } | { success: false; error: string };
 
@@ -51,11 +53,13 @@ async exchangeCodeForToken(code: string): Promise<Result<OAuthTokenResponse>> {
 **Current approach is mostly correct** - Route handlers CAN use try/catch and return NextResponse.
 
 **Minor improvements:**
+
 - Add proper status codes for all error cases
 - Consider adding error boundaries for the pages that call these routes
 - Log errors to monitoring service (Sentry, etc.)
 
 **Example (good as-is but can be enhanced):**
+
 ```typescript
 export async function GET(request: NextRequest) {
   try {
@@ -137,17 +141,20 @@ export function ConnectMailchimpButton() {
 ## Summary of Recommendations
 
 ### ✅ Keep as-is:
+
 - Route handlers with try/catch (they're correct)
 - Error redirects with query parameters
 - CSRF validation and error handling
 
 ### 🔄 Consider updating:
+
 1. **OAuth Service methods**: Return `Result<T>` objects instead of throwing
 2. **Repository methods**: Return `Result<T>` for expected errors (e.g., "connection not found")
 3. **Add error boundaries**: For pages that use these OAuth flows
 4. **Zod validation**: Use `.safeParse()` instead of `.parse()` to avoid throwing
 
 ### 📝 Implementation Priority:
+
 1. **Low priority**: Current plan is functional and mostly follows Next.js patterns
 2. **Nice to have**: Refactor service methods to return Result types
 3. **Future enhancement**: Add error boundaries when building UI components

@@ -20,8 +20,6 @@ export type OAuthTokenRequest = z.infer<typeof oAuthTokenRequestSchema>;
 
 export type OAuthTokenResponse = z.infer<typeof oAuthTokenResponseSchema>;
 
-export type OAuthMetadataResponse = z.infer<
-  typeof oAuthMetadataResponseSchema
->;
+export type OAuthMetadataResponse = z.infer<typeof oAuthMetadataResponseSchema>;
 
 export type OAuthCallbackParams = z.infer<typeof oAuthCallbackParamsSchema>;
