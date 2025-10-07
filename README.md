@@ -1,56 +1,171 @@
-# NextJS Project
+# Another Dashboard
 
-A modern, production-ready Next.js application with TypeScript, Tailwind CSS, shadcn/ui components, and comprehensive development tooling.
+A modern, production-ready Next.js application for unified marketing analytics. Connect your Mailchimp account via OAuth 2.0 and view campaigns, audiences, and performance metrics in one beautiful dashboard.
 
 ## ✨ Features
 
-- **Next.js 15** with App Router
+### Core Functionality
+
+- **OAuth 2.0 Authentication** - Secure user-scoped Mailchimp connections
+- **Multi-User Support** - Each user connects their own Mailchimp account
+- **Encrypted Token Storage** - AES-256-GCM encryption for OAuth tokens at rest
+- **Mailchimp Integration** - Full API access to campaigns, audiences, and reports
+- **Real-Time Updates** - Live polling with user controls
+- **Connection Management** - Easy connect/disconnect at `/settings/integrations`
+
+### Technical Stack
+
+- **Next.js 15** with App Router architecture
 - **TypeScript** with strict mode configuration
-- **Tailwind CSS v4** with default imports only
-- **shadcn/ui** components with neutral base color
-- **ESLint** with Next.js recommended rules
-- **TypeDoc** for documentation generation
-- **Zod** for schema validation
-- **Lucide React** for icons
+- **Neon Postgres** - Serverless database via Vercel integration
+- **Drizzle ORM** - Type-safe database queries
+- **Kinde Auth** - User authentication and management
+- **Tailwind CSS v4** with shadcn/ui components
+- **Zod** for comprehensive schema validation
+- **Vitest** with React Testing Library
+
+### Developer Experience
+
 - **HTTPS development server** with Turbopack
-- **Standardized folder structure** with kebab-case naming
-- **Import aliases** for clean imports
-- **Error handling** with React Error Boundaries
-- **Data Access Layer (DAL)** structure
-- **Accessibility (a11y) testing** with axe-core integration
+- **Pre-commit hooks** - Automatic formatting, linting, type-checking, and testing
+- **Import aliases** for clean, maintainable code
+- **Accessibility testing** with axe-core integration
 - **Performance monitoring** with Web Vitals tracking
-- **Comprehensive testing setup** with Vitest and React Testing Library
+- **Comprehensive documentation** with TypeDoc
 
 ## 📁 Project Structure
 
 ```
 src/
-├── app/              # App Router pages and layouts
+├── app/              # Next.js App Router pages, layouts, and API routes
+│   ├── mailchimp/    # Mailchimp dashboard and related pages
+│   ├── settings/     # Settings and integrations pages
+│   └── api/          # API routes (including OAuth endpoints)
 ├── components/       # Reusable UI components
+│   ├── ui/           # shadcn/ui base components
+│   ├── dashboard/    # Dashboard-specific components
+│   ├── mailchimp/    # Mailchimp-specific components (empty states, banners)
+│   ├── settings/     # Settings page components (integration cards)
+│   ├── layout/       # Layout components (header, sidebar, footer)
 │   ├── accessibility/ # A11y testing components
 │   └── performance/  # Performance monitoring components
-├── actions/          # Server actions and API routes
-├── types/           # TypeScript type definitions
-├── schemas/         # Zod schemas for validation
-├── utils/           # Helper functions and utilities
-├── lib/             # Library utilities and configurations
-│   └── web-vitals.ts # Web Vitals tracking utilities
-├── test/            # Test utilities and helpers
-│   ├── setup.ts     # Test setup configuration
-│   ├── test-utils.tsx # Custom render functions
-│   └── axe-helper.tsx # Accessibility testing helpers
-└── dal/              # Data Access Layer
-    ├── models/       # Data models and schemas
-    ├── repositories/ # Data access patterns
-    └── services/     # Business logic services
+├── db/               # Database layer
+│   ├── schema.ts     # Drizzle ORM schema definitions
+│   ├── repositories/ # Repository pattern for data access
+│   └── index.ts      # Database client exports
+├── lib/              # Library utilities and configurations
+│   ├── config.ts     # Environment validation with Zod
+│   ├── encryption.ts # AES-256-GCM token encryption
+│   ├── mailchimp.ts  # OAuth-based Mailchimp client
+│   └── validate-mailchimp-connection.ts # Token validation middleware
+├── services/         # API service layer
+│   ├── mailchimp.service.ts # User-scoped Mailchimp API calls
+│   └── mailchimp-oauth.service.ts # OAuth flow logic
+├── actions/          # Server actions and business logic
+├── types/            # TypeScript type definitions
+│   └── mailchimp/    # Mailchimp-specific types (OAuth, campaigns, reports)
+├── schemas/          # Zod validation schemas
+│   └── mailchimp/    # Mailchimp API schemas
+├── utils/            # Helper functions and utilities
+├── hooks/            # Custom React hooks
+└── test/             # Test utilities, helpers, and mocks
+    ├── setup.ts      # Test setup configuration
+    ├── mocks/        # Test mocks (OAuth, Mailchimp)
+    └── architectural-enforcement/ # Architectural pattern tests
 ```
 
 ## 🚀 Getting Started
 
-1. Clone the repository
-2. Install dependencies: `pnpm install`
-3. Copy `.env.example` to `.env` and update values
-4. Start development server: `pnpm dev`
+### Prerequisites
+
+- Node.js v24.7.0 or later
+- pnpm v10.15.0 or later
+- A Vercel account (for database hosting)
+- A Mailchimp account (for OAuth app registration)
+- A Kinde account (for user authentication)
+
+### Setup Steps
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd another-dashboard
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Create Neon database via Vercel**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard) → Your Project → Storage
+   - Click "Create Database" → Select "Neon" (Serverless Postgres)
+   - Vercel automatically adds environment variables
+
+4. **Pull environment variables**
+
+   ```bash
+   vercel env pull .env.local
+   ```
+
+5. **Register Mailchimp OAuth app**
+   - Login to Mailchimp → Account → Extras → API Keys → "Register an App"
+   - App Name: `Another Dashboard`
+   - Redirect URI (local): `https://127.0.0.1:3000/api/auth/mailchimp/callback`
+   - Copy Client ID and Client Secret
+
+6. **Configure environment variables**
+
+   ```bash
+   # Add to .env.local
+   MAILCHIMP_CLIENT_ID=your_client_id
+   MAILCHIMP_CLIENT_SECRET=your_client_secret
+   MAILCHIMP_REDIRECT_URI=https://127.0.0.1:3000/api/auth/mailchimp/callback
+
+   # Generate encryption key
+   openssl rand -base64 32
+   ENCRYPTION_KEY=<paste-generated-key>
+
+   # Add Kinde credentials (from your Kinde dashboard)
+   KINDE_CLIENT_ID=your_kinde_client_id
+   KINDE_CLIENT_SECRET=your_kinde_client_secret
+   KINDE_ISSUER_URL=https://your_subdomain.kinde.com
+   KINDE_SITE_URL=https://127.0.0.1:3000
+   KINDE_POST_LOGOUT_REDIRECT_URL=https://127.0.0.1:3000
+   KINDE_POST_LOGIN_REDIRECT_URL=https://127.0.0.1:3000/mailchimp
+   ```
+
+7. **Push database schema**
+
+   ```bash
+   pnpm db:push
+   ```
+
+8. **Start development server**
+
+   ```bash
+   pnpm dev
+   ```
+
+9. **Connect your Mailchimp account**
+   - Visit `https://127.0.0.1:3000/mailchimp`
+   - Click "Connect Mailchimp"
+   - Authorize access in Mailchimp
+   - You'll be redirected back with an active connection
+
+### Quick Commands
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build production version
+- `pnpm test` - Run all tests
+- `pnpm type-check` - Check TypeScript types
+- `pnpm lint` - Run ESLint
+- `pnpm format` - Format code with Prettier
+- `pnpm pre-commit` - Run full validation suite
+- `pnpm db:push` - Push database schema changes
+- `pnpm db:studio` - Open Drizzle Studio (database GUI)
 
 ## 📖 Documentation
 
@@ -163,44 +278,77 @@ function PerformanceDashboard() {
 }
 ```
 
-### 📊 Mailchimp API Integration
+### 📊 Mailchimp OAuth Integration
 
-Comprehensive Mailchimp API integration with campaigns, audiences, and reports functionality:
+Comprehensive Mailchimp OAuth 2.0 integration with user-scoped API access:
 
-#### 📧 Campaigns API
+#### 🔐 OAuth Authentication
 
-Robust API route for Mailchimp campaign reports and details, featuring:
+Secure OAuth 2.0 flow with encrypted token storage:
 
-- **Strict query parameter validation** using Zod schemas
-- **Centralized error handling** with custom error classes
-- **Type-safe request handling** with TypeScript types
-- **Comprehensive test coverage**
+- **User-scoped connections** - Each user connects their own Mailchimp account
+- **AES-256-GCM encryption** - OAuth tokens encrypted at rest in database
+- **CSRF protection** - State parameter validation for security
+- **Automatic token validation** - Hourly health checks with auto-deactivation
+- **Connection management** - Easy connect/disconnect at `/settings/integrations`
 
-#### 📈 Reports API (NEW)
+#### 📧 Campaigns & Reports
 
-Complete campaign reports endpoint with detailed analytics and metrics:
+Full campaign analytics and reporting:
 
-- **Server action integration** for reports data fetching ([see](src/actions/mailchimp-reports.ts))
-- **Comprehensive schema validation** with nested object support ([see](src/schemas/mailchimp/report-list-success.schema.ts))
-- **Table-based UI** with server-side pagination at `/mailchimp/reports`
-- **Full campaign analytics** including opens, clicks, bounces, and deliverability metrics
+- **Campaign dashboard** at `/mailchimp` with tabbed interface
+- **Reports page** at `/mailchimp/reports` with detailed analytics
+- **Server-side pagination** for efficient data loading
+- **Real-time updates** with configurable polling
+- **Comprehensive metrics** - opens, clicks, bounces, deliverability
 
-#### 👥 Audiences API
+#### 👥 Audiences
 
-Audience management and segmentation functionality:
+Audience management and insights:
 
-- **Audience listing** with filtering and pagination
+- **Audience listing** at `/mailchimp/lists` with filtering
 - **Member statistics** and engagement metrics
-- **Type-safe audience data handling**
+- **Growth tracking** and audience health
 
-#### Usage Examples
+#### Architecture & Security
 
-**Reports Server Action:**
+**OAuth Flow:**
+
+```
+User Authentication (Kinde)
+    ↓
+OAuth Authorization (Mailchimp)
+    ↓
+Token Exchange & Encryption
+    ↓
+Secure Storage (Neon Postgres)
+    ↓
+User-Scoped API Calls
+```
+
+**Key Components:**
+
+- **OAuth Service:** [mailchimp-oauth.service.ts](src/services/mailchimp-oauth.service.ts)
+- **Token Encryption:** [encryption.ts](src/lib/encryption.ts)
+- **Database Repository:** [mailchimp-connection.ts](src/db/repositories/mailchimp-connection.ts)
+- **User-Scoped Client:** [mailchimp.ts](src/lib/mailchimp.ts)
+- **Service Layer:** [mailchimp.service.ts](src/services/mailchimp.service.ts)
+
+**API Endpoints:**
+
+- `POST /api/auth/mailchimp/authorize` - Initiate OAuth flow
+- `GET /api/auth/mailchimp/callback` - Handle OAuth callback
+- `POST /api/auth/mailchimp/disconnect` - Disconnect account
+- `GET /api/auth/mailchimp/status` - Check connection status
+
+#### Usage Example
+
+**Server Action with OAuth:**
 
 ```typescript
 import { getMailchimpReports } from "@/actions/mailchimp-reports";
 
-// Get paginated campaign reports
+// User must be authenticated (Kinde) and have active Mailchimp connection
 const result = await getMailchimpReports({
   count: 10,
   offset: 0,
@@ -212,26 +360,28 @@ if (result.success) {
   result.data.reports.forEach((report) => {
     console.log(`${report.campaign_title}: ${report.emails_sent} sent`);
   });
+} else {
+  // Handles "mailchimp_not_connected" error automatically
+  console.error(result.error);
 }
 ```
 
-**Error Response Format:**
+**Error Handling:**
 
 ```json
 {
   "success": false,
-  "error": "Parameter validation failed: Invalid campaign report parameters"
+  "error": "mailchimp_not_connected"
 }
 ```
 
-#### Architecture & References
+Common error codes:
 
-- **Reports:** [Schema](src/schemas/mailchimp/report-list-success.schema.ts) | [Types](src/types/mailchimp/reports.ts) | [Actions](src/actions/mailchimp-reports.ts) | [UI](src/components/dashboard/reports-overview.tsx)
-- **Campaigns:** [Schema](src/schemas/mailchimp-campaigns.ts) | [Types](src/types/mailchimp-campaigns.ts) | [Actions](src/actions/mailchimp-campaigns.ts)
-- **Service Layer:** [Mailchimp Service](src/services/mailchimp.service.ts) with singleton pattern and health checks
-- **Common Patterns:** [Link Schema](src/schemas/mailchimp/common/link.schema.ts) | [Common Types](src/types/mailchimp/common.ts)
+- `mailchimp_not_connected` - User hasn't connected Mailchimp
+- `mailchimp_connection_inactive` - Connection deactivated (token expired)
+- `mailchimp_token_invalid` - Token validation failed
 
-See `.github/copilot-instructions.md` for documentation standards.
+See [docs/mailchimp-oauth-migration.md](docs/mailchimp-oauth-migration.md) for complete setup guide.
 
 ### Example Tests
 

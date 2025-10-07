@@ -1,9 +1,48 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
+import { MailchimpConnectionBanner } from "@/components/mailchimp/mailchimp-connection-banner";
+import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
 
-export default function MailchimpPage() {
+async function MailchimpDashboardContent({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  // Check for OAuth callback parameters
+  const params = await searchParams;
+  const connected = params.connected === "true";
+  const error = params.error
+    ? String(params.error)
+    : params.error_description
+      ? String(params.error_description)
+      : null;
+
+  // Validate Mailchimp connection
+  const validation = await validateMailchimpConnection();
+
+  // Show connection banner if redirected from OAuth
+  const showBanner = connected || error;
+
+  // Show empty state if not connected
+  if (!validation.isValid) {
+    return (
+      <>
+        {showBanner && (
+          <MailchimpConnectionBanner connected={connected} error={error} />
+        )}
+        <MailchimpEmptyState error={validation.error || error} />
+      </>
+    );
+  }
+
+  // Show dashboard navigation if connected
   return (
-    <DashboardLayout>
+    <>
+      {showBanner && (
+        <MailchimpConnectionBanner connected={connected} error={error} />
+      )}
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="space-y-8 text-center">
           <div>
@@ -49,6 +88,20 @@ export default function MailchimpPage() {
           </div>
         </div>
       </div>
+    </>
+  );
+}
+
+export default function MailchimpPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  return (
+    <DashboardLayout>
+      <Suspense fallback={<div>Loading...</div>}>
+        <MailchimpDashboardContent searchParams={searchParams} />
+      </Suspense>
     </DashboardLayout>
   );
 }

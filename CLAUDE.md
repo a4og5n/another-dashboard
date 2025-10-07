@@ -43,11 +43,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Project Status & Context
 
-- **Status**: MVP Complete with ongoing enhancements
-- **Current Phase**: Post-MVP feature development and workflow optimization
+- **Status**: MVP Complete with OAuth 2.0 migration
+- **Current Phase**: Post-MVP feature development and multi-user OAuth implementation
 - **Key Achievement**: 70x acceleration - 10-week roadmap completed in 1 day
-- **MVP Architecture**: No database - read-only mode with live API data only
-- **Data Strategy**: Direct API integration without local persistence or DAL layer
+- **Architecture**: Neon Postgres database with OAuth 2.0 user authentication
+- **Data Strategy**: User-scoped API access with encrypted token storage
 
 ### Environment Requirements
 
@@ -82,9 +82,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `src/types/` - TypeScript type definitions with strict subfolder organization (mailchimp/, components/)
 - `src/schemas/` - Zod validation schemas for API and form validation with nested organization (mailchimp/)
 - `src/utils/` - Pure utility functions with comprehensive test coverage
-- `src/lib/` - Configuration and library utilities (config.ts with environment validation, utils.ts, web-vitals)
-- `src/services/` - API service classes with singleton pattern and health check capabilities
+- `src/lib/` - Configuration and library utilities (config.ts with environment validation, encryption.ts, mailchimp.ts, utils.ts, web-vitals)
+- `src/services/` - API service classes with singleton pattern and OAuth flow management
 - `src/hooks/` - Custom React hooks for pagination and real-time data
+- `src/db/` - Database schema, migrations, and repositories (Drizzle ORM with Neon Postgres)
 - `src/test/` - Testing setup, utilities, helpers, and architectural enforcement tests
 - `src/translations/` - Internationalization files (en.json, es.json) for next-intl
 
@@ -93,11 +94,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **tsconfig.json**: Strict TypeScript with comprehensive path aliases
 - **vitest.config.ts**: Test configuration with jsdom environment and coverage setup
 - **next.config.ts**: Minimal Next.js configuration
+- **drizzle.config.ts**: Database configuration for Drizzle ORM migrations
 - **scripts/check-no-secrets-logged.js**: Security script to prevent secret logging
 
 ### Core Features & Integrations
 
-- **Mailchimp Integration**: Full API integration with campaigns, audiences, and dashboard data
+- **Mailchimp Integration**: OAuth 2.0 authentication with user-scoped API access
+  - Each user connects their own Mailchimp account via OAuth flow
+  - Tokens encrypted at rest using AES-256-GCM encryption
+  - Database-backed token storage with Neon Postgres
+  - CSRF protection with state parameters
+  - Full API integration with campaigns, audiences, and dashboard data
+  - Connection management at `/settings/integrations`
+- **Database**: Neon Postgres with Drizzle ORM
+  - Serverless PostgreSQL via Vercel integration
+  - Type-safe queries with Drizzle ORM
+  - Encrypted OAuth token storage
+  - Connection pooling and optimization
+- **Authentication**: Kinde for user authentication + Mailchimp OAuth for API access
 - **Accessibility (A11y)**: axe-core integration with development-time checking and test utilities
 - **Performance Monitoring**: Web Vitals tracking with multiple analytics provider support
 - **Progressive Web App**: PWA components and utilities for installation prompts
@@ -205,10 +219,100 @@ Before starting any development work, always review:
 
 ### Security & Best Practices
 
-- Never log environment variables, API keys, or secrets (enforced by automated scanning)
+- Never log environment variables, API keys, OAuth tokens, or secrets (enforced by automated scanning)
 - Use the centralized environment validation in `src/lib/config.ts`
 - All API endpoints must use Zod schemas for input validation
 - Follow accessibility guidelines with automated testing
+- OAuth tokens are encrypted at rest using AES-256-GCM
+- HTTPS-only in production for OAuth redirects
+- CSRF protection via state parameters in OAuth flow
+
+### Mailchimp OAuth Setup
+
+**Authentication Method:** OAuth 2.0 (user-scoped tokens)
+
+**Initial Setup:**
+
+1. **Create Neon Database via Vercel:**
+   - Go to Vercel Dashboard → Your Project → Storage tab
+   - Click "Create Database" → Select "Neon" (Serverless Postgres)
+   - Vercel automatically adds environment variables (`DATABASE_URL`, `POSTGRES_PRISMA_URL`, `POSTGRES_URL`)
+
+2. **Pull Environment Variables:**
+
+   ```bash
+   vercel env pull .env.local
+   ```
+
+3. **Register OAuth App at Mailchimp:**
+   - Login to Mailchimp → Account → Extras → API Keys → "Register an App"
+   - Fill in app details:
+     - App Name: Another Dashboard
+     - App Website: Your production Vercel URL
+     - Redirect URI (local): `https://127.0.0.1:3000/api/auth/mailchimp/callback`
+     - Redirect URI (production): `https://your-domain.vercel.app/api/auth/mailchimp/callback`
+   - Copy Client ID and Client Secret
+
+4. **Add OAuth Credentials to Environment:**
+
+   ```bash
+   # Add to .env.local
+   MAILCHIMP_CLIENT_ID=your-client-id
+   MAILCHIMP_CLIENT_SECRET=your-client-secret
+   MAILCHIMP_REDIRECT_URI=https://127.0.0.1:3000/api/auth/mailchimp/callback
+
+   # Generate encryption key
+   openssl rand -base64 32
+   ENCRYPTION_KEY=your-generated-key
+   ```
+
+5. **Push Database Schema:**
+
+   ```bash
+   pnpm db:push
+   ```
+
+6. **Start Development Server:**
+
+   ```bash
+   pnpm dev
+   ```
+
+7. **Connect Mailchimp Account:**
+   - Visit `https://127.0.0.1:3000/mailchimp` or `/settings/integrations`
+   - Click "Connect Mailchimp"
+   - Authorize access in Mailchimp
+   - Redirected back to dashboard with active connection
+
+**Database Structure:**
+
+- **Table:** `mailchimp_connections` links Kinde user IDs to encrypted Mailchimp OAuth tokens
+- **Encryption:** Tokens encrypted at rest using AES-256-GCM
+- **Repository Pattern:** `src/db/repositories/mailchimp-connection.ts` handles all database operations
+
+**OAuth Flow:**
+
+- `POST /api/auth/mailchimp/authorize` - Initiate OAuth flow
+- `GET /api/auth/mailchimp/callback` - OAuth callback handler (processes authorization code)
+- `POST /api/auth/mailchimp/disconnect` - Disconnect Mailchimp account
+- `GET /api/auth/mailchimp/status` - Check connection status
+
+**User Experience:**
+
+- Users without connected Mailchimp see empty state with "Connect Mailchimp" button
+- Settings page at `/settings/integrations` shows connection status and management options
+- Success/error banners provide feedback after OAuth flow
+- Connection validation happens hourly via Mailchimp ping endpoint
+- Invalid tokens automatically deactivate connections
+
+**Security Features:**
+
+- Tokens encrypted at rest in database
+- CSRF protection via state parameter
+- HTTPS-only redirects in production
+- HTTP-only cookies for OAuth state
+- Tokens never logged or exposed to client
+- Hourly token validation with auto-deactivation
 
 ### Architectural Enforcement
 
