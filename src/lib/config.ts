@@ -91,7 +91,10 @@ const envSchema = z.object({
   KINDE_SITE_URL: z.url().optional(),
   KINDE_POST_LOGOUT_REDIRECT_URL: z.url().optional(),
   KINDE_POST_LOGIN_REDIRECT_URL: z.url().optional(),
-  KINDE_GOOGLE_CONNECTION_ID: z.string().optional(),
+  KINDE_GOOGLE_CONNECTION_ID: z
+    .string()
+    .min(1, "Google Connection ID required for OAuth")
+    .optional(),
 
   // Optional: Error tracking (future)
   SENTRY_DSN: z.url().optional(),
