@@ -95,6 +95,10 @@ const envSchema = z.object({
     .string()
     .min(1, "Google Connection ID required for OAuth")
     .optional(),
+  NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID: z
+    .string()
+    .min(1, "Google Connection ID required for OAuth (client-side)")
+    .optional(),
 
   // Optional: Error tracking (future)
   SENTRY_DSN: z.url().optional(),
@@ -218,6 +222,7 @@ function parseEnv(): Env {
         KINDE_POST_LOGOUT_REDIRECT_URL: undefined,
         KINDE_POST_LOGIN_REDIRECT_URL: undefined,
         KINDE_GOOGLE_CONNECTION_ID: undefined,
+        NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID: undefined,
         SENTRY_DSN: undefined,
       };
 

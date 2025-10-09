@@ -6,13 +6,13 @@
  *
  * Features:
  * - Google branding per Google's brand guidelines
- * - Loading states during authentication
+ * - Direct navigation to Kinde OAuth with connection_id
  * - Error handling with user feedback
  * - Accessibility (ARIA labels, keyboard navigation)
  * - Uses Kinde OAuth with Google connection ID
  *
- * Following Next.js error handling best practices:
- * https://nextjs.org/docs/app/getting-started/error-handling
+ * Following Kinde's custom UI documentation:
+ * https://docs.kinde.com/build/authentication/custom-configurations/custom-sign-up-sign-in/
  *
  * @component
  * @example
@@ -23,8 +23,7 @@
  * />
  * ```
  */
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -72,46 +71,35 @@ export function GoogleSignInButton({
   showErrorAlert = true,
 }: GoogleSignInButtonProps) {
   const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
-  const handleGoogleSignIn = () => {
-    setError(null);
+  // Construct the Kinde auth URL with Google connection_id parameter
+  // Per Kinde's custom UI documentation, we pass connection_id as a query parameter
+  // to tell Kinde which OAuth provider to use (Google in this case)
+  const connectionId = process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID;
 
-    startTransition(() => {
-      try {
-        // Construct the Kinde auth URL with Google connection via environment config
-        // The KINDE_GOOGLE_CONNECTION_ID is configured in .env and validated in config.ts
-        const authEndpoint =
-          mode === "register" ? "/api/auth/register" : "/api/auth/login";
-        const redirectUrl = "/mailchimp"; // Post-login destination
+  // Build the auth URL based on mode (login vs register)
+  const authEndpoint = mode === "register" ? "/api/auth/register" : "/api/auth/login";
+  const postLoginRedirect = "/mailchimp";
 
-        // Build auth URL with redirect parameter
-        // Kinde will handle the OAuth flow with Google using the connection_id
-        // The connection_id is automatically used by Kinde when "Use your own sign-up
-        // and sign-in screens" is enabled in the dashboard
-        const authUrl = `${authEndpoint}?post_login_redirect_url=${encodeURIComponent(redirectUrl)}`;
+  // Construct full auth URL with connection_id and post_login_redirect_url
+  const authUrl = `${authEndpoint}?connection_id=${connectionId}&post_login_redirect_url=${encodeURIComponent(postLoginRedirect)}`;
 
-        // Navigate to Kinde's OAuth endpoint
-        // This initiates the Google OAuth flow via Kinde
-        router.push(authUrl);
-      } catch (err) {
-        // Following Next.js error handling best practices
-        // Capture error details and provide user-friendly feedback
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : "Failed to initiate Google sign-in";
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Validate that connection_id is available
+    if (!connectionId) {
+      e.preventDefault();
+      const errorMessage = "Google OAuth not configured. Please check environment variables.";
+      setError(errorMessage);
+      onError?.(errorMessage);
 
-        setError(errorMessage);
-        onError?.(errorMessage);
-
-        // Log error for debugging (but never log sensitive data)
-        if (process.env.NODE_ENV === "development") {
-          console.error("Google sign-in error:", err);
-        }
+      if (process.env.NODE_ENV === "development") {
+        console.error("Missing NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID");
       }
-    });
+      return;
+    }
+
+    // Navigate to the auth URL
+    window.location.href = authUrl;
   };
 
   return (
@@ -130,27 +118,17 @@ export function GoogleSignInButton({
         variant="outline"
         size="lg"
         className={`w-full bg-white hover:bg-gray-50 text-gray-700 border-gray-300 font-medium dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-200 dark:border-gray-600 ${className}`}
-        onClick={handleGoogleSignIn}
-        disabled={isPending}
+        onClick={handleClick}
         aria-label={
           mode === "register" ? "Sign up with Google" : "Sign in with Google"
         }
       >
-        {isPending ? (
-          <>
-            <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
-            <span>Connecting...</span>
-          </>
-        ) : (
-          <>
-            <GoogleLogo className="mr-3 h-5 w-5" />
-            <span>
-              {mode === "register"
-                ? "Sign up with Google"
-                : "Continue with Google"}
-            </span>
-          </>
-        )}
+        <GoogleLogo className="mr-3 h-5 w-5" />
+        <span>
+          {mode === "register"
+            ? "Sign up with Google"
+            : "Continue with Google"}
+        </span>
       </Button>
     </div>
   );

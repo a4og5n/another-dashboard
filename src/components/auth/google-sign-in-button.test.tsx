@@ -5,21 +5,31 @@
  * Following established component testing patterns with comprehensive coverage
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 
-// Mock next/navigation
-const mockPush = vi.fn();
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+// Mock environment variable
+const mockConnectionId = "conn_test123";
+vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
+
+// Store original window.location
+const originalLocation = window.location;
 
 describe("GoogleSignInButton", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock window.location.href setter
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (window as any).location;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).location = { ...originalLocation, href: "" };
+  });
+
+  afterEach(() => {
+    // Restore original window.location
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).location = originalLocation;
   });
 
   describe("Rendering", () => {
@@ -68,18 +78,18 @@ describe("GoogleSignInButton", () => {
   });
 
   describe("Authentication Flow", () => {
-    it("should initiate Google sign-in on button click", async () => {
+    it("should navigate to login endpoint with connection_id on button click", async () => {
       const user = userEvent.setup();
       render(<GoogleSignInButton />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith(
-          "/api/auth/login?post_login_redirect_url=%2Fmailchimp",
-        );
-      });
+      expect(window.location.href).toContain("/api/auth/login");
+      expect(window.location.href).toContain(`connection_id=${mockConnectionId}`);
+      expect(window.location.href).toContain(
+        "post_login_redirect_url=%2Fmailchimp",
+      );
     });
 
     it("should use register endpoint when mode is register", async () => {
@@ -89,11 +99,8 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith(
-          "/api/auth/register?post_login_redirect_url=%2Fmailchimp",
-        );
-      });
+      expect(window.location.href).toContain("/api/auth/register");
+      expect(window.location.href).toContain(`connection_id=${mockConnectionId}`);
     });
 
     it("should use login endpoint when mode is login", async () => {
@@ -103,11 +110,8 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith(
-          "/api/auth/login?post_login_redirect_url=%2Fmailchimp",
-        );
-      });
+      expect(window.location.href).toContain("/api/auth/login");
+      expect(window.location.href).toContain(`connection_id=${mockConnectionId}`);
     });
 
     it("should properly encode redirect URL", async () => {
@@ -117,67 +121,16 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      await waitFor(() => {
-        const callArgs = mockPush.mock.calls[0]?.[0];
-        expect(callArgs).toContain(encodeURIComponent("/mailchimp"));
-      });
-    });
-  });
-
-  describe("Loading State", () => {
-    it("should have disabled attribute when isPending prop would be true", () => {
-      // Note: useTransition's isPending doesn't trigger in test environment the same way
-      // as in real browser. This test verifies the button has the disabled prop defined
-      // which will be enabled when isPending is true in the real application.
-      render(<GoogleSignInButton />);
-
-      const button = screen.getByRole("button");
-
-      // Verify button is interactive when not pending
-      expect(button).not.toBeDisabled();
-      expect(button).toHaveAttribute("type", "button");
-    });
-
-    it("should render loading UI elements when pending", () => {
-      // This test verifies the conditional rendering structure exists
-      // The actual isPending state is handled by React's useTransition
-      render(<GoogleSignInButton />);
-
-      const button = screen.getByRole("button");
-
-      // Should show normal state initially
-      expect(button).toHaveTextContent("Continue with Google");
-
-      // Should have Google logo in normal state
-      const svg = button.querySelector("svg");
-      expect(svg).toBeInTheDocument();
-    });
-
-    it("should use startTransition for navigation", async () => {
-      // Verify that clicking the button triggers navigation
-      // The useTransition wrapping ensures React can manage the pending state
-      const user = userEvent.setup();
-      render(<GoogleSignInButton />);
-
-      const button = screen.getByRole("button");
-      await user.click(button);
-
-      // Verify router.push was called (this happens inside startTransition)
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalled();
-      });
+      expect(window.location.href).toContain(
+        encodeURIComponent("/mailchimp"),
+      );
     });
   });
 
   describe("Error Handling", () => {
-    it("should handle navigation errors gracefully", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-      const mockError = new Error("Navigation failed");
-      mockPush.mockImplementationOnce(() => {
-        throw mockError;
-      });
+    it("should show error when connection_id is missing", async () => {
+      // Temporarily unset the environment variable
+      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", undefined);
 
       const user = userEvent.setup();
       render(<GoogleSignInButton showErrorAlert />);
@@ -185,64 +138,34 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      await waitFor(() => {
-        expect(screen.getByRole("alert")).toBeInTheDocument();
-        expect(screen.getByText("Navigation failed")).toBeInTheDocument();
-      });
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(
+        screen.getByText(/Google OAuth not configured/i),
+      ).toBeInTheDocument();
 
-      consoleErrorSpy.mockRestore();
+      // Restore the environment variable
+      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
     });
 
-    it("should call onError callback when error occurs", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-      const onError = vi.fn();
-      mockPush.mockImplementationOnce(() => {
-        throw new Error("Test error");
-      });
+    it("should call onError callback when connection_id is missing", async () => {
+      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", undefined);
 
+      const onError = vi.fn();
       const user = userEvent.setup();
       render(<GoogleSignInButton onError={onError} />);
 
       const button = screen.getByRole("button");
       await user.click(button);
 
-      await waitFor(() => {
-        expect(onError).toHaveBeenCalledWith("Test error");
-      });
+      expect(onError).toHaveBeenCalledWith(
+        "Google OAuth not configured. Please check environment variables.",
+      );
 
-      consoleErrorSpy.mockRestore();
-    });
-
-    it("should show error alert when showErrorAlert is true", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-      mockPush.mockImplementationOnce(() => {
-        throw new Error("Test error");
-      });
-
-      const user = userEvent.setup();
-      render(<GoogleSignInButton showErrorAlert />);
-
-      const button = screen.getByRole("button");
-      await user.click(button);
-
-      await waitFor(() => {
-        expect(screen.getByRole("alert")).toBeInTheDocument();
-      });
-
-      consoleErrorSpy.mockRestore();
+      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
     });
 
     it("should not show error alert when showErrorAlert is false", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-      mockPush.mockImplementationOnce(() => {
-        throw new Error("Test error");
-      });
+      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", undefined);
 
       const user = userEvent.setup();
       render(<GoogleSignInButton showErrorAlert={false} />);
@@ -250,66 +173,26 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      await waitFor(() => {
-        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-      });
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 
-      consoleErrorSpy.mockRestore();
+      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
     });
 
-    it("should handle non-Error exceptions", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-      mockPush.mockImplementationOnce(() => {
-        throw "String error";
-      });
+    it("should not navigate when connection_id is not available", async () => {
+      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", undefined);
 
       const user = userEvent.setup();
-      render(<GoogleSignInButton showErrorAlert />);
+      render(<GoogleSignInButton />);
 
       const button = screen.getByRole("button");
+      const initialHref = window.location.href;
+
       await user.click(button);
 
-      await waitFor(() => {
-        expect(screen.getByRole("alert")).toBeInTheDocument();
-        expect(
-          screen.getByText("Failed to initiate Google sign-in"),
-        ).toBeInTheDocument();
-      });
+      // Should not have navigated
+      expect(window.location.href).toBe(initialHref);
 
-      consoleErrorSpy.mockRestore();
-    });
-
-    it("should clear previous errors on new attempt", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-      // First click throws error
-      mockPush.mockImplementationOnce(() => {
-        throw new Error("First error");
-      });
-
-      const user = userEvent.setup();
-      render(<GoogleSignInButton showErrorAlert />);
-
-      const button = screen.getByRole("button");
-
-      // First click - should show error
-      await user.click(button);
-      await waitFor(() => {
-        expect(screen.getByText("First error")).toBeInTheDocument();
-      });
-
-      // Second click - should clear error and show new loading state
-      mockPush.mockClear();
-      await user.click(button);
-
-      await waitFor(() => {
-        expect(screen.queryByText("First error")).not.toBeInTheDocument();
-      });
-
-      consoleErrorSpy.mockRestore();
+      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
     });
   });
 
@@ -352,9 +235,7 @@ describe("GoogleSignInButton", () => {
       // Press Enter
       await user.keyboard("{Enter}");
 
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalled();
-      });
+      expect(window.location.href).toContain("/api/auth/login");
     });
 
     it("should be activatable with Space key", async () => {
@@ -370,9 +251,7 @@ describe("GoogleSignInButton", () => {
       // Press Space
       await user.keyboard(" ");
 
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalled();
-      });
+      expect(window.location.href).toContain("/api/auth/login");
     });
   });
 
@@ -385,19 +264,18 @@ describe("GoogleSignInButton", () => {
       expect(button.className).toContain("border");
     });
 
-    it("should have large size styling", () => {
-      render(<GoogleSignInButton />);
-
-      const button = screen.getByRole("button");
-      // Size is controlled by the Button component's size prop
-      expect(button).toBeInTheDocument();
-    });
-
     it("should have Google brand colors (white background)", () => {
       render(<GoogleSignInButton />);
 
       const button = screen.getByRole("button");
       expect(button.className).toContain("bg-white");
+    });
+
+    it("should be full width", () => {
+      render(<GoogleSignInButton />);
+
+      const button = screen.getByRole("button");
+      expect(button.className).toContain("w-full");
     });
   });
 });
