@@ -1,9 +1,11 @@
 /**
- * Login Page - MVP Version
- * Uses Kinde's hosted login for simplicity and security
+ * Login Page - MVP Version with Google OAuth
+ * Provides custom Google OAuth button alongside Kinde's hosted login
  *
- * This redirects users to Kinde's hosted authentication page
- * which handles all authentication methods (email, Google, etc.)
+ * Features:
+ * - Google OAuth sign-in with custom UI (stays on our domain)
+ * - Fallback to Kinde's hosted authentication (email, password, etc.)
+ * - Seamless user experience without Kinde branding
  */
 import { redirect } from "next/navigation";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
@@ -20,6 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { GoogleSignInButton } from "@/components/auth";
 
 export default async function LoginPage() {
   // Check if user is already authenticated
@@ -47,7 +50,21 @@ export default async function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Login Button */}
+            {/* Google OAuth Sign-In - Primary option */}
+            <GoogleSignInButton mode="login" />
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or
+                </span>
+              </div>
+            </div>
+
+            {/* Kinde Hosted Login - Fallback option for email/password */}
             <LoginLink>
               <Button className="w-full" size="lg">
                 Sign In
@@ -65,7 +82,7 @@ export default async function LoginPage() {
               </div>
             </div>
 
-            {/* Register Button */}
+            {/* Register Account */}
             <RegisterLink>
               <Button variant="outline" className="w-full" size="lg">
                 Create Account
@@ -74,23 +91,9 @@ export default async function LoginPage() {
           </CardContent>
         </Card>
 
-        <div className="text-center space-y-2">
-          <p className="text-sm text-muted-foreground">
-            Secure authentication powered by{" "}
-            <a
-              href="https://kinde.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Kinde
-            </a>
-          </p>
-          <p className="text-xs text-muted-foreground">
-            All authentication methods (email, Google, etc.) are handled
-            securely
-          </p>
-        </div>
+        <p className="text-center text-xs text-muted-foreground">
+          Your data is encrypted and secure
+        </p>
       </div>
     </div>
   );
