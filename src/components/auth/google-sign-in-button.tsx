@@ -110,7 +110,9 @@ export function GoogleSignInButton({
     // Based on community solutions: router.push to API endpoint with query params
     const authUrl = `${authEndpoint}?connection_id=${connectionId}&post_login_redirect_url=${encodeURIComponent(postLoginRedirect)}`;
 
+    // Show alert BEFORE redirect so we can see it
     if (process.env.NODE_ENV === "development") {
+      alert(`Navigating to: ${authUrl}\n\nConnection ID: ${connectionId}`);
       console.log("🔍 Google OAuth Debug:", {
         connectionId,
         mode,
