@@ -107,21 +107,10 @@ export function GoogleSignInButton({
     const postLoginRedirect = "/mailchimp";
 
     // Build the auth URL with connection_id as query parameter
-    // Based on community solutions: router.push to API endpoint with query params
+    // This bypasses Kinde's hosted login page and goes directly to Google OAuth
     const authUrl = `${authEndpoint}?connection_id=${connectionId}&post_login_redirect_url=${encodeURIComponent(postLoginRedirect)}`;
 
-    // Show alert BEFORE redirect so we can see it
-    if (process.env.NODE_ENV === "development") {
-      alert(`Navigating to: ${authUrl}\n\nConnection ID: ${connectionId}`);
-      console.log("🔍 Google OAuth Debug:", {
-        connectionId,
-        mode,
-        authUrl,
-      });
-      console.log("🚀 Navigating to:", authUrl);
-    }
-
-    // Use router.push instead of LoginLink component
+    // Use router.push to navigate directly to Kinde API with connection_id
     router.push(authUrl);
   };
 
