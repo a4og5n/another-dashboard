@@ -105,6 +105,16 @@ export function GoogleSignInButton({
   const ariaLabel =
     mode === "register" ? "Sign up with Google" : "Sign in with Google";
 
+  // Debug: Log what we're sending to Kinde
+  if (process.env.NODE_ENV === "development") {
+    console.log("🔍 Google OAuth Debug:", {
+      connectionId,
+      mode,
+      postLoginRedirectURL: "/mailchimp",
+      LinkComponent: LinkComponent.name,
+    });
+  }
+
   return (
     <div className="w-full">
       <LinkComponent
@@ -118,6 +128,11 @@ export function GoogleSignInButton({
           type="button"
           className={`w-full inline-flex items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-3 text-base font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-750 ${className}`}
           aria-label={ariaLabel}
+          onClick={() => {
+            if (process.env.NODE_ENV === "development") {
+              console.log("🚀 Button clicked, initiating OAuth flow...");
+            }
+          }}
         >
           <GoogleLogo className="h-5 w-5" />
           <span>{buttonText}</span>
