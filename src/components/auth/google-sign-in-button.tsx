@@ -23,10 +23,7 @@
  * />
  * ```
  */
-import {
-  LoginLink,
-  RegisterLink,
-} from "@kinde-oss/kinde-auth-nextjs/components";
+import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import type {
@@ -71,6 +68,8 @@ export function GoogleSignInButton({
   className = "",
   showErrorAlert = true,
 }: GoogleSignInButtonProps) {
+  const router = useRouter();
+
   // Get Google connection ID from environment variables
   // This tells Kinde which OAuth provider to use (Google in this case)
   const connectionId = process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID;
@@ -97,47 +96,44 @@ export function GoogleSignInButton({
     );
   }
 
-  // Use LoginLink or RegisterLink based on mode
-  // These components handle the OAuth flow properly with authUrlParams
-  const LinkComponent = mode === "register" ? RegisterLink : LoginLink;
   const buttonText =
     mode === "register" ? "Sign up with Google" : "Continue with Google";
   const ariaLabel =
     mode === "register" ? "Sign up with Google" : "Sign in with Google";
 
-  // Debug: Log what we're sending to Kinde
-  if (process.env.NODE_ENV === "development") {
-    console.log("🔍 Google OAuth Debug:", {
-      connectionId,
-      mode,
-      postLoginRedirectURL: "/mailchimp",
-      LinkComponent: LinkComponent.name,
-    });
-  }
+  // Handle click - directly navigate to Kinde API endpoint with connection_id
+  const handleClick = () => {
+    const authEndpoint = mode === "register" ? "/api/auth/register" : "/api/auth/login";
+    const postLoginRedirect = "/mailchimp";
+
+    // Build the auth URL with connection_id as query parameter
+    // Based on community solutions: router.push to API endpoint with query params
+    const authUrl = `${authEndpoint}?connection_id=${connectionId}&post_login_redirect_url=${encodeURIComponent(postLoginRedirect)}`;
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("🔍 Google OAuth Debug:", {
+        connectionId,
+        mode,
+        authUrl,
+      });
+      console.log("🚀 Navigating to:", authUrl);
+    }
+
+    // Use router.push instead of LoginLink component
+    router.push(authUrl);
+  };
 
   return (
     <div className="w-full">
-      <LinkComponent
-        authUrlParams={{
-          connection_id: connectionId,
-          // Optionally add other parameters like login_hint for pre-filling email
-        }}
-        postLoginRedirectURL="/mailchimp"
+      <button
+        type="button"
+        className={`w-full inline-flex items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-3 text-base font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-750 ${className}`}
+        aria-label={ariaLabel}
+        onClick={handleClick}
       >
-        <button
-          type="button"
-          className={`w-full inline-flex items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-3 text-base font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-750 ${className}`}
-          aria-label={ariaLabel}
-          onClick={() => {
-            if (process.env.NODE_ENV === "development") {
-              console.log("🚀 Button clicked, initiating OAuth flow...");
-            }
-          }}
-        >
-          <GoogleLogo className="h-5 w-5" />
-          <span>{buttonText}</span>
-        </button>
-      </LinkComponent>
+        <GoogleLogo className="h-5 w-5" />
+        <span>{buttonText}</span>
+      </button>
     </div>
   );
 }
