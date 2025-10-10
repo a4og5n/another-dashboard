@@ -6,13 +6,13 @@
  *
  * Features:
  * - Google branding per Google's brand guidelines
- * - Direct navigation to Kinde OAuth with connection_id
+ * - Uses Kinde's LoginLink/RegisterLink with authUrlParams for proper OAuth flow
  * - Error handling with user feedback
  * - Accessibility (ARIA labels, keyboard navigation)
- * - Uses Kinde OAuth with Google connection ID
+ * - Direct Google OAuth via connection_id parameter
  *
- * Following Kinde's custom UI documentation:
- * https://docs.kinde.com/build/authentication/custom-configurations/custom-sign-up-sign-in/
+ * Following Kinde's Next.js SDK documentation:
+ * https://docs.kinde.com/developer-tools/sdks/backend/nextjs-sdk/
  *
  * @component
  * @example
@@ -23,8 +23,10 @@
  * />
  * ```
  */
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import {
+  LoginLink,
+  RegisterLink,
+} from "@kinde-oss/kinde-auth-nextjs/components";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import type {
@@ -66,86 +68,61 @@ function GoogleLogo({ className }: GoogleLogoProps) {
 
 export function GoogleSignInButton({
   mode = "login",
-  onError,
   className = "",
   showErrorAlert = true,
 }: GoogleSignInButtonProps) {
-  const [error, setError] = useState<string | null>(null);
-
-  // Construct the Kinde auth URL with Google connection_id parameter
-  // Per Kinde's custom UI documentation, we pass connection_id as a query parameter
-  // to tell Kinde which OAuth provider to use (Google in this case)
+  // Get Google connection ID from environment variables
+  // This tells Kinde which OAuth provider to use (Google in this case)
   const connectionId = process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID;
 
-  // Debug logging in development
-  if (process.env.NODE_ENV === "development") {
-    console.log("GoogleSignInButton - connectionId:", connectionId);
-    console.log("GoogleSignInButton - all NEXT_PUBLIC env vars:", {
-      connectionId: process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID,
-    });
-  }
+  // Validate connection_id is configured
+  if (!connectionId) {
+    const errorMessage =
+      "Google OAuth not configured. Missing NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID";
 
-  // Build the auth URL based on mode (login vs register)
-  const authEndpoint =
-    mode === "register" ? "/api/auth/register" : "/api/auth/login";
-  const postLoginRedirect = "/mailchimp";
-
-  // Construct full auth URL with connection_id and post_login_redirect_url
-  const authUrl = `${authEndpoint}?connection_id=${connectionId}&post_login_redirect_url=${encodeURIComponent(postLoginRedirect)}`;
-
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // Validate that connection_id is available
-    if (!connectionId) {
-      e.preventDefault();
-      const errorMessage =
-        "Google OAuth not configured. Please check environment variables.";
-      setError(errorMessage);
-      onError?.(errorMessage);
-
-      if (process.env.NODE_ENV === "development") {
-        console.error("Missing NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID");
-      }
-      return;
+    if (process.env.NODE_ENV === "development") {
+      console.error(errorMessage);
     }
 
-    // Navigate to the auth URL
-    window.location.href = authUrl;
-  };
+    // Show error state
+    return (
+      <div className="w-full space-y-3">
+        {showErrorAlert && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+      </div>
+    );
+  }
+
+  // Use LoginLink or RegisterLink based on mode
+  // These components handle the OAuth flow properly with authUrlParams
+  const LinkComponent = mode === "register" ? RegisterLink : LoginLink;
+  const buttonText =
+    mode === "register" ? "Sign up with Google" : "Continue with Google";
+  const ariaLabel =
+    mode === "register" ? "Sign up with Google" : "Sign in with Google";
 
   return (
-    <div className="w-full space-y-3">
-      {/* Error alert - following established Alert component patterns */}
-      {showErrorAlert && error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Google sign-in button - following Google's brand guidelines */}
-      <Button
-        type="button"
-        variant="outline"
-        size="lg"
-        className={`w-full bg-white hover:bg-gray-50 text-gray-700 border-gray-300 font-medium dark:bg-gray-800 dark:hover:bg-gray-750 dark:text-gray-200 dark:border-gray-600 ${className}`}
-        onClick={handleClick}
-        aria-label={
-          mode === "register" ? "Sign up with Google" : "Sign in with Google"
-        }
-        title={
-          connectionId
-            ? undefined
-            : "Google OAuth not configured - check console"
-        }
+    <div className="w-full">
+      <LinkComponent
+        authUrlParams={{
+          connection_id: connectionId,
+          // Optionally add other parameters like login_hint for pre-filling email
+        }}
+        postLoginRedirectURL="/mailchimp"
       >
-        <GoogleLogo className="mr-3 h-5 w-5" />
-        <span>
-          {mode === "register" ? "Sign up with Google" : "Continue with Google"}
-          {!connectionId && (
-            <span className="ml-2 text-xs text-red-500">[CONFIG MISSING]</span>
-          )}
-        </span>
-      </Button>
+        <button
+          type="button"
+          className={`w-full inline-flex items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-3 text-base font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-750 ${className}`}
+          aria-label={ariaLabel}
+        >
+          <GoogleLogo className="h-5 w-5" />
+          <span>{buttonText}</span>
+        </button>
+      </LinkComponent>
     </div>
   );
 }
