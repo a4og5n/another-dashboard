@@ -77,8 +77,17 @@ export function GoogleSignInButton({
   // to tell Kinde which OAuth provider to use (Google in this case)
   const connectionId = process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID;
 
+  // Debug logging in development
+  if (process.env.NODE_ENV === "development") {
+    console.log("GoogleSignInButton - connectionId:", connectionId);
+    console.log("GoogleSignInButton - all NEXT_PUBLIC env vars:", {
+      connectionId: process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID,
+    });
+  }
+
   // Build the auth URL based on mode (login vs register)
-  const authEndpoint = mode === "register" ? "/api/auth/register" : "/api/auth/login";
+  const authEndpoint =
+    mode === "register" ? "/api/auth/register" : "/api/auth/login";
   const postLoginRedirect = "/mailchimp";
 
   // Construct full auth URL with connection_id and post_login_redirect_url
@@ -88,7 +97,8 @@ export function GoogleSignInButton({
     // Validate that connection_id is available
     if (!connectionId) {
       e.preventDefault();
-      const errorMessage = "Google OAuth not configured. Please check environment variables.";
+      const errorMessage =
+        "Google OAuth not configured. Please check environment variables.";
       setError(errorMessage);
       onError?.(errorMessage);
 
@@ -122,12 +132,18 @@ export function GoogleSignInButton({
         aria-label={
           mode === "register" ? "Sign up with Google" : "Sign in with Google"
         }
+        title={
+          connectionId
+            ? undefined
+            : "Google OAuth not configured - check console"
+        }
       >
         <GoogleLogo className="mr-3 h-5 w-5" />
         <span>
-          {mode === "register"
-            ? "Sign up with Google"
-            : "Continue with Google"}
+          {mode === "register" ? "Sign up with Google" : "Continue with Google"}
+          {!connectionId && (
+            <span className="ml-2 text-xs text-red-500">[CONFIG MISSING]</span>
+          )}
         </span>
       </Button>
     </div>
