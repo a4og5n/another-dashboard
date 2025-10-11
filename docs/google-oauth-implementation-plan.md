@@ -48,9 +48,11 @@ Instead of implementing Google OAuth **alongside** email/password authentication
 **Commit:** `e477882` - "feat: update environment config for Google OAuth"
 
 Files modified:
+
 - Added `NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID` to environment variables
 
 **Actual Implementation:**
+
 - Used `NEXT_PUBLIC_` prefix to make connection ID available in client components
 - Connection ID: `conn_019946068ca72115b2d84422226dec5b`
 
@@ -61,6 +63,7 @@ Files modified:
 **Commit:** `597bcf9` - "feat: implement Google OAuth button component (Phase 2)"
 
 Files created:
+
 - `src/components/auth/google-sign-in-button.tsx`
 - `src/types/components/google-sign-in-button.ts`
 
@@ -86,12 +89,13 @@ const router = useRouter();
 const connectionId = process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID;
 
 const handleClick = () => {
-  const authUrl = `/api/auth/login?connection_id=${connectionId}&post_login_redirect_url=${encodeURIComponent('/mailchimp')}`;
+  const authUrl = `/api/auth/login?connection_id=${connectionId}&post_login_redirect_url=${encodeURIComponent("/mailchimp")}`;
   router.push(authUrl);
 };
 ```
 
 **Component Features:**
+
 - ✅ Google branding (official logo, colors per Google's brand guidelines)
 - ✅ Direct OAuth redirect via `connection_id` parameter
 - ✅ Error handling for missing connection ID
@@ -104,6 +108,7 @@ const handleClick = () => {
 ### Phase 3: Update Login Page ✅ COMPLETED
 
 **Commits:**
+
 - `3f446d7` - "feat: add Google OAuth to login page (Phase 3)"
 - `2dbc2a5` - "feat: simplify login to Google OAuth only (Phase 3 complete)"
 - `5d6825a` - "fix: use Kinde LoginLink with authUrlParams for proper Google OAuth"
@@ -111,10 +116,12 @@ const handleClick = () => {
 - `5a9f2a2` - "refactor: remove debug alert from Google OAuth flow"
 
 Files modified:
+
 - `src/app/login/page.tsx` - Simplified to Google OAuth only
 - `src/components/auth/google-sign-in-button.tsx` - Multiple iterations to fix redirect issue
 
 **Original Plan:**
+
 ```
 ┌─────────────────────────┐
 │  [Continue with Google] │  ← New
@@ -125,6 +132,7 @@ Files modified:
 ```
 
 **Actual Implementation (BETTER):**
+
 ```
 ┌──────────────────────────────────┐
 │         Welcome                  │
@@ -148,6 +156,7 @@ Files modified:
 ```
 
 **Changes:**
+
 - ✅ Removed Kinde's `LoginLink` and `RegisterLink` components
 - ✅ Removed email/password fallback options
 - ✅ Removed separators and "OR" text
@@ -175,6 +184,7 @@ If a register page is needed in the future (e.g., for adding email/password auth
 ### Phase 5-7: SKIPPED (Not Applicable)
 
 **Phases Skipped:**
+
 - Phase 5: Server Actions (not needed with direct router.push approach)
 - Phase 6: Auth Layout (single page, no shared layout needed)
 - Phase 7: Testing & Documentation (handled as part of Phase 3)
@@ -182,6 +192,7 @@ If a register page is needed in the future (e.g., for adding email/password auth
 **Why Skipped:**
 
 The final implementation is much simpler than the original plan:
+
 - No server actions needed (using Kinde SDK's built-in handlers)
 - No shared layout needed (only one auth page)
 - Documentation updated inline with implementation
@@ -195,12 +206,14 @@ The final implementation is much simpler than the original plan:
 **Problem:** After implementing the correct code, Chrome would still redirect to Kinde's hosted page because it was using a cached redirect.
 
 **Symptoms:**
+
 - Safari/Incognito worked correctly
 - Chrome continued showing Kinde hosted page
 - No console errors
 - Code was correct but appeared to not work
 
 **Solution:** Clear Chrome's site data:
+
 1. Open Chrome DevTools (F12)
 2. Go to **Application** tab
 3. Click **Storage** in left sidebar
@@ -218,6 +231,7 @@ The final implementation is much simpler than the original plan:
 **Problem:** After successfully authenticating with Google, the callback returns a 500 error with message: `"Authentication flow: State mismatch. Received: [state1] | Expected: [state2]"`
 
 **Symptoms:**
+
 - Google authentication works ✅
 - User selects Google account ✅
 - Redirect to callback URL happens ✅
@@ -227,6 +241,7 @@ The final implementation is much simpler than the original plan:
 **Root Cause:** OAuth state parameter is stored in a session cookie. If cookies are stale, blocked, or conflicting from previous auth attempts, the state won't match.
 
 **Solution:** Clear ALL cookies and browser data:
+
 1. Chrome → Settings → Privacy → Clear browsing data
 2. Select:
    - ✅ Cookies and other site data
@@ -237,6 +252,7 @@ The final implementation is much simpler than the original plan:
 6. Reopen and try login again
 
 **Prevention:**
+
 - Use Chrome Incognito for testing OAuth flows
 - Don't click login button multiple times
 - Wait for redirect to complete before trying again
@@ -332,18 +348,18 @@ NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID=conn_019946068ca72115b2d84422226dec5b
 
 ## Commits Summary
 
-| Commit | Description | Files Changed |
-|--------|-------------|---------------|
-| `e477882` | feat: update environment config for Google OAuth | Environment variables |
-| `597bcf9` | feat: implement Google OAuth button component (Phase 2) | google-sign-in-button.tsx, types |
-| `3f446d7` | feat: add Google OAuth to login page (Phase 3) | login/page.tsx |
-| `2a36417` | fix: correct Google OAuth button to use connection_id parameter | google-sign-in-button.tsx |
-| `2dbc2a5` | feat: simplify login to Google OAuth only (Phase 3 complete) | login/page.tsx |
-| `5d6825a` | fix: use Kinde LoginLink with authUrlParams for proper Google OAuth | google-sign-in-button.tsx |
-| `0366cb1` | debug: add console logging to trace Google OAuth flow | google-sign-in-button.tsx |
-| `3a8f061` | feat: use router.push for direct API navigation with connection_id | google-sign-in-button.tsx |
-| `6f17e11` | debug: add alert to show URL before redirect | google-sign-in-button.tsx |
-| `5a9f2a2` | refactor: remove debug alert from Google OAuth flow | google-sign-in-button.tsx |
+| Commit    | Description                                                         | Files Changed                    |
+| --------- | ------------------------------------------------------------------- | -------------------------------- |
+| `e477882` | feat: update environment config for Google OAuth                    | Environment variables            |
+| `597bcf9` | feat: implement Google OAuth button component (Phase 2)             | google-sign-in-button.tsx, types |
+| `3f446d7` | feat: add Google OAuth to login page (Phase 3)                      | login/page.tsx                   |
+| `2a36417` | fix: correct Google OAuth button to use connection_id parameter     | google-sign-in-button.tsx        |
+| `2dbc2a5` | feat: simplify login to Google OAuth only (Phase 3 complete)        | login/page.tsx                   |
+| `5d6825a` | fix: use Kinde LoginLink with authUrlParams for proper Google OAuth | google-sign-in-button.tsx        |
+| `0366cb1` | debug: add console logging to trace Google OAuth flow               | google-sign-in-button.tsx        |
+| `3a8f061` | feat: use router.push for direct API navigation with connection_id  | google-sign-in-button.tsx        |
+| `6f17e11` | debug: add alert to show URL before redirect                        | google-sign-in-button.tsx        |
+| `5a9f2a2` | refactor: remove debug alert from Google OAuth flow                 | google-sign-in-button.tsx        |
 
 **Total:** 10 commits over ~6 hours (including debugging Chrome caching issue)
 
@@ -422,11 +438,13 @@ NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID=conn_019946068ca72115b2d84422226dec5b
 ### Issue: Still redirected to Kinde hosted page
 
 **Symptoms:**
+
 - Clicking "Continue with Google" goes to `lanoticia.kinde.com`
 - Code looks correct
 - Safari works but Chrome doesn't
 
 **Solution:**
+
 1. Clear Chrome site data (DevTools → Application → Storage → Clear site data)
 2. Or use Chrome Incognito mode
 3. Verify "Use your own sign-up and sign-in screens" is enabled in Kinde
@@ -436,10 +454,12 @@ NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID=conn_019946068ca72115b2d84422226dec5b
 ### Issue: Connection ID not found error
 
 **Symptoms:**
+
 - Error message: "Google OAuth not configured"
 - Button shows `[CONFIG MISSING]` text
 
 **Solution:**
+
 1. Check `.env.local` has `NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID`
 2. Restart dev server after adding environment variable
 3. Verify connection ID matches value in Kinde dashboard
@@ -449,10 +469,12 @@ NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID=conn_019946068ca72115b2d84422226dec5b
 ### Issue: Callback URL mismatch
 
 **Symptoms:**
+
 - After Google authentication, error about invalid redirect URI
 - Stuck on Kinde error page
 
 **Solution:**
+
 1. Add both `https://localhost:3000/api/auth/kinde_callback` and `https://127.0.0.1:3000/api/auth/kinde_callback` to Kinde allowed callback URLs
 2. Verify Google Cloud Console has `https://lanoticia.kinde.com/login/callback`
 

@@ -103,7 +103,8 @@ export function GoogleSignInButton({
 
   // Handle click - directly navigate to Kinde API endpoint with connection_id
   const handleClick = () => {
-    const authEndpoint = mode === "register" ? "/api/auth/register" : "/api/auth/login";
+    const authEndpoint =
+      mode === "register" ? "/api/auth/register" : "/api/auth/login";
     const postLoginRedirect = "/mailchimp";
 
     // Build the auth URL with connection_id as query parameter

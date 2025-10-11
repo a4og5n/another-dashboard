@@ -86,7 +86,9 @@ describe("GoogleSignInButton", () => {
       await user.click(button);
 
       expect(window.location.href).toContain("/api/auth/login");
-      expect(window.location.href).toContain(`connection_id=${mockConnectionId}`);
+      expect(window.location.href).toContain(
+        `connection_id=${mockConnectionId}`,
+      );
       expect(window.location.href).toContain(
         "post_login_redirect_url=%2Fmailchimp",
       );
@@ -100,7 +102,9 @@ describe("GoogleSignInButton", () => {
       await user.click(button);
 
       expect(window.location.href).toContain("/api/auth/register");
-      expect(window.location.href).toContain(`connection_id=${mockConnectionId}`);
+      expect(window.location.href).toContain(
+        `connection_id=${mockConnectionId}`,
+      );
     });
 
     it("should use login endpoint when mode is login", async () => {
@@ -111,7 +115,9 @@ describe("GoogleSignInButton", () => {
       await user.click(button);
 
       expect(window.location.href).toContain("/api/auth/login");
-      expect(window.location.href).toContain(`connection_id=${mockConnectionId}`);
+      expect(window.location.href).toContain(
+        `connection_id=${mockConnectionId}`,
+      );
     });
 
     it("should properly encode redirect URL", async () => {
@@ -121,9 +127,7 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(window.location.href).toContain(
-        encodeURIComponent("/mailchimp"),
-      );
+      expect(window.location.href).toContain(encodeURIComponent("/mailchimp"));
     });
   });
 
