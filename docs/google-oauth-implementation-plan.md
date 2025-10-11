@@ -188,11 +188,11 @@ The final implementation is much simpler than the original plan:
 
 ---
 
-## Critical Discovery: Chrome Caching Issue
+## Critical Discoveries: Browser Caching Issues
 
-### The Problem
+### Issue 1: Chrome Caches OAuth Redirects
 
-**Chrome aggressively caches OAuth redirects.** After implementing the correct code, Chrome would still redirect to Kinde's hosted page because it was using a cached redirect.
+**Problem:** After implementing the correct code, Chrome would still redirect to Kinde's hosted page because it was using a cached redirect.
 
 **Symptoms:**
 - Safari/Incognito worked correctly
@@ -200,10 +200,7 @@ The final implementation is much simpler than the original plan:
 - No console errors
 - Code was correct but appeared to not work
 
-### The Solution
-
-Users must clear Chrome's site data when testing OAuth changes:
-
+**Solution:** Clear Chrome's site data:
 1. Open Chrome DevTools (F12)
 2. Go to **Application** tab
 3. Click **Storage** in left sidebar
@@ -212,9 +209,39 @@ Users must clear Chrome's site data when testing OAuth changes:
 
 **Alternative:** Use Chrome Incognito mode for testing OAuth flows
 
-### Why This Happens
+**Why This Happens:** OAuth redirects are treated as permanent redirects (301/308) by browsers for security reasons. Chrome caches these aggressively to prevent malicious redirect attacks.
 
-OAuth redirects are treated as permanent redirects (301/308) by browsers for security reasons. Chrome caches these aggressively to prevent malicious redirect attacks.
+---
+
+### Issue 2: OAuth State Mismatch Error (500)
+
+**Problem:** After successfully authenticating with Google, the callback returns a 500 error with message: `"Authentication flow: State mismatch. Received: [state1] | Expected: [state2]"`
+
+**Symptoms:**
+- Google authentication works ✅
+- User selects Google account ✅
+- Redirect to callback URL happens ✅
+- 500 error on `/api/auth/kinde_callback` ❌
+- Error message about state mismatch ❌
+
+**Root Cause:** OAuth state parameter is stored in a session cookie. If cookies are stale, blocked, or conflicting from previous auth attempts, the state won't match.
+
+**Solution:** Clear ALL cookies and browser data:
+1. Chrome → Settings → Privacy → Clear browsing data
+2. Select:
+   - ✅ Cookies and other site data
+   - ✅ Cached images and files
+3. Time range: **All time**
+4. Clear data
+5. Close ALL Chrome windows
+6. Reopen and try login again
+
+**Prevention:**
+- Use Chrome Incognito for testing OAuth flows
+- Don't click login button multiple times
+- Wait for redirect to complete before trying again
+
+**Why This Happens:** The OAuth state parameter is a CSRF protection mechanism. Kinde stores the expected state in a cookie when initiating the flow, then verifies it matches on callback. Cookie issues break this verification.
 
 ---
 
