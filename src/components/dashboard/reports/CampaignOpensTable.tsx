@@ -27,7 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
-import { formatDateTime } from "@/utils";
+import { formatDateTime } from "@/utils/format-date";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import { Mail, Eye, User, Clock } from "lucide-react";
 import type { ReportOpenListMember } from "@/types/mailchimp";
@@ -43,10 +43,10 @@ export function CampaignOpensTable({
   campaignId,
 }: ReportOpensTableProps) {
   const { members, total_items, total_opens, total_proxy_excluded_opens } =
-    opensData;
+    opensData || {};
 
   // Calculate pagination
-  const totalPages = Math.ceil(total_items / pageSize);
+  const totalPages = Math.ceil((total_items || 0) / pageSize);
 
   // Helper functions for URL generation
   const createPageUrl = useCallback(
@@ -146,12 +146,18 @@ export function CampaignOpensTable({
           <div className="h-8 px-2 lg:px-3 flex items-center">Last Opened</div>
         ),
         accessorFn: (row) => {
-          const lastOpen = row.opens[row.opens.length - 1];
+          const lastOpen =
+            row.opens && row.opens.length > 0
+              ? row.opens[row.opens.length - 1]
+              : null;
           return lastOpen ? lastOpen.timestamp : "";
         },
         cell: ({ row }) => {
           const member = row.original;
-          const lastOpen = member.opens[member.opens.length - 1];
+          const lastOpen =
+            member.opens && member.opens.length > 0
+              ? member.opens[member.opens.length - 1]
+              : null;
           return (
             <div className="text-muted-foreground">
               {lastOpen ? formatDateTime(lastOpen.timestamp) : "—"}
@@ -180,6 +186,16 @@ export function CampaignOpensTable({
     manualSorting: true,
     pageCount: totalPages,
   });
+
+  // Defensive checks for data structure (after all hooks)
+  if (!opensData) {
+    return <CampaignOpensEmpty campaignId={campaignId} />;
+  }
+
+  // Validate members array
+  if (!Array.isArray(members)) {
+    return <CampaignOpensEmpty campaignId={campaignId} />;
+  }
 
   // Handle empty state when there are no opens
   if (total_items === 0) {
