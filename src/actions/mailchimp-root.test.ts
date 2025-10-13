@@ -26,13 +26,6 @@ vi.mock("@/services/mailchimp.service", () => ({
 vi.mock("@/lib/validate-mailchimp-connection", () => ({
   validateMailchimpConnection: vi.fn().mockResolvedValue({ isValid: true }),
   getValidationErrorMessage: vi.fn((error) => `Validation error: ${error}`),
-  MAILCHIMP_ERROR_CODES: {
-    NOT_AUTHENTICATED: "user_not_authenticated",
-    NOT_CONNECTED: "mailchimp_not_connected",
-    CONNECTION_INACTIVE: "mailchimp_connection_inactive",
-    TOKEN_INVALID: "mailchimp_token_invalid",
-    VALIDATION_FAILED: "validation_failed",
-  },
 }));
 
 describe("Mailchimp API Root Server Actions", () => {

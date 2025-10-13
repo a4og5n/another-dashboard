@@ -1,7 +1,9 @@
 /**
- * Mailchimp Connection Banner
- * Shown after OAuth connection attempt (success or error)
- * Auto-dismisses after 5 seconds
+ * Mailchimp Connection Guard
+ * Handles all connection-related UI logic:
+ * - Shows success/error banner after OAuth flow
+ * - Shows empty state if not connected
+ * - Renders children only when connected
  */
 
 "use client";
@@ -10,30 +12,75 @@ import { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, AlertCircle, X } from "lucide-react";
-
-interface MailchimpConnectionBannerProps {
-  connected?: boolean;
-  error?: string | null;
-}
+import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
+import type { MailchimpConnectionBannerProps } from "@/types/components/mailchimp";
 
 /**
- * Banner shown after OAuth connection (success or error)
+ * Self-contained connection guard component
+ * Handles all connection states and renders appropriate UI
  */
 export function MailchimpConnectionBanner({
   connected,
   error,
+  isValid,
+  children,
 }: MailchimpConnectionBannerProps) {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isBannerVisible, setIsBannerVisible] = useState(true);
 
+  // Auto-dismiss banner after 5 seconds
   useEffect(() => {
     if (!connected && !error) return;
 
-    const timer = setTimeout(() => setIsVisible(false), 5000);
+    const timer = setTimeout(() => setIsBannerVisible(false), 5000);
     return () => clearTimeout(timer);
   }, [connected, error]);
 
-  if (!isVisible || (!connected && !error)) return null;
+  // Show banner if redirected from OAuth
+  const showBanner = isBannerVisible && (connected || error);
 
+  // If not connected, show empty state (with optional banner)
+  if (!isValid) {
+    return (
+      <>
+        {showBanner && (
+          <ConnectionBanner
+            connected={connected}
+            error={error}
+            onDismiss={() => setIsBannerVisible(false)}
+          />
+        )}
+        <MailchimpEmptyState error={error} />
+      </>
+    );
+  }
+
+  // Connected: show banner (if applicable) and children
+  return (
+    <>
+      {showBanner && (
+        <ConnectionBanner
+          connected={connected}
+          error={error}
+          onDismiss={() => setIsBannerVisible(false)}
+        />
+      )}
+      {children}
+    </>
+  );
+}
+
+/**
+ * Internal banner component for success/error messages
+ */
+function ConnectionBanner({
+  connected,
+  error,
+  onDismiss,
+}: {
+  connected?: boolean;
+  error?: string | null;
+  onDismiss: () => void;
+}) {
   return (
     <Alert variant={connected ? "default" : "destructive"} className="mb-6">
       <div className="flex items-center justify-between">
@@ -58,7 +105,7 @@ export function MailchimpConnectionBanner({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsVisible(false)}
+          onClick={onDismiss}
           className="h-6 w-6"
         >
           <X className="h-4 w-4" />
