@@ -39,7 +39,7 @@ export const reportListMemberSchema = z.object({
   contact_status: z.string(),
   email_id: z.string(),
   email_address: z.string(),
-  merge_fields: z.array(mergeField),
+  merge_fields: mergeField,
   vip: z.boolean(),
   opens_count: z.number(),
   proxy_excluded_opens_count: z.number(),

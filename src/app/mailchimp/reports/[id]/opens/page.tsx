@@ -10,7 +10,6 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
 import { CampaignOpensSkeleton } from "@/skeletons/mailchimp";
-import { generateCampaignOpensMetadata } from "@/utils/mailchimp/metadata";
 import {
   reportOpensPageParamsSchema,
   reportOpensPageSearchParamsSchema,
@@ -20,9 +19,10 @@ import { mailchimpService } from "@/services/mailchimp.service";
 import { CampaignOpensTable } from "@/components/dashboard/reports";
 import { openListQueryParamsSchema } from "@/schemas/mailchimp/report-open-details-params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
-import type { ReportOpenListSuccess } from "@/types/mailchimp";
-import { processPageParams } from "@/utils/mailchimp";
+import type { ReportOpenListSuccess, CampaignReport } from "@/types/mailchimp";
+import { processPageParams } from "@/utils/mailchimp/page-params";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
+import type { Metadata } from "next";
 
 async function CampaignOpensPageContent({
   params,
@@ -131,5 +131,34 @@ async function BreadcrumbContent({
 // Force dynamic rendering to prevent build-time API calls
 export const dynamic = "force-dynamic";
 
-// Generate metadata for the page using the utility function
-export const generateMetadata = generateCampaignOpensMetadata;
+// Generate metadata for the page
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = reportOpensPageParamsSchema.parse(rawParams);
+
+  // Fetch campaign report for metadata
+  const response = await mailchimpService.getCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Opens - Campaign Not Found",
+      description: "The requested campaign could not be found.",
+    };
+  }
+
+  const report = response.data as CampaignReport;
+
+  return {
+    title: `${report.campaign_title} - Opens`,
+    description: `View all members who opened ${report.campaign_title}. Total opens: ${report.opens.opens_total.toLocaleString()}`,
+    openGraph: {
+      title: `${report.campaign_title} - Campaign Opens`,
+      description: `${report.opens.opens_total.toLocaleString()} total opens from ${report.emails_sent.toLocaleString()} recipients`,
+      type: "website",
+    },
+  };
+}
