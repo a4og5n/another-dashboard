@@ -1,12 +1,9 @@
 /**
- * Mailchimp Service Layer (OAuth-based)
- * All methods now use user-scoped OAuth tokens
+ * Mailchimp Service Layer (Fetch-based)
+ * All methods now use modern fetch client with OAuth tokens
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// SDK interop requires any types for proper functioning
-
-import { mailchimpCall } from "@/lib/mailchimp";
+import { mailchimpApiCall } from "@/lib/mailchimp-action-wrapper";
 import type { ApiResponse } from "@/types/api-errors";
 import type {
   Report,
@@ -29,22 +26,30 @@ export class MailchimpService {
    * List Operations
    */
   async getLists(params: ListsParams): Promise<ApiResponse<ListsSuccess>> {
-    return mailchimpCall((client) => (client as any).lists.getAllLists(params));
+    return mailchimpApiCall((client) =>
+      client.get<ListsSuccess>("/lists", params),
+    );
   }
 
   async getList(listId: string): Promise<ApiResponse<unknown>> {
-    return mailchimpCall((client) => (client as any).lists.getList(listId));
+    return mailchimpApiCall((client) =>
+      client.get<unknown>(`/lists/${listId}`),
+    );
   }
 
   /**
    * Campaign Operations
    */
   async getCampaigns(params: unknown): Promise<ApiResponse<unknown>> {
-    return mailchimpCall((client) => (client as any).campaigns.list(params));
+    return mailchimpApiCall((client) =>
+      client.get<unknown>("/campaigns", params as Record<string, unknown>),
+    );
   }
 
   async getCampaign(campaignId: string): Promise<ApiResponse<unknown>> {
-    return mailchimpCall((client) => (client as any).campaigns.get(campaignId));
+    return mailchimpApiCall((client) =>
+      client.get<unknown>(`/campaigns/${campaignId}`),
+    );
   }
 
   /**
@@ -53,16 +58,16 @@ export class MailchimpService {
   async getCampaignReports(
     params: ReportListParams,
   ): Promise<ApiResponse<ReportListSuccess>> {
-    return mailchimpCall((client) =>
-      (client as any).reports.getAllCampaignReports(params),
+    return mailchimpApiCall((client) =>
+      client.get<ReportListSuccess>("/reports", params),
     );
   }
 
   async getCampaignReport(
     campaignId: string,
   ): Promise<ApiResponse<ReportSuccess>> {
-    return mailchimpCall((client) =>
-      (client as any).reports.getCampaignReport(campaignId),
+    return mailchimpApiCall((client) =>
+      client.get<ReportSuccess>(`/reports/${campaignId}`),
     );
   }
 
@@ -70,8 +75,8 @@ export class MailchimpService {
     campaignId: string,
     params?: OpenListQueryParams,
   ): Promise<ApiResponse<unknown>> {
-    return mailchimpCall((client) =>
-      (client as any).reports.getCampaignOpenDetails(campaignId, params),
+    return mailchimpApiCall((client) =>
+      client.get<unknown>(`/reports/${campaignId}/open-details`, params),
     );
   }
 
@@ -81,11 +86,11 @@ export class MailchimpService {
   async getApiRoot(
     params?: Record<string, unknown>,
   ): Promise<ApiResponse<RootSuccess>> {
-    return mailchimpCall((client) => (client as any).root.getRoot(params));
+    return mailchimpApiCall((client) => client.get<RootSuccess>("/", params));
   }
 
   async healthCheck(): Promise<ApiResponse<unknown>> {
-    return mailchimpCall((client) => (client as any).ping.get());
+    return mailchimpApiCall((client) => client.get<unknown>("/ping"));
   }
 }
 
