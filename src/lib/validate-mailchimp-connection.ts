@@ -6,25 +6,8 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { mailchimpConnectionRepo } from "@/db/repositories/mailchimp-connection";
 import { mailchimpService } from "@/services/mailchimp.service";
-
-/**
- * Connection validation result
- */
-export interface ValidationResult {
-  isValid: boolean;
-  error?: string;
-}
-
-/**
- * Error codes for Mailchimp connection issues
- */
-export const MAILCHIMP_ERROR_CODES = {
-  NOT_AUTHENTICATED: "user_not_authenticated",
-  NOT_CONNECTED: "mailchimp_not_connected",
-  CONNECTION_INACTIVE: "mailchimp_connection_inactive",
-  TOKEN_INVALID: "mailchimp_token_invalid",
-  VALIDATION_FAILED: "validation_failed",
-} as const;
+import type { ValidationResult } from "@/types/auth";
+import { MAILCHIMP_ERROR_CODES } from "@/constants/auth";
 
 /**
  * Validate Mailchimp connection and token health

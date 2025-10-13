@@ -1,48 +1,29 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
 import { MailchimpConnectionBanner } from "@/components/mailchimp/mailchimp-connection-banner";
 import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
+import { validateMailchimpConnectionParams } from "@/utils/mailchimp";
 
 async function MailchimpDashboardContent({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  // Check for OAuth callback parameters
+  // Validate and parse Mailchimp connection status parameters
   const params = await searchParams;
-  const connected = params.connected === "true";
-  const error = params.error
-    ? String(params.error)
-    : params.error_description
-      ? String(params.error_description)
-      : null;
+  const { connected, error } = validateMailchimpConnectionParams(params);
 
   // Validate Mailchimp connection
   const validation = await validateMailchimpConnection();
 
-  // Show connection banner if redirected from OAuth
-  const showBanner = connected || error;
-
-  // Show empty state if not connected
-  if (!validation.isValid) {
-    return (
-      <>
-        {showBanner && (
-          <MailchimpConnectionBanner connected={connected} error={error} />
-        )}
-        <MailchimpEmptyState error={validation.error || error} />
-      </>
-    );
-  }
-
-  // Show dashboard navigation if connected
+  // Connection guard handles all states: empty state, banner, and children
   return (
-    <>
-      {showBanner && (
-        <MailchimpConnectionBanner connected={connected} error={error} />
-      )}
+    <MailchimpConnectionBanner
+      connected={connected}
+      error={validation.error || error}
+      isValid={validation.isValid}
+    >
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="space-y-8 text-center">
           <div>
@@ -88,7 +69,7 @@ async function MailchimpDashboardContent({
           </div>
         </div>
       </div>
-    </>
+    </MailchimpConnectionBanner>
   );
 }
 

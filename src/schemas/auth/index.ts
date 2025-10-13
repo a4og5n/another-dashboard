@@ -7,3 +7,4 @@
 export * from "@/schemas/auth/user";
 export * from "@/schemas/auth/custom-login";
 export * from "@/schemas/auth/google-oauth";
+export * from "@/schemas/auth/oauth-params";

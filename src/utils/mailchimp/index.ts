@@ -9,3 +9,4 @@ export * from "@/utils/mailchimp/report-helpers";
 export * from "@/utils/mailchimp/pricing-plan";
 export * from "@/utils/mailchimp/page-params";
 export * from "@/utils/mailchimp/route-params";
+export * from "@/utils/mailchimp/oauth-params";
