@@ -1105,6 +1105,13 @@ MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
 - [ ] **Week 6:** MVP ready for testing
 - [ ] **Week 8:** Feature-complete version
 - [ ] **Week 10:** Production launch
+- [x] **Post-MVP:** Mailchimp API Modernization (October 2025)
+  - Migrated from legacy `@mailchimp/mailchimp_marketing` SDK to native fetch-based client
+  - Achieved 97% bundle size reduction (~150KB → ~5KB)
+  - Added Edge Runtime compatibility for faster API routes
+  - Implemented comprehensive error handling with typed error classes
+  - Built-in rate limit tracking and timeout handling
+  - Maintained 100% backward compatibility with existing API
 
 ---
 
