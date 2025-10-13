@@ -4,36 +4,27 @@
  *
  * Following established component testing patterns with comprehensive coverage
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+// Import router mock BEFORE component import
+import { resetRouterMocks, mockRouter } from "@/test/mocks/next-router";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 
 // Mock environment variable
 const mockConnectionId = "conn_test123";
 vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
 
-// Store original window.location
-const originalLocation = window.location;
-
-// TODO: Fix Next.js router mocking for proper testing
-// These tests require Next.js App Router context which needs proper mock setup
-// Issue: useRouter() hook requires app router to be mounted in test environment
-// Skipping temporarily to unblock PR - see GitHub issue #XXX
-describe.skip("GoogleSignInButton", () => {
+describe("GoogleSignInButton", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock window.location.href setter
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (window as any).location;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).location = { ...originalLocation, href: "" };
+    resetRouterMocks();
+    // Ensure environment variable is set for each test
+    vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
   });
 
   afterEach(() => {
-    // Restore original window.location
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).location = originalLocation;
+    vi.clearAllMocks();
   });
 
   describe("Rendering", () => {
@@ -89,12 +80,14 @@ describe.skip("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(window.location.href).toContain("/api/auth/login");
-      expect(window.location.href).toContain(
-        `connection_id=${mockConnectionId}`,
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining("/api/auth/login"),
       );
-      expect(window.location.href).toContain(
-        "post_login_redirect_url=%2Fmailchimp",
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining(`connection_id=${mockConnectionId}`),
+      );
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining("post_login_redirect_url=%2Fmailchimp"),
       );
     });
 
@@ -105,9 +98,11 @@ describe.skip("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(window.location.href).toContain("/api/auth/register");
-      expect(window.location.href).toContain(
-        `connection_id=${mockConnectionId}`,
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining("/api/auth/register"),
+      );
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining(`connection_id=${mockConnectionId}`),
       );
     });
 
@@ -118,9 +113,11 @@ describe.skip("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(window.location.href).toContain("/api/auth/login");
-      expect(window.location.href).toContain(
-        `connection_id=${mockConnectionId}`,
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining("/api/auth/login"),
+      );
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining(`connection_id=${mockConnectionId}`),
       );
     });
 
@@ -131,76 +128,45 @@ describe.skip("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(window.location.href).toContain(encodeURIComponent("/mailchimp"));
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining(encodeURIComponent("/mailchimp")),
+      );
     });
   });
 
   describe("Error Handling", () => {
-    it("should show error when connection_id is missing", async () => {
+    it("should show error when connection_id is missing", () => {
       // Temporarily unset the environment variable
       vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", undefined);
 
-      const user = userEvent.setup();
       render(<GoogleSignInButton showErrorAlert />);
 
-      const button = screen.getByRole("button");
-      await user.click(button);
-
+      // Should show error alert instead of button
       expect(screen.getByRole("alert")).toBeInTheDocument();
       expect(
         screen.getByText(/Google OAuth not configured/i),
       ).toBeInTheDocument();
-
-      // Restore the environment variable
-      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
 
-    it("should call onError callback when connection_id is missing", async () => {
+    it("should not show error alert when showErrorAlert is false", () => {
       vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", undefined);
 
-      const onError = vi.fn();
-      const user = userEvent.setup();
-      render(<GoogleSignInButton onError={onError} />);
-
-      const button = screen.getByRole("button");
-      await user.click(button);
-
-      expect(onError).toHaveBeenCalledWith(
-        "Google OAuth not configured. Please check environment variables.",
-      );
-
-      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
-    });
-
-    it("should not show error alert when showErrorAlert is false", async () => {
-      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", undefined);
-
-      const user = userEvent.setup();
       render(<GoogleSignInButton showErrorAlert={false} />);
 
-      const button = screen.getByRole("button");
-      await user.click(button);
-
+      // Should not show error alert or button
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-
-      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
 
-    it("should not navigate when connection_id is not available", async () => {
+    it("should not navigate when connection_id is not available", () => {
       vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", undefined);
 
-      const user = userEvent.setup();
       render(<GoogleSignInButton />);
 
-      const button = screen.getByRole("button");
-      const initialHref = window.location.href;
-
-      await user.click(button);
-
-      // Should not have navigated
-      expect(window.location.href).toBe(initialHref);
-
-      vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
+      // Should not have rendered button, so no navigation possible
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+      expect(mockRouter.push).not.toHaveBeenCalled();
     });
   });
 
@@ -243,7 +209,9 @@ describe.skip("GoogleSignInButton", () => {
       // Press Enter
       await user.keyboard("{Enter}");
 
-      expect(window.location.href).toContain("/api/auth/login");
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining("/api/auth/login"),
+      );
     });
 
     it("should be activatable with Space key", async () => {
@@ -259,7 +227,9 @@ describe.skip("GoogleSignInButton", () => {
       // Press Space
       await user.keyboard(" ");
 
-      expect(window.location.href).toContain("/api/auth/login");
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        expect.stringContaining("/api/auth/login"),
+      );
     });
   });
 

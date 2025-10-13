@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      // Allow example.com for test environments
+      ...(process.env.NODE_ENV === "test"
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: "example.com",
+            },
+          ]
+        : []),
     ],
   },
   // Allow 127.0.0.1 for Mailchimp OAuth testing (required for dev environment)

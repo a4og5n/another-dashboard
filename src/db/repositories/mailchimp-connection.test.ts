@@ -13,10 +13,14 @@ const isDatabaseAvailable = Boolean(
   process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL,
 );
 
-// TODO: Fix database mocking for integration tests
-// These tests fail due to db.delete not being properly mocked in the test environment
-// Issue: Drizzle ORM mocking needs proper setup for test isolation
-// Skipping temporarily to unblock PR - see GitHub issue #XXX
+// TODO: Convert to integration tests with test database setup
+// These tests require:
+// 1. Test database instance (e.g., docker-compose with PostgreSQL)
+// 2. Database migrations run before tests
+// 3. Proper cleanup between tests
+// 4. Consider using `testcontainers` for isolated test database
+// Recommended approach: Set up GitHub Actions with PostgreSQL service container
+// Skipping temporarily - see GitHub issue #172
 describe.skip("MailchimpConnectionRepository (Integration)", () => {
   const testKindeUserId = "test_kinde_user_123";
   const testAccessToken = "test_access_token_abc";
