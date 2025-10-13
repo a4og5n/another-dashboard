@@ -317,6 +317,31 @@ Before starting any development work, always review:
 - Tokens never logged or exposed to client
 - Hourly token validation with auto-deactivation
 
+### Kinde Authentication Setup
+
+**Local Development Cookie Configuration:**
+
+For local HTTPS development with self-signed certificates, add these environment variables to `.env.local`:
+
+```bash
+# Cookie configuration for local HTTPS development
+KINDE_COOKIE_SAME_SITE=lax
+KINDE_COOKIE_SECURE=false  # false for local dev, true for production
+```
+
+**Troubleshooting OAuth "State not found" Errors:**
+
+If you encounter "State not found" errors during OAuth login:
+
+1. **Clear browser state** using the utility endpoint: `https://127.0.0.1:3000/api/auth/clear-state`
+2. **Clear browser cache**: Cmd+Shift+Delete (Mac) or Ctrl+Shift+Delete (Windows)
+   - Select "Cookies and other site data"
+   - Choose "All time"
+   - Click "Clear data"
+3. **Alternative**: Use incognito/private browsing mode for development
+
+**Note:** This issue typically occurs with corrupted cookies from previous sessions and doesn't affect production deployments.
+
 ### Mailchimp Fetch Client Architecture
 
 The project uses a modern, native fetch-based client for Mailchimp API integration, replacing the legacy `@mailchimp/mailchimp_marketing` SDK.
