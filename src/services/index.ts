@@ -9,8 +9,9 @@ export {
   mailchimpService,
 } from "@/services/mailchimp.service";
 
-// Re-export OAuth-based SDK utilities
-export { getUserMailchimpClient, mailchimpCall } from "@/lib/mailchimp";
+// Re-export fetch client utilities (new implementation)
+export { getUserMailchimpClient } from "@/lib/mailchimp-client-factory";
+export { mailchimpApiCall } from "@/lib/mailchimp-action-wrapper";
 export type { ApiResponse } from "@/types/api-errors";
 
 // Keep auth service export for compatibility
