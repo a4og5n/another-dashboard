@@ -12,6 +12,7 @@ import type {
 } from "@/types/mailchimp";
 import type {
   RootSuccess,
+  List,
   ListsSuccess,
   ListsParams,
   ReportListParams,
@@ -31,10 +32,8 @@ export class MailchimpDAL {
     );
   }
 
-  async fetchList(listId: string): Promise<ApiResponse<unknown>> {
-    return mailchimpApiCall((client) =>
-      client.get<unknown>(`/lists/${listId}`),
-    );
+  async fetchList(listId: string): Promise<ApiResponse<List>> {
+    return mailchimpApiCall((client) => client.get<List>(`/lists/${listId}`));
   }
 
   /**

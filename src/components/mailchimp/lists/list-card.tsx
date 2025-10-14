@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, TrendingUp, TrendingDown } from "lucide-react";
@@ -46,48 +47,50 @@ export function ListCard({ list, className }: ListCardProps) {
   };
 
   return (
-    <Card
-      className={cn(
-        "hover:shadow-md transition-shadow duration-200",
-        className,
-      )}
-      role="article"
-      aria-labelledby={`list-${list.id}-title`}
-    >
-      <CardHeader>
-        <CardTitle
-          id={`list-${list.id}-title`}
-          className="flex items-start justify-between"
-        >
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg truncate" title={list.name}>
-              {list.name}
-            </h3>
-            <div className="flex items-center gap-2 mt-1">
-              {getVisibilityBadge(list.visibility)}
+    <Link href={`/mailchimp/lists/${list.id}`} className="block">
+      <Card
+        className={cn(
+          "hover:shadow-md transition-shadow duration-200 cursor-pointer",
+          className,
+        )}
+        role="article"
+        aria-labelledby={`list-${list.id}-title`}
+      >
+        <CardHeader>
+          <CardTitle
+            id={`list-${list.id}-title`}
+            className="flex items-start justify-between"
+          >
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-lg truncate" title={list.name}>
+                {list.name}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                {getVisibilityBadge(list.visibility)}
+              </div>
             </div>
-          </div>
-        </CardTitle>
-      </CardHeader>
+          </CardTitle>
+        </CardHeader>
 
-      <CardContent>
-        <div className="space-y-4">
-          {/* Member Statistics */}
-          <div>
-            <div className="flex items-center text-muted-foreground text-sm">
-              <Users className="h-4 w-4 mr-1" />
-              <span>Total Members</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-2xl font-bold">
-                {formatNumber(list.stats?.member_count || 0)}
-              </span>
-              {getGrowthIndicator()}
+        <CardContent>
+          <div className="space-y-4">
+            {/* Member Statistics */}
+            <div>
+              <div className="flex items-center text-muted-foreground text-sm">
+                <Users className="h-4 w-4 mr-1" />
+                <span>Total Members</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-bold">
+                  {formatNumber(list.stats?.member_count || 0)}
+                </span>
+                {getGrowthIndicator()}
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 

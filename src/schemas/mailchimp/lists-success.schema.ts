@@ -32,7 +32,7 @@ export const listContactSchema = z.object({
  */
 export const listCampaignDefaultsSchema = z.object({
   from_name: z.string(),
-  from_email: z.string(),
+  from_email: z.email(),
   subject: z.string(),
   language: z.string(),
 });
@@ -51,22 +51,22 @@ export const listConstraintsSchema = z.object({
  */
 export const listStatsSchema = z.object({
   member_count: z.number().min(0),
-  total_contacts: z.number().min(0),
+  total_contacts: z.number().min(0).optional(),
   unsubscribe_count: z.number().min(0),
   cleaned_count: z.number().min(0),
   member_count_since_send: z.number().min(0),
   unsubscribe_count_since_send: z.number().min(0),
   cleaned_count_since_send: z.number().min(0),
   campaign_count: z.number().min(0),
-  campaign_last_sent: z.iso.datetime({ offset: true }),
+  campaign_last_sent: z.iso.datetime({ offset: true }).optional(),
   merge_field_count: z.number().min(0),
   avg_sub_rate: z.number().optional(),
   avg_unsub_rate: z.number().optional(),
   target_sub_rate: z.number().optional(),
   open_rate: z.number().min(0).max(100).optional(),
   click_rate: z.number().min(0).max(100).optional(),
-  last_sub_date: z.iso.datetime({ offset: true }),
-  last_unsub_date: z.iso.datetime({ offset: true }),
+  last_sub_date: z.iso.datetime({ offset: true }).optional(),
+  last_unsub_date: z.iso.datetime({ offset: true }).optional(),
 });
 
 /**
@@ -80,14 +80,14 @@ export const listSchema = z.object({
   permission_reminder: z.string(),
   use_archive_bar: z.boolean(),
   campaign_defaults: listCampaignDefaultsSchema,
-  notify_on_subscribe: z.string().optional(),
-  notify_on_unsubscribe: z.string().optional(),
+  notify_on_subscribe: z.email().optional(),
+  notify_on_unsubscribe: z.email().optional(),
   date_created: z.iso.datetime({ offset: true }),
   list_rating: z.number().min(0).max(5), // auto-generated activity score (0-5)
   email_type_option: z.boolean(),
-  subscribe_url_short: z.string(),
-  subscribe_url_long: z.string(),
-  beamer_address: z.string,
+  subscribe_url_short: z.url(),
+  subscribe_url_long: z.url(),
+  beamer_address: z.email(),
   visibility: z.enum(LIST_VISIBILITY),
   double_optin: z.boolean(),
   has_welcome: z.boolean(),
