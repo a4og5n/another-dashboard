@@ -1,28 +1,34 @@
 /**
- * Mailchimp Connection Guard (Server Component)
- * Server-side wrapper that automatically validates Mailchimp connection
- * before rendering children or showing empty state
+ * Mailchimp Connection Guard (Pure UI Component)
+ * Pure UI component that renders content based on errorCode prop
  *
- * This component handles validation internally, so pages don't need to remember
- * to call validateMailchimpConnection() before using it.
+ * This component is now purely presentational - validation happens at the DAL layer
+ * and the errorCode is passed down from server actions/pages.
  *
  * Architecture:
- * - Server Component: Validates connection on server
+ * - Pure UI Component: No business logic or validation
  * - Wraps MailchimpConnectionBanner (Client Component) for UI logic
+ * - Receives errorCode from parent (DAL handles validation)
  * - Passes OAuth callback params for success/error banners
  */
 
 import { MailchimpConnectionBanner } from "@/components/mailchimp/mailchimp-connection-banner";
-import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
 import type { ReactNode } from "react";
 
 interface MailchimpConnectionGuardProps {
   /**
-   * Content to render when connection is valid
+   * Content to render when connection is valid (no errorCode)
    * Can be a ReactNode or a function that returns a ReactNode
    * Use function form to defer execution until after validation
    */
   children: ReactNode | (() => ReactNode);
+
+  /**
+   * Error code from DAL validation
+   * If present, shows empty state instead of children
+   * Possible values: 'MAILCHIMP_NOT_CONNECTED', 'MAILCHIMP_TOKEN_EXPIRED', etc.
+   */
+  errorCode?: string;
 
   /**
    * Optional: OAuth callback connected status
@@ -38,36 +44,43 @@ interface MailchimpConnectionGuardProps {
 }
 
 /**
- * Server Component that validates Mailchimp connection automatically
- * and delegates UI rendering to MailchimpConnectionBanner
+ * Pure UI Component that renders based on errorCode prop
+ * Validation happens at DAL layer, not in this component
  *
  * @example
  * ```tsx
- * // Simple usage - validation happens automatically
- * <MailchimpConnectionGuard>
- *   <YourMailchimpContent />
+ * // Usage with DAL validation result
+ * const result = await mailchimpDAL.fetchCampaigns();
+ *
+ * <MailchimpConnectionGuard errorCode={result.errorCode}>
+ *   <YourMailchimpContent data={result.data} />
  * </MailchimpConnectionGuard>
  *
  * // With OAuth callback params (for main dashboard page)
- * <MailchimpConnectionGuard connected={connected} oauthError={error}>
+ * <MailchimpConnectionGuard
+ *   errorCode={result.errorCode}
+ *   connected={connected}
+ *   oauthError={error}
+ * >
  *   <YourMailchimpContent />
  * </MailchimpConnectionGuard>
  * ```
  */
-export async function MailchimpConnectionGuard({
+export function MailchimpConnectionGuard({
   children,
+  errorCode,
   connected,
   oauthError,
 }: MailchimpConnectionGuardProps) {
-  // Automatically validate connection - pages don't need to do this manually
-  const validation = await validateMailchimpConnection();
+  // If errorCode present, connection is not valid - show empty state
+  const isValid = !errorCode;
 
   // If not valid, show empty state (children won't be evaluated)
-  if (!validation.isValid) {
+  if (!isValid) {
     return (
       <MailchimpConnectionBanner
         isValid={false}
-        error={validation.error || oauthError}
+        error={errorCode || oauthError}
         connected={connected}
       >
         {null}
