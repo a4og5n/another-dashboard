@@ -9,7 +9,7 @@ import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
 export default withAuth({
   isReturnToCurrentPage: true,
   loginPage: "/login",
-  publicPaths: ["/", "/login", "/register", "/api/auth"],
+  publicPaths: ["/", "/login", "/register", "/auth-error", "/api/auth"],
 });
 
 /**

@@ -2,8 +2,9 @@
  * Clear Auth State Utility Route
  * Helps clear Kinde authentication cookies and state
  *
- * This is a development utility to help resolve OAuth state mismatch errors
- * Usage: Visit /api/auth/clear-state in your browser
+ * This utility helps resolve OAuth state mismatch errors automatically
+ * Called by the AuthErrorContent component on the /auth-error page
+ * Can also be visited directly: /api/auth/clear-state
  */
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -31,18 +32,21 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      message: "Auth state cleared successfully",
+      message: "Authentication state cleared successfully",
       deletedCookies,
-      instructions:
-        "Please close this tab, clear your browser cache, and try logging in again.",
+      count: deletedCookies.length,
+      nextSteps:
+        "Authentication state has been cleared. You can now try signing in again.",
     });
   } catch (error) {
     console.error("Error clearing auth state:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to clear auth state",
+        error: "Failed to clear authentication state",
         message: error instanceof Error ? error.message : "Unknown error",
+        recommendation:
+          "Please manually clear your browser cache and cookies, then try again.",
       },
       { status: 500 },
     );
