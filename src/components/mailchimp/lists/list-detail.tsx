@@ -160,23 +160,23 @@ export function ListDetail({
                 </CardContent>
               </Card>
 
-              {list.stats.total_contacts !== undefined && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-sm font-medium">
-                      Total Contacts
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">
-                      {list.stats.total_contacts.toLocaleString()}
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      All contacts
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm font-medium">
+                    Total Contacts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">
+                    {list.stats.total_contacts !== undefined
+                      ? list.stats.total_contacts.toLocaleString()
+                      : "—"}
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    All contacts
+                  </p>
+                </CardContent>
+              </Card>
 
               <Card>
                 <CardHeader>
