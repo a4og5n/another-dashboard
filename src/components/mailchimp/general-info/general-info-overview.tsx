@@ -3,7 +3,7 @@
  * Displays general information from the API Root endpoint
  *
  * Issue #121: General Info Overview UI components
- * Uses data from: @/actions/mailchimp-root.ts
+ * Focuses on data display - connection state handled by MailchimpConnectionBanner
  * Uses types from: @/types/mailchimp/root.ts
  */
 
@@ -16,7 +16,7 @@ import type { GeneralInfoOverviewProps } from "@/types/components";
 import { formatDateLongSafe } from "@/utils";
 
 export function GeneralInfoOverview({ data, error }: GeneralInfoOverviewProps) {
-  // Display service errors from parent
+  // Display API errors from service layer (NOT connection errors)
   if (error) {
     return <DashboardInlineError error={error} />;
   }

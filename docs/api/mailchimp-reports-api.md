@@ -318,5 +318,5 @@ Comprehensive schema validation for all response fields including nested objects
 - **Mailchimp API Documentation:** [List Campaign Reports](https://mailchimp.com/developer/marketing/api/reports/list-campaign-reports/)
 - **Schema Files:** `src/schemas/mailchimp/report-*.schema.ts`
 - **Type Definitions:** `src/types/mailchimp/reports.ts`
-- **Service Implementation:** `src/services/mailchimp.service.ts`
+- **Service Implementation:** `src/dal/mailchimp.dal.ts`
 - **Component Implementation:** `src/components/dashboard/reports-overview.tsx`

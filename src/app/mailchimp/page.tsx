@@ -1,28 +1,29 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { MailchimpConnectionBanner } from "@/components/mailchimp/mailchimp-connection-banner";
-import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { validateMailchimpConnectionParams } from "@/utils/mailchimp";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 
 async function MailchimpDashboardContent({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  // Validate and parse Mailchimp connection status parameters
+  // Parse OAuth callback parameters for success/error banners
   const params = await searchParams;
   const { connected, error } = validateMailchimpConnectionParams(params);
 
-  // Validate Mailchimp connection
-  const validation = await validateMailchimpConnection();
+  // Validate connection via health check (validation happens at DAL layer)
+  const healthCheckResult = await mailchimpDAL.healthCheck();
+  const errorCode = healthCheckResult.errorCode;
 
-  // Connection guard handles all states: empty state, banner, and children
+  // Guard component handles UI based on errorCode
   return (
-    <MailchimpConnectionBanner
+    <MailchimpConnectionGuard
+      errorCode={errorCode}
       connected={connected}
-      error={validation.error || error}
-      isValid={validation.isValid}
+      oauthError={error}
     >
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="space-y-8 text-center">
@@ -69,7 +70,7 @@ async function MailchimpDashboardContent({
           </div>
         </div>
       </div>
-    </MailchimpConnectionBanner>
+    </MailchimpConnectionGuard>
   );
 }
 

@@ -10,22 +10,19 @@
 import { BreadcrumbNavigation } from "@/components/layout";
 import type { ReportsPageProps } from "@/types/components/mailchimp";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
-import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { reportListParamsSchema } from "@/schemas/mailchimp";
 import { reportsPageSearchParamsSchema } from "@/schemas/components";
 import { transformCampaignReportsParams } from "@/utils/mailchimp/query-params";
 import { ReportsOverviewSkeleton } from "@/skeletons/mailchimp";
-import { processPageParams } from "@/utils/mailchimp/page-params";
+import { validatePageParams } from "@/utils/mailchimp/page-params";
 
 async function ReportsPageContent({ searchParams }: ReportsPageProps) {
-  // Process page parameters: validate, redirect if needed, convert to API format
-  const { apiParams, currentPage, pageSize } = await processPageParams({
+  // Validate page parameters: validate, redirect if needed, convert to API format
+  const { apiParams, currentPage, pageSize } = await validatePageParams({
     searchParams,
     uiSchema: reportsPageSearchParamsSchema,
     apiSchema: reportListParamsSchema,
@@ -33,56 +30,29 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
     transformer: transformCampaignReportsParams,
   });
 
-  // Get reports
-  const response = await mailchimpService.getCampaignReports(apiParams);
+  // Fetch reports (validation happens at DAL layer)
+  const response = await mailchimpDAL.fetchCampaignReports(apiParams);
 
-  // Handle errors
-  if (!response.success) {
-    return (
-      <ReportsOverview
-        error={response.error || "Failed to load campaign reports"}
-        data={null}
-      />
-    );
-  }
-
-  // Pass data to component
+  // Guard component handles UI based on errorCode from DAL
   return (
-    <ReportsOverview
-      data={response.data || null}
-      currentPage={currentPage}
-      pageSize={pageSize}
-    />
+    <MailchimpConnectionGuard errorCode={response.errorCode}>
+      {response.success ? (
+        <ReportsOverview
+          data={response.data || null}
+          currentPage={currentPage}
+          pageSize={pageSize}
+        />
+      ) : (
+        <ReportsOverview
+          error={response.error || "Failed to load campaign reports"}
+          data={null}
+        />
+      )}
+    </MailchimpConnectionGuard>
   );
 }
 
-export default async function ReportsPage({ searchParams }: ReportsPageProps) {
-  // 1. Check user authentication (Kinde)
-  const { getUser, isAuthenticated } = getKindeServerSession();
-  const isAuthed = await isAuthenticated();
-
-  if (!isAuthed) {
-    redirect("/api/auth/login?post_login_redirect_url=/mailchimp/reports");
-  }
-
-  const user = await getUser();
-  if (!user) {
-    redirect("/api/auth/login");
-  }
-
-  // 2. Check Mailchimp connection
-  const connectionStatus = await validateMailchimpConnection();
-
-  // 3. Show empty state if not connected
-  if (!connectionStatus.isValid) {
-    return (
-      <DashboardLayout>
-        <MailchimpEmptyState error={connectionStatus.error} />
-      </DashboardLayout>
-    );
-  }
-
-  // 4. Show connected page
+export default function ReportsPage({ searchParams }: ReportsPageProps) {
   return (
     <DashboardLayout>
       <div className="space-y-6">

@@ -4,47 +4,34 @@
  *
  * Issue #122: General Info navigation and routing
  * Uses components from: @/components/mailchimp/general-info
- * Uses direct service calls following audiences page pattern
+ * Uses MailchimpConnectionGuard for automatic connection validation
  */
 
 import { GeneralInfoOverview } from "@/components/mailchimp/general-info";
 import { GeneralInfoOverviewSkeleton } from "@/skeletons/mailchimp";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout";
-import { mailchimpService } from "@/services/mailchimp.service";
-import {
-  validateMailchimpConnection,
-  getValidationErrorMessage,
-} from "@/lib/validate-mailchimp-connection";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { Suspense } from "react";
 
 async function GeneralInfoPageContent() {
-  // Validate Mailchimp connection before making API call
-  const validation = await validateMailchimpConnection();
-  if (!validation.isValid) {
-    return (
-      <GeneralInfoOverview
-        error={getValidationErrorMessage(validation.error || "")}
-        data={null}
-      />
-    );
-  }
+  // Fetch data (validation happens at DAL layer)
+  const response = await mailchimpDAL.fetchApiRoot();
 
-  // Use service layer for better architecture
-  const response = await mailchimpService.getApiRoot();
-
-  // Handle errors
-  if (!response.success) {
-    return (
-      <GeneralInfoOverview
-        error={response.error || "Failed to load general info data"}
-        data={null}
-      />
-    );
-  }
-
-  // Pass data to component - let component handle prop validation
-  return <GeneralInfoOverview data={response.data!} />;
+  // Guard component handles UI based on errorCode from DAL
+  return (
+    <MailchimpConnectionGuard errorCode={response.errorCode}>
+      {response.success ? (
+        <GeneralInfoOverview data={response.data!} />
+      ) : (
+        <GeneralInfoOverview
+          error={response.error || "Failed to load general info data"}
+          data={null}
+        />
+      )}
+    </MailchimpConnectionGuard>
+  );
 }
 
 export default function GeneralInfoPage() {
@@ -71,7 +58,7 @@ export default function GeneralInfoPage() {
           </p>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content - Suspense wraps async component */}
         <Suspense fallback={<GeneralInfoOverviewSkeleton />}>
           <GeneralInfoPageContent />
         </Suspense>

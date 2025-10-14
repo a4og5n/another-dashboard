@@ -8,9 +8,10 @@
 
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignReportDetail } from "@/components/dashboard";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignReportSkeleton } from "@/skeletons/mailchimp";
 import { generateCampaignReportMetadata, processRouteParams } from "@/utils";
 import type { CampaignReport } from "@/types/mailchimp";
@@ -35,13 +36,11 @@ async function CampaignReportPageContent({
   // Get active tab from search params (with default fallback)
   const activeTab = validatedSearchParams.tab;
 
-  // Fetch campaign report data
-  const response = await mailchimpService.getCampaignReport(validatedParams.id);
+  // Fetch campaign report data (validation happens at DAL layer)
+  const response = await mailchimpDAL.fetchCampaignReport(validatedParams.id);
 
-  // Handle error states
+  // Handle 404 errors with notFound()
   if (!response.success) {
-    // Use notFound() for 404 errors (missing campaign)
-    // Pass other errors to component for inline display
     const errorMessage = response.error || "Failed to load campaign report";
     if (
       errorMessage.toLowerCase().includes("not found") ||
@@ -49,21 +48,24 @@ async function CampaignReportPageContent({
     ) {
       notFound();
     }
-
-    return (
-      <CampaignReportDetail
-        report={null}
-        error={errorMessage}
-        activeTab={activeTab}
-      />
-    );
   }
 
+  // Guard component handles UI based on errorCode from DAL
   return (
-    <CampaignReportDetail
-      report={response.data as CampaignReport}
-      activeTab={activeTab}
-    />
+    <MailchimpConnectionGuard errorCode={response.errorCode}>
+      {response.success ? (
+        <CampaignReportDetail
+          report={response.data as CampaignReport}
+          activeTab={activeTab}
+        />
+      ) : (
+        <CampaignReportDetail
+          report={null}
+          error={response.error || "Failed to load campaign report"}
+          activeTab={activeTab}
+        />
+      )}
+    </MailchimpConnectionGuard>
   );
 }
 

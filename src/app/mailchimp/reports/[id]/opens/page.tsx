@@ -9,18 +9,19 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignOpensSkeleton } from "@/skeletons/mailchimp";
 import {
   reportOpensPageParamsSchema,
   reportOpensPageSearchParamsSchema,
 } from "@/schemas/components";
 import type { ReportOpensPageProps } from "@/types/components/mailchimp";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignOpensTable } from "@/components/dashboard/reports";
 import { openListQueryParamsSchema } from "@/schemas/mailchimp/report-open-details-params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import type { ReportOpenListSuccess, CampaignReport } from "@/types/mailchimp";
-import { processPageParams } from "@/utils/mailchimp/page-params";
+import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import type { Metadata } from "next";
 
@@ -32,23 +33,22 @@ async function CampaignOpensPageContent({
   const rawRouteParams = await params;
   const { id: campaignId } = reportOpensPageParamsSchema.parse(rawRouteParams);
 
-  // Process page params with redirect handling
-  const { apiParams, currentPage, pageSize } = await processPageParams({
+  // Validate page params with redirect handling
+  const { apiParams, currentPage, pageSize } = await validatePageParams({
     searchParams,
     uiSchema: reportOpensPageSearchParamsSchema,
     apiSchema: openListQueryParamsSchema,
     basePath: `/mailchimp/reports/${campaignId}/opens`,
   });
 
-  // Fetch campaign open list data - service validates internally
-  const response = await mailchimpService.getCampaignOpenList(
+  // Fetch campaign open list data (validation happens at DAL layer)
+  const response = await mailchimpDAL.fetchCampaignOpenList(
     campaignId,
     apiParams,
   );
 
-  // Handle error states
+  // Handle 404 errors with notFound()
   if (!response.success) {
-    // Use notFound() for 404 errors (missing campaign)
     const errorMessage = response.error || "Failed to load campaign opens";
     if (
       errorMessage.toLowerCase().includes("not found") ||
@@ -56,22 +56,28 @@ async function CampaignOpensPageContent({
     ) {
       notFound();
     }
-
-    // For other errors, display inline error
-    return <DashboardInlineError error={errorMessage} />;
   }
 
   const opensData = response.data as ReportOpenListSuccess;
 
+  // Guard component handles UI based on errorCode from DAL
   return (
-    <CampaignOpensTable
-      opensData={opensData}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      perPageOptions={[...PER_PAGE_OPTIONS]}
-      baseUrl={`/mailchimp/reports/${campaignId}/opens`}
-      campaignId={campaignId}
-    />
+    <MailchimpConnectionGuard errorCode={response.errorCode}>
+      {response.success ? (
+        <CampaignOpensTable
+          opensData={opensData}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          perPageOptions={[...PER_PAGE_OPTIONS]}
+          baseUrl={`/mailchimp/reports/${campaignId}/opens`}
+          campaignId={campaignId}
+        />
+      ) : (
+        <DashboardInlineError
+          error={response.error || "Failed to load campaign opens"}
+        />
+      )}
+    </MailchimpConnectionGuard>
   );
 }
 
@@ -141,7 +147,7 @@ export async function generateMetadata({
   const { id } = reportOpensPageParamsSchema.parse(rawParams);
 
   // Fetch campaign report for metadata
-  const response = await mailchimpService.getCampaignReport(id);
+  const response = await mailchimpDAL.fetchCampaignReport(id);
 
   if (!response.success || !response.data) {
     return {

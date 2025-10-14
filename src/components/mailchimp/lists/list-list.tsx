@@ -7,7 +7,7 @@ import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector
 import { TableSkeleton } from "@/skeletons";
 import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { List } from "@/services";
+import type { List } from "@/types/mailchimp";
 
 interface ListListProps {
   lists: List[];

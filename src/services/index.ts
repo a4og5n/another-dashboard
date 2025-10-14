@@ -1,49 +1,13 @@
 /**
- * Services Index - Simplified for MVP
- * Just re-export the simple mailchimp setup
+ * Services Index
+ * Centralized exports for service layer modules
+ *
+ * Note: This folder is reserved for future service layer implementation.
+ * Current architecture:
+ * - Data Access Layer (DAL): @/dal/* - Direct database/API data access
+ * - Service Layer: @/services/* - Business logic and orchestration (future)
+ * - Actions: @/actions/* - Server actions for client-server communication
  */
 
-// Export new service layer
-export {
-  MailchimpService,
-  mailchimpService,
-} from "@/services/mailchimp.service";
-
-// Re-export fetch client utilities (new implementation)
-export { getUserMailchimpClient } from "@/lib/mailchimp-client-factory";
-export { mailchimpApiCall } from "@/lib/mailchimp-action-wrapper";
-export type { ApiResponse } from "@/types/api-errors";
-
-// Keep auth service export for compatibility
+// Auth service (legacy - will be refactored)
 export { AuthService, authService } from "@/services/auth.service";
-
-// Re-export types for backward compatibility
-export type { List, ListsParams } from "@/types/mailchimp";
-
-/**
- * Health check all services - simplified
- */
-export async function healthCheckAllServices() {
-  try {
-    // Import the service from the export above
-    const { mailchimpService: service } = await import(
-      "@/services/mailchimp.service"
-    );
-    const result = await service.healthCheck();
-    return [
-      {
-        service: "mailchimp",
-        success: result.success,
-        error: result.error,
-      },
-    ];
-  } catch (error) {
-    return [
-      {
-        service: "mailchimp",
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-    ];
-  }
-}

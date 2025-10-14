@@ -6,3 +6,4 @@
 export * from "@/components/mailchimp/general-info";
 export { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
 export { MailchimpConnectionBanner } from "@/components/mailchimp/mailchimp-connection-banner";
+export { MailchimpConnectionGuard } from "@/components/mailchimp/mailchimp-connection-guard";

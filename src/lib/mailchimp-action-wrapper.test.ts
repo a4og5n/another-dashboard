@@ -13,6 +13,7 @@ import {
   MailchimpNetworkError,
 } from "@/lib/errors";
 import type { MailchimpFetchClient } from "@/lib/mailchimp-fetch-client";
+import { MAILCHIMP_ERROR_CODES } from "@/constants";
 
 // Mock the client factory
 vi.mock("@/lib/mailchimp-client-factory");
@@ -68,37 +69,66 @@ describe("mailchimpApiCall", () => {
   });
 
   describe("connection errors", () => {
-    it("should handle 'not connected' error", async () => {
-      vi.mocked(getUserMailchimpClient).mockRejectedValue(
-        new Error("Mailchimp not connected. Please connect your account."),
+    it("should handle 'not connected' error with errorCode", async () => {
+      const error = new Error(
+        "Mailchimp account not connected. Please connect your account to continue.",
       );
+      (error as Error & { errorCode: string }).errorCode =
+        MAILCHIMP_ERROR_CODES.NOT_CONNECTED;
+
+      vi.mocked(getUserMailchimpClient).mockRejectedValue(error);
 
       const result = await mailchimpApiCall(async () => ({ data: "test" }));
 
       expect(result).toEqual({
         success: false,
-        error: "Mailchimp not connected. Please connect your account.",
+        error:
+          "Mailchimp account not connected. Please connect your account to continue.",
+        errorCode: MAILCHIMP_ERROR_CODES.NOT_CONNECTED,
         statusCode: 401,
       });
     });
 
-    it("should handle inactive connection error", async () => {
-      vi.mocked(getUserMailchimpClient).mockRejectedValue(
-        new Error("Mailchimp connection is inactive. Please reconnect."),
+    it("should handle inactive connection error with errorCode", async () => {
+      const error = new Error(
+        "Your Mailchimp connection is inactive. Please reconnect your account.",
       );
+      (error as Error & { errorCode: string }).errorCode =
+        MAILCHIMP_ERROR_CODES.CONNECTION_INACTIVE;
+
+      vi.mocked(getUserMailchimpClient).mockRejectedValue(error);
 
       const result = await mailchimpApiCall(async () => ({ data: "test" }));
 
       expect(result).toEqual({
         success: false,
-        error: "Mailchimp connection is inactive. Please reconnect.",
+        error:
+          "Your Mailchimp connection is inactive. Please reconnect your account.",
+        errorCode: MAILCHIMP_ERROR_CODES.CONNECTION_INACTIVE,
+        statusCode: 401,
+      });
+    });
+
+    it("should handle not authenticated error with errorCode", async () => {
+      const error = new Error("User not authenticated");
+      (error as Error & { errorCode: string }).errorCode =
+        MAILCHIMP_ERROR_CODES.NOT_AUTHENTICATED;
+
+      vi.mocked(getUserMailchimpClient).mockRejectedValue(error);
+
+      const result = await mailchimpApiCall(async () => ({ data: "test" }));
+
+      expect(result).toEqual({
+        success: false,
+        error: "User not authenticated",
+        errorCode: MAILCHIMP_ERROR_CODES.NOT_AUTHENTICATED,
         statusCode: 401,
       });
     });
   });
 
   describe("authentication errors", () => {
-    it("should handle MailchimpAuthError", async () => {
+    it("should handle MailchimpAuthError with errorCode", async () => {
       const authError = new MailchimpAuthError({
         type: "https://mailchimp.com/developer/marketing/docs/errors/",
         title: "Forbidden",
@@ -116,13 +146,14 @@ describe("mailchimpApiCall", () => {
       expect(result).toEqual({
         success: false,
         error: "You are not authorized to access this resource",
+        errorCode: MAILCHIMP_ERROR_CODES.TOKEN_INVALID,
         statusCode: 403,
       });
     });
   });
 
   describe("rate limit errors", () => {
-    it("should handle MailchimpRateLimitError with retry info", async () => {
+    it("should handle MailchimpRateLimitError with retry info and errorCode", async () => {
       const rateLimitError = new MailchimpRateLimitError(
         {
           type: "https://mailchimp.com/developer/marketing/docs/errors/",
@@ -145,6 +176,7 @@ describe("mailchimpApiCall", () => {
       expect(result.error).toBe(
         "Rate limit exceeded. Try again in 60 seconds.",
       );
+      expect(result.errorCode).toBe(MAILCHIMP_ERROR_CODES.RATE_LIMIT);
       expect(result.statusCode).toBe(429);
       expect(result.rateLimit).toEqual({
         remaining: 0,
@@ -155,7 +187,7 @@ describe("mailchimpApiCall", () => {
   });
 
   describe("API errors", () => {
-    it("should handle MailchimpFetchError", async () => {
+    it("should handle MailchimpFetchError with errorCode", async () => {
       const apiError = new MailchimpFetchError({
         type: "https://mailchimp.com/developer/marketing/docs/errors/",
         title: "Resource Not Found",
@@ -173,13 +205,14 @@ describe("mailchimpApiCall", () => {
       expect(result).toEqual({
         success: false,
         error: "The requested resource could not be found",
+        errorCode: MAILCHIMP_ERROR_CODES.API_ERROR,
         statusCode: 404,
       });
     });
   });
 
   describe("network errors", () => {
-    it("should handle MailchimpNetworkError", async () => {
+    it("should handle MailchimpNetworkError with errorCode", async () => {
       const networkError = new MailchimpNetworkError(
         "Request timeout after 30000ms",
       );
@@ -193,13 +226,14 @@ describe("mailchimpApiCall", () => {
       expect(result).toEqual({
         success: false,
         error: "Request timeout after 30000ms",
+        errorCode: MAILCHIMP_ERROR_CODES.API_ERROR,
         statusCode: 503,
       });
     });
   });
 
   describe("unknown errors", () => {
-    it("should handle generic Error", async () => {
+    it("should handle generic Error with errorCode", async () => {
       vi.mocked(getUserMailchimpClient).mockResolvedValue(mockClient);
 
       const result = await mailchimpApiCall(async () => {
@@ -209,11 +243,12 @@ describe("mailchimpApiCall", () => {
       expect(result).toEqual({
         success: false,
         error: "Something went wrong",
+        errorCode: MAILCHIMP_ERROR_CODES.UNKNOWN_ERROR,
         statusCode: 500,
       });
     });
 
-    it("should handle non-Error thrown values", async () => {
+    it("should handle non-Error thrown values with errorCode", async () => {
       vi.mocked(getUserMailchimpClient).mockResolvedValue(mockClient);
 
       const result = await mailchimpApiCall(async () => {
@@ -223,6 +258,7 @@ describe("mailchimpApiCall", () => {
       expect(result).toEqual({
         success: false,
         error: "Unknown error occurred",
+        errorCode: MAILCHIMP_ERROR_CODES.UNKNOWN_ERROR,
         statusCode: 500,
       });
     });

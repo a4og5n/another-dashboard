@@ -349,7 +349,7 @@ The project uses a modern, native fetch-based client for Mailchimp API integrati
 **Architecture Layers:**
 
 ```
-Server Actions → Service Layer → Action Wrapper → Fetch Client → Mailchimp API
+Server Actions → Data Access Layer (DAL) → Action Wrapper → Fetch Client → Mailchimp API
 ```
 
 **Key Components:**
@@ -379,7 +379,7 @@ Server Actions → Service Layer → Action Wrapper → Fetch Client → Mailchi
    - Follows Next.js App Router best practices (return errors, don't throw)
    - Includes rate limit info in responses
 
-5. **Service Layer** (`src/services/mailchimp.service.ts`):
+5. **Data Access Layer (DAL)** (`src/dal/mailchimp.dal.ts`):
    - Business logic and API orchestration
    - Methods for campaigns, audiences, reports
    - Singleton pattern for app-wide use
@@ -397,10 +397,10 @@ Server Actions → Service Layer → Action Wrapper → Fetch Client → Mailchi
 **Usage Example:**
 
 ```typescript
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 
 // Service layer handles all the complexity
-const result = await mailchimpService.getCampaignReports({
+const result = await mailchimpDAL.fetchCampaignReports({
   count: 10,
   offset: 0,
 });

@@ -244,7 +244,7 @@ Update index.ts to export the new schemas using path aliases.
 
 ### Section 3: Actions Layer
 
-1. **Service Layer (`src/services/mailchimp.service.ts`):**
+1. **Data Access Layer (DAL) (`src/dal/mailchimp.dal.ts`):**
    - Use existing `getCampaignReports(params?: ReportListQueryInternal)` method
    - Note: Method already exists - will be used for campaign reports specifically
    - Future: Other report types (audience reports, etc.) will use different methods

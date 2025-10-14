@@ -930,7 +930,7 @@ MAILCHIMP_SERVER_PREFIX="us1" # extracted from API key
 
 **Section 3: Actions Layer (45 minutes)**
 
-1. Add API Root method to existing `src/services/mailchimp.service.ts`
+1. Add API Root method to existing `src/dal/mailchimp.dal.ts`
    - Add `getApiRoot(params?: RootParams)` method
    - Follow existing service patterns (parameter conversion, error handling)
    - Return `ApiResponse<RootSuccess>` type

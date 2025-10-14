@@ -32,7 +32,7 @@ We have successfully implemented a comprehensive API service architecture with M
 - `authenticate()` - Service-specific authentication (abstract)
 - `healthCheck()` - Service health monitoring (abstract)
 
-#### 2. Mailchimp Service (`src/services/mailchimp.service.ts`)
+#### 2. Mailchimp Service (`src/dal/mailchimp.dal.ts`)
 
 **Complete Implementation:**
 

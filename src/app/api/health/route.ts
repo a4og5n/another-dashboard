@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { healthCheckAllServices } from "@/services";
+import { healthCheckAllServices } from "@/lib/health-check";
 
 /**
  * API Health Check Endpoint

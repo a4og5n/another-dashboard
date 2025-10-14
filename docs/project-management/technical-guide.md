@@ -290,7 +290,7 @@ export default function RootLayout({
 
 ---
 
-## 📊 Phase 2: API Service Layer
+## 📊 Phase 2: API Data Access Layer (DAL)
 
 ### Step 4: Type Definitions
 

@@ -37,7 +37,7 @@ src/types/mailchimp/index.ts                             # Add exports
 **Files to Extend:**
 
 ```
-src/services/mailchimp.service.ts                        # Add getCampaignReport method
+src/dal/mailchimp.dal.ts                        # Add getCampaignReport method
 src/actions/mailchimp-reports.ts                         # Add server action + validation
 ```
 
@@ -196,7 +196,7 @@ export function ReportMetrics({ report }: ReportMetricsProps) {
 
 ## Dependencies
 
-- Existing MailchimpService class
+- Existing MailchimpDAL class
 - shadcn/ui components
 - Recharts library
 - Next.js 15 App Router patterns
