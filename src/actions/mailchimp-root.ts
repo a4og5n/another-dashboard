@@ -13,10 +13,6 @@ import { rootParamsSchema } from "@/schemas/mailchimp/root-params.schema";
 import { rootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
 import { rootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
 import { convertFieldsToCommaString } from "@/utils/mailchimp";
-import {
-  validateMailchimpConnection,
-  getValidationErrorMessage,
-} from "@/lib/validate-mailchimp-connection";
 import type { RootSuccess, RootError } from "@/types/mailchimp";
 
 /**
@@ -32,26 +28,13 @@ export async function getApiRoot(
   } = {},
 ): Promise<RootSuccess | RootError> {
   try {
-    // Validate Mailchimp connection before making API call
-    const validation = await validateMailchimpConnection();
-    if (!validation.isValid) {
-      const errorResponse: RootError = {
-        type: "about:blank",
-        title: "Connection Error",
-        detail: getValidationErrorMessage(validation.error || ""),
-        status: 401,
-        instance: "/",
-      };
-      return rootErrorSchema.parse(errorResponse);
-    }
-
     // Convert arrays to comma-separated strings
     const apiQuery = convertFieldsToCommaString(query);
 
     // Validate API format parameters
     const validatedApiQuery = rootParamsSchema.parse(apiQuery);
 
-    // Get API root data
+    // Get API root data (validation happens at DAL layer)
     const response = await mailchimpDAL.fetchApiRoot(validatedApiQuery);
 
     if (response.success && response.data) {

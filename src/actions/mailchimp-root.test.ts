@@ -22,12 +22,6 @@ vi.mock("@/dal/mailchimp.dal", () => ({
   },
 }));
 
-// Mock validation middleware to always return valid
-vi.mock("@/lib/validate-mailchimp-connection", () => ({
-  validateMailchimpConnection: vi.fn().mockResolvedValue({ isValid: true }),
-  getValidationErrorMessage: vi.fn((error) => `Validation error: ${error}`),
-}));
-
 describe("Mailchimp API Root Server Actions", () => {
   const mockApiRootData: RootSuccess = {
     account_id: "test-account-123",

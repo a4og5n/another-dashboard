@@ -2,7 +2,7 @@
 
 **Branch:** `refactor/oauth-validation-architecture`
 **Start Date:** 2025-10-14
-**Status:** Phase 4 Complete ✅ | Phase 5 Ready
+**Status:** All Phases Complete ✅ | Ready for Final Commit
 
 ---
 
@@ -205,20 +205,75 @@ export default function ListsPage({ searchParams }: ListsPageProps) {
 
 ---
 
-### 🧹 Phase 5: Cleanup & Deprecation
+### ✅ Phase 5: Cleanup & Deprecation
 
 **Goal:** Remove old validation utility and finalize
 
-**Files to Modify:**
+**Status:** Complete
 
-- `/src/lib/validate-mailchimp-connection.ts` - Deprecate or remove
-- `/src/lib/index.ts` - Update exports
-- Search for remaining usage
-- Update CLAUDE.md if needed
+**Files Modified:**
+
+- `/src/actions/mailchimp-root.ts` - Refactored to use DAL pattern (removed manual validation)
+- `/src/lib/validate-mailchimp-connection.ts` - Deleted (deprecated utility)
+- `/src/lib/index.ts` - Removed deprecated exports
+- `/src/actions/mailchimp-root.test.ts` - Removed validation mock
 
 **Commit:** `chore: remove deprecated validateMailchimpConnection utility`
+**Commit Hash:** Pending
 
-**Status:** Pending
+**Key Changes:**
+
+- **Refactored `mailchimp-root.ts`:** Removed manual validation logic, now relies on DAL layer
+- **Deleted deprecated file:** Removed `validate-mailchimp-connection.ts` (no longer needed)
+- **Cleaned up exports:** Removed `validateMailchimpConnection` and `getValidationErrorMessage` from index
+- **Removed test mocks:** Cleaned up mock that was mocking deprecated validation function
+- **Code reduction:** ~110 lines removed (validation utility + manual validation code)
+
+**Before (Manual Validation Pattern):**
+
+```typescript
+// mailchimp-root.ts
+import {
+  validateMailchimpConnection,
+  getValidationErrorMessage,
+} from "@/lib/validate-mailchimp-connection";
+
+export async function getApiRoot(query = {}) {
+  // Manual validation before API call
+  const validation = await validateMailchimpConnection();
+  if (!validation.isValid) {
+    return errorResponse;
+  }
+
+  // Then call DAL
+  const response = await mailchimpDAL.fetchApiRoot(query);
+  // ...
+}
+```
+
+**After (DAL-Based Validation Pattern):**
+
+```typescript
+// mailchimp-root.ts
+export async function getApiRoot(query = {}) {
+  // Validation happens automatically at DAL layer
+  const response = await mailchimpDAL.fetchApiRoot(query);
+
+  if (response.success) {
+    return response.data;
+  } else {
+    return errorResponse;
+  }
+}
+```
+
+**Results:**
+
+- ✅ Type-check: Passing
+- ✅ Lint: Passing (7 pre-existing warnings in test mocks)
+- ✅ Tests: 496 passing (no test updates needed - all tests pass)
+- ✅ All deprecated validation code removed
+- ✅ Single source of truth: Validation only in client factory
 
 ---
 
@@ -274,24 +329,36 @@ export default function ListsPage({ searchParams }: ListsPageProps) {
 - ✅ **Phase 2:** DAL Layer - Client Factory Validation (Commit: `2eb461d`)
 - ✅ **Phase 3:** Component Layer - Pure UI Guard (Commit: `87e78bb`)
 - ✅ **Phase 4:** Page Migration - New Pattern (Commit: `05dc6de`)
+- ✅ **Phase 5:** Cleanup & Deprecation (Commit: Pending)
 
 ### Current Status
 
-**Active:** Ready to start Phase 5
-**Next Task:** Remove deprecated validateMailchimpConnection utility
+**Status:** Phase 5 Complete - Ready for commit
+**Branch:** `refactor/oauth-validation-architecture`
+**All Phases:** Complete ✅
 
-### Validation Status
+### Final Validation Status
 
-All validation checks passing after Phase 4:
+All validation checks passing after Phase 5:
 
 - ✅ Type-check: Passing
 - ✅ Lint: Passing (7 pre-existing warnings)
 - ✅ Tests: 496 passing
-- ✅ A11y: All passing
-- ✅ All 6 Mailchimp pages migrated to unified pattern
+- ✅ Deprecated validation code removed
+- ✅ Architecture refactor complete
+
+### Code Impact Summary
+
+**Total lines removed:** ~310 lines
+
+- Phase 4 (Page migrations): ~200 lines
+- Phase 5 (Deprecated utility): ~110 lines
+
+**Files modified:** 13 files across 5 phases
+**Files deleted:** 1 file (validate-mailchimp-connection.ts)
 
 ---
 
 ## Next Steps
 
-Start Phase 5: Cleanup & Deprecation - Remove old validation utility
+Create final commit for Phase 5 and update documentation with commit hash
