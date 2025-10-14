@@ -219,7 +219,7 @@ export default function ListsPage({ searchParams }: ListsPageProps) {
 - `/src/actions/mailchimp-root.test.ts` - Removed validation mock
 
 **Commit:** `chore: remove deprecated validateMailchimpConnection utility`
-**Commit Hash:** Pending
+**Commit Hash:** `d965bf5`
 
 **Key Changes:**
 
@@ -329,7 +329,7 @@ export async function getApiRoot(query = {}) {
 - ✅ **Phase 2:** DAL Layer - Client Factory Validation (Commit: `2eb461d`)
 - ✅ **Phase 3:** Component Layer - Pure UI Guard (Commit: `87e78bb`)
 - ✅ **Phase 4:** Page Migration - New Pattern (Commit: `05dc6de`)
-- ✅ **Phase 5:** Cleanup & Deprecation (Commit: Pending)
+- ✅ **Phase 5:** Cleanup & Deprecation (Commit: `d965bf5`)
 
 ### Current Status
 
