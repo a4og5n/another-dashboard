@@ -7,6 +7,7 @@
  * - No redirect to Kinde's hosted pages
  * - Clean, branded user experience
  * - Single sign-on via Google for simplicity
+ * - Error detection and automatic redirect to error page
  */
 import { redirect } from "next/navigation";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
@@ -19,12 +20,29 @@ import {
 } from "@/components/ui/card";
 import { GoogleSignInButton } from "@/components/auth";
 
-export default async function LoginPage() {
+interface LoginPageProps {
+  searchParams: Promise<{ error?: string; error_description?: string }>;
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
   // Check if user is already authenticated
   const { isAuthenticated } = getKindeServerSession();
 
   if (await isAuthenticated()) {
     redirect("/mailchimp");
+  }
+
+  // Check for authentication errors in URL parameters
+  const params = await searchParams;
+  if (params.error) {
+    // Redirect to dedicated error page with error details
+    const errorParams = new URLSearchParams({
+      error: params.error,
+      ...(params.error_description && {
+        error_description: params.error_description,
+      }),
+    });
+    redirect(`/auth-error?${errorParams.toString()}`);
   }
 
   return (
