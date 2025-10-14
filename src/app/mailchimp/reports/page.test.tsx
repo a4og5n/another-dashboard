@@ -7,18 +7,18 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { mailchimpService } from "@/services";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 
 // Mock the Mailchimp service
-vi.mock("@/services", () => ({
-  mailchimpService: {
-    getCampaignReports: vi.fn(),
+vi.mock("@/dal/mailchimp.dal", () => ({
+  mailchimpDAL: {
+    fetchCampaignReports: vi.fn(),
   },
 }));
 
 describe("Reports Page Service Integration", () => {
-  const mockMailchimpService = {
-    getCampaignReports: vi.fn(),
+  const mockMailchimpDAL = {
+    fetchCampaignReports: vi.fn(),
   };
 
   const mockReportsData = {
@@ -82,8 +82,8 @@ describe("Reports Page Service Integration", () => {
   };
 
   beforeEach(() => {
-    vi.mocked(mailchimpService.getCampaignReports).mockImplementation(
-      mockMailchimpService.getCampaignReports,
+    vi.mocked(mailchimpDAL.fetchCampaignReports).mockImplementation(
+      mockMailchimpDAL.fetchCampaignReports,
     );
     vi.clearAllMocks();
   });
@@ -94,89 +94,95 @@ describe("Reports Page Service Integration", () => {
 
   describe("Service Integration", () => {
     it("should call service with default parameters", () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      mockMailchimpDAL.fetchCampaignReports.mockResolvedValue({
         success: true,
         data: mockReportsData,
       });
 
-      const service = mailchimpService;
-      service.getCampaignReports({
+      const service = mailchimpDAL;
+      service.fetchCampaignReports({
         count: 10,
         offset: 0,
       });
 
-      expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
+      expect(mockMailchimpDAL.fetchCampaignReports).toHaveBeenCalledWith({
         count: 10,
         offset: 0,
       });
     });
 
     it("should call service with pagination parameters", () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      mockMailchimpDAL.fetchCampaignReports.mockResolvedValue({
         success: true,
         data: mockReportsData,
       });
 
-      const service = mailchimpService;
-      service.getCampaignReports({
+      const service = mailchimpDAL;
+      service.fetchCampaignReports({
         count: 20,
         offset: 20,
       });
 
-      expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
+      expect(mockMailchimpDAL.fetchCampaignReports).toHaveBeenCalledWith({
         count: 20,
         offset: 20,
       });
     });
 
     it("should handle service success response", async () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      mockMailchimpDAL.fetchCampaignReports.mockResolvedValue({
         success: true,
         data: mockReportsData,
       });
 
-      const service = mailchimpService;
-      const result = await service.getCampaignReports({ count: 10, offset: 0 });
+      const service = mailchimpDAL;
+      const result = await service.fetchCampaignReports({
+        count: 10,
+        offset: 0,
+      });
 
       expect(result.success).toBe(true);
       expect(result.data?.reports).toHaveLength(1);
     });
 
     it("should handle service error response", async () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      mockMailchimpDAL.fetchCampaignReports.mockResolvedValue({
         success: false,
         error: "API request failed",
       });
 
-      const service = mailchimpService;
-      const result = await service.getCampaignReports({ count: 10, offset: 0 });
+      const service = mailchimpDAL;
+      const result = await service.fetchCampaignReports({
+        count: 10,
+        offset: 0,
+      });
 
       expect(result.success).toBe(false);
       expect(result.error).toBe("API request failed");
     });
 
     it("should handle service exceptions", async () => {
-      mockMailchimpService.getCampaignReports.mockRejectedValue(
+      mockMailchimpDAL.fetchCampaignReports.mockRejectedValue(
         new Error("Network error"),
       );
 
-      const service = mailchimpService;
+      const service = mailchimpDAL;
 
       await expect(
-        service.getCampaignReports({ count: 10, offset: 0 }),
+        service.fetchCampaignReports({ count: 10, offset: 0 }),
       ).rejects.toThrow("Network error");
     });
   });
 
   describe("Parameter Validation", () => {
     it("should handle filter parameters", () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      mockMailchimpDAL.fetchCampaignReports.mockResolvedValue({
         success: true,
         data: mockReportsData,
       });
 
-      const service = mailchimpService;
-      service.getCampaignReports({
+      const service = mailchimpDAL;
+      service.fetchCampaignReports({
         count: 10,
         offset: 0,
         type: "regular",
@@ -184,7 +190,7 @@ describe("Reports Page Service Integration", () => {
         since_send_time: "2023-01-01T00:00:00Z",
       });
 
-      expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
+      expect(mockMailchimpDAL.fetchCampaignReports).toHaveBeenCalledWith({
         count: 10,
         offset: 0,
         type: "regular",
@@ -194,18 +200,18 @@ describe("Reports Page Service Integration", () => {
     });
 
     it("should handle boundary conditions", () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      mockMailchimpDAL.fetchCampaignReports.mockResolvedValue({
         success: true,
         data: { reports: [], total_items: 0 },
       });
 
-      const service = mailchimpService;
-      service.getCampaignReports({
+      const service = mailchimpDAL;
+      service.fetchCampaignReports({
         count: 1,
         offset: 0,
       });
 
-      expect(mockMailchimpService.getCampaignReports).toHaveBeenCalledWith({
+      expect(mockMailchimpDAL.fetchCampaignReports).toHaveBeenCalledWith({
         count: 1,
         offset: 0,
       });
@@ -214,13 +220,16 @@ describe("Reports Page Service Integration", () => {
 
   describe("Response Handling", () => {
     it("should preserve report data structure", async () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      mockMailchimpDAL.fetchCampaignReports.mockResolvedValue({
         success: true,
         data: mockReportsData,
       });
 
-      const service = mailchimpService;
-      const result = await service.getCampaignReports({ count: 1, offset: 0 });
+      const service = mailchimpDAL;
+      const result = await service.fetchCampaignReports({
+        count: 1,
+        offset: 0,
+      });
 
       expect(result.success).toBe(true);
       const report = result.data?.reports[0];
@@ -233,13 +242,16 @@ describe("Reports Page Service Integration", () => {
     });
 
     it("should handle empty results", async () => {
-      mockMailchimpService.getCampaignReports.mockResolvedValue({
+      mockMailchimpDAL.fetchCampaignReports.mockResolvedValue({
         success: true,
         data: { reports: [], total_items: 0 },
       });
 
-      const service = mailchimpService;
-      const result = await service.getCampaignReports({ count: 10, offset: 0 });
+      const service = mailchimpDAL;
+      const result = await service.fetchCampaignReports({
+        count: 10,
+        offset: 0,
+      });
 
       expect(result.success).toBe(true);
       expect(result.data?.reports).toEqual([]);

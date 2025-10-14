@@ -8,7 +8,7 @@
  */
 "use server";
 
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { rootParamsSchema } from "@/schemas/mailchimp/root-params.schema";
 import { rootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
 import { rootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
@@ -52,7 +52,7 @@ export async function getApiRoot(
     const validatedApiQuery = rootParamsSchema.parse(apiQuery);
 
     // Get API root data
-    const response = await mailchimpService.getApiRoot(validatedApiQuery);
+    const response = await mailchimpDAL.fetchApiRoot(validatedApiQuery);
 
     if (response.success && response.data) {
       // Parse and validate successful response

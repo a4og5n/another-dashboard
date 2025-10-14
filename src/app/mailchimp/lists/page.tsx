@@ -6,7 +6,7 @@ import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-stat
 import type { ListsPageProps } from "@/types/components/mailchimp";
 import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { listsPageSearchParamsSchema } from "@/schemas/components";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
@@ -23,7 +23,7 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
   });
 
   // Fetch lists using API params
-  const response = await mailchimpService.getLists(apiParams);
+  const response = await mailchimpDAL.fetchLists(apiParams);
 
   // Handle errors
   if (!response.success) {

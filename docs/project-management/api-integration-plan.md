@@ -198,7 +198,7 @@ export class MetaGraphService {
 
 ```typescript
 // lib/api/mailchimp.ts
-export class MailchimpService {
+export class MailchimpDAL {
   async getListMetrics(listId: string): Promise<ListMetrics> {
     // List growth and engagement metrics
   }

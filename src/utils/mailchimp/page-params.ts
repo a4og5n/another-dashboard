@@ -52,7 +52,7 @@ export interface ProcessPageParamsResult<T, U> {
  *   basePath: "/mailchimp/lists",
  * });
  *
- * const response = await mailchimpService.getLists(result.apiParams);
+ * const response = await mailchimpDAL.fetchLists(result.apiParams);
  * ```
  */
 export async function processPageParams<

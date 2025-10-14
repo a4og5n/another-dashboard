@@ -25,7 +25,7 @@ Migrate from the outdated `@mailchimp/mailchimp_marketing` SDK (last updated Nov
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ Service Layer (src/services/mailchimp.service.ts)           │
+│ Data Access Layer (DAL) (src/dal/mailchimp.dal.ts)           │
 │ - Business logic and orchestration                          │
 │ - Returns ApiResponse<T> wrapper                            │
 └────────────────┬────────────────────────────────────────────┘
@@ -595,7 +595,7 @@ git show --stat
 
 ---
 
-### Phase 2: Service Layer Integration
+### Phase 2: Data Access Layer (DAL) Integration
 
 **Objective**: Create action wrapper and refactor service layer to use fetch client.
 
@@ -728,13 +728,13 @@ export async function mailchimpApiCall<T>(
 
 ---
 
-#### 2.2 Update Service Layer
+#### 2.2 Update Data Access Layer (DAL)
 
-**File**: `src/services/mailchimp.service.ts` (REFACTORED)
+**File**: `src/dal/mailchimp.dal.ts` (REFACTORED)
 
 ```typescript
 /**
- * Mailchimp Service Layer (Fetch-based)
+ * Mailchimp Data Access Layer (DAL) (Fetch-based)
  * All methods now use modern fetch client with OAuth tokens
  */
 
@@ -754,7 +754,7 @@ import type {
 // Re-export the report type for external use
 export type { Report as CampaignReport };
 
-export class MailchimpService {
+export class MailchimpDAL {
   /**
    * List Operations
    */
@@ -830,7 +830,7 @@ export class MailchimpService {
 /**
  * Singleton instance for use throughout the application
  */
-export const mailchimpService = new MailchimpService();
+export const mailchimpDAL = new MailchimpDAL();
 ```
 
 **Checklist**:
@@ -872,7 +872,7 @@ pnpm quick-check
 # Stage new and modified files
 git add src/lib/mailchimp-action-wrapper.ts
 git add src/lib/mailchimp-action-wrapper.test.ts
-git add src/services/mailchimp.service.ts
+git add src/dal/mailchimp.dal.ts
 
 # Create commit
 git commit -m "feat: integrate fetch client with service layer
@@ -880,12 +880,12 @@ git commit -m "feat: integrate fetch client with service layer
 - Add mailchimpApiCall wrapper following Next.js error handling patterns
 - Return error values instead of throwing for expected errors
 - Include rate limit info in ApiResponse
-- Refactor MailchimpService to use MailchimpFetchClient
+- Refactor MailchimpDAL to use MailchimpFetchClient
 - Maintain 100% backward compatibility with existing API
 - All existing tests pass without modification
 - Add comprehensive error handling for all error types
 
-Part of Phase 2: Service Layer Integration
+Part of Phase 2: Data Access Layer (DAL) Integration
 Ref: docs/mailchimp-fetch-client-migration-plan.md"
 
 # Verify commit
@@ -1328,10 +1328,10 @@ Migrates from the outdated `@mailchimp/mailchimp_marketing` SDK (last updated No
 - ✅ Timeout support with AbortController
 - ✅ User-scoped client factory with OAuth token retrieval
 
-### Phase 2: Service Layer Integration
+### Phase 2: Data Access Layer (DAL) Integration
 
 - ✅ mailchimpApiCall wrapper following Next.js error handling patterns
-- ✅ Refactored MailchimpService to use MailchimpFetchClient
+- ✅ Refactored MailchimpDAL to use MailchimpFetchClient
 - ✅ 100% backward compatibility maintained
 
 ### Phase 3: Testing & Validation
@@ -1643,7 +1643,7 @@ export {
 import { MailchimpFetchError } from "@/lib/errors";
 import { getUserMailchimpClient } from "@/lib/mailchimp-client-factory";
 import { mailchimpApiCall } from "@/lib/mailchimp-action-wrapper";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 
 // Never use relative imports
 // ❌ import { MailchimpFetchError } from "../errors/mailchimp-errors";
@@ -1686,7 +1686,7 @@ Follow Next.js best practices - return error values:
 export async function getCampaignReports(): Promise<
   ReportListSuccess | ReportListError
 > {
-  const response = await mailchimpService.getCampaignReports({});
+  const response = await mailchimpDAL.getCampaignReports({});
 
   if (!response.success) {
     return {
@@ -1704,7 +1704,7 @@ export async function getCampaignReports(): Promise<
 // ❌ INCORRECT: Don't use try/catch for expected errors
 export async function getCampaignReports() {
   try {
-    const response = await mailchimpService.getCampaignReports({});
+    const response = await mailchimpDAL.getCampaignReports({});
     return response;
   } catch (error) {
     // Don't do this for expected errors
@@ -1799,9 +1799,9 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe("MailchimpService Integration", () => {
+describe("MailchimpDAL Integration", () => {
   it("should fetch campaign reports", async () => {
-    const result = await mailchimpService.getCampaignReports({});
+    const result = await mailchimpDAL.getCampaignReports({});
     expect(result.success).toBe(true);
   });
 });
@@ -1930,7 +1930,7 @@ if (rateLimitInfo && rateLimitInfo.remaining < 10) {
 
 **Break**: Clear conversation (saves ~80% token costs)
 
-### Phase 2: Service Layer (2-3 hours)
+### Phase 2: Data Access Layer (DAL) (2-3 hours)
 
 - Wrapper function: 1 hour
 - Service refactoring: 30 minutes
@@ -1989,7 +1989,7 @@ If issues occur post-deployment:
 
    ```bash
    pnpm add @mailchimp/mailchimp_marketing@^3.0.80
-   git restore src/lib/mailchimp.ts src/services/mailchimp.service.ts
+   git restore src/lib/mailchimp.ts src/dal/mailchimp.dal.ts
    ```
 
 3. **Redeploy**:
@@ -2034,7 +2034,7 @@ Do not proceed to the next phase - I will start a new conversation.
    - Commit: `feat: add Mailchimp fetch client foundation`
    - Clear conversation ✋
 
-3. **New Conversation**: Phase 2 (Service Layer)
+3. **New Conversation**: Phase 2 (Data Access Layer (DAL))
    - Integrate with service layer
    - Commit: `feat: integrate fetch client with service layer`
    - Clear conversation ✋

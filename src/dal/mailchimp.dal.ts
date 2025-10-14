@@ -1,5 +1,5 @@
 /**
- * Mailchimp Service Layer (Fetch-based)
+ * Mailchimp Data Access Layer (Fetch-based)
  * All methods now use modern fetch client with OAuth tokens
  */
 
@@ -21,17 +21,17 @@ import type {
 // Re-export the report type for external use
 export type { Report as CampaignReport };
 
-export class MailchimpService {
+export class MailchimpDAL {
   /**
    * List Operations
    */
-  async getLists(params: ListsParams): Promise<ApiResponse<ListsSuccess>> {
+  async fetchLists(params: ListsParams): Promise<ApiResponse<ListsSuccess>> {
     return mailchimpApiCall((client) =>
       client.get<ListsSuccess>("/lists", params),
     );
   }
 
-  async getList(listId: string): Promise<ApiResponse<unknown>> {
+  async fetchList(listId: string): Promise<ApiResponse<unknown>> {
     return mailchimpApiCall((client) =>
       client.get<unknown>(`/lists/${listId}`),
     );
@@ -40,13 +40,13 @@ export class MailchimpService {
   /**
    * Campaign Operations
    */
-  async getCampaigns(params: unknown): Promise<ApiResponse<unknown>> {
+  async fetchCampaigns(params: unknown): Promise<ApiResponse<unknown>> {
     return mailchimpApiCall((client) =>
       client.get<unknown>("/campaigns", params as Record<string, unknown>),
     );
   }
 
-  async getCampaign(campaignId: string): Promise<ApiResponse<unknown>> {
+  async fetchCampaign(campaignId: string): Promise<ApiResponse<unknown>> {
     return mailchimpApiCall((client) =>
       client.get<unknown>(`/campaigns/${campaignId}`),
     );
@@ -55,7 +55,7 @@ export class MailchimpService {
   /**
    * Campaign Report Operations
    */
-  async getCampaignReports(
+  async fetchCampaignReports(
     params: ReportListParams,
   ): Promise<ApiResponse<ReportListSuccess>> {
     return mailchimpApiCall((client) =>
@@ -63,7 +63,7 @@ export class MailchimpService {
     );
   }
 
-  async getCampaignReport(
+  async fetchCampaignReport(
     campaignId: string,
   ): Promise<ApiResponse<ReportSuccess>> {
     return mailchimpApiCall((client) =>
@@ -71,7 +71,7 @@ export class MailchimpService {
     );
   }
 
-  async getCampaignOpenList(
+  async fetchCampaignOpenList(
     campaignId: string,
     params?: OpenListQueryParams,
   ): Promise<ApiResponse<unknown>> {
@@ -83,7 +83,7 @@ export class MailchimpService {
   /**
    * System Operations
    */
-  async getApiRoot(
+  async fetchApiRoot(
     params?: Record<string, unknown>,
   ): Promise<ApiResponse<RootSuccess>> {
     return mailchimpApiCall((client) => client.get<RootSuccess>("/", params));
@@ -97,4 +97,4 @@ export class MailchimpService {
 /**
  * Singleton instance for use throughout the application
  */
-export const mailchimpService = new MailchimpService();
+export const mailchimpDAL = new MailchimpDAL();

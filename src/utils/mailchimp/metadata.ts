@@ -6,7 +6,7 @@
  * Following project guidelines to extract reusable utilities
  */
 
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { Metadata } from "next";
 import {
   reportPageParamsSchema,
@@ -32,7 +32,7 @@ export async function generateCampaignMetadata({
   const { id } = reportPageParamsSchema.parse(rawParams);
 
   // Fetch campaign report for metadata
-  const response = await mailchimpService.getCampaignReport(id);
+  const response = await mailchimpDAL.fetchCampaignReport(id);
 
   if (!response.success || !response.data) {
     return {
@@ -115,7 +115,7 @@ export async function generateCampaignOpensMetadata({
   const { id } = reportOpensPageParamsSchema.parse(rawParams);
 
   // Fetch campaign report for metadata
-  const response = await mailchimpService.getCampaignReport(id);
+  const response = await mailchimpDAL.fetchCampaignReport(id);
 
   if (!response.success || !response.data) {
     return {

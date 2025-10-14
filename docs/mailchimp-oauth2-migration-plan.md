@@ -1140,7 +1140,7 @@ export async function GET() {
 
 ---
 
-## Phase 4: Update Mailchimp Service Layer (2 hours)
+## Phase 4: Update Mailchimp Data Access Layer (DAL) (2 hours)
 
 ### Section 4.1: Create User-Scoped Mailchimp Client (1.5 hours)
 
@@ -1234,11 +1234,11 @@ export async function mailchimpCall<T>(
 // export { mailchimp }; ❌ DELETE
 ```
 
-**Update `src/services/mailchimp.service.ts`:**
+**Update `src/dal/mailchimp.dal.ts`:**
 
 ```typescript
 /**
- * Mailchimp Service Layer (OAuth-based)
+ * Mailchimp Data Access Layer (DAL) (OAuth-based)
  * All methods now use user-scoped OAuth tokens
  */
 
@@ -1259,7 +1259,7 @@ import type {
 
 export type { Report as CampaignReport };
 
-export class MailchimpService {
+export class MailchimpDAL {
   /**
    * List Operations
    */
@@ -1327,7 +1327,7 @@ export class MailchimpService {
 /**
  * Singleton instance - now uses OAuth tokens per request
  */
-export const mailchimpService = new MailchimpService();
+export const mailchimpDAL = new MailchimpDAL();
 ```
 
 ---
@@ -1339,7 +1339,7 @@ export const mailchimpService = new MailchimpService();
 ```typescript
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { mailchimpConnectionRepo } from "@/repositories/mailchimp-connection.repository";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 
 /**
  * Validate Mailchimp connection and token health
@@ -1379,7 +1379,7 @@ export async function validateMailchimpConnection(): Promise<{
 
     if (hoursSinceValidation > 1) {
       // Validate with ping endpoint
-      const pingResult = await mailchimpService.healthCheck();
+      const pingResult = await mailchimpDAL.healthCheck();
 
       if (!pingResult.success) {
         // Token invalid - mark connection inactive
@@ -2405,18 +2405,18 @@ pnpm db:push
 
 ## Estimated Timeline Summary
 
-| Phase                              | Tasks                                         | Time            |
-| ---------------------------------- | --------------------------------------------- | --------------- |
-| **Phase 1:** Foundation Setup      | Supabase, dependencies, schema, config        | 4-5 hours       |
-| **Phase 2:** Token Encryption      | Encryption utility, repository pattern        | 2 hours         |
-| **Phase 3:** OAuth Flow            | API routes, OAuth service                     | 4 hours         |
-| **Phase 4:** Service Layer Updates | User-scoped client, validation                | 2 hours         |
-| **Phase 5:** UI Components         | Empty states, banners, dashboard              | 3 hours         |
-| **Phase 6:** Settings Page         | Integrations management UI                    | 2 hours         |
-| **Phase 7:** Testing               | Unit tests, integration tests, manual testing | 3 hours         |
-| **Phase 8:** Migration             | Remove old auth, update docs                  | 2 hours         |
-| **Phase 9:** Deployment            | Vercel setup, production deployment           | 1 hour          |
-| **Total**                          |                                               | **23-24 hours** |
+| Phase                                        | Tasks                                         | Time            |
+| -------------------------------------------- | --------------------------------------------- | --------------- |
+| **Phase 1:** Foundation Setup                | Supabase, dependencies, schema, config        | 4-5 hours       |
+| **Phase 2:** Token Encryption                | Encryption utility, repository pattern        | 2 hours         |
+| **Phase 3:** OAuth Flow                      | API routes, OAuth service                     | 4 hours         |
+| **Phase 4:** Data Access Layer (DAL) Updates | User-scoped client, validation                | 2 hours         |
+| **Phase 5:** UI Components                   | Empty states, banners, dashboard              | 3 hours         |
+| **Phase 6:** Settings Page                   | Integrations management UI                    | 2 hours         |
+| **Phase 7:** Testing                         | Unit tests, integration tests, manual testing | 3 hours         |
+| **Phase 8:** Migration                       | Remove old auth, update docs                  | 2 hours         |
+| **Phase 9:** Deployment                      | Vercel setup, production deployment           | 1 hour          |
+| **Total**                                    |                                               | **23-24 hours** |
 
 **Realistic Schedule:** 2-3 days with focused work
 

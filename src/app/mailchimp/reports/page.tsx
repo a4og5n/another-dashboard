@@ -11,7 +11,7 @@ import { BreadcrumbNavigation } from "@/components/layout";
 import type { ReportsPageProps } from "@/types/components/mailchimp";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
 import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
@@ -34,7 +34,7 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
   });
 
   // Get reports
-  const response = await mailchimpService.getCampaignReports(apiParams);
+  const response = await mailchimpDAL.fetchCampaignReports(apiParams);
 
   // Handle errors
   if (!response.success) {

@@ -8,7 +8,7 @@
 
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignReportDetail } from "@/components/dashboard";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
 import { CampaignReportSkeleton } from "@/skeletons/mailchimp";
@@ -36,7 +36,7 @@ async function CampaignReportPageContent({
   const activeTab = validatedSearchParams.tab;
 
   // Fetch campaign report data
-  const response = await mailchimpService.getCampaignReport(validatedParams.id);
+  const response = await mailchimpDAL.fetchCampaignReport(validatedParams.id);
 
   // Handle error states
   if (!response.success) {

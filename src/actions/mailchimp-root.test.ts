@@ -8,16 +8,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getApiRoot, checkApiRootHealth } from "@/actions/mailchimp-root";
 import type { RootSuccess, RootError } from "@/types/mailchimp";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { setupOAuthMocks, resetOAuthMocks } from "@/test/mocks/oauth-mailchimp";
 
 // Setup OAuth mocks (Kinde + database connection)
 setupOAuthMocks();
 
-// Mock mailchimpService singleton instance
-vi.mock("@/services/mailchimp.service", () => ({
-  mailchimpService: {
-    getApiRoot: vi.fn(),
+// Mock mailchimpDAL singleton instance
+vi.mock("@/dal/mailchimp.dal", () => ({
+  mailchimpDAL: {
+    fetchApiRoot: vi.fn(),
     healthCheck: vi.fn().mockResolvedValue({ success: true }),
   },
 }));
@@ -79,19 +79,19 @@ describe("Mailchimp API Root Server Actions", () => {
 
   describe("getApiRoot", () => {
     it("should successfully fetch API root data with default parameters", async () => {
-      vi.mocked(mailchimpService.getApiRoot).mockResolvedValue({
+      vi.mocked(mailchimpDAL.fetchApiRoot).mockResolvedValue({
         success: true,
         data: mockApiRootData,
       });
 
       const result = await getApiRoot();
 
-      expect(vi.mocked(mailchimpService.getApiRoot)).toHaveBeenCalledWith({});
+      expect(vi.mocked(mailchimpDAL.fetchApiRoot)).toHaveBeenCalledWith({});
       expect(result).toEqual(mockApiRootData);
     });
 
     it("should fetch API root data with field selection (array format)", async () => {
-      vi.mocked(mailchimpService.getApiRoot).mockResolvedValue({
+      vi.mocked(mailchimpDAL.fetchApiRoot).mockResolvedValue({
         success: true,
         data: mockApiRootData,
       });
@@ -101,7 +101,7 @@ describe("Mailchimp API Root Server Actions", () => {
         exclude_fields: ["contact", "industry_stats"],
       });
 
-      expect(vi.mocked(mailchimpService.getApiRoot)).toHaveBeenCalledWith({
+      expect(vi.mocked(mailchimpDAL.fetchApiRoot)).toHaveBeenCalledWith({
         fields: "account_id,account_name",
         exclude_fields: "contact,industry_stats",
       });
@@ -110,7 +110,7 @@ describe("Mailchimp API Root Server Actions", () => {
 
     it("should handle string field parameters correctly", async () => {
       // The function accepts both strings and arrays in RootParams
-      vi.mocked(mailchimpService.getApiRoot).mockResolvedValue({
+      vi.mocked(mailchimpDAL.fetchApiRoot).mockResolvedValue({
         success: true,
         data: mockApiRootData,
       });
@@ -121,7 +121,7 @@ describe("Mailchimp API Root Server Actions", () => {
       });
 
       // Should successfully call service and return data
-      expect(vi.mocked(mailchimpService.getApiRoot)).toHaveBeenCalledWith({
+      expect(vi.mocked(mailchimpDAL.fetchApiRoot)).toHaveBeenCalledWith({
         fields: "account_id,account_name",
         exclude_fields: "contact,industry_stats",
       });
@@ -129,7 +129,7 @@ describe("Mailchimp API Root Server Actions", () => {
     });
 
     it("should handle API service error response", async () => {
-      vi.mocked(mailchimpService.getApiRoot).mockResolvedValue({
+      vi.mocked(mailchimpDAL.fetchApiRoot).mockResolvedValue({
         success: false,
         error: "API connection failed",
         statusCode: 500,
@@ -137,7 +137,7 @@ describe("Mailchimp API Root Server Actions", () => {
 
       const result = await getApiRoot();
 
-      expect(vi.mocked(mailchimpService.getApiRoot)).toHaveBeenCalledWith({});
+      expect(vi.mocked(mailchimpDAL.fetchApiRoot)).toHaveBeenCalledWith({});
       expect(result).toMatchObject({
         type: "about:blank",
         title: "API Root Error",
@@ -167,7 +167,7 @@ describe("Mailchimp API Root Server Actions", () => {
     });
 
     it("should handle service instantiation errors", async () => {
-      vi.mocked(mailchimpService.getApiRoot).mockRejectedValue(
+      vi.mocked(mailchimpDAL.fetchApiRoot).mockRejectedValue(
         new Error("Service initialization failed"),
       );
 
@@ -183,7 +183,7 @@ describe("Mailchimp API Root Server Actions", () => {
     });
 
     it("should handle empty field arrays", async () => {
-      vi.mocked(mailchimpService.getApiRoot).mockResolvedValue({
+      vi.mocked(mailchimpDAL.fetchApiRoot).mockResolvedValue({
         success: true,
         data: mockApiRootData,
       });
@@ -193,7 +193,7 @@ describe("Mailchimp API Root Server Actions", () => {
         exclude_fields: [],
       });
 
-      expect(vi.mocked(mailchimpService.getApiRoot)).toHaveBeenCalledWith({
+      expect(vi.mocked(mailchimpDAL.fetchApiRoot)).toHaveBeenCalledWith({
         fields: "",
         exclude_fields: "",
       });
@@ -203,7 +203,7 @@ describe("Mailchimp API Root Server Actions", () => {
 
   describe("checkApiRootHealth", () => {
     it("should return true for successful API root access", async () => {
-      vi.mocked(mailchimpService.getApiRoot).mockResolvedValue({
+      vi.mocked(mailchimpDAL.fetchApiRoot).mockResolvedValue({
         success: true,
         data: mockApiRootData,
       });
@@ -214,7 +214,7 @@ describe("Mailchimp API Root Server Actions", () => {
     });
 
     it("should return false when getApiRoot throws error", async () => {
-      vi.mocked(mailchimpService.getApiRoot).mockRejectedValue(
+      vi.mocked(mailchimpDAL.fetchApiRoot).mockRejectedValue(
         new Error("Service unavailable"),
       );
 

@@ -27,7 +27,7 @@
 - Secure HTTP-only cookies
 - Files: `src/services/mailchimp-oauth.service.ts`, `src/app/api/auth/mailchimp/*/route.ts`
 
-### ✅ Phase 4: Service Layer Migration
+### ✅ Phase 4: Data Access Layer (DAL) Migration
 
 - **Section 4.1**: User-Scoped Mailchimp Client
   - Migrated `src/lib/mailchimp.ts` from API key to OAuth tokens

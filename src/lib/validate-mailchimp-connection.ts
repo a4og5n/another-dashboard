@@ -5,7 +5,7 @@
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { mailchimpConnectionRepo } from "@/db/repositories/mailchimp-connection";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import type { ValidationResult } from "@/types/auth";
 import { MAILCHIMP_ERROR_CODES } from "@/constants/auth";
 
@@ -59,7 +59,7 @@ export async function validateMailchimpConnection(): Promise<ValidationResult> {
 
     if (hoursSinceValidation > 1) {
       // Validate with ping endpoint
-      const pingResult = await mailchimpService.healthCheck();
+      const pingResult = await mailchimpDAL.healthCheck();
 
       if (!pingResult.success) {
         // Token invalid - mark connection inactive

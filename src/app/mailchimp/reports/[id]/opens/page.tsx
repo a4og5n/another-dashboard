@@ -15,7 +15,7 @@ import {
   reportOpensPageSearchParamsSchema,
 } from "@/schemas/components";
 import type { ReportOpensPageProps } from "@/types/components/mailchimp";
-import { mailchimpService } from "@/services/mailchimp.service";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignOpensTable } from "@/components/dashboard/reports";
 import { openListQueryParamsSchema } from "@/schemas/mailchimp/report-open-details-params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
@@ -41,7 +41,7 @@ async function CampaignOpensPageContent({
   });
 
   // Fetch campaign open list data - service validates internally
-  const response = await mailchimpService.getCampaignOpenList(
+  const response = await mailchimpDAL.fetchCampaignOpenList(
     campaignId,
     apiParams,
   );
@@ -141,7 +141,7 @@ export async function generateMetadata({
   const { id } = reportOpensPageParamsSchema.parse(rawParams);
 
   // Fetch campaign report for metadata
-  const response = await mailchimpService.getCampaignReport(id);
+  const response = await mailchimpDAL.fetchCampaignReport(id);
 
   if (!response.success || !response.data) {
     return {
