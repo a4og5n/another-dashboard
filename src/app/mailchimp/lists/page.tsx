@@ -2,14 +2,11 @@ import { BreadcrumbNavigation } from "@/components/layout";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { ListOverview } from "@/components/mailchimp/lists/list-overview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
-import { MailchimpEmptyState } from "@/components/mailchimp/mailchimp-empty-state";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import type { ListsPageProps } from "@/types/components/mailchimp";
 import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { listsPageSearchParamsSchema } from "@/schemas/components";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
-import { validateMailchimpConnection } from "@/lib/validate-mailchimp-connection";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { processPageParams } from "@/utils/mailchimp/page-params";
 
@@ -22,56 +19,29 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
     basePath: "/mailchimp/lists",
   });
 
-  // Fetch lists using API params
+  // Fetch lists (validation happens at DAL layer)
   const response = await mailchimpDAL.fetchLists(apiParams);
 
-  // Handle errors
-  if (!response.success) {
-    return (
-      <ListOverview
-        error={response.error || "Failed to load lists"}
-        data={null}
-      />
-    );
-  }
-
-  // Pass data to component
+  // Guard component handles UI based on errorCode from DAL
   return (
-    <ListOverview
-      data={response.data || null}
-      currentPage={currentPage}
-      pageSize={pageSize}
-    />
+    <MailchimpConnectionGuard errorCode={response.errorCode}>
+      {response.success ? (
+        <ListOverview
+          data={response.data || null}
+          currentPage={currentPage}
+          pageSize={pageSize}
+        />
+      ) : (
+        <ListOverview
+          error={response.error || "Failed to load lists"}
+          data={null}
+        />
+      )}
+    </MailchimpConnectionGuard>
   );
 }
 
-export default async function ListsPage({ searchParams }: ListsPageProps) {
-  // 1. Check user authentication (Kinde)
-  const { getUser, isAuthenticated } = getKindeServerSession();
-  const isAuthed = await isAuthenticated();
-
-  if (!isAuthed) {
-    redirect("/api/auth/login?post_login_redirect_url=/mailchimp/lists");
-  }
-
-  const user = await getUser();
-  if (!user) {
-    redirect("/api/auth/login");
-  }
-
-  // 2. Check Mailchimp connection
-  const connectionStatus = await validateMailchimpConnection();
-
-  // 3. Show empty state if not connected
-  if (!connectionStatus.isValid) {
-    return (
-      <DashboardLayout>
-        <MailchimpEmptyState error={connectionStatus.error} />
-      </DashboardLayout>
-    );
-  }
-
-  // 4. Show connected page
+export default function ListsPage({ searchParams }: ListsPageProps) {
   return (
     <DashboardLayout>
       <div className="space-y-6">

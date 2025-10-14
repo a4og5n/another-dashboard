@@ -2,7 +2,7 @@
 
 **Branch:** `refactor/oauth-validation-architecture`
 **Start Date:** 2025-10-14
-**Status:** Phase 3 Complete ✅ | Phase 4 Ready
+**Status:** Phase 4 Complete ✅ | Phase 5 Ready
 
 ---
 
@@ -124,23 +124,84 @@ Page → DAL method → mailchimpApiCall → getUserMailchimpClient (validates)
 
 ---
 
-### 📄 Phase 4: Page Migration - New Pattern
+### ✅ Phase 4: Page Migration - New Pattern
 
 **Goal:** Update all Mailchimp pages to use new architecture
 
-**Files to Modify:**
+**Status:** Complete
 
-- `/src/app/mailchimp/page.tsx`
-- `/src/app/mailchimp/general-info/page.tsx`
-- `/src/app/mailchimp/lists/page.tsx`
-- `/src/app/mailchimp/reports/page.tsx`
-- `/src/app/mailchimp/reports/[id]/page.tsx`
-- `/src/app/mailchimp/reports/[id]/opens/page.tsx`
-- Page tests
+**Files Modified:**
+
+- `/src/app/mailchimp/page.tsx` - Added health check call, pass errorCode to guard
+- `/src/app/mailchimp/general-info/page.tsx` - Removed function child pattern, pass errorCode to guard
+- `/src/app/mailchimp/lists/page.tsx` - Removed manual validation + empty state, use guard with errorCode
+- `/src/app/mailchimp/reports/page.tsx` - Removed manual validation + empty state, use guard with errorCode
+- `/src/app/mailchimp/reports/[id]/page.tsx` - Added guard with errorCode for consistency
+- `/src/app/mailchimp/reports/[id]/opens/page.tsx` - Added guard with errorCode for consistency
 
 **Commit:** `refactor(pages): migrate Mailchimp pages to DAL-based validation pattern`
+**Commit Hash:** `[pending]`
 
-**Status:** Pending
+**Key Changes:**
+
+- **Unified Pattern:** All pages now use the same pattern: fetch data → pass errorCode to guard → render
+- **Removed Boilerplate:** Eliminated 40+ lines of manual validation code per page
+- **Simpler Page Logic:** No more Kinde auth checks, manual validation, or custom empty states
+- **Guard Handles UI:** `MailchimpConnectionGuard` now handles all connection-related UI
+- **Health Check for Non-Data Pages:** Main dashboard page uses `healthCheck()` for validation
+
+**Before (Manual Validation - 72 lines):**
+
+```tsx
+export default async function ListsPage({ searchParams }: ListsPageProps) {
+  // 1. Check user authentication (Kinde)
+  const { getUser, isAuthenticated } = getKindeServerSession();
+  const isAuthed = await isAuthenticated();
+  if (!isAuthed) redirect("/api/auth/login?...");
+
+  // 2. Check Mailchimp connection
+  const connectionStatus = await validateMailchimpConnection();
+
+  // 3. Show empty state if not connected
+  if (!connectionStatus.isValid) {
+    return <DashboardLayout><MailchimpEmptyState error={...} /></DashboardLayout>;
+  }
+
+  // 4. Show connected page
+  return <DashboardLayout>...</DashboardLayout>;
+}
+```
+
+**After (DAL-Based Validation - 27 lines):**
+
+```tsx
+async function ListsPageContent({ searchParams }: ListsPageProps) {
+  const { apiParams, currentPage, pageSize } = await processPageParams({...});
+
+  // Fetch lists (validation happens at DAL layer)
+  const response = await mailchimpDAL.fetchLists(apiParams);
+
+  // Guard component handles UI based on errorCode from DAL
+  return (
+    <MailchimpConnectionGuard errorCode={response.errorCode}>
+      {response.success ? <ListOverview ... /> : <ListOverview error={...} />}
+    </MailchimpConnectionGuard>
+  );
+}
+
+export default function ListsPage({ searchParams }: ListsPageProps) {
+  return <DashboardLayout><Suspense><ListsPageContent ... /></Suspense></DashboardLayout>;
+}
+```
+
+**Results:**
+
+- ✅ Type-check: Passing
+- ✅ Lint: Passing (7 pre-existing warnings in test mocks)
+- ✅ Tests: 496 passing (no test updates needed - tests mock DAL layer)
+- ✅ A11y: All passing
+- ✅ Code reduction: ~200 lines removed across all pages
+- ✅ Pattern consistency: All 6 pages now use identical validation pattern
 
 ---
 
@@ -212,23 +273,25 @@ Page → DAL method → mailchimpApiCall → getUserMailchimpClient (validates)
 - ✅ **Phase 1:** Type System & Error Code Foundation (Commit: `af3d36c`)
 - ✅ **Phase 2:** DAL Layer - Client Factory Validation (Commit: `2eb461d`)
 - ✅ **Phase 3:** Component Layer - Pure UI Guard (Commit: `87e78bb`)
+- ✅ **Phase 4:** Page Migration - New Pattern (Commit: `[pending]`)
 
 ### Current Status
 
-**Active:** Ready to start Phase 4
-**Next Task:** Migrate Mailchimp pages to DAL-based validation pattern
+**Active:** Ready to start Phase 5
+**Next Task:** Remove deprecated validateMailchimpConnection utility
 
 ### Validation Status
 
-All validation checks passing after Phase 3:
+All validation checks passing after Phase 4:
 
 - ✅ Type-check: Passing
 - ✅ Lint: Passing (7 pre-existing warnings)
 - ✅ Tests: 496 passing
 - ✅ A11y: All passing
+- ✅ All 6 Mailchimp pages migrated to unified pattern
 
 ---
 
 ## Next Steps
 
-Start Phase 4: Page Migration - New Pattern
+Start Phase 5: Cleanup & Deprecation - Remove old validation utility

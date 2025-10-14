@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { validateMailchimpConnectionParams } from "@/utils/mailchimp";
+import { mailchimpDAL } from "@/dal/mailchimp.dal";
 
 async function MailchimpDashboardContent({
   searchParams,
@@ -13,9 +14,17 @@ async function MailchimpDashboardContent({
   const params = await searchParams;
   const { connected, error } = validateMailchimpConnectionParams(params);
 
-  // Connection guard handles validation automatically
+  // Validate connection via health check (validation happens at DAL layer)
+  const healthCheckResult = await mailchimpDAL.healthCheck();
+  const errorCode = healthCheckResult.errorCode;
+
+  // Guard component handles UI based on errorCode
   return (
-    <MailchimpConnectionGuard connected={connected} oauthError={error}>
+    <MailchimpConnectionGuard
+      errorCode={errorCode}
+      connected={connected}
+      oauthError={error}
+    >
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="space-y-8 text-center">
           <div>

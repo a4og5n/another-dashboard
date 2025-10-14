@@ -9,6 +9,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignOpensSkeleton } from "@/skeletons/mailchimp";
 import {
   reportOpensPageParamsSchema,
@@ -40,15 +41,14 @@ async function CampaignOpensPageContent({
     basePath: `/mailchimp/reports/${campaignId}/opens`,
   });
 
-  // Fetch campaign open list data - service validates internally
+  // Fetch campaign open list data (validation happens at DAL layer)
   const response = await mailchimpDAL.fetchCampaignOpenList(
     campaignId,
     apiParams,
   );
 
-  // Handle error states
+  // Handle 404 errors with notFound()
   if (!response.success) {
-    // Use notFound() for 404 errors (missing campaign)
     const errorMessage = response.error || "Failed to load campaign opens";
     if (
       errorMessage.toLowerCase().includes("not found") ||
@@ -56,22 +56,28 @@ async function CampaignOpensPageContent({
     ) {
       notFound();
     }
-
-    // For other errors, display inline error
-    return <DashboardInlineError error={errorMessage} />;
   }
 
   const opensData = response.data as ReportOpenListSuccess;
 
+  // Guard component handles UI based on errorCode from DAL
   return (
-    <CampaignOpensTable
-      opensData={opensData}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      perPageOptions={[...PER_PAGE_OPTIONS]}
-      baseUrl={`/mailchimp/reports/${campaignId}/opens`}
-      campaignId={campaignId}
-    />
+    <MailchimpConnectionGuard errorCode={response.errorCode}>
+      {response.success ? (
+        <CampaignOpensTable
+          opensData={opensData}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          perPageOptions={[...PER_PAGE_OPTIONS]}
+          baseUrl={`/mailchimp/reports/${campaignId}/opens`}
+          campaignId={campaignId}
+        />
+      ) : (
+        <DashboardInlineError
+          error={response.error || "Failed to load campaign opens"}
+        />
+      )}
+    </MailchimpConnectionGuard>
   );
 }
 

@@ -16,22 +16,20 @@ import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { Suspense } from "react";
 
 async function GeneralInfoPageContent() {
-  // Guard validates connection BEFORE evaluating children
-  // Using function form prevents API calls when user isn't connected
-  return (
-    <MailchimpConnectionGuard>
-      {async () => {
-        const response = await mailchimpDAL.fetchApiRoot();
+  // Fetch data (validation happens at DAL layer)
+  const response = await mailchimpDAL.fetchApiRoot();
 
-        return response.success ? (
-          <GeneralInfoOverview data={response.data!} />
-        ) : (
-          <GeneralInfoOverview
-            error={response.error || "Failed to load general info data"}
-            data={null}
-          />
-        );
-      }}
+  // Guard component handles UI based on errorCode from DAL
+  return (
+    <MailchimpConnectionGuard errorCode={response.errorCode}>
+      {response.success ? (
+        <GeneralInfoOverview data={response.data!} />
+      ) : (
+        <GeneralInfoOverview
+          error={response.error || "Failed to load general info data"}
+          data={null}
+        />
+      )}
     </MailchimpConnectionGuard>
   );
 }
