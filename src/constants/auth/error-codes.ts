@@ -31,3 +31,9 @@ export const MAILCHIMP_ERROR_CODES = {
  */
 export type MailchimpErrorCode =
   (typeof MAILCHIMP_ERROR_CODES)[keyof typeof MAILCHIMP_ERROR_CODES];
+
+/**
+ * Cache TTL for validation results (1 hour in milliseconds)
+ * Matches the token validation interval in the database
+ */
+export const VALIDATION_CACHE_TTL_MS = 60 * 60 * 1000;

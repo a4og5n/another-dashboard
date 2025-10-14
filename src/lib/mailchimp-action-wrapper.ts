@@ -15,13 +15,14 @@ import {
   MailchimpRateLimitError,
   MailchimpNetworkError,
 } from "@/lib/errors";
+import { MAILCHIMP_ERROR_CODES } from "@/constants";
 
 /**
  * Wrapper for Mailchimp API calls with user-scoped client
- * Returns ApiResponse<T> for consistent error handling
+ * Returns ApiResponse<T> for consistent error handling with structured error codes
  *
  * @param apiCall - Function that takes client and returns data
- * @returns ApiResponse with success/error state
+ * @returns ApiResponse with success/error state and errorCode
  */
 export async function mailchimpApiCall<T>(
   apiCall: (client: MailchimpFetchClient) => Promise<T>,
@@ -45,15 +46,12 @@ export async function mailchimpApiCall<T>(
         : undefined,
     };
   } catch (error) {
-    // Handle connection errors (not connected, inactive)
-    if (
-      error instanceof Error &&
-      (error.message.includes("not connected") ||
-        error.message.includes("inactive"))
-    ) {
+    // Handle connection validation errors with errorCode
+    if (error instanceof Error && "errorCode" in error) {
       return {
         success: false,
         error: error.message,
+        errorCode: (error as Error & { errorCode: string }).errorCode,
         statusCode: 401,
       };
     }
@@ -63,6 +61,7 @@ export async function mailchimpApiCall<T>(
       return {
         success: false,
         error: error.message,
+        errorCode: MAILCHIMP_ERROR_CODES.TOKEN_INVALID,
         statusCode: error.statusCode,
       };
     }
@@ -72,6 +71,7 @@ export async function mailchimpApiCall<T>(
       return {
         success: false,
         error: `Rate limit exceeded. Try again in ${error.retryAfter} seconds.`,
+        errorCode: MAILCHIMP_ERROR_CODES.RATE_LIMIT,
         statusCode: 429,
         rateLimit: {
           remaining: 0,
@@ -86,6 +86,7 @@ export async function mailchimpApiCall<T>(
       return {
         success: false,
         error: error.message,
+        errorCode: MAILCHIMP_ERROR_CODES.API_ERROR,
         statusCode: error.statusCode,
       };
     }
@@ -95,6 +96,7 @@ export async function mailchimpApiCall<T>(
       return {
         success: false,
         error: error.message,
+        errorCode: MAILCHIMP_ERROR_CODES.API_ERROR,
         statusCode: 503,
       };
     }
@@ -103,6 +105,7 @@ export async function mailchimpApiCall<T>(
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
+      errorCode: MAILCHIMP_ERROR_CODES.UNKNOWN_ERROR,
       statusCode: 500,
     };
   }
