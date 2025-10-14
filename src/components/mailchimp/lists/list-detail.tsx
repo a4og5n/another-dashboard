@@ -143,25 +143,40 @@ export function ListDetail({
         <div data-tab="stats" className="mt-6">
           <div className="space-y-6">
             {/* Key Metrics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-sm font-medium">
-                    Total Members
+                    Subscribed Members
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">
                     {list.stats.member_count.toLocaleString()}
                   </div>
-                  {list.stats.total_contacts !== undefined && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {list.stats.total_contacts.toLocaleString()} total
-                      contacts
-                    </p>
-                  )}
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Active subscribers
+                  </p>
                 </CardContent>
               </Card>
+
+              {list.stats.total_contacts !== undefined && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm font-medium">
+                      Total Contacts
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold">
+                      {list.stats.total_contacts.toLocaleString()}
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      All contacts
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
 
               <Card>
                 <CardHeader>
