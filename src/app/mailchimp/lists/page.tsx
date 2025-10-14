@@ -8,11 +8,11 @@ import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { listsPageSearchParamsSchema } from "@/schemas/components";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { Suspense } from "react";
-import { processPageParams } from "@/utils/mailchimp/page-params";
+import { validatePageParams } from "@/utils/mailchimp/page-params";
 
 async function ListsPageContent({ searchParams }: ListsPageProps) {
-  // Process params: validate, check redirect, convert to API format
-  const { apiParams, currentPage, pageSize } = await processPageParams({
+  // Validate params: validate, check redirect, convert to API format
+  const { apiParams, currentPage, pageSize } = await validatePageParams({
     searchParams,
     uiSchema: listsPageSearchParamsSchema,
     apiSchema: listsParamsSchema,

@@ -18,11 +18,11 @@ import { reportListParamsSchema } from "@/schemas/mailchimp";
 import { reportsPageSearchParamsSchema } from "@/schemas/components";
 import { transformCampaignReportsParams } from "@/utils/mailchimp/query-params";
 import { ReportsOverviewSkeleton } from "@/skeletons/mailchimp";
-import { processPageParams } from "@/utils/mailchimp/page-params";
+import { validatePageParams } from "@/utils/mailchimp/page-params";
 
 async function ReportsPageContent({ searchParams }: ReportsPageProps) {
-  // Process page parameters: validate, redirect if needed, convert to API format
-  const { apiParams, currentPage, pageSize } = await processPageParams({
+  // Validate page parameters: validate, redirect if needed, convert to API format
+  const { apiParams, currentPage, pageSize } = await validatePageParams({
     searchParams,
     uiSchema: reportsPageSearchParamsSchema,
     apiSchema: reportListParamsSchema,

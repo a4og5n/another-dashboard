@@ -21,7 +21,7 @@ import { CampaignOpensTable } from "@/components/dashboard/reports";
 import { openListQueryParamsSchema } from "@/schemas/mailchimp/report-open-details-params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import type { ReportOpenListSuccess, CampaignReport } from "@/types/mailchimp";
-import { processPageParams } from "@/utils/mailchimp/page-params";
+import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import type { Metadata } from "next";
 
@@ -33,8 +33,8 @@ async function CampaignOpensPageContent({
   const rawRouteParams = await params;
   const { id: campaignId } = reportOpensPageParamsSchema.parse(rawRouteParams);
 
-  // Process page params with redirect handling
-  const { apiParams, currentPage, pageSize } = await processPageParams({
+  // Validate page params with redirect handling
+  const { apiParams, currentPage, pageSize } = await validatePageParams({
     searchParams,
     uiSchema: reportOpensPageSearchParamsSchema,
     apiSchema: openListQueryParamsSchema,

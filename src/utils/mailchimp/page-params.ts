@@ -13,13 +13,13 @@ import { getRedirectUrlIfNeeded } from "@/utils/pagination-url-builders";
 import { transformPaginationParams } from "@/utils/mailchimp/query-params";
 
 /**
- * Result of processing page parameters
+ * Result of validating and transforming page parameters
  */
-export interface ProcessPageParamsResult<T, U> {
-  /** Validated and converted parameters ready for API calls */
+export interface ValidatedPageParams<T, U> {
+  /** Validated and transformed parameters ready for API calls */
   apiParams: U;
-  /** Parsed UI parameters (page, perPage, etc.) */
-  validatedParams: T;
+  /** Validated UI parameters (page, perPage, etc.) */
+  uiParams: T;
   /** Extracted currentPage number for UI display */
   currentPage: number;
   /** Extracted pageSize number for UI display */
@@ -27,7 +27,7 @@ export interface ProcessPageParamsResult<T, U> {
 }
 
 /**
- * Process page parameters: validate, check redirect, convert to API format
+ * Validate, transform, and redirect page parameters
  *
  * This function handles the complete flow of URL parameter processing:
  * 1. Parse and validate raw params from URL
@@ -41,11 +41,11 @@ export interface ProcessPageParamsResult<T, U> {
  * @param options.apiSchema Zod schema for validating API parameters
  * @param options.basePath Base URL path for redirect (e.g., "/mailchimp/lists")
  * @param options.transformer Optional function to convert UI params to API format
- * @returns Processed parameters ready for API and UI
+ * @returns Validated parameters ready for API and UI
  *
  * @example
  * ```typescript
- * const result = await processPageParams({
+ * const result = await validatePageParams({
  *   searchParams,
  *   uiSchema: listsPageSearchParamsSchema,
  *   apiSchema: listsParamsSchema,
@@ -55,7 +55,7 @@ export interface ProcessPageParamsResult<T, U> {
  * const response = await mailchimpDAL.fetchLists(result.apiParams);
  * ```
  */
-export async function processPageParams<
+export async function validatePageParams<
   T extends { page?: string; perPage?: string },
   U extends { count?: number },
 >({
@@ -72,7 +72,7 @@ export async function processPageParams<
   apiSchema: ZodSchema<U>;
   basePath: string;
   transformer?: (params: T) => Partial<U>;
-}): Promise<ProcessPageParamsResult<T, U>> {
+}): Promise<ValidatedPageParams<T, U>> {
   // Parse and validate raw params from URL
   const rawParams = await searchParams;
   const validatedParams = uiSchema.parse(rawParams);
@@ -101,7 +101,7 @@ export async function processPageParams<
 
   return {
     apiParams,
-    validatedParams,
+    uiParams: validatedParams,
     currentPage,
     pageSize,
   };
