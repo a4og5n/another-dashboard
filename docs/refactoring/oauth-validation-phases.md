@@ -2,7 +2,7 @@
 
 **Branch:** `refactor/oauth-validation-architecture`
 **Start Date:** 2025-10-14
-**Status:** Phase 0 Complete ✅
+**Status:** Phase 2 Complete ✅ | Phase 3 Ready
 
 ---
 
@@ -37,35 +37,58 @@ Page → DAL method → mailchimpApiCall → getUserMailchimpClient (validates)
 
 ---
 
-### 📝 Phase 1: Type System & Error Code Foundation
+### ✅ Phase 1: Type System & Error Code Foundation
 
 **Goal:** Establish type-safe error handling infrastructure
 
-**Files to Modify:**
+**Status:** Complete
 
-- `/src/types/api-errors.ts` - Add `errorCode?: string` field
-- `/src/types/auth/mailchimp-validation.ts` - Create validation result types
-- `/src/types/auth/index.ts` - Export new types
+**Files Modified:**
+
+- `/src/types/api-errors.ts` - Added `errorCode?: string` field
+- `/src/types/auth/mailchimp-validation.ts` - Created validation result types
+- `/src/types/auth/index.ts` - Exported new types
 
 **Commit:** `feat(types): add error code support for Mailchimp validation`
+**Commit Hash:** `af3d36c`
 
-**Status:** Pending
+**Results:**
+
+- ✅ Type-check: Passing
+- ✅ Lint: Passing
+- ✅ Tests: 482 passing
 
 ---
 
-### 🏭 Phase 2: DAL Layer - Client Factory Validation
+### ✅ Phase 2: DAL Layer - Client Factory Validation
 
 **Goal:** Move validation logic into client factory
 
-**Files to Modify:**
+**Status:** Complete
 
-- `/src/lib/mailchimp-client-factory.ts` - Add validation + in-memory cache
-- `/src/lib/mailchimp-action-wrapper.ts` - Map errors to errorCode
-- Tests for validation logic
+**Files Modified:**
+
+- `/src/lib/mailchimp-client-factory.ts` - Added validation + in-memory cache (1-hour TTL)
+- `/src/lib/mailchimp-action-wrapper.ts` - Mapped errors to errorCode
+- `/src/constants/auth/error-codes.ts` - Added VALIDATION_CACHE_TTL_MS constant
+- Tests: Updated 23 tests (12 client factory + 11 action wrapper)
 
 **Commit:** `refactor(dal): move OAuth validation into client factory layer`
+**Commit Hash:** `2eb461d`
 
-**Status:** Pending
+**Key Changes:**
+
+- Added `validateUserConnection()` with structured validation results
+- Implemented in-memory caching to reduce DB queries
+- Added cache management: `invalidateValidationCache()`, `clearValidationCache()`
+- All errors now include `errorCode` property
+
+**Results:**
+
+- ✅ Type-check: Passing
+- ✅ Lint: Passing (7 pre-existing warnings in test mocks)
+- ✅ Tests: 482 passing (including 23 new/updated tests)
+- ✅ A11y: All passing
 
 ---
 
@@ -164,6 +187,30 @@ Page → DAL method → mailchimpApiCall → getUserMailchimpClient (validates)
 
 ---
 
+## Progress Summary
+
+### Completed Phases
+
+- ✅ **Phase 0:** Setup & Branch Creation
+- ✅ **Phase 1:** Type System & Error Code Foundation (Commit: `af3d36c`)
+- ✅ **Phase 2:** DAL Layer - Client Factory Validation (Commit: `2eb461d`)
+
+### Current Status
+
+**Active:** Ready to start Phase 3
+**Next Task:** Refactor MailchimpConnectionGuard to pure UI component
+
+### Validation Status
+
+All validation checks passing after Phase 2:
+
+- ✅ Type-check: Passing
+- ✅ Lint: Passing (7 pre-existing warnings)
+- ✅ Tests: 482 passing
+- ✅ A11y: All passing
+
+---
+
 ## Next Steps
 
-Start Phase 1: Type System & Error Code Foundation
+Start Phase 3: Component Layer - Pure UI Guard
