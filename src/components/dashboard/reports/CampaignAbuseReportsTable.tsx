@@ -9,6 +9,7 @@
 "use client";
 
 import React, { useMemo, useCallback } from "react";
+import Link from "next/link";
 import {
   ColumnDef,
   flexRender,
@@ -80,11 +81,13 @@ export function CampaignAbuseReportsTable({
   // Utility functions
   const getVipBadge = (isVip: boolean) => {
     return isVip ? (
-      <Badge variant="secondary" className="text-xs flex items-center gap-1">
+      <Badge variant="default" className="flex items-center gap-1 w-fit">
         <User className="h-3 w-3" />
         VIP
       </Badge>
-    ) : null;
+    ) : (
+      <Badge variant="outline">No</Badge>
+    );
   };
 
   const getListStatusBadge = (isActive: boolean) => {
@@ -92,6 +95,42 @@ export function CampaignAbuseReportsTable({
       <Badge variant="default">Active</Badge>
     ) : (
       <Badge variant="secondary">Inactive</Badge>
+    );
+  };
+
+  const formatMergeFields = (
+    mergeFields?: Record<string, string | number | unknown>,
+  ) => {
+    if (!mergeFields || Object.keys(mergeFields).length === 0) {
+      return <span className="text-muted-foreground text-sm">—</span>;
+    }
+
+    return (
+      <div className="space-y-1 max-w-xs">
+        {Object.entries(mergeFields).map(([key, value]) => {
+          // Handle address objects
+          if (typeof value === "object" && value !== null) {
+            const addr = value as Record<string, string>;
+            const addressStr = [addr.addr1, addr.city, addr.state, addr.zip]
+              .filter(Boolean)
+              .join(", ");
+            return (
+              <div key={key} className="text-xs">
+                <span className="font-medium">{key}:</span>{" "}
+                <span className="text-muted-foreground">{addressStr}</span>
+              </div>
+            );
+          }
+
+          // Handle string/number values
+          return (
+            <div key={key} className="text-xs">
+              <span className="font-medium">{key}:</span>{" "}
+              <span className="text-muted-foreground">{String(value)}</span>
+            </div>
+          );
+        })}
+      </div>
     );
   };
 
@@ -106,13 +145,23 @@ export function CampaignAbuseReportsTable({
             Email Address
           </div>
         ),
-        cell: ({ row }) => (
-          <div className="font-medium max-w-xs">
-            <div className="truncate" title={row.getValue("email_address")}>
-              {row.getValue("email_address")}
+        cell: ({ row }) => {
+          const emailAddress = row.getValue("email_address") as string;
+          const emailId = row.original.email_id;
+          const emailActivityUrl = `/mailchimp/reports/${campaignId}/email-activity/${emailId}`;
+
+          return (
+            <div className="font-medium max-w-xs">
+              <Link
+                href={emailActivityUrl}
+                className="truncate hover:underline text-primary"
+                title={emailAddress}
+              >
+                {emailAddress}
+              </Link>
             </div>
-          </div>
-        ),
+          );
+        },
       },
       {
         accessorKey: "date",
@@ -142,8 +191,15 @@ export function CampaignAbuseReportsTable({
         ),
         cell: ({ row }) => getVipBadge(row.getValue("vip")),
       },
+      {
+        accessorKey: "merge_fields",
+        header: () => (
+          <div className="h-8 px-2 lg:px-3 flex items-center">Merge Fields</div>
+        ),
+        cell: ({ row }) => formatMergeFields(row.getValue("merge_fields")),
+      },
     ],
-    [],
+    [campaignId],
   );
 
   // Initialize the table

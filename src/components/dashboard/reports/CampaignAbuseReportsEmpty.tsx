@@ -47,14 +47,14 @@ export function CampaignAbuseReportsEmpty({
         {/* Action Buttons */}
         <div className="flex items-center gap-3">
           <Button asChild variant="outline" size="sm">
-            <Link href={`/mailchimp/campaigns/${campaignId}/report`}>
+            <Link href={`/mailchimp/reports/${campaignId}`}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Report
             </Link>
           </Button>
 
           <Button asChild size="sm">
-            <Link href="/mailchimp/campaigns">View All Campaigns</Link>
+            <Link href="/mailchimp/reports">View All Reports</Link>
           </Button>
         </div>
       </CardContent>
