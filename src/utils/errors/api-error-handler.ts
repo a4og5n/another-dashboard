@@ -37,7 +37,7 @@ export function is404Error(message: string): boolean {
  * Note: This does not throw for non-404 errors, following Next.js guidance
  * to model expected errors as return values rather than exceptions.
  *
- * @param response - API response from DAL (includes success, data, error, errorCode)
+ * @param response - API response from DAL (includes success, data, error, errorCode, statusCode)
  * @returns error message if not a 404, null if success
  * @throws Calls notFound() for 404 errors (triggers Next.js not-found.tsx)
  *
@@ -54,7 +54,8 @@ export function is404Error(message: string): boolean {
 export function handleApiError(response: ApiResponse<unknown>): string | null {
   if (!response.success) {
     const errorMessage = response.error || "Failed to load data";
-    if (is404Error(errorMessage)) {
+    // Check both status code (more reliable) and error message for 404s
+    if (response.statusCode === 404 || is404Error(errorMessage)) {
       notFound();
     }
     return errorMessage;
@@ -68,7 +69,7 @@ export function handleApiError(response: ApiResponse<unknown>): string | null {
  * Same as handleApiError but allows specifying a custom fallback message
  * when response.error is undefined.
  *
- * @param response - API response from DAL
+ * @param response - API response from DAL (includes success, data, error, errorCode, statusCode)
  * @param fallbackMessage - Custom error message if response.error is undefined
  * @returns error message if not a 404, null if success
  * @throws Calls notFound() for 404 errors (triggers Next.js not-found.tsx)
@@ -88,7 +89,8 @@ export function handleApiErrorWithFallback(
 ): string | null {
   if (!response.success) {
     const errorMessage = response.error || fallbackMessage;
-    if (is404Error(errorMessage)) {
+    // Check both status code (more reliable) and error message for 404s
+    if (response.statusCode === 404 || is404Error(errorMessage)) {
       notFound();
     }
     return errorMessage;

@@ -41,10 +41,30 @@ describe("is404Error", () => {
 });
 
 describe("handleApiError", () => {
-  it("should call notFound() for 404 errors", () => {
+  it("should call notFound() for 404 errors based on message", () => {
     const response: ApiResponse<unknown> = {
       success: false,
       error: "Campaign not found",
+    };
+
+    expect(() => handleApiError(response)).toThrow("NEXT_NOT_FOUND");
+  });
+
+  it("should call notFound() for 404 status code even without matching message", () => {
+    const response: ApiResponse<unknown> = {
+      success: false,
+      error: "Resource could not be retrieved",
+      statusCode: 404,
+    };
+
+    expect(() => handleApiError(response)).toThrow("NEXT_NOT_FOUND");
+  });
+
+  it("should call notFound() for both 404 status code and matching message", () => {
+    const response: ApiResponse<unknown> = {
+      success: false,
+      error: "Campaign not found",
+      statusCode: 404,
     };
 
     expect(() => handleApiError(response)).toThrow("NEXT_NOT_FOUND");
@@ -54,6 +74,7 @@ describe("handleApiError", () => {
     const response: ApiResponse<unknown> = {
       success: false,
       error: "Invalid API key",
+      statusCode: 401,
     };
 
     expect(handleApiError(response)).toBe("Invalid API key");
@@ -88,10 +109,22 @@ describe("handleApiErrorWithFallback", () => {
     );
   });
 
-  it("should call notFound() for 404 errors with fallback", () => {
+  it("should call notFound() for 404 errors with fallback based on message", () => {
     const response: ApiResponse<unknown> = {
       success: false,
       error: "Resource not found",
+    };
+
+    expect(() => handleApiErrorWithFallback(response, "Custom error")).toThrow(
+      "NEXT_NOT_FOUND",
+    );
+  });
+
+  it("should call notFound() for 404 status code with fallback", () => {
+    const response: ApiResponse<unknown> = {
+      success: false,
+      error: "Resource could not be retrieved",
+      statusCode: 404,
     };
 
     expect(() => handleApiErrorWithFallback(response, "Custom error")).toThrow(
