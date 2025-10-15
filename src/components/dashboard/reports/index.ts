@@ -41,3 +41,6 @@ export { CampaignReportDetail } from "@/components/dashboard/reports/CampaignRep
 // Campaign opens components
 export { CampaignOpensTable } from "@/components/dashboard/reports/CampaignOpensTable";
 export { CampaignOpensEmpty } from "@/components/dashboard/reports/CampaignOpensEmpty";
+
+// Campaign abuse reports components
+export { CampaignAbuseReportsEmpty } from "@/components/dashboard/reports/CampaignAbuseReportsEmpty";
