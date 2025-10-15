@@ -10,8 +10,8 @@ import Link from "next/link";
 
 export default function CampaignNotFound() {
   return (
-    <div className="container mx-auto py-8">
-      <Card className="max-w-md mx-auto">
+    <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-200px)]">
+      <Card className="max-w-md w-full">
         <CardHeader className="text-center">
           <FileX className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
           <CardTitle>Campaign Not Found</CardTitle>
