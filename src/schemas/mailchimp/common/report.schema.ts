@@ -162,7 +162,7 @@ export const reportTimeseriesSchema = z.array(
  * Schema for share report data
  */
 export const reportShareReportSchema = z.object({
-  share_url: z.string(),
+  share_url: z.url(),
   share_password: z.string(),
 });
 

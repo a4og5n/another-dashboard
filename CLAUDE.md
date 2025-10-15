@@ -321,26 +321,32 @@ Before starting any development work, always review:
 
 **Local Development Cookie Configuration:**
 
-For local HTTPS development with self-signed certificates, add these environment variables to `.env.local`:
+For local HTTPS development with self-signed certificates on `127.0.0.1`, you MUST set the cookie domain explicitly in `.env.local`:
 
 ```bash
 # Cookie configuration for local HTTPS development
-KINDE_COOKIE_SAME_SITE=lax
-KINDE_COOKIE_SECURE=false  # false for local dev, true for production
+# CRITICAL: Must match the domain you're developing on (without port)
+KINDE_COOKIE_DOMAIN=127.0.0.1
 ```
+
+**Why This Is Required:**
+
+The Kinde Next.js SDK needs explicit cookie domain configuration for HTTPS on `127.0.0.1` to ensure OAuth state cookies persist between the authorization request and callback. Without this, you'll encounter "State not found" errors because the browser won't properly scope the cookies.
 
 **Troubleshooting OAuth "State not found" Errors:**
 
-If you encounter "State not found" errors during OAuth login:
+If you still encounter "State not found" errors after setting `KINDE_COOKIE_DOMAIN`:
 
-1. **Clear browser state** using the utility endpoint: `https://127.0.0.1:3000/api/auth/clear-state`
-2. **Clear browser cache**: Cmd+Shift+Delete (Mac) or Ctrl+Shift+Delete (Windows)
+1. **Restart your development server** after adding/changing `KINDE_COOKIE_DOMAIN`
+2. **Clear browser state** using the utility endpoint: `https://127.0.0.1:3000/api/auth/clear-state`
+3. **Clear browser cache**: Cmd+Shift+Delete (Mac) or Ctrl+Shift+Delete (Windows)
    - Select "Cookies and other site data"
    - Choose "All time"
    - Click "Clear data"
-3. **Alternative**: Use incognito/private browsing mode for development
+4. **Verify configuration** using the health endpoint: `https://127.0.0.1:3000/api/auth/health`
+5. **Alternative**: Use incognito/private browsing mode for development
 
-**Note:** This issue typically occurs with corrupted cookies from previous sessions and doesn't affect production deployments.
+**Production Note:** In production on Vercel, remove `KINDE_COOKIE_DOMAIN` or set it to your custom domain (e.g., `KINDE_COOKIE_DOMAIN=yourdomain.com`). Do not use `127.0.0.1` in production.
 
 ### Mailchimp Fetch Client Architecture
 

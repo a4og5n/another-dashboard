@@ -28,7 +28,7 @@ export const HTTP_METHODS = [
  */
 export const linkSchema = z.object({
   rel: z.string(),
-  href: z.string(),
+  href: z.url(),
   targetSchema: z.string().optional(),
   schema: z.string().optional(),
   method: z.enum(HTTP_METHODS),

@@ -92,7 +92,8 @@ describe("ListCard", () => {
     it("applies hover effects correctly", () => {
       const { container } = render(<ListCard list={mockList} />);
 
-      const card = container.firstChild;
+      // The Card is wrapped in a Link, so get the Card element
+      const card = container.querySelector('[role="article"]');
       expect(card).toHaveClass("hover:shadow-md");
       expect(card).toHaveClass("transition-shadow");
       expect(card).toHaveClass("duration-200");
@@ -340,7 +341,9 @@ describe("ListCard", () => {
         <ListCard list={mockList} className="custom-class" />,
       );
 
-      expect(container.firstChild).toHaveClass("custom-class");
+      // className is applied to the Card, not the Link wrapper
+      const card = container.querySelector('[role="article"]');
+      expect(card).toHaveClass("custom-class");
     });
 
     it("has correct displayName", () => {

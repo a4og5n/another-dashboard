@@ -1,6 +1,10 @@
 import { z } from "zod";
 import type { List, DashboardListStats } from "@/types/mailchimp/lists";
 import type { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import type {
+  ListPageParams,
+  ListPageSearchParams,
+} from "@/schemas/components";
 
 // ============================================================================
 // Lists Page Props
@@ -50,4 +54,26 @@ export interface ListOverviewProps {
 export interface ListStatsProps {
   stats: DashboardListStats;
   className?: string;
+}
+
+// ============================================================================
+// List Detail Page Props
+// ============================================================================
+
+/**
+ * Props interface for List Detail Page component
+ */
+export interface ListPageProps {
+  params: Promise<ListPageParams>;
+  searchParams: Promise<ListPageSearchParams>;
+}
+
+/**
+ * Props for ListDetail component
+ */
+export interface ListDetailProps {
+  list: List | null;
+  error?: string | null;
+  activeTab?: "overview" | "stats" | "settings";
+  serverPrefix?: string;
 }
