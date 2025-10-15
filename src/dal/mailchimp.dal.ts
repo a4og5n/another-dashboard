@@ -9,6 +9,8 @@ import type {
   Report,
   ReportListSuccess,
   ReportSuccess,
+  AbuseReportListSuccess,
+  AbuseReportsQueryParams,
 } from "@/types/mailchimp";
 import type {
   RootSuccess,
@@ -76,6 +78,18 @@ export class MailchimpDAL {
   ): Promise<ApiResponse<unknown>> {
     return mailchimpApiCall((client) =>
       client.get<unknown>(`/reports/${campaignId}/open-details`, params),
+    );
+  }
+
+  async fetchCampaignAbuseReports(
+    campaignId: string,
+    params?: AbuseReportsQueryParams,
+  ): Promise<ApiResponse<AbuseReportListSuccess>> {
+    return mailchimpApiCall((client) =>
+      client.get<AbuseReportListSuccess>(
+        `/reports/${campaignId}/abuse-reports`,
+        params,
+      ),
     );
   }
 

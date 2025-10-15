@@ -10,7 +10,10 @@
  * Follows PRD guideline: "Define shared types in /src/types (no inline definitions)"
  */
 
-import type { ReportOpenListSuccess } from "@/types/mailchimp";
+import type {
+  ReportOpenListSuccess,
+  AbuseReportListSuccess,
+} from "@/types/mailchimp";
 
 // ============================================================================
 // Reports List Page Props (GET /reports)
@@ -82,5 +85,32 @@ export interface ReportOpensTableProps {
   pageSize: number;
   perPageOptions?: number[];
   baseUrl: string; // Base URL for navigation (replaces callback functions)
+  campaignId: string; // Campaign ID for empty state component
+}
+
+// ============================================================================
+// Report Abuse Reports Page Props (GET /reports/{campaign_id}/abuse-reports)
+// ============================================================================
+
+/**
+ * Props interface for Abuse Reports Page component
+ */
+export interface AbuseReportsPageProps {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{
+    page?: string;
+    perPage?: string;
+  }>;
+}
+
+/**
+ * Props interface for Abuse Reports Table component
+ */
+export interface AbuseReportsTableProps {
+  abuseReportsData: AbuseReportListSuccess;
+  currentPage: number;
+  pageSize: number;
+  perPageOptions?: number[];
+  baseUrl: string; // Base URL for navigation
   campaignId: string; // Campaign ID for empty state component
 }

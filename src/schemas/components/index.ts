@@ -6,3 +6,4 @@
 export * from "@/schemas/components/dashboard";
 export * from "@/schemas/components/mailchimp";
 export * from "@/schemas/components/reports-page-params.schema";
+export * from "@/schemas/components/abuse-reports-page-params.schema";
