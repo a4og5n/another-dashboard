@@ -63,6 +63,7 @@ export function CampaignReportDetail({
               unsubscribed={report.unsubscribed}
               abuseReports={report.abuse_reports}
               emailsSent={report.emails_sent}
+              campaignId={report.id}
             />
           </div>
 

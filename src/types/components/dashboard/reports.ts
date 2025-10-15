@@ -101,6 +101,8 @@ export interface ListHealthCardProps {
   abuseReports: number;
   /** Total number of emails sent in the campaign */
   emailsSent: number;
+  /** Campaign ID for linking to abuse reports page */
+  campaignId?: string;
   /** Optional CSS class name for styling */
   className?: string;
 }

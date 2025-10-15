@@ -8,6 +8,7 @@
  * Following established patterns from existing dashboard components
  */
 
+import Link from "next/link";
 import {
   BaseMetricCard,
   MetricRow,
@@ -20,6 +21,7 @@ export function ListHealthCard({
   unsubscribed,
   abuseReports,
   emailsSent,
+  campaignId,
   className,
 }: ListHealthCardProps) {
   // Calculate unsubscribe rate
@@ -34,11 +36,31 @@ export function ListHealthCard({
     >
       <MetricRow label="Unsubscribes" value={unsubscribed} />
 
-      <MetricRow
-        label="Abuse Reports"
-        value={abuseReports}
-        textColor="var(--red-600, #dc2626)"
-      />
+      {/* Abuse Reports with link */}
+      {campaignId ? (
+        <Link
+          href={`/mailchimp/reports/${campaignId}/abuse-reports`}
+          className="flex items-center justify-between hover:underline"
+        >
+          <span className="text-sm text-muted-foreground">Abuse Reports</span>
+          <span
+            className="font-medium"
+            style={{ color: "var(--red-600, #dc2626)" }}
+          >
+            {abuseReports.toLocaleString()}
+          </span>
+        </Link>
+      ) : (
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Abuse Reports</span>
+          <span
+            className="font-medium"
+            style={{ color: "var(--red-600, #dc2626)" }}
+          >
+            {abuseReports.toLocaleString()}
+          </span>
+        </div>
+      )}
 
       <div className="text-xs text-muted-foreground">
         Unsub rate: {formatPercentage(unsubRate)}%

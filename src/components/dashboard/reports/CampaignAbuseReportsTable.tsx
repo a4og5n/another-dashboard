@@ -182,7 +182,20 @@ export function CampaignAbuseReportsTable({
         header: () => (
           <div className="h-8 px-2 lg:px-3 flex items-center">List Status</div>
         ),
-        cell: ({ row }) => getListStatusBadge(row.getValue("list_is_active")),
+        cell: ({ row }) => {
+          const listId = row.original.list_id;
+          const isActive = row.getValue("list_is_active") as boolean;
+          const badge = getListStatusBadge(isActive);
+
+          return (
+            <Link
+              href={`/mailchimp/lists/${listId}`}
+              className="inline-block hover:opacity-80 transition-opacity"
+            >
+              {badge}
+            </Link>
+          );
+        },
       },
       {
         accessorKey: "vip",
