@@ -9,4 +9,5 @@ export * from "@/skeletons/mailchimp/ListStatsSkeleton";
 export * from "@/skeletons/mailchimp/ListDetailSkeleton";
 export * from "@/skeletons/mailchimp/CampaignReportSkeleton";
 export * from "@/skeletons/mailchimp/CampaignOpensSkeleton";
+export * from "@/skeletons/mailchimp/CampaignAbuseReportsSkeleton";
 export * from "@/skeletons/mailchimp/ReportsOverviewSkeleton";

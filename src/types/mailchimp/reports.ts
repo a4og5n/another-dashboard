@@ -6,6 +6,7 @@
  * - GET /reports (list all reports)
  * - GET /reports/{campaign_id} (single report)
  * - GET /reports/{campaign_id}/open-details (report opens)
+ * - GET /reports/{campaign_id}/abuse-reports (abuse reports)
  *
  * All types properly inferred from corresponding schemas
  */
@@ -46,6 +47,15 @@ import {
 import { reportOpenListSuccessSchema } from "@/schemas/mailchimp/report-open-details-success.schema";
 import { openListErrorSchema } from "@/schemas/mailchimp/report-open-details-error.schema";
 import { reportListMemberSchema } from "@/schemas/mailchimp/common/report-list-member.schema";
+import {
+  abuseReportsPathParamsSchema,
+  abuseReportsQueryParamsSchema,
+} from "@/schemas/mailchimp/abuse-reports-params.schema";
+import {
+  abuseReportSchema,
+  abuseReportListSuccessSchema,
+} from "@/schemas/mailchimp/abuse-reports-success.schema";
+import { abuseReportListErrorSchema } from "@/schemas/mailchimp/abuse-reports-error.schema";
 
 // ============================================================================
 // Reports List Types (GET /reports)
@@ -146,3 +156,26 @@ export type ReportOpenListMember = z.infer<typeof reportListMemberSchema>;
  * Sort direction type for open details
  */
 export type SortDirection = (typeof OPEN_DETAILS_SORT_DIRECTIONS)[number];
+
+// ============================================================================
+// Report Abuse Reports Types (GET /reports/{campaign_id}/abuse-reports)
+// ============================================================================
+
+/**
+ * Abuse reports parameter types
+ */
+export type AbuseReportsPathParams = z.infer<
+  typeof abuseReportsPathParamsSchema
+>;
+export type AbuseReportsQueryParams = z.infer<
+  typeof abuseReportsQueryParamsSchema
+>;
+
+/**
+ * Abuse reports response types
+ */
+export type AbuseReport = z.infer<typeof abuseReportSchema>;
+export type AbuseReportListSuccess = z.infer<
+  typeof abuseReportListSuccessSchema
+>;
+export type AbuseReportListError = z.infer<typeof abuseReportListErrorSchema>;
