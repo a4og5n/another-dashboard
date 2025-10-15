@@ -7,7 +7,6 @@
  */
 
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignOpensSkeleton } from "@/skeletons/mailchimp";
@@ -24,6 +23,7 @@ import type { ReportOpenListSuccess, CampaignReport } from "@/types/mailchimp";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import type { Metadata } from "next";
+import { handleApiError } from "@/utils";
 
 async function CampaignOpensPageContent({
   params,
@@ -47,16 +47,8 @@ async function CampaignOpensPageContent({
     apiParams,
   );
 
-  // Handle 404 errors with notFound()
-  if (!response.success) {
-    const errorMessage = response.error || "Failed to load campaign opens";
-    if (
-      errorMessage.toLowerCase().includes("not found") ||
-      errorMessage.toLowerCase().includes("404")
-    ) {
-      notFound();
-    }
-  }
+  // Handle API errors (automatically triggers notFound() for 404s)
+  handleApiError(response);
 
   const opensData = response.data as ReportOpenListSuccess;
 
