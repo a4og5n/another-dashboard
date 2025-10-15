@@ -14,6 +14,37 @@
 4. **Follow the plan step-by-step** to ensure nothing is missed
 5. **Update the plan** as you discover new requirements or blockers
 
+## Pre-Generation Checklist for AI
+
+**Before generating an execution plan, Claude Code should:**
+
+1. **Read project conventions** from CLAUDE.md to understand:
+   - Import/export patterns (path aliases, barrel exports)
+   - Type definitions location (`src/types/`)
+   - Schema definitions location (`src/schemas/`)
+   - Testing patterns and architectural enforcement
+
+2. **Verify existing patterns** by reading:
+   - Similar files to understand established patterns
+   - Index files to see how exports are structured
+   - Type files to understand where types are defined
+   - Test files to understand testing conventions
+
+3. **Check official documentation** if relevant:
+   - Next.js error handling docs for error-related utilities
+   - Framework-specific best practices
+   - Library documentation for integrations
+
+4. **Identify key files** by searching:
+   - Where types are actually defined (not assumed locations)
+   - How barrel exports are structured in the project
+   - Existing similar implementations to reference
+
+5. **Validate assumptions** before writing the plan:
+   - File paths are correct (use Glob/Read to verify)
+   - Import paths follow project conventions
+   - Type/schema locations match project structure
+
 ---
 
 ## Execution Plan Structure
@@ -36,12 +67,14 @@
 - Required knowledge or context
 - Dependencies that must be completed first
 - Files or patterns to review before starting
+- **Documentation to reference** (e.g., Next.js docs, library docs)
 
 **Files Affected**
 
-- List of files that will be created
-- List of files that will be modified
+- List of files that will be created (with verified paths)
+- List of files that will be modified (verified to exist)
 - List of files that will be deleted (if any)
+- **Note:** All file paths should be verified before plan generation
 
 ---
 
@@ -52,9 +85,12 @@ Before writing any code:
 - [ ] **Review related documentation** (PRD, technical specs, patterns)
 - [ ] **Understand the current implementation** (if modifying existing code)
 - [ ] **Identify existing patterns** to follow (e.g., similar components/pages)
+- [ ] **Verify import/export patterns** (read existing index.ts files)
+- [ ] **Verify type locations** (read src/types/index.ts and understand barrel exports)
 - [ ] **Check for reusable utilities** that already exist
 - [ ] **Review test requirements** (what needs to be tested?)
 - [ ] **Verify environment setup** (dependencies installed, servers running)
+- [ ] **Check official docs** if implementing framework-specific features (Next.js, React, etc.)
 
 ---
 
@@ -255,7 +291,68 @@ Clearing conversation context helps reduce costs. Here are optimal points to cle
 
 ---
 
-### 6. Testing Strategy
+### 6. Code Examples in Execution Plans
+
+**Quality Standards for Code Examples:**
+
+All code examples in execution plans must follow project conventions exactly. Before writing any code example:
+
+1. **Verify Import Paths:**
+
+   ```bash
+   # Read barrel exports to understand import patterns
+   cat src/types/index.ts
+   cat src/utils/index.ts
+   cat src/components/index.ts
+   ```
+
+2. **Verify Export Patterns:**
+
+   ```bash
+   # Check if project uses relative or absolute paths in barrel exports
+   grep "export \* from" src/utils/index.ts
+   ```
+
+3. **Verify Type Locations:**
+
+   ```bash
+   # Find where types are actually defined
+   find src/types -name "*.ts" -type f
+   ```
+
+4. **Check Framework Documentation:**
+   - For Next.js features: Check Next.js docs
+   - For React patterns: Check React docs
+   - For libraries: Check library docs
+
+**Import Path Examples - RIGHT vs WRONG:**
+
+```tsx
+// ✅ RIGHT - Using barrel export
+import type { ApiResponse } from "@/types";
+
+// ❌ WRONG - Importing from specific file
+import type { ApiResponse } from "@/types/api-errors";
+
+// ✅ RIGHT - Absolute path in barrel export
+export * from "@/utils/errors/api-error-handler";
+
+// ❌ WRONG - Relative path in barrel export (depends on project)
+export * from "./api-error-handler";
+```
+
+**Pre-Writing Checklist for Code Examples:**
+
+- [ ] Verified import paths by reading index.ts files
+- [ ] Checked project's barrel export pattern (relative vs absolute)
+- [ ] Confirmed file locations with Glob/Bash
+- [ ] Referenced official framework docs if applicable
+- [ ] All imports use established project aliases
+- [ ] No assumed file locations without verification
+
+---
+
+### 7. Testing Strategy
 
 **Test Levels:**
 
@@ -308,7 +405,7 @@ pnpm pre-commit
 
 ---
 
-### 7. Manual Review Checklist
+### 8. Manual Review Checklist
 
 **Before Pushing to Origin**
 
@@ -352,7 +449,7 @@ Perform a thorough manual review:
 
 ---
 
-### 8. Push and PR Strategy
+### 9. Push and PR Strategy
 
 #### Before Pushing
 
@@ -427,7 +524,7 @@ Brief description of what this PR does
 
 ---
 
-### 9. Rollback Strategy
+### 10. Rollback Strategy
 
 **If Something Goes Wrong**
 
@@ -475,42 +572,122 @@ git clean -fd  # Remove untracked files
 
 ---
 
-### 10. Common Pitfalls and How to Avoid Them
+### 11. Common Pitfalls and How to Avoid Them
 
-**Pitfall 1: Not Committing Frequently Enough**
+**Pitfall 1: Using Incorrect Import Paths in Code Examples**
+
+- **Problem:** Code examples use wrong import paths (e.g., `@/types/api.ts` instead of `@/types`)
+- **Solution:** Before writing examples, verify barrel export structure by reading index.ts files
+- **Example Check:**
+  ```bash
+  # Read to understand export pattern
+  cat src/types/index.ts
+  cat src/utils/index.ts
+  ```
+
+**Pitfall 2: Using Relative Imports in Barrel Exports**
+
+- **Problem:** Writing `export * from "./file"` instead of `export * from "@/path/file"`
+- **Solution:** Read existing index.ts files to see the project's export pattern
+- **Always verify:** Does this project use relative or absolute paths in barrel exports?
+
+**Pitfall 3: Not Verifying File Locations**
+
+- **Problem:** Assuming types are in `src/types/api.ts` when they're actually in `src/types/api-errors.ts`
+- **Solution:** Use Glob or Bash to find actual file locations before writing the plan
+- **Example:**
+  ```bash
+  find src/types -name "*api*.ts"
+  ```
+
+**Pitfall 4: Not Checking Framework Best Practices**
+
+- **Problem:** Missing important framework-specific patterns (e.g., Next.js error handling)
+- **Solution:** Fetch official documentation URLs when implementing framework features
+- **Example:** For error handling utilities, check Next.js error handling docs first
+
+**Pitfall 5: Not Committing Frequently Enough**
 
 - **Problem:** Lose hours of work if something goes wrong
 - **Solution:** Commit after each logical unit (aim for every 15-30 minutes)
 
-**Pitfall 2: Pushing Broken Code**
+**Pitfall 6: Pushing Broken Code**
 
 - **Problem:** Breaks CI/CD or other developers' work
 - **Solution:** Always run `pnpm validate` before pushing
 
-**Pitfall 3: Not Clearing Context When Needed**
+**Pitfall 7: Not Clearing Context When Needed**
 
 - **Problem:** High token costs, slower responses
 - **Solution:** Follow clear points in execution plan
 
-**Pitfall 4: Forgetting to Create Branch**
+**Pitfall 8: Forgetting to Create Branch**
 
 - **Problem:** Commits go directly to main
 - **Solution:** Always check branch before first commit: `git branch --show-current`
 
-**Pitfall 5: Large, Unfocused Commits**
+**Pitfall 9: Large, Unfocused Commits**
 
 - **Problem:** Hard to review, hard to rollback
 - **Solution:** Break work into small, focused commits
 
-**Pitfall 6: Not Testing Before Committing**
+**Pitfall 10: Not Testing Before Committing**
 
 - **Problem:** Commit broken code, waste time debugging later
 - **Solution:** Run validation commands before each commit
 
-**Pitfall 7: Not Reading Existing Code First**
+**Pitfall 11: Not Reading Existing Code First**
 
 - **Problem:** Duplicate existing functionality or violate patterns
 - **Solution:** Always complete pre-implementation checklist
+
+---
+
+## AI Self-Check Before Submitting Execution Plan
+
+Before presenting the execution plan to the user, verify:
+
+### Import/Export Verification
+
+- [ ] Read `src/types/index.ts` to understand type import patterns
+- [ ] Read `src/utils/index.ts` to understand utility export patterns
+- [ ] Verified all code examples use correct import paths (barrel exports)
+- [ ] Verified all barrel export examples use project's pattern (relative vs absolute)
+- [ ] No assumed file paths - all verified with Glob/Bash/Read
+
+### Type and Schema Verification
+
+- [ ] Located actual type definition files (not assumed paths)
+- [ ] Verified types are imported from barrel exports (e.g., `@/types` not `@/types/specific-file`)
+- [ ] Checked if schemas need to be in `src/schemas/` per project conventions
+- [ ] All type references in code examples are correct
+
+### Framework Best Practices
+
+- [ ] If Next.js feature: Fetched and referenced Next.js documentation
+- [ ] If React pattern: Checked React best practices
+- [ ] If error handling: Verified Next.js error handling conventions
+- [ ] All code examples follow framework conventions
+
+### File Path Verification
+
+- [ ] All "Files to Create" have verified parent directories exist
+- [ ] All "Files to Modify" verified to exist with Read/Glob
+- [ ] All file paths use absolute paths from project root
+- [ ] No guessed file locations
+
+### Code Example Quality
+
+- [ ] All imports use path aliases (e.g., `@/types`, `@/utils`)
+- [ ] No relative imports in examples (unless project uses them)
+- [ ] All barrel exports follow project pattern
+- [ ] JSDoc examples reference correct types and imports
+
+### Documentation References
+
+- [ ] Official docs fetched/referenced where applicable
+- [ ] Links to docs included in plan
+- [ ] Best practices from docs incorporated into examples
 
 ---
 
