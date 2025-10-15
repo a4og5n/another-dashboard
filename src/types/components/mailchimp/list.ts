@@ -75,4 +75,5 @@ export interface ListDetailProps {
   list: List | null;
   error?: string | null;
   activeTab?: "overview" | "stats" | "settings";
+  serverPrefix?: string;
 }

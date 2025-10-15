@@ -12,7 +12,7 @@ import { ListDetail } from "@/components/mailchimp/lists";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { ListDetailSkeleton } from "@/skeletons/mailchimp";
-import { processRouteParams } from "@/utils";
+import { processRouteParams, getUserServerPrefix } from "@/utils";
 import type { List } from "@/types/mailchimp";
 import type { ListPageProps } from "@/types/components/mailchimp";
 import {
@@ -32,6 +32,9 @@ async function ListPageContent({ params, searchParams }: ListPageProps) {
   // Get active tab from search params (with default fallback)
   const activeTab = validatedSearchParams.tab;
 
+  // Fetch server prefix for Mailchimp admin URL
+  const serverPrefix = await getUserServerPrefix();
+
   // Fetch list data (validation happens at DAL layer)
   const response = await mailchimpDAL.fetchList(validatedParams.id);
 
@@ -50,12 +53,17 @@ async function ListPageContent({ params, searchParams }: ListPageProps) {
   return (
     <MailchimpConnectionGuard errorCode={response.errorCode}>
       {response.success ? (
-        <ListDetail list={response.data as List} activeTab={activeTab} />
+        <ListDetail
+          list={response.data as List}
+          activeTab={activeTab}
+          serverPrefix={serverPrefix}
+        />
       ) : (
         <ListDetail
           list={null}
           error={response.error || "Failed to load list"}
           activeTab={activeTab}
+          serverPrefix={serverPrefix}
         />
       )}
     </MailchimpConnectionGuard>

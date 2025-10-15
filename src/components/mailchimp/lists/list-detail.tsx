@@ -10,12 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { ListTabNavigation } from "@/components/mailchimp/lists/list-tab-navigation";
 import type { ListDetailProps } from "@/types/components";
-import { formatDateLongSafe } from "@/utils/format-date";
+import { formatDateLongSafe, buildMailchimpListUrl } from "@/utils";
+import { Star, ExternalLink } from "lucide-react";
 
 export function ListDetail({
   list,
   error,
   activeTab = "overview",
+  serverPrefix,
 }: ListDetailProps) {
   // Handle service-level errors passed from parent
   if (error) {
@@ -26,6 +28,9 @@ export function ListDetail({
   if (!list) {
     return <DashboardInlineError error="No list data provided" />;
   }
+
+  // Build Mailchimp admin URL
+  const mailchimpAdminUrl = buildMailchimpListUrl(serverPrefix, list.web_id);
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -41,9 +46,18 @@ export function ListDetail({
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Rating:</span>
-              <span className="text-lg font-semibold">
-                {list.list_rating}/5
-              </span>
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={index}
+                    className={`h-5 w-5 ${
+                      index < list.list_rating
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-muted-foreground"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -136,6 +150,23 @@ export function ListDetail({
                 </CardContent>
               </Card>
             )}
+
+            {/* External Link to Mailchimp Admin */}
+            {mailchimpAdminUrl && (
+              <Card>
+                <CardContent className="pt-6">
+                  <a
+                    href={mailchimpAdminUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    View on Mailchimp Admin
+                  </a>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
@@ -170,7 +201,7 @@ export function ListDetail({
                   <div className="text-3xl font-bold">
                     {list.stats.total_contacts !== undefined
                       ? list.stats.total_contacts.toLocaleString()
-                      : "—"}
+                      : "N/A"}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     All contacts
@@ -490,6 +521,29 @@ export function ListDetail({
                     <p className="text-sm font-mono">{list.beamer_address}</p>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Modules (Integrations) */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Modules</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {list.modules && list.modules.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {list.modules.map((module, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-secondary text-secondary-foreground rounded-md text-sm font-medium"
+                      >
+                        {module}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">N/A</p>
+                )}
               </CardContent>
             </Card>
           </div>
