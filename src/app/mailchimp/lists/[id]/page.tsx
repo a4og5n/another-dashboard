@@ -6,13 +6,16 @@
  */
 
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { ListDetail } from "@/components/mailchimp/lists";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { ListDetailSkeleton } from "@/skeletons/mailchimp";
-import { processRouteParams, getUserServerPrefix } from "@/utils";
+import {
+  processRouteParams,
+  getUserServerPrefix,
+  handleApiError,
+} from "@/utils";
 import type { List } from "@/types/mailchimp";
 import type { ListPageProps } from "@/types/components/mailchimp";
 import {
@@ -38,16 +41,8 @@ async function ListPageContent({ params, searchParams }: ListPageProps) {
   // Fetch list data (validation happens at DAL layer)
   const response = await mailchimpDAL.fetchList(validatedParams.id);
 
-  // Handle 404 errors with notFound()
-  if (!response.success) {
-    const errorMessage = response.error || "Failed to load list";
-    if (
-      errorMessage.toLowerCase().includes("not found") ||
-      errorMessage.toLowerCase().includes("404")
-    ) {
-      notFound();
-    }
-  }
+  // Handle API errors (automatically triggers notFound() for 404s)
+  handleApiError(response);
 
   // Guard component handles UI based on errorCode from DAL
   return (

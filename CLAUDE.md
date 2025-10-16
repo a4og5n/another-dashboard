@@ -165,6 +165,46 @@ Before starting any development work, always review:
 - **Component organization**: Group by feature with proper index.ts exports (ui/, dashboard/, layout/, accessibility/, performance/, pwa/, social/)
 - **Internationalization**: Use next-intl with JSON files in `src/translations/`
 
+### Error Handling Utilities
+
+The project includes standardized error handling utilities for API responses in `src/utils/errors/`:
+
+**Core Functions:**
+
+- `is404Error(message: string)` - Detects 404/not found errors in API responses
+- `handleApiError(response: ApiResponse<unknown>)` - Automatically handles 404 detection with `notFound()` call
+- `handleApiErrorWithFallback(response: ApiResponse<unknown>, fallbackMessage: string)` - Same as above with custom fallback
+
+**Usage Pattern:**
+
+```typescript
+import { handleApiError } from "@/utils/errors";
+
+const response = await mailchimpDAL.fetchCampaignReport(id);
+const error = handleApiError(response);
+
+if (error) {
+  // Handle non-404 errors in UI if needed
+  return <ErrorDisplay message={error} />;
+}
+
+// Render success UI with response.data
+```
+
+**Benefits:**
+
+- Eliminates repeated 404 detection logic across pages (~7 lines per page)
+- Consistent error handling following Next.js App Router best practices
+- Automatic `notFound()` triggering for 404 errors (renders not-found.tsx)
+- Returns error messages as values (not thrown) for conditional UI rendering
+- Fully tested with 100% coverage
+
+**Next.js Error Handling Philosophy:**
+
+- **Expected errors** (404s, API failures): Return as values, use `notFound()` for 404s
+- **Unexpected errors** (bugs, exceptions): Let error boundaries catch them
+- Reference: [Next.js Error Handling Docs](https://nextjs.org/docs/app/getting-started/error-handling)
+
 ### Schema & API Patterns
 
 - **Error response strategy**: Compare fields to shared error schema, extend with `.extend({ ... })` if needed, or create custom schema if fundamentally different

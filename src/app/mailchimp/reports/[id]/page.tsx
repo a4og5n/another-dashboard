@@ -7,13 +7,16 @@
  */
 
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignReportDetail } from "@/components/dashboard";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignReportSkeleton } from "@/skeletons/mailchimp";
-import { generateCampaignReportMetadata, processRouteParams } from "@/utils";
+import {
+  generateCampaignReportMetadata,
+  processRouteParams,
+  handleApiError,
+} from "@/utils";
 import type { CampaignReport } from "@/types/mailchimp";
 import type { ReportPageProps } from "@/types/components/mailchimp";
 import {
@@ -39,16 +42,8 @@ async function CampaignReportPageContent({
   // Fetch campaign report data (validation happens at DAL layer)
   const response = await mailchimpDAL.fetchCampaignReport(validatedParams.id);
 
-  // Handle 404 errors with notFound()
-  if (!response.success) {
-    const errorMessage = response.error || "Failed to load campaign report";
-    if (
-      errorMessage.toLowerCase().includes("not found") ||
-      errorMessage.toLowerCase().includes("404")
-    ) {
-      notFound();
-    }
-  }
+  // Handle API errors (automatically triggers notFound() for 404s)
+  handleApiError(response);
 
   // Guard component handles UI based on errorCode from DAL
   return (
