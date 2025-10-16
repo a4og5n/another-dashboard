@@ -16,6 +16,7 @@ import {
   generateCampaignReportMetadata,
   processRouteParams,
   handleApiError,
+  bc,
 } from "@/utils";
 import type { CampaignReport } from "@/types/mailchimp";
 import type { ReportPageProps } from "@/types/components/mailchimp";
@@ -75,12 +76,7 @@ export default async function CampaignReportPage({
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Reports", href: "/mailchimp/reports" },
-            { label: "Report", isCurrent: true },
-          ]}
+          items={[bc.home, bc.mailchimp, bc.reports, bc.current("Report")]}
         />
 
         {/* Page Header */}

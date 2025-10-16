@@ -19,6 +19,7 @@ import { reportsPageSearchParamsSchema } from "@/schemas/components";
 import { transformCampaignReportsParams } from "@/utils/mailchimp/query-params";
 import { ReportsOverviewSkeleton } from "@/skeletons/mailchimp";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
+import { bc } from "@/utils";
 
 async function ReportsPageContent({ searchParams }: ReportsPageProps) {
   // Validate page parameters: validate, redirect if needed, convert to API format
@@ -58,11 +59,7 @@ export default function ReportsPage({ searchParams }: ReportsPageProps) {
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Reports", isCurrent: true },
-          ]}
+          items={[bc.home, bc.mailchimp, bc.current("Reports")]}
         />
 
         {/* Page Header */}

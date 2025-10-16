@@ -15,6 +15,7 @@ import {
   processRouteParams,
   getUserServerPrefix,
   handleApiError,
+  bc,
 } from "@/utils";
 import type { List } from "@/types/mailchimp";
 import type { ListPageProps } from "@/types/components/mailchimp";
@@ -89,12 +90,7 @@ export default async function ListPage({
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Lists", href: "/mailchimp/lists" },
-            { label: "List", isCurrent: true },
-          ]}
+          items={[bc.home, bc.mailchimp, bc.lists, bc.current("List")]}
         />
 
         {/* Page Header */}

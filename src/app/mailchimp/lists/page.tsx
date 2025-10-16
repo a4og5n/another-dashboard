@@ -9,6 +9,7 @@ import { listsPageSearchParamsSchema } from "@/schemas/components";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { Suspense } from "react";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
+import { bc } from "@/utils";
 
 async function ListsPageContent({ searchParams }: ListsPageProps) {
   // Validate params: validate, check redirect, convert to API format
@@ -47,11 +48,7 @@ export default function ListsPage({ searchParams }: ListsPageProps) {
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Lists", isCurrent: true },
-          ]}
+          items={[bc.home, bc.mailchimp, bc.current("Lists")]}
         />
 
         {/* Page Header */}
