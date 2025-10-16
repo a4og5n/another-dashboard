@@ -207,6 +207,16 @@ Break down the implementation into phases with clear checkpoints.
 
 **Estimated Time:** X minutes/hours
 
+**Pre-Phase Checklist (Check Before Starting):**
+
+Before starting this phase, verify it hasn't already been completed:
+
+- [ ] Check git commit history: `git log --oneline -10`
+- [ ] Verify expected files don't exist: `ls [expected-file-path]` or use Read tool
+- [ ] Check if related commits already exist (look for commit messages matching this phase)
+- [ ] If phase is already complete, inform user and ask for next steps
+- [ ] If partially complete, identify what's done and what remains
+
 **Files to Create:**
 
 **Types:**
@@ -824,6 +834,26 @@ git clean -fd  # Remove untracked files
   import type { BackButtonProps } from "@/types/components/not-found";
   ```
 
+**Pitfall 15: Not Checking if Phase is Already Complete**
+
+- **Problem:** User says "Start Phase 2" but Phase 2 is already completed in git history
+- **Impact:** Wasted time re-implementing or re-testing already completed work
+- **Solution:** ALWAYS check git history and file existence before starting any phase
+- **What to check:**
+  - Git commit history: `git log --oneline -10`
+  - File existence for files the phase should create
+  - Commit messages matching the phase description
+- **If already complete:** Inform user and ask whether to verify or move to next phase
+- **Example:**
+
+  ```bash
+  # User says: "Start Phase 2"
+  # First check:
+  git log --oneline -10
+  # See: "test(utils): add comprehensive tests for breadcrumb builder"
+  # Response: "Phase 2 appears to be already completed. I can see commit 20799c6..."
+  ```
+
 ---
 
 ## AI Self-Check Before Submitting Execution Plan
@@ -1324,11 +1354,32 @@ When creating an execution plan, ensure it includes:
 - Don't skip validation steps
 - Commit frequently for safety
 
+**When User Says "Start Phase X":**
+
+CRITICAL - Always check completion status FIRST:
+
+1. **Check git history** for commits related to that phase
+   ```bash
+   git log --oneline -10
+   ```
+2. **Check if files exist** that the phase should create
+   - Use `ls` or Read tool to verify
+3. **If phase is already complete:**
+   - Inform user: "Phase X appears to be already completed. I can see commit [hash] with message [message] and files [file list] already exist."
+   - Provide summary of what was completed
+   - Ask: "Would you like me to verify the phase is working correctly, or should we move to the next phase?"
+4. **If phase is partially complete:**
+   - List what's done and what remains
+   - Ask user how to proceed
+5. **If phase is not started:**
+   - Proceed with implementation as planned
+
 **Communication:**
 
 - Ask Claude to confirm understanding before starting each phase
 - Share error messages immediately when they occur
 - Request clarification on unclear steps
+- **NEVER assume a phase needs to be done without checking if it's already complete**
 
 ### File Organization
 
