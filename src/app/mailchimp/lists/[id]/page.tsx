@@ -23,18 +23,13 @@ import {
   listPageSearchParamsSchema,
 } from "@/schemas/components";
 
-async function ListPageContent({ params, searchParams }: ListPageProps) {
-  // Validate route params and search params
-  const { validatedParams, validatedSearchParams } = await processRouteParams({
-    params,
-    searchParams,
-    paramsSchema: listPageParamsSchema,
-    searchParamsSchema: listPageSearchParamsSchema,
-  });
-
-  // Get active tab from search params (with default fallback)
-  const activeTab = validatedSearchParams.tab;
-
+async function ListPageContent({
+  validatedParams,
+  activeTab,
+}: {
+  validatedParams: { id: string };
+  activeTab: "overview" | "stats" | "settings";
+}) {
   // Fetch server prefix for Mailchimp admin URL
   const serverPrefix = await getUserServerPrefix();
 
@@ -65,7 +60,22 @@ async function ListPageContent({ params, searchParams }: ListPageProps) {
   );
 }
 
-export default function ListPage({ params, searchParams }: ListPageProps) {
+export default async function ListPage({
+  params,
+  searchParams,
+}: ListPageProps) {
+  // Validate route params and search params BEFORE Suspense boundary
+  // This ensures notFound() is called at the page level
+  const { validatedParams, validatedSearchParams } = await processRouteParams({
+    params,
+    searchParams,
+    paramsSchema: listPageParamsSchema,
+    searchParamsSchema: listPageSearchParamsSchema,
+  });
+
+  // Get active tab from search params (with default fallback)
+  const activeTab = validatedSearchParams.tab;
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -89,7 +99,10 @@ export default function ListPage({ params, searchParams }: ListPageProps) {
 
         {/* Main Content */}
         <Suspense fallback={<ListDetailSkeleton />}>
-          <ListPageContent params={params} searchParams={searchParams} />
+          <ListPageContent
+            validatedParams={validatedParams}
+            activeTab={activeTab}
+          />
         </Suspense>
       </div>
     </DashboardLayout>
