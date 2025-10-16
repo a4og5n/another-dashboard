@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/layout/sidebar-provider";
 import {
   BarChart3,
   Home,
@@ -97,8 +98,9 @@ const navigation: NavigationItem[] = [
   },
 ];
 
-export function DashboardSidebar({ visible }: { visible: boolean }) {
+export function DashboardSidebar() {
   const pathname = usePathname();
+  const { sidebarOpen } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>(() => {
     // Auto-expand Mailchimp if we're on a Mailchimp page
     return pathname.startsWith("/mailchimp") ? ["Mailchimp"] : [];
@@ -231,11 +233,13 @@ export function DashboardSidebar({ visible }: { visible: boolean }) {
       id="dashboard-sidebar"
       className={cn(
         "w-64 h-screen flex flex-col border-r bg-background transition-transform duration-300 pt-16", // pt-16 matches header height
-        visible ? "md:flex" : "md:hidden -translate-x-full",
-        !visible ? "absolute z-[999] left-0 top-16 h-[calc(100vh-4rem)]" : "",
+        sidebarOpen ? "md:flex" : "md:hidden -translate-x-full",
+        !sidebarOpen
+          ? "absolute z-[999] left-0 top-16 h-[calc(100vh-4rem)]"
+          : "",
       )}
-      aria-hidden={!visible}
-      tabIndex={visible ? 0 : -1}
+      aria-hidden={!sidebarOpen}
+      tabIndex={sidebarOpen ? 0 : -1}
     >
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {navigation.map((item, idx) => renderNavigationItem(item, idx))}

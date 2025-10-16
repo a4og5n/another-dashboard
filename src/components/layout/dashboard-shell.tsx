@@ -1,8 +1,6 @@
-"use client";
-
-import { useState } from "react";
-import { DashboardHeader } from "@/components/layout";
-import { DashboardSidebar } from "@/components/layout";
+import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
+import { SidebarProvider } from "@/components/layout/sidebar-provider";
 import type { AuthSession } from "@/types/auth";
 
 interface DashboardShellProps {
@@ -15,20 +13,17 @@ interface DashboardShellProps {
 }
 
 export function DashboardShell({ children, authData }: DashboardShellProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   return (
-    <>
+    <SidebarProvider>
       <DashboardHeader
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
         session={authData.session}
         displayName={authData.displayName}
         initials={authData.initials}
       />
       <div className="flex">
-        <DashboardSidebar visible={sidebarOpen} />
+        <DashboardSidebar />
         <main className="flex-1">{children}</main>
       </div>
-    </>
+    </SidebarProvider>
   );
 }
