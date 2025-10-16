@@ -1,8 +1,6 @@
 "use client";
 
-interface BackButtonProps {
-  className?: string;
-}
+import type { BackButtonProps } from "@/types/components/not-found";
 
 export function BackButton({ className }: BackButtonProps) {
   const handleGoBack = () => {
