@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BackButton } from "@/components/not-found";
+import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
@@ -17,12 +18,9 @@ export default function NotFound() {
         </div>
 
         <div className="space-y-4">
-          <Link
-            href="/"
-            className="inline-block w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            Go back home
-          </Link>
+          <Button asChild className="w-full">
+            <Link href="/">Go back home</Link>
+          </Button>
 
           <BackButton />
         </div>

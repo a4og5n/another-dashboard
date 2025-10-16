@@ -1,6 +1,7 @@
 "use client";
 
 import type { BackButtonProps } from "@/types/components/not-found";
+import { Button } from "@/components/ui/button";
 
 export function BackButton({ className }: BackButtonProps) {
   const handleGoBack = () => {
@@ -8,14 +9,12 @@ export function BackButton({ className }: BackButtonProps) {
   };
 
   return (
-    <button
+    <Button
       onClick={handleGoBack}
-      className={
-        className ||
-        "w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
-      }
+      variant="secondary"
+      className={className || "w-full"}
     >
       Go back
-    </button>
+    </Button>
   );
 }
