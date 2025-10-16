@@ -23,35 +23,32 @@ import {
   listPageSearchParamsSchema,
 } from "@/schemas/components";
 
-async function ListPageContent({
-  validatedParams,
+function ListPageContent({
+  list,
+  error,
   activeTab,
+  serverPrefix,
+  errorCode,
 }: {
-  validatedParams: { id: string };
+  list: List | null;
+  error?: string;
   activeTab: "overview" | "stats" | "settings";
+  serverPrefix?: string;
+  errorCode?: string;
 }) {
-  // Fetch server prefix for Mailchimp admin URL
-  const serverPrefix = await getUserServerPrefix();
-
-  // Fetch list data (validation happens at DAL layer)
-  const response = await mailchimpDAL.fetchList(validatedParams.id);
-
-  // Handle API errors (automatically triggers notFound() for 404s)
-  handleApiError(response);
-
   // Guard component handles UI based on errorCode from DAL
   return (
-    <MailchimpConnectionGuard errorCode={response.errorCode}>
-      {response.success ? (
+    <MailchimpConnectionGuard errorCode={errorCode}>
+      {list ? (
         <ListDetail
-          list={response.data as List}
+          list={list}
           activeTab={activeTab}
           serverPrefix={serverPrefix}
         />
       ) : (
         <ListDetail
           list={null}
-          error={response.error || "Failed to load list"}
+          error={error || "Failed to load list"}
           activeTab={activeTab}
           serverPrefix={serverPrefix}
         />
@@ -76,6 +73,17 @@ export default async function ListPage({
   // Get active tab from search params (with default fallback)
   const activeTab = validatedSearchParams.tab;
 
+  // Fetch server prefix for Mailchimp admin URL
+  const serverPrefix = await getUserServerPrefix();
+
+  // Fetch list data BEFORE Suspense boundary
+  // This ensures notFound() works properly for 404 responses
+  const response = await mailchimpDAL.fetchList(validatedParams.id);
+
+  // Handle API errors (automatically triggers notFound() for 404s)
+  // Must be called BEFORE Suspense boundary
+  handleApiError(response);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -97,11 +105,14 @@ export default async function ListPage({
           </p>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content - Suspense only used for streaming */}
         <Suspense fallback={<ListDetailSkeleton />}>
           <ListPageContent
-            validatedParams={validatedParams}
+            list={response.success ? (response.data as List) : null}
+            error={response.error}
             activeTab={activeTab}
+            serverPrefix={serverPrefix ?? undefined}
+            errorCode={response.errorCode}
           />
         </Suspense>
       </div>
