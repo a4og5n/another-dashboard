@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { z } from "zod";
 
 export async function processRouteParams<T, U>({
@@ -14,8 +15,20 @@ export async function processRouteParams<T, U>({
   const rawParams = await params;
   const rawSearchParams = await searchParams;
 
-  const validatedParams = paramsSchema.parse(rawParams);
-  const validatedSearchParams = searchParamsSchema.parse(rawSearchParams);
+  // Validate params - trigger 404 for invalid route parameters
+  const paramsResult = paramsSchema.safeParse(rawParams);
+  if (!paramsResult.success) {
+    notFound();
+  }
 
-  return { validatedParams, validatedSearchParams };
+  // Validate search params - use safeParse to handle gracefully
+  const searchParamsResult = searchParamsSchema.safeParse(rawSearchParams);
+  if (!searchParamsResult.success) {
+    notFound();
+  }
+
+  return {
+    validatedParams: paramsResult.data,
+    validatedSearchParams: searchParamsResult.data,
+  };
 }
