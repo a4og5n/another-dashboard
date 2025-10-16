@@ -77,13 +77,58 @@ When users visit non-existent pages (e.g., `/mailchimp/lists/483a0ba84ass`), the
 Before writing any code:
 
 - [ ] **Review this execution plan** completely
-- [ ] **Verify current branch** is `main` and up to date
+- [ ] **Verify current branch** is `main` and up to date: `git branch --show-current`
+- [ ] **Pull latest changes** from origin: `git pull origin main`
+- [ ] **⚠️ CREATE FEATURE BRANCH** (see Phase 0 below - DO NOT skip this step!)
 - [ ] **Understand the problem:** Test current behavior by visiting `/fake-page`
 - [ ] **Read Next.js docs** on not-found.tsx and error handling
 - [ ] **Review sidebar implementation** in dashboard-header.tsx and dashboard-sidebar.tsx
 - [ ] **Check Kinde docs** for server-side authentication
 - [ ] **Verify development environment** works: `pnpm dev`
 - [ ] **Run current tests** to establish baseline: `pnpm test`
+
+---
+
+## Phase 0: Create Feature Branch (REQUIRED FIRST STEP)
+
+**⚠️ IMPORTANT: Complete this phase BEFORE starting Phase 1!**
+
+**Goal:** Set up a dedicated feature branch for all implementation work
+
+**Why this is critical:**
+
+- Keeps implementation separate from main branch
+- Allows easy rollback if needed
+- Follows git best practices
+- Prevents accidental commits to main
+
+### Commands:
+
+```bash
+# Verify you're on main
+git branch --show-current
+# Expected output: main
+
+# Ensure main is up to date
+git pull origin main
+
+# Create and switch to feature branch
+git checkout -b feature/fix-404-status-codes
+
+# Verify you're on the new branch
+git branch --show-current
+# Expected output: feature/fix-404-status-codes
+```
+
+### Validation:
+
+- [ ] Running `git branch --show-current` shows `feature/fix-404-status-codes`
+- [ ] Running `git status` shows "On branch feature/fix-404-status-codes"
+- [ ] You are NOT on main branch
+
+**✅ Checkpoint: Branch Created**
+
+Now proceed to Phase 1.
 
 ---
 
@@ -194,24 +239,13 @@ export function AuthWrapper({ children, redirectTo }) {
 feature/fix-404-status-codes
 ```
 
-**Initial Setup:**
-
-```bash
-# Ensure you're on main and up to date
-git checkout main
-git pull origin main
-
-# Create feature branch
-git checkout -b feature/fix-404-status-codes
-
-# Verify you're on the correct branch
-git branch --show-current
-```
+**Branch Creation:** See **Phase 0** above - this must be completed BEFORE starting Phase 1.
 
 ### Commit Strategy
 
 **Commit after each phase** to create safe rollback points:
 
+0. After creating feature branch (Phase 0) - No commit needed
 1. After fixing root not-found.tsx (Phase 1)
 2. After creating sidebar context provider (Phase 2)
 3. After refactoring DashboardShell (Phase 2)
@@ -222,6 +256,8 @@ git branch --show-current
 ---
 
 ## Implementation Phases
+
+**⚠️ REMINDER: You must complete Phase 0 (Create Feature Branch) before starting Phase 1!**
 
 ### Phase 1: Fix Root not-found.tsx (QUICK WIN)
 
