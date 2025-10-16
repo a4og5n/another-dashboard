@@ -25,10 +25,35 @@ import {
 } from "@/schemas/components";
 
 async function CampaignReportPageContent({
+  report,
+  activeTab,
+  errorCode,
+}: {
+  report: CampaignReport | null;
+  activeTab: string;
+  errorCode?: string;
+}) {
+  // Guard component handles UI based on errorCode from DAL
+  return (
+    <MailchimpConnectionGuard errorCode={errorCode}>
+      {report ? (
+        <CampaignReportDetail report={report} activeTab={activeTab} />
+      ) : (
+        <CampaignReportDetail
+          report={null}
+          error="Failed to load campaign report"
+          activeTab={activeTab}
+        />
+      )}
+    </MailchimpConnectionGuard>
+  );
+}
+
+export default async function CampaignReportPage({
   params,
   searchParams,
 }: ReportPageProps) {
-  // Validate route params and search params
+  // Validate route params and search params (BEFORE Suspense boundary)
   const { validatedParams, validatedSearchParams } = await processRouteParams({
     params,
     searchParams,
@@ -39,35 +64,12 @@ async function CampaignReportPageContent({
   // Get active tab from search params (with default fallback)
   const activeTab = validatedSearchParams.tab;
 
-  // Fetch campaign report data (validation happens at DAL layer)
+  // Fetch campaign report data (BEFORE Suspense boundary for 404 handling)
   const response = await mailchimpDAL.fetchCampaignReport(validatedParams.id);
 
-  // Handle API errors (automatically triggers notFound() for 404s)
+  // Handle API errors - triggers notFound() for 404s (BEFORE Suspense boundary)
   handleApiError(response);
 
-  // Guard component handles UI based on errorCode from DAL
-  return (
-    <MailchimpConnectionGuard errorCode={response.errorCode}>
-      {response.success ? (
-        <CampaignReportDetail
-          report={response.data as CampaignReport}
-          activeTab={activeTab}
-        />
-      ) : (
-        <CampaignReportDetail
-          report={null}
-          error={response.error || "Failed to load campaign report"}
-          activeTab={activeTab}
-        />
-      )}
-    </MailchimpConnectionGuard>
-  );
-}
-
-export default function CampaignReportPage({
-  params,
-  searchParams,
-}: ReportPageProps) {
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -92,8 +94,9 @@ export default function CampaignReportPage({
         {/* Main Content */}
         <Suspense fallback={<CampaignReportSkeleton />}>
           <CampaignReportPageContent
-            params={params}
-            searchParams={searchParams}
+            report={response.success ? (response.data as CampaignReport) : null}
+            activeTab={activeTab}
+            errorCode={response.errorCode}
           />
         </Suspense>
       </div>

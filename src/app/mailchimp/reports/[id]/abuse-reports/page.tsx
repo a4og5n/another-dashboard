@@ -7,7 +7,6 @@
  */
 
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignAbuseReportsSkeleton } from "@/skeletons/mailchimp";
@@ -18,38 +17,21 @@ import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import type { AbuseReportListSuccess, CampaignReport } from "@/types/mailchimp";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import type { Metadata } from "next";
+import { handleApiError } from "@/utils";
 
 async function CampaignAbuseReportsPageContent({
-  params,
+  abuseReportsData,
+  campaignId,
+  errorCode,
 }: {
-  params: Promise<{ id: string }>;
+  abuseReportsData: AbuseReportListSuccess | null;
+  campaignId: string;
+  errorCode?: string;
 }) {
-  // Process route params
-  const rawRouteParams = await params;
-  const { id: campaignId } = abuseReportsPageParamsSchema.parse(rawRouteParams);
-
-  // Fetch campaign abuse reports data
-  // Note: This API endpoint does not support pagination parameters (count/offset)
-  // All abuse reports are returned in a single response
-  const response = await mailchimpDAL.fetchCampaignAbuseReports(campaignId);
-
-  // Handle 404 errors with notFound()
-  if (!response.success) {
-    const errorMessage = response.error || "Failed to load abuse reports";
-    if (
-      errorMessage.toLowerCase().includes("not found") ||
-      errorMessage.toLowerCase().includes("404")
-    ) {
-      notFound();
-    }
-  }
-
-  const abuseReportsData = response.data as AbuseReportListSuccess;
-
   // Guard component handles UI based on errorCode from DAL
   return (
-    <MailchimpConnectionGuard errorCode={response.errorCode}>
-      {response.success ? (
+    <MailchimpConnectionGuard errorCode={errorCode}>
+      {abuseReportsData ? (
         <CampaignAbuseReportsTable
           abuseReportsData={abuseReportsData}
           currentPage={1}
@@ -59,19 +41,33 @@ async function CampaignAbuseReportsPageContent({
           campaignId={campaignId}
         />
       ) : (
-        <DashboardInlineError
-          error={response.error || "Failed to load abuse reports"}
-        />
+        <DashboardInlineError error="Failed to load abuse reports" />
       )}
     </MailchimpConnectionGuard>
   );
 }
 
-export default function CampaignAbuseReportsPage({
+export default async function CampaignAbuseReportsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // Process route params (BEFORE Suspense boundary)
+  const rawRouteParams = await params;
+  const { id: campaignId } = abuseReportsPageParamsSchema.parse(rawRouteParams);
+
+  // Fetch campaign abuse reports data (BEFORE Suspense boundary for 404 handling)
+  // Note: This API endpoint does not support pagination parameters (count/offset)
+  // All abuse reports are returned in a single response
+  const response = await mailchimpDAL.fetchCampaignAbuseReports(campaignId);
+
+  // Handle API errors - triggers notFound() for 404s (BEFORE Suspense boundary)
+  handleApiError(response);
+
+  const abuseReportsData = response.success
+    ? (response.data as AbuseReportListSuccess)
+    : null;
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -90,7 +86,11 @@ export default function CampaignAbuseReportsPage({
 
         {/* Main Content */}
         <Suspense fallback={<CampaignAbuseReportsSkeleton />}>
-          <CampaignAbuseReportsPageContent params={params} />
+          <CampaignAbuseReportsPageContent
+            abuseReportsData={abuseReportsData}
+            campaignId={campaignId}
+            errorCode={response.errorCode}
+          />
         </Suspense>
       </div>
     </DashboardLayout>
