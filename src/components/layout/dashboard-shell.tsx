@@ -20,9 +20,11 @@ export function DashboardShell({ children, authData }: DashboardShellProps) {
         displayName={authData.displayName}
         initials={authData.initials}
       />
-      <div className="flex">
+      <div className="flex transition-all duration-300 ease-in-out">
         <DashboardSidebar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 transition-[width,margin,padding] duration-300 ease-in-out">
+          {children}
+        </main>
       </div>
     </SidebarProvider>
   );

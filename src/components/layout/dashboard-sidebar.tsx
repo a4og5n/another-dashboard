@@ -11,10 +11,9 @@ import {
   Mail,
   Settings,
   Users,
-  Youtube,
+  Video,
   TrendingUp,
   Database,
-  ChevronDown,
   ChevronRight,
   Send,
   Building2,
@@ -76,7 +75,7 @@ const navigation: NavigationItem[] = [
   {
     name: "YouTube",
     href: "/youtube",
-    icon: Youtube,
+    icon: Video,
     disabled: true,
   },
   {
@@ -100,7 +99,7 @@ const navigation: NavigationItem[] = [
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const { sidebarOpen } = useSidebar();
+  const { sidebarOpen, setSidebarOpen } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>(() => {
     // Auto-expand Mailchimp if we're on a Mailchimp page
     return pathname.startsWith("/mailchimp") ? ["Mailchimp"] : [];
@@ -163,11 +162,12 @@ export function DashboardSidebar() {
                   {item.badge}
                 </Badge>
               )}
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
+              <ChevronRight
+                className={cn(
+                  "h-4 w-4 transition-transform duration-300 ease-in-out",
+                  isExpanded && "rotate-90",
+                )}
+              />
             </div>
           ) : (
             <Link
@@ -186,8 +186,13 @@ export function DashboardSidebar() {
         </Button>
 
         {/* Submenu items */}
-        {item.expandable && item.children && isExpanded && (
-          <div className="ml-4 mt-1 space-y-1">
+        {item.expandable && item.children && (
+          <div
+            className={cn(
+              "ml-4 space-y-1 overflow-hidden transition-all duration-300 ease-in-out",
+              isExpanded ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0",
+            )}
+          >
             {item.children.map((child) => {
               const childIsActive = pathname === child.href;
               const ChildIcon = child.icon;
@@ -229,26 +234,40 @@ export function DashboardSidebar() {
   };
 
   return (
-    <aside
-      id="dashboard-sidebar"
-      className={cn(
-        "w-64 h-screen flex flex-col border-r bg-background transition-transform duration-300 pt-16", // pt-16 matches header height
-        sidebarOpen ? "md:flex" : "md:hidden -translate-x-full",
-        !sidebarOpen
-          ? "absolute z-[999] left-0 top-16 h-[calc(100vh-4rem)]"
-          : "",
+    <>
+      {/* Mobile backdrop overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-[998] md:hidden transition-opacity duration-300"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
       )}
-      aria-hidden={!sidebarOpen}
-      tabIndex={sidebarOpen ? 0 : -1}
-    >
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        {navigation.map((item, idx) => renderNavigationItem(item, idx))}
-      </nav>
-      {/* Footer fixed to bottom */}
-      <div className="p-4 border-t text-xs text-muted-foreground w-full sticky bottom-0 bg-background">
-        <div>Another Dashboard v1.0</div>
-        <div className="mt-1">API Status: Connected</div>
-      </div>
-    </aside>
+
+      <aside
+        id="dashboard-sidebar"
+        className={cn(
+          "w-64 h-[calc(100vh-4rem)] flex flex-col border-r bg-background pt-16 z-40",
+          "transition-[transform,left,top,position] duration-300 ease-in-out",
+          // On mobile: always fixed and slide in/out
+          "fixed left-0 top-16",
+          // On desktop: only fixed when closed, otherwise relative
+          sidebarOpen
+            ? "translate-x-0 md:relative md:left-auto md:top-auto"
+            : "-translate-x-full md:fixed",
+        )}
+        aria-hidden={!sidebarOpen}
+        tabIndex={sidebarOpen ? 0 : -1}
+      >
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          {navigation.map((item, idx) => renderNavigationItem(item, idx))}
+        </nav>
+        {/* Footer fixed to bottom */}
+        <div className="p-4 border-t text-xs text-muted-foreground w-full sticky bottom-0 bg-background">
+          <div>Another Dashboard v1.0</div>
+          <div className="mt-1">API Status: Connected</div>
+        </div>
+      </aside>
+    </>
   );
 }

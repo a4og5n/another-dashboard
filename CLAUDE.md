@@ -143,6 +143,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Architectural enforcement tests**: Automated tests to enforce coding standards
   - `alias-enforcement.test.ts` - Enforces path alias usage (no long relative paths)
   - `types-folder-enforcement.test.ts` - Enforces type definitions in `/src/types` only
+  - `server-component-enforcement.test.ts` - Enforces Server Component architecture for proper 404 handling
+    - Prevents "use client" in layout.tsx, dashboard-shell.tsx, and all not-found.tsx files
+    - Critical for maintaining proper 404 status codes (notFound() only works in Server Components)
+    - Auto-discovers all not-found.tsx files to prevent regression
+  - `deprecated-declarations.test.ts` - Prevents usage of deprecated APIs and patterns
 - **Coverage reporting**: HTML, JSON, and text coverage reports
 - **Test utilities**: Custom render functions and helpers in `src/test/`
 
@@ -219,6 +224,12 @@ if (error) {
 ### Component Development
 
 - **Server Components**: Use by default, only mark with 'use client' when needed
+  - **CRITICAL**: Layout components (`layout.tsx`, `dashboard-shell.tsx`) MUST remain Server Components
+  - **CRITICAL**: All `not-found.tsx` files MUST be Server Components for proper 404 status codes
+  - **Rule**: Only add "use client" when component uses hooks (useState, useEffect, etc.) or browser APIs
+  - **Pattern**: Keep parent as Server Component, extract client logic to child components
+  - **Enforcement**: Architectural tests prevent "use client" in critical files (enforced by CI)
+  - **Why**: Next.js `notFound()` only works in Server Components; violating this returns 200 instead of 404
 - **Atomic design**: Follow atoms, molecules, organisms pattern
 - **shadcn/ui**: Use as base building blocks
 - **JSDoc**: Document component usage with comments

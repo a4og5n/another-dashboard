@@ -13,7 +13,7 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 
   return (
     <SidebarContext.Provider value={{ sidebarOpen, setSidebarOpen }}>
-      {children}
+      <div data-sidebar-open={sidebarOpen}>{children}</div>
     </SidebarContext.Provider>
   );
 }
