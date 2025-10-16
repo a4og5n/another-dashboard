@@ -22,7 +22,9 @@ export function is404Error(message: string): boolean {
   return (
     normalizedMessage.includes("not found") ||
     normalizedMessage.includes("404") ||
-    normalizedMessage.includes("does not exist")
+    normalizedMessage.includes("does not exist") ||
+    normalizedMessage.includes("could not be found") ||
+    normalizedMessage.includes("resource submitted could not be validated")
   );
 }
 
@@ -55,7 +57,12 @@ export function handleApiError(response: ApiResponse<unknown>): string | null {
   if (!response.success) {
     const errorMessage = response.error || "Failed to load data";
     // Check both status code (more reliable) and error message for 404s
-    if (response.statusCode === 404 || is404Error(errorMessage)) {
+    // Also treat 400 errors that indicate resource doesn't exist as 404s
+    if (
+      response.statusCode === 404 ||
+      (response.statusCode === 400 && is404Error(errorMessage)) ||
+      is404Error(errorMessage)
+    ) {
       notFound();
     }
     return errorMessage;
@@ -90,7 +97,12 @@ export function handleApiErrorWithFallback(
   if (!response.success) {
     const errorMessage = response.error || fallbackMessage;
     // Check both status code (more reliable) and error message for 404s
-    if (response.statusCode === 404 || is404Error(errorMessage)) {
+    // Also treat 400 errors that indicate resource doesn't exist as 404s
+    if (
+      response.statusCode === 404 ||
+      (response.statusCode === 400 && is404Error(errorMessage)) ||
+      is404Error(errorMessage)
+    ) {
       notFound();
     }
     return errorMessage;
