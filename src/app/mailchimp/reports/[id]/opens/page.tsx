@@ -65,6 +65,11 @@ export default async function CampaignOpensPage({
   const rawRouteParams = await params;
   const { id: campaignId } = reportOpensPageParamsSchema.parse(rawRouteParams);
 
+  // Validate campaign exists first (BEFORE Suspense boundary for 404 handling)
+  // The campaign report endpoint reliably returns 404 for invalid campaign IDs
+  const campaignResponse = await mailchimpDAL.fetchCampaignReport(campaignId);
+  handleApiError(campaignResponse);
+
   // Validate page params with redirect handling (BEFORE Suspense boundary)
   const { apiParams, currentPage, pageSize } = await validatePageParams({
     searchParams,
@@ -73,13 +78,13 @@ export default async function CampaignOpensPage({
     basePath: `/mailchimp/reports/${campaignId}/opens`,
   });
 
-  // Fetch campaign open list data (BEFORE Suspense boundary for 404 handling)
+  // Fetch campaign open list data (BEFORE Suspense boundary)
   const response = await mailchimpDAL.fetchCampaignOpenList(
     campaignId,
     apiParams,
   );
 
-  // Handle API errors - triggers notFound() for 404s (BEFORE Suspense boundary)
+  // Handle API errors (BEFORE Suspense boundary)
   handleApiError(response);
 
   const opensData = response.success

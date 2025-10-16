@@ -56,12 +56,17 @@ export default async function CampaignAbuseReportsPage({
   const rawRouteParams = await params;
   const { id: campaignId } = abuseReportsPageParamsSchema.parse(rawRouteParams);
 
-  // Fetch campaign abuse reports data (BEFORE Suspense boundary for 404 handling)
+  // Validate campaign exists first (BEFORE Suspense boundary for 404 handling)
+  // The campaign report endpoint reliably returns 404 for invalid campaign IDs
+  const campaignResponse = await mailchimpDAL.fetchCampaignReport(campaignId);
+  handleApiError(campaignResponse);
+
+  // Fetch campaign abuse reports data (BEFORE Suspense boundary)
   // Note: This API endpoint does not support pagination parameters (count/offset)
   // All abuse reports are returned in a single response
   const response = await mailchimpDAL.fetchCampaignAbuseReports(campaignId);
 
-  // Handle API errors - triggers notFound() for 404s (BEFORE Suspense boundary)
+  // Handle API errors (BEFORE Suspense boundary)
   handleApiError(response);
 
   const abuseReportsData = response.success
