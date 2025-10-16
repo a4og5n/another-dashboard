@@ -23,8 +23,46 @@ import {
   listPageSearchParamsSchema,
 } from "@/schemas/components";
 
-async function ListPageContent({ params, searchParams }: ListPageProps) {
-  // Validate route params and search params
+function ListPageContent({
+  list,
+  error,
+  activeTab,
+  serverPrefix,
+  errorCode,
+}: {
+  list: List | null;
+  error?: string;
+  activeTab: "overview" | "stats" | "settings";
+  serverPrefix?: string;
+  errorCode?: string;
+}) {
+  // Guard component handles UI based on errorCode from DAL
+  return (
+    <MailchimpConnectionGuard errorCode={errorCode}>
+      {list ? (
+        <ListDetail
+          list={list}
+          activeTab={activeTab}
+          serverPrefix={serverPrefix}
+        />
+      ) : (
+        <ListDetail
+          list={null}
+          error={error || "Failed to load list"}
+          activeTab={activeTab}
+          serverPrefix={serverPrefix}
+        />
+      )}
+    </MailchimpConnectionGuard>
+  );
+}
+
+export default async function ListPage({
+  params,
+  searchParams,
+}: ListPageProps) {
+  // Validate route params and search params BEFORE Suspense boundary
+  // This ensures notFound() is called at the page level
   const { validatedParams, validatedSearchParams } = await processRouteParams({
     params,
     searchParams,
@@ -38,34 +76,14 @@ async function ListPageContent({ params, searchParams }: ListPageProps) {
   // Fetch server prefix for Mailchimp admin URL
   const serverPrefix = await getUserServerPrefix();
 
-  // Fetch list data (validation happens at DAL layer)
+  // Fetch list data BEFORE Suspense boundary
+  // This ensures notFound() works properly for 404 responses
   const response = await mailchimpDAL.fetchList(validatedParams.id);
 
   // Handle API errors (automatically triggers notFound() for 404s)
+  // Must be called BEFORE Suspense boundary
   handleApiError(response);
 
-  // Guard component handles UI based on errorCode from DAL
-  return (
-    <MailchimpConnectionGuard errorCode={response.errorCode}>
-      {response.success ? (
-        <ListDetail
-          list={response.data as List}
-          activeTab={activeTab}
-          serverPrefix={serverPrefix}
-        />
-      ) : (
-        <ListDetail
-          list={null}
-          error={response.error || "Failed to load list"}
-          activeTab={activeTab}
-          serverPrefix={serverPrefix}
-        />
-      )}
-    </MailchimpConnectionGuard>
-  );
-}
-
-export default function ListPage({ params, searchParams }: ListPageProps) {
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -87,9 +105,15 @@ export default function ListPage({ params, searchParams }: ListPageProps) {
           </p>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content - Suspense only used for streaming */}
         <Suspense fallback={<ListDetailSkeleton />}>
-          <ListPageContent params={params} searchParams={searchParams} />
+          <ListPageContent
+            list={response.success ? (response.data as List) : null}
+            error={response.error}
+            activeTab={activeTab}
+            serverPrefix={serverPrefix ?? undefined}
+            errorCode={response.errorCode}
+          />
         </Suspense>
       </div>
     </DashboardLayout>

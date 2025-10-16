@@ -56,12 +56,22 @@ When users visit non-existent pages (e.g., `/mailchimp/lists/483a0ba84ass`), the
 
 **Files to Create:**
 
+**Types (following project architectural standards):**
+
+- `src/types/components/not-found/back-button.ts` - BackButton type definitions
+- `src/types/components/not-found/index.ts` - Not-found types barrel export
+- `src/types/components/layout/sidebar-provider.ts` - Sidebar context type definitions
+
+**Components:**
+
 - `src/components/not-found/back-button.tsx` - Client component for history.back()
-- `src/components/not-found/index.ts` - Barrel export
+- `src/components/not-found/index.ts` - Not-found components barrel export
 - `src/components/layout/sidebar-provider.tsx` - Context provider for sidebar state
 
 **Files to Modify:**
 
+- `src/types/components/index.ts` - Export not-found types
+- `src/types/components/layout/index.ts` - Export sidebar provider types
 - `src/app/not-found.tsx` - Remove `"use client"`, use BackButton component
 - `src/components/layout/dashboard-shell.tsx` - Remove `"use client"`, use context
 - `src/components/layout/dashboard-header.tsx` - Use sidebar context instead of props
@@ -269,31 +279,61 @@ feature/fix-404-status-codes
 
 #### Files to Create:
 
-- `src/components/not-found/back-button.tsx`
-- `src/components/not-found/index.ts`
+- `src/types/components/not-found/back-button.ts` - Type definitions
+- `src/types/components/not-found/index.ts` - Type barrel export
+- `src/components/not-found/back-button.tsx` - Client component
+- `src/components/not-found/index.ts` - Component barrel export
 
 #### Files to Modify:
 
-- `src/app/not-found.tsx`
+- `src/app/not-found.tsx` - Convert to server component
+- `src/types/components/index.ts` - Export not-found types
 
 #### Implementation Steps:
 
-1. **Create not-found components directory**
+1. **Create not-found directories**
 
    ```bash
+   mkdir -p src/types/components/not-found
    mkdir -p src/components/not-found
    ```
 
-2. **Create BackButton client component**
+2. **Create BackButton type definitions**
+
+   Create `src/types/components/not-found/back-button.ts`:
+
+   ```tsx
+   /**
+    * Types for BackButton component
+    *
+    * Follows project guidelines for centralized type definitions
+    */
+
+   /**
+    * Props for the BackButton component
+    */
+   export interface BackButtonProps {
+     /**
+      * Optional additional CSS class names
+      */
+     className?: string;
+   }
+   ```
+
+   Create `src/types/components/not-found/index.ts`:
+
+   ```tsx
+   export * from "@/types/components/not-found/back-button";
+   ```
+
+3. **Create BackButton client component**
 
    Create `src/components/not-found/back-button.tsx`:
 
    ```tsx
    "use client";
 
-   interface BackButtonProps {
-     className?: string;
-   }
+   import type { BackButtonProps } from "@/types/components/not-found";
 
    export function BackButton({ className }: BackButtonProps) {
      const handleGoBack = () => {
@@ -314,7 +354,7 @@ feature/fix-404-status-codes
    }
    ```
 
-3. **Create barrel export**
+4. **Create component barrel export**
 
    Create `src/components/not-found/index.ts`:
 
@@ -322,7 +362,15 @@ feature/fix-404-status-codes
    export * from "./back-button";
    ```
 
-4. **Update root not-found.tsx to remove "use client"**
+5. **Export not-found types from main types index**
+
+   Update `src/types/components/index.ts` to include:
+
+   ```tsx
+   export * from "@/types/components/not-found";
+   ```
+
+6. **Update root not-found.tsx to remove "use client"**
 
    Modify `src/app/not-found.tsx`:
    - Remove `"use client"` directive
@@ -354,13 +402,16 @@ pnpm dev
 #### Checkpoint: COMMIT
 
 ```bash
-git add src/components/not-found/ src/app/not-found.tsx
+git add src/types/components/not-found/ src/components/not-found/ src/app/not-found.tsx src/types/components/index.ts
 git commit -m "feat(404): convert root not-found.tsx to server component
 
+- Create BackButtonProps type in src/types/components/not-found/
+- Export not-found types from main types index
 - Extract BackButton into separate client component
 - Remove 'use client' from not-found.tsx
 - Enables proper 404 HTTP status code for most pages
-- Preserves all existing functionality"
+- Preserves all existing functionality
+- Follows project architectural standards for type definitions"
 ```
 
 #### 💰 Cost Optimization: CLEAR CONVERSATION
@@ -388,35 +439,79 @@ git commit -m "feat(404): convert root not-found.tsx to server component
 
 #### Files to Create:
 
-- `src/components/layout/sidebar-provider.tsx`
+- `src/types/components/layout/sidebar-provider.ts` - Type definitions
+- `src/components/layout/sidebar-provider.tsx` - Context provider
 
 #### Files to Modify:
 
-- `src/components/layout/dashboard-shell.tsx`
-- `src/components/layout/dashboard-header.tsx`
-- `src/components/layout/dashboard-sidebar.tsx`
-- `src/components/layout/index.ts`
-- `src/app/layout.tsx`
+- `src/types/components/layout/index.ts` - Export sidebar types
+- `src/components/layout/dashboard-shell.tsx` - Convert to server component
+- `src/components/layout/dashboard-header.tsx` - Use context hook
+- `src/components/layout/dashboard-sidebar.tsx` - Use context hook
+- `src/components/layout/index.ts` - Export SidebarProvider
+- `src/app/layout.tsx` - Remove prop passing
 
 #### Implementation Steps:
 
 **Step 1: Create Sidebar Context Provider**
 
-Create `src/components/layout/sidebar-provider.tsx`:
+First, create the type definitions in `src/types/components/layout/sidebar-provider.ts`:
+
+```tsx
+/**
+ * Types for Sidebar Context Provider
+ *
+ * Follows project guidelines for centralized type definitions
+ */
+import type { ReactNode } from "react";
+
+/**
+ * Value shape for SidebarContext
+ */
+export interface SidebarContextValue {
+  /**
+   * Whether the sidebar is currently open
+   */
+  sidebarOpen: boolean;
+
+  /**
+   * Function to set sidebar open state
+   */
+  setSidebarOpen: (open: boolean) => void;
+}
+
+/**
+ * Props for SidebarProvider component
+ */
+export interface SidebarProviderProps {
+  /**
+   * Child components to wrap with sidebar context
+   */
+  children: ReactNode;
+}
+```
+
+Update `src/types/components/layout/index.ts` to export the new types:
+
+```tsx
+export * from "@/types/components/layout/breadcrumb";
+export * from "@/types/components/layout/sidebar-provider";
+```
+
+Then, create the provider component in `src/components/layout/sidebar-provider.tsx`:
 
 ```tsx
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
-
-interface SidebarContextValue {
-  sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
-}
+import { createContext, useContext, useState } from "react";
+import type {
+  SidebarContextValue,
+  SidebarProviderProps,
+} from "@/types/components/layout";
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
 
-export function SidebarProvider({ children }: { children: ReactNode }) {
+export function SidebarProvider({ children }: SidebarProviderProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
@@ -445,10 +540,12 @@ pnpm lint
 **Checkpoint: COMMIT**
 
 ```bash
-git add src/components/layout/sidebar-provider.tsx
+git add src/types/components/layout/ src/components/layout/sidebar-provider.tsx
 git commit -m "feat(layout): add sidebar context provider
 
+- Create SidebarContextValue and SidebarProviderProps types
 - Create SidebarProvider with context for sidebar state
+- Export types from layout index
 - Isolates client-side state management
 - Preparation for converting DashboardShell to server component"
 ```
@@ -518,7 +615,7 @@ git commit -m "refactor(layout): convert DashboardShell to server component
 
 Modify `src/components/layout/dashboard-header.tsx`:
 
-1. Add import: `import { useSidebar } from "@/components/layout/sidebar-provider";`
+1. Add import: `import { useSidebar } from "@/components/layout";`
 2. Remove `sidebarOpen` and `setSidebarOpen` from props interface
 3. Add at start of component: `const { sidebarOpen, setSidebarOpen } = useSidebar();`
 4. Keep everything else the same
@@ -527,7 +624,7 @@ Modify `src/components/layout/dashboard-header.tsx`:
 
 Modify `src/components/layout/dashboard-sidebar.tsx`:
 
-1. Add import: `import { useSidebar } from "@/components/layout/sidebar-provider";`
+1. Add import: `import { useSidebar } from "@/components/layout";`
 2. Remove `visible` prop from props interface (if it exists)
 3. Add at start of component: `const { sidebarOpen } = useSidebar();`
 4. Replace any usage of `visible` prop with `sidebarOpen`
@@ -743,8 +840,11 @@ pnpm dev
 **3. Automated Testing**
 
 ```bash
-# Run all tests
+# Run all tests (includes architectural enforcement tests)
 pnpm test
+
+# Run architectural enforcement tests specifically
+pnpm test src/test/architectural-enforcement/
 
 # Run type checking
 pnpm type-check
@@ -752,7 +852,7 @@ pnpm type-check
 # Run linting
 pnpm lint
 
-# Run full validation
+# Run full validation (recommended)
 pnpm validate
 ```
 
@@ -797,11 +897,13 @@ Before pushing to origin:
   - [ ] All components follow project conventions
   - [ ] No console.logs or debug statements
 
-- [ ] **Type Safety**
+- [ ] **Type Safety & Architecture**
   - [ ] All TypeScript errors resolved
   - [ ] No `any` types introduced
-  - [ ] All imports use path aliases
+  - [ ] All imports use path aliases (`@/types`, `@/components`)
+  - [ ] All type definitions in `src/types/` folder (not inline)
   - [ ] Context is properly typed
+  - [ ] Types exported through barrel exports (index.ts)
 
 - [ ] **Testing**
   - [ ] All routes return 404 status correctly
@@ -895,16 +997,26 @@ Converted client components to server components to enable proper 404 status:
 
 ### New Files:
 
+**Type Definitions (following project architectural standards):**
+
+- `src/types/components/not-found/back-button.ts` - BackButton component types
+- `src/types/components/not-found/index.ts` - Not-found types barrel export
+- `src/types/components/layout/sidebar-provider.ts` - Sidebar context types
+
+**Components:**
+
 - `src/components/not-found/back-button.tsx` - Client component for history.back()
-- `src/components/not-found/index.ts` - Barrel export
+- `src/components/not-found/index.ts` - Not-found components barrel export
 - `src/components/layout/sidebar-provider.tsx` - Context provider for sidebar state
 
 ### Modified Files:
 
+- `src/types/components/index.ts` - Exports not-found types
+- `src/types/components/layout/index.ts` - Exports sidebar provider types
 - `src/app/not-found.tsx` - Removed "use client", uses BackButton component
 - `src/components/layout/dashboard-shell.tsx` - Converted to server component
-- `src/components/layout/dashboard-header.tsx` - Uses sidebar context
-- `src/components/layout/dashboard-sidebar.tsx` - Uses sidebar context
+- `src/components/layout/dashboard-header.tsx` - Uses sidebar context via hook
+- `src/components/layout/dashboard-sidebar.tsx` - Uses sidebar context via hook
 - `src/components/layout/index.ts` - Exports SidebarProvider
 - `src/app/mailchimp/layout.tsx` - Server-side auth check
 
@@ -922,7 +1034,11 @@ Converted client components to server components to enable proper 404 status:
 
 **None.** All changes are internal refactoring. Users see identical UI/UX.
 
-**Developer Note:** DashboardHeader and DashboardSidebar now use `useSidebar()` hook instead of props for sidebar state.
+**Developer Notes:**
+
+- DashboardHeader and DashboardSidebar now use `useSidebar()` hook instead of props for sidebar state
+- All new type definitions follow project architectural standards (centralized in `src/types/` folder)
+- All imports use path aliases (`@/types`, `@/components`) as enforced by project guidelines
 
 ## Checklist
 
@@ -931,6 +1047,8 @@ Converted client components to server components to enable proper 404 status:
 - [x] All tests pass
 - [x] Documentation reviewed
 - [x] Manual testing complete
+- [x] Type definitions centralized in `src/types/` (project architectural standard)
+- [x] All imports use path aliases (enforced by architectural tests)
 
 ## References
 
@@ -1111,11 +1229,21 @@ After PR is merged:
 - TypeScript ensures correctness
 - Context API is familiar pattern
 
+**Architectural Standards Compliance:**
+
+- All type definitions follow project guidelines (centralized in `src/types/`)
+- All imports use path aliases (`@/types`, `@/components`)
+- Barrel exports (index.ts) for clean imports
+- Types exported separately from components
+- Automated tests enforce these standards
+
 **If extending in the future:**
 
 - To add more sidebar state, update SidebarProvider
 - To add sidebar actions, add to context value
 - Pattern can be reused for other shared state
+- Always define types in `src/types/components/` first
+- Use path aliases for all imports
 
 ---
 

@@ -71,10 +71,29 @@
 
 **Files Affected**
 
-- List of files that will be created (with verified paths)
-- List of files that will be modified (verified to exist)
-- List of files that will be deleted (if any)
-- **Note:** All file paths should be verified before plan generation
+Organize by category for clarity:
+
+**Files to Create:**
+
+**Types (following project architectural standards):**
+
+- `src/types/[category]/[name].ts` - Type definitions with JSDoc
+- `src/types/[category]/index.ts` - Barrel export (if new category)
+
+**Components/Utilities:**
+
+- `src/components/[feature]/[name].tsx` - Component implementation
+- `src/utils/[category]/[name].ts` - Utility implementation
+- Corresponding index.ts files for barrel exports
+
+**Files to Modify:**
+
+- `src/types/[category]/index.ts` - Export new types
+- `src/types/index.ts` - Export new type category (if needed)
+- `src/components/[feature]/index.ts` - Export new components
+- Any pages/components using the new functionality
+
+**Note:** All file paths should be verified before plan generation
 
 ---
 
@@ -190,18 +209,43 @@ Break down the implementation into phases with clear checkpoints.
 
 **Files to Create:**
 
-- `path/to/file.ts` - Description
+**Types:**
+
+- `src/types/[category]/[name].ts` - Type definitions with JSDoc
+- `src/types/[category]/index.ts` - Barrel export
+
+**Implementation:**
+
+- `src/components/[feature]/[name].tsx` - Component implementation
+- `src/components/[feature]/index.ts` - Barrel export
 
 **Files to Modify:**
 
-- `path/to/file.ts` - What changes will be made
+- `src/types/[category]/index.ts` - Export new types
+- `src/types/index.ts` - Export type category (if new)
+- Other affected files
 
 **Implementation Steps:**
 
-1. **Step description**
+1. **Create type definitions FIRST**
+
    ```bash
-   # Commands to run (if applicable)
+   mkdir -p src/types/[category]
    ```
+
+   - Create type definition file with JSDoc
+   - Create/update barrel exports
+   - Export from main types index
+
+2. **Create implementation**
+
+   ```bash
+   mkdir -p src/components/[feature]
+   ```
+
+   - Import types from `@/types/[category]`
+   - Implement component/utility
+   - Create barrel export
 ````
 
 ```tsx
@@ -328,14 +372,27 @@ All code examples in execution plans must follow project conventions exactly. Be
 **Import Path Examples - RIGHT vs WRONG:**
 
 ```tsx
-// ✅ RIGHT - Using barrel export
+// ✅ RIGHT - Using barrel export from main index
 import type { ApiResponse } from "@/types";
 
-// ❌ WRONG - Importing from specific file
+// ✅ RIGHT - Using barrel export from subfolder index
+import type { BackButtonProps } from "@/types/components/not-found";
+
+// ❌ WRONG - Importing from specific file (bypass barrel exports)
 import type { ApiResponse } from "@/types/api-errors";
+import type { BackButtonProps } from "@/types/components/not-found/back-button";
+
+// ✅ RIGHT - Component importing types from @/types
+import type { BackButtonProps } from "@/types/components/not-found";
+
+// ❌ WRONG - Inline type definitions (should be in src/types/)
+interface BackButtonProps {
+  className?: string;
+}
 
 // ✅ RIGHT - Absolute path in barrel export
 export * from "@/utils/errors/api-error-handler";
+export * from "@/types/components/not-found/back-button";
 
 // ❌ WRONG - Relative path in barrel export (depends on project)
 export * from "./api-error-handler";
@@ -343,12 +400,76 @@ export * from "./api-error-handler";
 
 **Pre-Writing Checklist for Code Examples:**
 
-- [ ] Verified import paths by reading index.ts files
+- [ ] Verified import paths by reading index.ts files at multiple levels
 - [ ] Checked project's barrel export pattern (relative vs absolute)
 - [ ] Confirmed file locations with Glob/Bash
 - [ ] Referenced official framework docs if applicable
-- [ ] All imports use established project aliases
+- [ ] All imports use established project aliases (`@/types`, `@/components`)
 - [ ] No assumed file locations without verification
+- [ ] **CRITICAL:** No inline type definitions - all types defined in `src/types/`
+- [ ] Type definitions organized in subfolder structure matching components
+- [ ] Types exported through barrel exports (index.ts files)
+- [ ] JSDoc comments included in type definitions
+
+**Component Type Organization Pattern:**
+
+When creating new components that need type definitions:
+
+1. **Create type definition file FIRST:**
+
+   ```
+   src/types/components/[feature]/[component-name].ts
+   ```
+
+2. **Add JSDoc documentation:**
+
+   ```tsx
+   /**
+    * Types for [ComponentName] component
+    *
+    * Follows project guidelines for centralized type definitions
+    */
+
+   /**
+    * Props for the [ComponentName] component
+    */
+   export interface ComponentNameProps {
+     /**
+      * Description of the prop
+      */
+     propName: string;
+   }
+   ```
+
+3. **Create/update barrel export in feature folder:**
+
+   ```tsx
+   // src/types/components/[feature]/index.ts
+   export * from "@/types/components/[feature]/[component-name]";
+   ```
+
+4. **Update main types index if needed:**
+
+   ```tsx
+   // src/types/components/index.ts
+   export * from "@/types/components/[feature]";
+   ```
+
+5. **Import types in component:**
+   ```tsx
+   // src/components/[feature]/[component-name].tsx
+   import type { ComponentNameProps } from "@/types/components/[feature]";
+   ```
+
+**Real Example from 404 Fix:**
+
+```
+1. Created: src/types/components/not-found/back-button.ts
+2. Created: src/types/components/not-found/index.ts
+3. Updated: src/types/components/index.ts
+4. Created: src/components/not-found/back-button.tsx (imports from @/types)
+5. Created: src/components/not-found/index.ts
+```
 
 ---
 
@@ -366,15 +487,25 @@ export * from "./api-error-handler";
    - Location: `src/test/integration/`
    - Run: `pnpm test [test-file-path]`
 
-3. **Type Checking**
+3. **Architectural Enforcement Tests**
+   - Verify project conventions are followed
+   - Location: `src/test/architectural-enforcement/`
+   - Tests: `alias-enforcement.test.ts`, `types-folder-enforcement.test.ts`, `deprecated-declarations.test.ts`
+   - Run: `pnpm test src/test/architectural-enforcement/`
+   - **These tests will fail if:**
+     - Types are defined inline instead of in `src/types/`
+     - Long relative paths are used instead of path aliases
+     - Deprecated patterns are used (e.g., `z.string().datetime()`)
+
+4. **Type Checking**
    - Ensure TypeScript types are correct
    - Run: `pnpm type-check`
 
-4. **Linting**
+5. **Linting**
    - Ensure code style is consistent
    - Run: `pnpm lint` or `pnpm lint:fix`
 
-5. **Manual Testing**
+6. **Manual Testing**
    - Test in browser/UI
    - Verify user-facing functionality
 
@@ -385,6 +516,9 @@ After each phase:
 ```bash
 # Run specific tests
 pnpm test path/to/new-test-file.test.ts
+
+# Run architectural enforcement tests (IMPORTANT)
+pnpm test src/test/architectural-enforcement/
 
 # Run type checking
 pnpm type-check
@@ -418,15 +552,20 @@ Perform a thorough manual review:
   - [ ] No TODO comments without GitHub issue references
   - [ ] No hardcoded values that should be configurable
 
-- [ ] **Type Safety**
+- [ ] **Type Safety & Architecture**
   - [ ] No `any` types (unless absolutely necessary with justification)
-  - [ ] All imports use path aliases (not relative paths in index.ts)
-  - [ ] Types defined in `/src/types` (not inline)
+  - [ ] All imports use path aliases (`@/types`, `@/components`, `@/utils`)
+  - [ ] Types defined in `/src/types` (not inline) - enforced by tests
   - [ ] Schemas defined in `/src/schemas` (not inline)
+  - [ ] Types organized in subfolder structure matching features
+  - [ ] All types exported through barrel exports (index.ts)
+  - [ ] JSDoc comments on all type definitions
+  - [ ] Component types import from `@/types/components/[feature]`
 
 - [ ] **Testing**
   - [ ] All new functions have unit tests
   - [ ] All tests pass: `pnpm test`
+  - [ ] Architectural enforcement tests pass: `pnpm test src/test/architectural-enforcement/`
   - [ ] Type checking passes: `pnpm type-check`
   - [ ] Linting passes: `pnpm lint`
 
@@ -641,6 +780,50 @@ git clean -fd  # Remove untracked files
 - **Problem:** Duplicate existing functionality or violate patterns
 - **Solution:** Always complete pre-implementation checklist
 
+**Pitfall 12: Inline Type Definitions Instead of Centralized**
+
+- **Problem:** Defining types inline in components instead of in `src/types/`
+- **Impact:** Architectural enforcement tests will fail, types can't be reused
+- **Solution:** ALWAYS create type definitions in `src/types/[category]/` first
+- **Example:**
+
+  ```tsx
+  // ❌ WRONG - Inline type definition
+  interface BackButtonProps {
+    className?: string;
+  }
+
+  // ✅ RIGHT - Import from centralized location
+  import type { BackButtonProps } from "@/types/components/not-found";
+  ```
+
+**Pitfall 13: Forgetting Barrel Exports for Types**
+
+- **Problem:** Creating type files but not exporting them through index.ts
+- **Impact:** Types can't be imported cleanly, violates project conventions
+- **Solution:** Always create/update barrel exports at multiple levels
+- **Example:**
+  ```
+  1. Create: src/types/components/not-found/back-button.ts
+  2. Create/Update: src/types/components/not-found/index.ts
+  3. Update: src/types/components/index.ts
+  ```
+
+**Pitfall 14: Bypassing Barrel Exports in Imports**
+
+- **Problem:** Importing from specific files instead of barrel exports
+- **Impact:** Violates project conventions, harder to refactor
+- **Solution:** Always import from the nearest barrel export
+- **Example:**
+
+  ```tsx
+  // ❌ WRONG - Bypassing barrel export
+  import type { BackButtonProps } from "@/types/components/not-found/back-button";
+
+  // ✅ RIGHT - Using barrel export
+  import type { BackButtonProps } from "@/types/components/not-found";
+  ```
+
 ---
 
 ## AI Self-Check Before Submitting Execution Plan
@@ -658,9 +841,13 @@ Before presenting the execution plan to the user, verify:
 ### Type and Schema Verification
 
 - [ ] Located actual type definition files (not assumed paths)
-- [ ] Verified types are imported from barrel exports (e.g., `@/types` not `@/types/specific-file`)
+- [ ] Verified types are imported from barrel exports (e.g., `@/types/components/feature` not `@/types/components/feature/file`)
+- [ ] **CRITICAL:** All type definitions in code examples are in `src/types/` (NEVER inline)
 - [ ] Checked if schemas need to be in `src/schemas/` per project conventions
 - [ ] All type references in code examples are correct
+- [ ] Type folder structure mirrors component/feature structure
+- [ ] JSDoc documentation included in all type examples
+- [ ] Barrel exports created at all necessary levels (feature folder, category folder, main index)
 
 ### Framework Best Practices
 
@@ -678,10 +865,13 @@ Before presenting the execution plan to the user, verify:
 
 ### Code Example Quality
 
-- [ ] All imports use path aliases (e.g., `@/types`, `@/utils`)
+- [ ] All imports use path aliases (e.g., `@/types`, `@/utils`, `@/components`)
 - [ ] No relative imports in examples (unless project uses them)
-- [ ] All barrel exports follow project pattern
+- [ ] All barrel exports follow project pattern (absolute paths with `@/`)
 - [ ] JSDoc examples reference correct types and imports
+- [ ] **Type-first approach:** Examples show creating type definitions BEFORE components
+- [ ] Examples show complete flow: type file → barrel exports → component import
+- [ ] No inline type definitions in any code examples
 
 ### Documentation References
 
@@ -715,6 +905,12 @@ Here's a concrete example of how an execution plan might look:
 - ✅ Documentation updated
 
 **Files to Create:**
+
+**Types:**
+
+- `src/types/utils/errors.ts` - Error handler function types (if needed)
+
+**Implementation:**
 
 - `src/utils/errors/api-error-handler.ts` - Core error handling functions
 - `src/utils/errors/api-error-handler.test.ts` - Unit tests

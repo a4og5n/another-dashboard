@@ -26,36 +26,22 @@ import type { Metadata } from "next";
 import { handleApiError } from "@/utils";
 
 async function CampaignOpensPageContent({
-  params,
-  searchParams,
-}: ReportOpensPageProps) {
-  // Process route params
-  const rawRouteParams = await params;
-  const { id: campaignId } = reportOpensPageParamsSchema.parse(rawRouteParams);
-
-  // Validate page params with redirect handling
-  const { apiParams, currentPage, pageSize } = await validatePageParams({
-    searchParams,
-    uiSchema: reportOpensPageSearchParamsSchema,
-    apiSchema: openListQueryParamsSchema,
-    basePath: `/mailchimp/reports/${campaignId}/opens`,
-  });
-
-  // Fetch campaign open list data (validation happens at DAL layer)
-  const response = await mailchimpDAL.fetchCampaignOpenList(
-    campaignId,
-    apiParams,
-  );
-
-  // Handle API errors (automatically triggers notFound() for 404s)
-  handleApiError(response);
-
-  const opensData = response.data as ReportOpenListSuccess;
-
+  opensData,
+  campaignId,
+  currentPage,
+  pageSize,
+  errorCode,
+}: {
+  opensData: ReportOpenListSuccess | null;
+  campaignId: string;
+  currentPage: number;
+  pageSize: number;
+  errorCode?: string;
+}) {
   // Guard component handles UI based on errorCode from DAL
   return (
-    <MailchimpConnectionGuard errorCode={response.errorCode}>
-      {response.success ? (
+    <MailchimpConnectionGuard errorCode={errorCode}>
+      {opensData ? (
         <CampaignOpensTable
           opensData={opensData}
           currentPage={currentPage}
@@ -65,18 +51,46 @@ async function CampaignOpensPageContent({
           campaignId={campaignId}
         />
       ) : (
-        <DashboardInlineError
-          error={response.error || "Failed to load campaign opens"}
-        />
+        <DashboardInlineError error="Failed to load campaign opens" />
       )}
     </MailchimpConnectionGuard>
   );
 }
 
-export default function CampaignOpensPage({
+export default async function CampaignOpensPage({
   params,
   searchParams,
 }: ReportOpensPageProps) {
+  // Process route params (BEFORE Suspense boundary)
+  const rawRouteParams = await params;
+  const { id: campaignId } = reportOpensPageParamsSchema.parse(rawRouteParams);
+
+  // Validate campaign exists first (BEFORE Suspense boundary for 404 handling)
+  // The campaign report endpoint reliably returns 404 for invalid campaign IDs
+  const campaignResponse = await mailchimpDAL.fetchCampaignReport(campaignId);
+  handleApiError(campaignResponse);
+
+  // Validate page params with redirect handling (BEFORE Suspense boundary)
+  const { apiParams, currentPage, pageSize } = await validatePageParams({
+    searchParams,
+    uiSchema: reportOpensPageSearchParamsSchema,
+    apiSchema: openListQueryParamsSchema,
+    basePath: `/mailchimp/reports/${campaignId}/opens`,
+  });
+
+  // Fetch campaign open list data (BEFORE Suspense boundary)
+  const response = await mailchimpDAL.fetchCampaignOpenList(
+    campaignId,
+    apiParams,
+  );
+
+  // Handle API errors (BEFORE Suspense boundary)
+  handleApiError(response);
+
+  const opensData = response.success
+    ? (response.data as ReportOpenListSuccess)
+    : null;
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -96,8 +110,11 @@ export default function CampaignOpensPage({
         {/* Main Content */}
         <Suspense fallback={<CampaignOpensSkeleton />}>
           <CampaignOpensPageContent
-            params={params}
-            searchParams={searchParams}
+            opensData={opensData}
+            campaignId={campaignId}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            errorCode={response.errorCode}
           />
         </Suspense>
       </div>

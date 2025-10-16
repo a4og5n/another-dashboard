@@ -1,12 +1,9 @@
-"use client";
-
 import Link from "next/link";
 
-export default function NotFound() {
-  const handleGoBack = () => {
-    window.history.back();
-  };
+import { BackButton } from "@/components/not-found";
+import { Button } from "@/components/ui/button";
 
+export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center space-y-6 max-w-md mx-auto px-4">
@@ -21,19 +18,11 @@ export default function NotFound() {
         </div>
 
         <div className="space-y-4">
-          <Link
-            href="/"
-            className="inline-block w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            Go back home
-          </Link>
+          <Button asChild className="w-full">
+            <Link href="/">Go back home</Link>
+          </Button>
 
-          <button
-            onClick={handleGoBack}
-            className="w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
-          >
-            Go back
-          </button>
+          <BackButton />
         </div>
 
         <div className="pt-6 border-t border-border">

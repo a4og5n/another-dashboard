@@ -10,13 +10,11 @@ const TABS = ["overview", "stats", "settings"] as const;
 /**
  * Schema for list page route params
  * Validates the list ID from the URL
- * List IDs are alphanumeric strings from Mailchimp API
+ * List IDs are typically hexadecimal strings (10 chars) from Mailchimp API
+ * Using lenient validation to handle various ID formats
  */
 export const listPageParamsSchema = z.object({
-  id: z
-    .string()
-    .min(1, "List ID is required")
-    .regex(/^[a-zA-Z0-9]+$/, "List ID must be alphanumeric"),
+  id: z.string().min(1, "List ID is required"),
 });
 
 /**

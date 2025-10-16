@@ -8,13 +8,11 @@ import { z } from "zod";
 /**
  * Schema for report opens page route params
  * Validates the campaign ID from the URL
- * Campaign IDs are alphanumeric strings from Mailchimp API
+ * Campaign IDs are typically hexadecimal strings (10 chars) from Mailchimp API
+ * Using lenient validation to handle various ID formats
  */
 export const reportOpensPageParamsSchema = z.object({
-  id: z
-    .string()
-    .min(1, "Campaign ID is required")
-    .regex(/^[a-zA-Z0-9]+$/, "Campaign ID must be alphanumeric"),
+  id: z.string().min(1, "Campaign ID is required"),
 });
 
 /**

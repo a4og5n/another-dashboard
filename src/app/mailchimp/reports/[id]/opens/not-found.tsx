@@ -39,7 +39,7 @@ export default function NotFound() {
             </p>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <Button asChild>
-                <Link href="/mailchimp/campaigns">View All Campaigns</Link>
+                <Link href="/mailchimp/reports">View All Reports</Link>
               </Button>
               <Button variant="outline" asChild>
                 <Link href="/mailchimp">Back to Dashboard</Link>
