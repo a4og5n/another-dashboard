@@ -2,28 +2,24 @@
  * Mailchimp Layout
  * Protected layout that requires authentication for all mailchimp routes
  *
- * Following established layout patterns with route protection
+ * Server-side authentication check for improved security and performance
  */
-import { AuthWrapper } from "@/components/auth";
+import { redirect } from "next/navigation";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export default function MailchimpLayout({
+export default async function MailchimpLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <AuthWrapper
-      redirectTo="/login"
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Checking authentication...</p>
-          </div>
-        </div>
-      }
-    >
-      {children}
-    </AuthWrapper>
-  );
+  // Server-side authentication check
+  const { isAuthenticated } = await getKindeServerSession();
+
+  // Redirect unauthenticated users (server-side)
+  if (!isAuthenticated) {
+    redirect("/api/auth/login?post_login_redirect_url=/mailchimp");
+  }
+
+  // Render children for authenticated users
+  return <>{children}</>;
 }
