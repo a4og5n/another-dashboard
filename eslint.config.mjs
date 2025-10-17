@@ -36,6 +36,15 @@ const eslintConfig = [
         },
       ],
       "@typescript-eslint/no-require-imports": "error",
+      // Allow unused variables/parameters that start with underscore
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
 ];
