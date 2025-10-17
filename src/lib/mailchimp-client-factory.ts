@@ -39,41 +39,58 @@ async function validateUserConnection(
     return cached.result;
   }
 
-  // Fetch connection from database
-  const connection = await mailchimpConnectionRepo.getDecryptedToken(userId);
+  try {
+    // Fetch connection from database
+    const connection = await mailchimpConnectionRepo.getDecryptedToken(userId);
 
-  // Connection doesn't exist
-  if (!connection) {
+    // Connection doesn't exist
+    if (!connection) {
+      const result: MailchimpValidationResult = {
+        isValid: false,
+        errorCode: MAILCHIMP_ERROR_CODES.NOT_CONNECTED,
+        errorMessage:
+          "Mailchimp account not connected. Please connect your account to continue.",
+      };
+      validationCache.set(userId, { result, timestamp: Date.now() });
+      return result;
+    }
+
+    // Connection exists but is inactive
+    if (!connection.isActive) {
+      const result: MailchimpValidationResult = {
+        isValid: false,
+        errorCode: MAILCHIMP_ERROR_CODES.CONNECTION_INACTIVE,
+        errorMessage:
+          "Your Mailchimp connection is inactive. Please reconnect your account.",
+      };
+      validationCache.set(userId, { result, timestamp: Date.now() });
+      return result;
+    }
+
+    // Connection is valid
     const result: MailchimpValidationResult = {
-      isValid: false,
-      errorCode: MAILCHIMP_ERROR_CODES.NOT_CONNECTED,
-      errorMessage:
-        "Mailchimp account not connected. Please connect your account to continue.",
+      isValid: true,
+      server: connection.serverPrefix,
+      accessToken: connection.accessToken,
     };
     validationCache.set(userId, { result, timestamp: Date.now() });
     return result;
-  }
+  } catch (error) {
+    // Handle database connectivity errors gracefully
+    const errorMessage =
+      error instanceof Error && error.message.includes("ENOTFOUND")
+        ? "Unable to connect to database. Please check your internet connection and try again."
+        : "Database error occurred. Please try again later.";
 
-  // Connection exists but is inactive
-  if (!connection.isActive) {
     const result: MailchimpValidationResult = {
       isValid: false,
-      errorCode: MAILCHIMP_ERROR_CODES.CONNECTION_INACTIVE,
-      errorMessage:
-        "Your Mailchimp connection is inactive. Please reconnect your account.",
+      errorCode: MAILCHIMP_ERROR_CODES.DATABASE_ERROR,
+      errorMessage,
     };
-    validationCache.set(userId, { result, timestamp: Date.now() });
+
+    // Don't cache database errors - we want to retry on next request
     return result;
   }
-
-  // Connection is valid
-  const result: MailchimpValidationResult = {
-    isValid: true,
-    server: connection.serverPrefix,
-    accessToken: connection.accessToken,
-  };
-  validationCache.set(userId, { result, timestamp: Date.now() });
-  return result;
 }
 
 /**

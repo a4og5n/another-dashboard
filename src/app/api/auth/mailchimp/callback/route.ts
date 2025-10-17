@@ -114,8 +114,36 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("OAuth callback error:", error);
 
+    // Provide specific error codes based on error type
+    let errorCode = "connection_failed";
+
+    if (error instanceof Error) {
+      // Network/DNS errors (cannot reach Mailchimp)
+      if (
+        error.message.includes("ENOTFOUND") ||
+        error.message.includes("fetch failed") ||
+        error.message.includes("ETIMEDOUT")
+      ) {
+        errorCode = "mailchimp_unreachable";
+      }
+      // Database errors
+      else if (
+        error.message.includes("Failed query") ||
+        error.message.includes("database")
+      ) {
+        errorCode = "database_error";
+      }
+      // OAuth state validation errors
+      else if (error.message.includes("state")) {
+        errorCode = "invalid_state";
+      }
+    }
+
+    // Log detailed error for debugging
+    console.error(`Mailchimp OAuth callback failed with code: ${errorCode}`);
+
     return NextResponse.redirect(
-      new URL("/mailchimp?error=connection_failed", request.url),
+      new URL(`/mailchimp?error=${encodeURIComponent(errorCode)}`, request.url),
     );
   }
 }

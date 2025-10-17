@@ -45,6 +45,12 @@ function getErrorMessage(error: string): string {
       "Your Mailchimp connection is inactive. Please reconnect your account.",
     mailchimp_token_invalid:
       "Your Mailchimp connection has expired. Please reconnect your account.",
+    database_connection_error:
+      "Unable to connect to database. Please check your internet connection and try again later.",
+    mailchimp_unreachable:
+      "Unable to reach Mailchimp servers. This may be a temporary network issue. Please check your internet connection and try again in a few moments.",
+    database_error:
+      "Database error occurred while saving your connection. Please try again later.",
   };
 
   return messages[error] || "An error occurred. Please try again.";
