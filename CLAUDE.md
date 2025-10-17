@@ -268,6 +268,95 @@ import { bc } from "@/utils/breadcrumbs";
 
 If you find yourself using `bc.custom()` multiple times for the same route, add it as a static route or dynamic function in the breadcrumb builder instead.
 
+### PageLayout Component Pattern
+
+The project uses a centralized `PageLayout` component to reduce boilerplate across all dashboard pages.
+
+**When to Use:**
+
+- All dashboard pages that follow the standard layout (breadcrumbs + header + content)
+- Both static pages and pages with dynamic route params
+
+**Two Usage Patterns:**
+
+**Pattern A - Static Pages** (no dynamic route params):
+
+```tsx
+import { PageLayout } from "@/components/layout";
+import { bc } from "@/utils";
+
+export default function MyPage({ searchParams }) {
+  return (
+    <PageLayout
+      breadcrumbs={[bc.home, bc.mailchimp, bc.current("My Page")]}
+      title="Page Title"
+      description="Page description"
+      skeleton={<MyPageSkeleton />}
+    >
+      <MyPageContent searchParams={searchParams} />
+    </PageLayout>
+  );
+}
+```
+
+**Pattern B - Dynamic Pages** (with `[id]` or other dynamic segments):
+
+```tsx
+import { PageLayout, BreadcrumbNavigation } from "@/components/layout";
+import { bc } from "@/utils";
+import { Suspense } from "react";
+
+export default async function MyDynamicPage({ params, searchParams }) {
+  const rawParams = await params;
+  const { id } = myParamsSchema.parse(rawParams);
+
+  // ... data fetching and validation ...
+
+  return (
+    <PageLayout
+      breadcrumbsSlot={
+        <Suspense fallback={null}>
+          <BreadcrumbContent params={params} />
+        </Suspense>
+      }
+      title="Page Title"
+      description="Page description"
+      skeleton={<MyPageSkeleton />}
+    >
+      <MyPageContent {...props} />
+    </PageLayout>
+  );
+}
+
+// Separate async component for breadcrumbs
+async function BreadcrumbContent({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = myParamsSchema.parse(await params);
+  return (
+    <BreadcrumbNavigation
+      items={[bc.home, bc.mailchimp, bc.myRoute(id), bc.current("Details")]}
+    />
+  );
+}
+```
+
+**Benefits:**
+
+- Eliminates 20-50 lines of boilerplate per page
+- Consistent layout structure across all pages
+- Type-safe props with comprehensive JSDoc
+- Supports both static and dynamic breadcrumb patterns
+
+**Rules:**
+
+- Use `breadcrumbs` prop for static pages (Pattern A)
+- Use `breadcrumbsSlot` prop for dynamic pages (Pattern B)
+- Never pass both props - choose one based on page type
+- Always provide title, description, and skeleton props
+
 ### Schema & API Patterns
 
 - **Error response strategy**: Compare fields to shared error schema, extend with `.extend({ ... })` if needed, or create custom schema if fundamentally different
