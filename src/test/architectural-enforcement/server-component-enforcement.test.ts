@@ -70,7 +70,7 @@ function hasUseClientDirective(filePath: string): boolean {
       break;
     }
     return false;
-  } catch (error) {
+  } catch {
     // If file doesn't exist, it's not a violation
     return false;
   }
@@ -104,7 +104,7 @@ function findAllNotFoundFiles(dir: string): string[] {
           notFoundFiles.push(relativePath);
         }
       }
-    } catch (error) {
+    } catch {
       // Skip directories we can't read
     }
   }
