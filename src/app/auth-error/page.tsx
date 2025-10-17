@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function AuthErrorPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 pt-24">
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-2">
           <AlertCircle className="mx-auto h-16 w-16 text-destructive" />

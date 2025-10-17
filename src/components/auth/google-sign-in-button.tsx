@@ -23,7 +23,6 @@
  * />
  * ```
  */
-import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import type {
@@ -68,8 +67,6 @@ export function GoogleSignInButton({
   className = "",
   showErrorAlert = true,
 }: GoogleSignInButtonProps) {
-  const router = useRouter();
-
   // Get Google connection ID from environment variables
   // This tells Kinde which OAuth provider to use (Google in this case)
   const connectionId = process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID;
@@ -111,8 +108,9 @@ export function GoogleSignInButton({
     // This bypasses Kinde's hosted login page and goes directly to Google OAuth
     const authUrl = `${authEndpoint}?connection_id=${connectionId}&post_login_redirect_url=${encodeURIComponent(postLoginRedirect)}`;
 
-    // Use router.push to navigate directly to Kinde API with connection_id
-    router.push(authUrl);
+    // Use window.location.href for OAuth redirects to avoid Next.js fetch errors
+    // router.push() can cause "Failed to fetch" errors with external OAuth URLs
+    window.location.href = authUrl;
   };
 
   return (

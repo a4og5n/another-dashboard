@@ -17,7 +17,7 @@ import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import type { AbuseReportListSuccess, CampaignReport } from "@/types/mailchimp";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import type { Metadata } from "next";
-import { handleApiError } from "@/utils";
+import { handleApiError, bc } from "@/utils";
 
 async function CampaignAbuseReportsPageContent({
   abuseReportsData,
@@ -113,11 +113,11 @@ async function BreadcrumbContent({
   return (
     <BreadcrumbNavigation
       items={[
-        { label: "Dashboard", href: "/" },
-        { label: "Mailchimp", href: "/mailchimp" },
-        { label: "Reports", href: `/mailchimp/reports` },
-        { label: "Report", href: `/mailchimp/reports/${id}` },
-        { label: "Abuse Reports", isCurrent: true },
+        bc.home,
+        bc.mailchimp,
+        bc.reports,
+        bc.report(id),
+        bc.current("Abuse Reports"),
       ]}
     />
   );

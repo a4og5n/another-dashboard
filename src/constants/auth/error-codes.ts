@@ -22,6 +22,8 @@ export const MAILCHIMP_ERROR_CODES = {
   RATE_LIMIT: "mailchimp_rate_limit",
   /** Network or API error */
   API_ERROR: "mailchimp_api_error",
+  /** Database connectivity error */
+  DATABASE_ERROR: "database_connection_error",
   /** Unknown error occurred */
   UNKNOWN_ERROR: "mailchimp_unknown_error",
 } as const;

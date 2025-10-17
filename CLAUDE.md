@@ -210,6 +210,153 @@ if (error) {
 - **Unexpected errors** (bugs, exceptions): Let error boundaries catch them
 - Reference: [Next.js Error Handling Docs](https://nextjs.org/docs/app/getting-started/error-handling)
 
+### Breadcrumb Pattern
+
+The project includes a centralized breadcrumb builder utility for consistent navigation across all pages in `src/utils/breadcrumbs/`:
+
+**Core Object:**
+
+- `bc` - Breadcrumb builder with static routes, dynamic functions, and helpers
+
+**Usage Pattern:**
+
+```tsx
+import { bc } from "@/utils/breadcrumbs";
+
+// Simple static breadcrumbs
+<BreadcrumbNavigation items={[bc.home, bc.mailchimp, bc.current("Reports")]} />
+
+// Breadcrumbs with dynamic IDs
+<BreadcrumbNavigation
+  items={[bc.home, bc.mailchimp, bc.reports, bc.report(id), bc.current("Opens")]}
+/>
+```
+
+**Available Routes:**
+
+**Static Routes:**
+
+- `bc.home` - Dashboard home page (`/`)
+- `bc.mailchimp` - Mailchimp section (`/mailchimp`)
+- `bc.reports` - Reports list (`/mailchimp/reports`)
+- `bc.lists` - Lists list (`/mailchimp/lists`)
+- `bc.generalInfo` - General info page (`/mailchimp/general-info`)
+- `bc.settings` - Settings section (`/settings`)
+- `bc.integrations` - Integrations settings (`/settings/integrations`)
+
+**Dynamic Functions:**
+
+- `bc.report(id)` - Individual report page (`/mailchimp/reports/{id}`)
+- `bc.list(id)` - Individual list page (`/mailchimp/lists/{id}`)
+- `bc.reportOpens(id)` - Report opens page (`/mailchimp/reports/{id}/opens`)
+- `bc.reportAbuseReports(id)` - Abuse reports page (`/mailchimp/reports/{id}/abuse-reports`)
+
+**Helper Functions:**
+
+- `bc.current(label)` - Mark breadcrumb as current page (no href, `isCurrent: true`)
+- `bc.custom(label, href)` - Create custom breadcrumb for non-standard routes
+
+**Benefits:**
+
+- Eliminates 5-8 lines of boilerplate per page
+- Centralized route definitions prevent typos in labels and URLs
+- Type-safe using existing `BreadcrumbItem` type
+- Consistent breadcrumb experience across all pages
+- Easy to maintain - update labels/URLs in one place
+
+**When to Add New Routes:**
+
+If you find yourself using `bc.custom()` multiple times for the same route, add it as a static route or dynamic function in the breadcrumb builder instead.
+
+### PageLayout Component Pattern
+
+The project uses a centralized `PageLayout` component to reduce boilerplate across all dashboard pages.
+
+**When to Use:**
+
+- All dashboard pages that follow the standard layout (breadcrumbs + header + content)
+- Both static pages and pages with dynamic route params
+
+**Two Usage Patterns:**
+
+**Pattern A - Static Pages** (no dynamic route params):
+
+```tsx
+import { PageLayout } from "@/components/layout";
+import { bc } from "@/utils";
+
+export default function MyPage({ searchParams }) {
+  return (
+    <PageLayout
+      breadcrumbs={[bc.home, bc.mailchimp, bc.current("My Page")]}
+      title="Page Title"
+      description="Page description"
+      skeleton={<MyPageSkeleton />}
+    >
+      <MyPageContent searchParams={searchParams} />
+    </PageLayout>
+  );
+}
+```
+
+**Pattern B - Dynamic Pages** (with `[id]` or other dynamic segments):
+
+```tsx
+import { PageLayout, BreadcrumbNavigation } from "@/components/layout";
+import { bc } from "@/utils";
+import { Suspense } from "react";
+
+export default async function MyDynamicPage({ params, searchParams }) {
+  const rawParams = await params;
+  const { id } = myParamsSchema.parse(rawParams);
+
+  // ... data fetching and validation ...
+
+  return (
+    <PageLayout
+      breadcrumbsSlot={
+        <Suspense fallback={null}>
+          <BreadcrumbContent params={params} />
+        </Suspense>
+      }
+      title="Page Title"
+      description="Page description"
+      skeleton={<MyPageSkeleton />}
+    >
+      <MyPageContent {...props} />
+    </PageLayout>
+  );
+}
+
+// Separate async component for breadcrumbs
+async function BreadcrumbContent({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = myParamsSchema.parse(await params);
+  return (
+    <BreadcrumbNavigation
+      items={[bc.home, bc.mailchimp, bc.myRoute(id), bc.current("Details")]}
+    />
+  );
+}
+```
+
+**Benefits:**
+
+- Eliminates 20-50 lines of boilerplate per page
+- Consistent layout structure across all pages
+- Type-safe props with comprehensive JSDoc
+- Supports both static and dynamic breadcrumb patterns
+
+**Rules:**
+
+- Use `breadcrumbs` prop for static pages (Pattern A)
+- Use `breadcrumbsSlot` prop for dynamic pages (Pattern B)
+- Never pass both props - choose one based on page type
+- Always provide title, description, and skeleton props
+
 ### Schema & API Patterns
 
 - **Error response strategy**: Compare fields to shared error schema, extend with `.extend({ ... })` if needed, or create custom schema if fundamentally different
@@ -386,16 +533,50 @@ The Kinde Next.js SDK needs explicit cookie domain configuration for HTTPS on `1
 
 **Troubleshooting OAuth "State not found" Errors:**
 
-If you still encounter "State not found" errors after setting `KINDE_COOKIE_DOMAIN`:
+If you encounter "State not found" errors after setting `KINDE_COOKIE_DOMAIN`, follow these steps in order:
 
-1. **Restart your development server** after adding/changing `KINDE_COOKIE_DOMAIN`
-2. **Clear browser state** using the utility endpoint: `https://127.0.0.1:3000/api/auth/clear-state`
-3. **Clear browser cache**: Cmd+Shift+Delete (Mac) or Ctrl+Shift+Delete (Windows)
+1. **Kill all Next.js dev servers** (multiple instances cause state conflicts):
+
+   ```bash
+   pkill -f "next dev"
+   ```
+
+2. **Clear Next.js cache**:
+
+   ```bash
+   pnpm clean
+   ```
+
+3. **Verify environment variables are set**:
+
+   ```bash
+   grep KINDE_COOKIE_DOMAIN .env.local
+   # Should output: KINDE_COOKIE_DOMAIN=127.0.0.1
+   ```
+
+4. **Start fresh dev server**:
+
+   ```bash
+   pnpm dev
+   ```
+
+5. **Clear browser state** using the utility endpoint: `https://127.0.0.1:3000/api/auth/clear-state`
+
+6. **Clear browser cache completely**: Cmd+Shift+Delete (Mac) or Ctrl+Shift+Delete (Windows)
    - Select "Cookies and other site data"
    - Choose "All time"
    - Click "Clear data"
-4. **Verify configuration** using the health endpoint: `https://127.0.0.1:3000/api/auth/health`
-5. **Alternative**: Use incognito/private browsing mode for development
+
+7. **Verify configuration** using the health endpoint: `https://127.0.0.1:3000/api/auth/health`
+
+8. **Test login in incognito/private browsing mode** (eliminates browser cache issues)
+
+**Common Causes:**
+
+- Multiple dev servers running (check with `ps aux | grep "next dev"`)
+- Stale Next.js cache in `.next/` directory
+- Browser cached cookies from previous sessions
+- `KINDE_COOKIE_DOMAIN` not set or server not restarted after setting it
 
 **Production Note:** In production on Vercel, remove `KINDE_COOKIE_DOMAIN` or set it to your custom domain (e.g., `KINDE_COOKIE_DOMAIN=yourdomain.com`). Do not use `127.0.0.1` in production.
 

@@ -7,18 +7,17 @@
  * Implements Next.js best practices for error handling and layout consistency
  */
 
-import { BreadcrumbNavigation } from "@/components/layout";
 import type { ReportsPageProps } from "@/types/components/mailchimp";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { ReportsOverview } from "@/components/dashboard/reports-overview";
-import { Suspense } from "react";
 import { reportListParamsSchema } from "@/schemas/mailchimp";
 import { reportsPageSearchParamsSchema } from "@/schemas/components";
 import { transformCampaignReportsParams } from "@/utils/mailchimp/query-params";
 import { ReportsOverviewSkeleton } from "@/skeletons/mailchimp";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
+import { bc } from "@/utils";
+import { PageLayout } from "@/components/layout";
 
 async function ReportsPageContent({ searchParams }: ReportsPageProps) {
   // Validate page parameters: validate, redirect if needed, convert to API format
@@ -54,32 +53,14 @@ async function ReportsPageContent({ searchParams }: ReportsPageProps) {
 
 export default function ReportsPage({ searchParams }: ReportsPageProps) {
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation */}
-        <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Reports", isCurrent: true },
-          ]}
-        />
-
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Reports</h1>
-          <p className="text-muted-foreground">
-            View and analyze your Mailchimp reports and their performance
-            metrics
-          </p>
-        </div>
-
-        {/* Main Content */}
-        <Suspense fallback={<ReportsOverviewSkeleton />}>
-          <ReportsPageContent searchParams={searchParams} />
-        </Suspense>
-      </div>
-    </DashboardLayout>
+    <PageLayout
+      breadcrumbs={[bc.home, bc.mailchimp, bc.current("Reports")]}
+      title="Reports"
+      description="View and analyze your Mailchimp reports and their performance metrics"
+      skeleton={<ReportsOverviewSkeleton />}
+    >
+      <ReportsPageContent searchParams={searchParams} />
+    </PageLayout>
   );
 }
 

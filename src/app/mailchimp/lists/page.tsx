@@ -1,5 +1,3 @@
-import { BreadcrumbNavigation } from "@/components/layout";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { ListOverview } from "@/components/mailchimp/lists/list-overview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
@@ -7,8 +5,9 @@ import type { ListsPageProps } from "@/types/components/mailchimp";
 import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { listsPageSearchParamsSchema } from "@/schemas/components";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
-import { Suspense } from "react";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
+import { bc } from "@/utils";
+import { PageLayout } from "@/components/layout";
 
 async function ListsPageContent({ searchParams }: ListsPageProps) {
   // Validate params: validate, check redirect, convert to API format
@@ -43,31 +42,14 @@ async function ListsPageContent({ searchParams }: ListsPageProps) {
 
 export default function ListsPage({ searchParams }: ListsPageProps) {
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation */}
-        <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Mailchimp", href: "/mailchimp" },
-            { label: "Lists", isCurrent: true },
-          ]}
-        />
-
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Lists</h1>
-          <p className="text-muted-foreground">
-            Manage your Mailchimp lists and monitor their performance
-          </p>
-        </div>
-
-        {/* Main Content */}
-        <Suspense fallback={<ListOverviewSkeleton />}>
-          <ListsPageContent searchParams={searchParams} />
-        </Suspense>
-      </div>
-    </DashboardLayout>
+    <PageLayout
+      breadcrumbs={[bc.home, bc.mailchimp, bc.current("Lists")]}
+      title="Lists"
+      description="Manage your Mailchimp lists and monitor their performance"
+      skeleton={<ListOverviewSkeleton />}
+    >
+      <ListsPageContent searchParams={searchParams} />
+    </PageLayout>
   );
 }
 
