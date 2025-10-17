@@ -199,7 +199,7 @@ describe("getUserMailchimpClient", () => {
     ).mockRejectedValue(new Error("Database connection failed"));
 
     await expect(getUserMailchimpClient()).rejects.toThrow(
-      "Database connection failed",
+      "Database error occurred. Please try again later.",
     );
   });
 

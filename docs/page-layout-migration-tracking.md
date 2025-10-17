@@ -13,6 +13,7 @@ Migrating all remaining dashboard pages to use the `PageLayout` component create
 ## Page Inventory
 
 ### ✅ Already Migrated (PR #184)
+
 - [x] `/mailchimp/reports` - Pattern A (static breadcrumbs)
 - [x] `/mailchimp/lists` - Pattern A (static breadcrumbs)
 - [x] `/mailchimp/reports/[id]/opens` - Pattern B (dynamic breadcrumbs)
@@ -20,17 +21,21 @@ Migrating all remaining dashboard pages to use the `PageLayout` component create
 ### ✅ Newly Migrated Pages
 
 **Pattern A - Static Pages (3 pages):**
+
 - [x] `/mailchimp/general-info` - General account info
 - [x] `/mailchimp/reports/[id]` - Campaign report detail (static breadcrumbs)
 - [x] `/settings/integrations` - Integration settings
 
 **Pattern B - Dynamic Pages (1 page):**
+
 - [x] `/mailchimp/reports/[id]/abuse-reports` - Abuse reports list
 
 **Pattern A (treated as static):**
+
 - [x] `/mailchimp/lists/[id]` - List detail (static breadcrumbs)
 
 **Skipped (different layout):**
+
 - [ ] `/mailchimp` - Mailchimp dashboard home (navigation cards, not standard layout)
 
 **Total Migrated:** 5 pages
@@ -39,6 +44,7 @@ Migrating all remaining dashboard pages to use the `PageLayout` component create
 ## Pattern Reference
 
 ### Pattern A - Static Breadcrumbs
+
 ```tsx
 <PageLayout
   breadcrumbs={[bc.home, bc.mailchimp, bc.current("Page Name")]}
@@ -51,6 +57,7 @@ Migrating all remaining dashboard pages to use the `PageLayout` component create
 ```
 
 ### Pattern B - Dynamic Breadcrumbs
+
 ```tsx
 <PageLayout
   breadcrumbsSlot={
@@ -69,10 +76,12 @@ Migrating all remaining dashboard pages to use the `PageLayout` component create
 ## Migration Strategy
 
 **Approach:** Batch migrations in small PRs
+
 - **Batch 1:** Pattern A pages (3 pages) - Simpler, good warmup
 - **Batch 2:** Pattern B pages (4 pages) - More complex with dynamic params
 
 **Per-Page Checklist:**
+
 1. [ ] Read current page implementation
 2. [ ] Identify pattern (A or B)
 3. [ ] Update imports (remove DashboardLayout, BreadcrumbNavigation, Suspense where appropriate)
@@ -88,6 +97,7 @@ Migrating all remaining dashboard pages to use the `PageLayout` component create
 **Skipped:** 1 page (different layout, not applicable)
 
 **Lines of Code:**
+
 - Batch 1 (PR #184): 74 lines saved (3 pages)
 - Batch 2 (this PR): 73 lines saved (5 pages)
 - **Total Saved:** 147 lines of boilerplate eliminated
