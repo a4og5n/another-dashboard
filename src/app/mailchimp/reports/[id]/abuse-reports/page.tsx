@@ -7,7 +7,7 @@
  */
 
 import { Suspense } from "react";
-import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
+import { BreadcrumbNavigation, PageLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignAbuseReportsSkeleton } from "@/skeletons/mailchimp";
 import { abuseReportsPageParamsSchema } from "@/schemas/components";
@@ -74,31 +74,22 @@ export default async function CampaignAbuseReportsPage({
     : null;
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation - params will be awaited inside Suspense */}
+    <PageLayout
+      breadcrumbsSlot={
         <Suspense fallback={null}>
           <BreadcrumbContent params={params} />
         </Suspense>
-
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Abuse Reports</h1>
-          <p className="text-muted-foreground">
-            Spam complaints and abuse reports for this campaign
-          </p>
-        </div>
-
-        {/* Main Content */}
-        <Suspense fallback={<CampaignAbuseReportsSkeleton />}>
-          <CampaignAbuseReportsPageContent
-            abuseReportsData={abuseReportsData}
-            campaignId={campaignId}
-            errorCode={response.errorCode}
-          />
-        </Suspense>
-      </div>
-    </DashboardLayout>
+      }
+      title="Abuse Reports"
+      description="Spam complaints and abuse reports for this campaign"
+      skeleton={<CampaignAbuseReportsSkeleton />}
+    >
+      <CampaignAbuseReportsPageContent
+        abuseReportsData={abuseReportsData}
+        campaignId={campaignId}
+        errorCode={response.errorCode}
+      />
+    </PageLayout>
   );
 }
 

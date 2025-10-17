@@ -7,18 +7,24 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-// Import router mock BEFORE component import
-import { resetRouterMocks, mockRouter } from "@/test/mocks/next-router";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 
 // Mock environment variable
 const mockConnectionId = "conn_test123";
 vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
 
+// Mock window.location for testing navigation
+const mockLocation = { href: "" };
+Object.defineProperty(window, "location", {
+  writable: true,
+  value: mockLocation,
+});
+
 describe("GoogleSignInButton", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    resetRouterMocks();
+    // Reset window.location.href
+    mockLocation.href = "";
     // Ensure environment variable is set for each test
     vi.stubEnv("NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID", mockConnectionId);
   });
@@ -80,14 +86,12 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining("/api/auth/login"),
+      expect(window.location.href).toContain("/api/auth/login");
+      expect(window.location.href).toContain(
+        `connection_id=${mockConnectionId}`,
       );
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining(`connection_id=${mockConnectionId}`),
-      );
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining("post_login_redirect_url=%2Fmailchimp"),
+      expect(window.location.href).toContain(
+        "post_login_redirect_url=%2Fmailchimp",
       );
     });
 
@@ -98,11 +102,9 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining("/api/auth/register"),
-      );
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining(`connection_id=${mockConnectionId}`),
+      expect(window.location.href).toContain("/api/auth/register");
+      expect(window.location.href).toContain(
+        `connection_id=${mockConnectionId}`,
       );
     });
 
@@ -113,11 +115,9 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining("/api/auth/login"),
-      );
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining(`connection_id=${mockConnectionId}`),
+      expect(window.location.href).toContain("/api/auth/login");
+      expect(window.location.href).toContain(
+        `connection_id=${mockConnectionId}`,
       );
     });
 
@@ -128,9 +128,7 @@ describe("GoogleSignInButton", () => {
       const button = screen.getByRole("button");
       await user.click(button);
 
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining(encodeURIComponent("/mailchimp")),
-      );
+      expect(window.location.href).toContain(encodeURIComponent("/mailchimp"));
     });
   });
 
@@ -166,7 +164,8 @@ describe("GoogleSignInButton", () => {
 
       // Should not have rendered button, so no navigation possible
       expect(screen.queryByRole("button")).not.toBeInTheDocument();
-      expect(mockRouter.push).not.toHaveBeenCalled();
+      // window.location.href should remain empty since no button was clicked
+      expect(window.location.href).toBe("");
     });
   });
 
@@ -209,9 +208,7 @@ describe("GoogleSignInButton", () => {
       // Press Enter
       await user.keyboard("{Enter}");
 
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining("/api/auth/login"),
-      );
+      expect(window.location.href).toContain("/api/auth/login");
     });
 
     it("should be activatable with Space key", async () => {
@@ -227,9 +224,7 @@ describe("GoogleSignInButton", () => {
       // Press Space
       await user.keyboard(" ");
 
-      expect(mockRouter.push).toHaveBeenCalledWith(
-        expect.stringContaining("/api/auth/login"),
-      );
+      expect(window.location.href).toContain("/api/auth/login");
     });
   });
 

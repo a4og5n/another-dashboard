@@ -6,9 +6,9 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import { mailchimpConnectionRepo } from "@/db/repositories/mailchimp-connection";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { BreadcrumbNavigation } from "@/components/layout";
+import { PageLayout } from "@/components/layout";
 import { MailchimpIntegrationCard } from "@/components/settings/mailchimp-integration-card";
+import { bc } from "@/utils";
 
 export default async function IntegrationsPage() {
   // 1. Check user authentication (Kinde)
@@ -30,35 +30,20 @@ export default async function IntegrationsPage() {
   );
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation */}
-        <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Settings", href: "/settings/integrations" },
-            { label: "Integrations", isCurrent: true },
-          ]}
-        />
+    <PageLayout
+      breadcrumbs={[bc.home, bc.settings, bc.current("Integrations")]}
+      title="Integrations"
+      description="Manage your connected data sources and API integrations"
+      skeleton={<div>Loading...</div>}
+    >
+      <div className="grid gap-6">
+        <MailchimpIntegrationCard connection={mailchimpConnection} />
 
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Integrations</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage your connected data sources and API integrations
-          </p>
-        </div>
-
-        {/* Integration Cards */}
-        <div className="grid gap-6">
-          <MailchimpIntegrationCard connection={mailchimpConnection} />
-
-          {/* Future integrations */}
-          {/* <GoogleAnalyticsIntegrationCard /> */}
-          {/* <YouTubeIntegrationCard /> */}
-        </div>
+        {/* Future integrations */}
+        {/* <GoogleAnalyticsIntegrationCard /> */}
+        {/* <YouTubeIntegrationCard /> */}
       </div>
-    </DashboardLayout>
+    </PageLayout>
   );
 }
 
