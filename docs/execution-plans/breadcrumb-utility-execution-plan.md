@@ -61,6 +61,18 @@ Before writing any code:
 
 ### Branch Strategy
 
+**⚠️ ACTUAL IMPLEMENTATION:** Work was committed directly to `main` branch instead of creating a feature branch. All commits were made directly to main:
+
+```bash
+# Actual git history on main:
+087fc0e feat(utils): add breadcrumb builder utility for consistent navigation
+20799c6 test(utils): add comprehensive tests for breadcrumb builder
+c2169e3 refactor(pages): apply breadcrumb builder to mailchimp pages
+b8d994c refactor(pages): apply breadcrumb builder to nested report pages
+```
+
+**Original Plan (not followed):**
+
 ```bash
 # Ensure you're on main and up to date
 git checkout main
