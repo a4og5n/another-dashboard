@@ -12,6 +12,7 @@
 
 **Implementation:** All phases completed successfully
 **Commits:**
+
 - `087fc0e` - feat(utils): add breadcrumb builder utility
 - `20799c6` - test(utils): add comprehensive tests (39 tests, 100% coverage)
 - `c2169e3` - refactor(pages): apply to mailchimp pages
@@ -19,6 +20,7 @@
 - `9d048d5` - docs: add breadcrumb pattern to CLAUDE.md
 
 **Results:**
+
 - ✅ 5+ pages updated with breadcrumb utility
 - ✅ 5-8 lines saved per page
 - ✅ Centralized route management in one file
@@ -26,6 +28,7 @@
 - ✅ 100% test coverage (39 passing tests)
 
 **Lessons Learned:**
+
 - ⚠️ Git workflow not followed (committed to `main` instead of feature branch)
 - ✅ Template improvements made to prevent this in future plans
 

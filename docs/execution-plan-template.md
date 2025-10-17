@@ -137,11 +137,13 @@ docs/description-of-docs-change
 **Before starting ANY implementation work, you MUST:**
 
 1. **Verify current branch:**
+
    ```bash
    git branch --show-current
    ```
 
 2. **If on `main`, STOP immediately and create feature branch:**
+
    ```bash
    git checkout main
    git pull origin main
@@ -223,35 +225,128 @@ git commit -m "docs: update CLAUDE.md with error handling patterns"
 
 ### 4. Implementation Phases
 
-**🚨 BEFORE STARTING PHASE 1: MANDATORY GIT SETUP CHECK 🚨**
+Break down the implementation into phases with clear checkpoints.
 
-**STOP! Before proceeding with ANY implementation phase, you MUST complete this checklist:**
-
-- [ ] **Verify current branch:** Run `git branch --show-current`
-- [ ] **Current branch is NOT `main`** (if it is, STOP and create feature branch)
-- [ ] **Feature branch created:** Branch name follows convention (e.g., `feature/description`)
-- [ ] **Confirmed branch status:** Re-run `git branch --show-current` to verify
-
-**If ANY of the above checks fail:**
-1. STOP implementation immediately
-2. Create the feature branch as specified in the execution plan
-3. Verify you're on the feature branch
-4. THEN proceed with Phase 1
-
-**Example verification:**
-```bash
-$ git branch --show-current
-feature/breadcrumb-builder-utility  # ✅ GOOD - proceed with implementation
-
-$ git branch --show-current
-main  # ❌ STOP - create feature branch first!
-```
+**IMPORTANT:** All execution plans MUST start with Phase 0 for git setup and pre-implementation validation.
 
 ---
 
-Break down the implementation into phases with clear checkpoints.
+#### Phase 0 Template (MANDATORY - Always Include This)
 
-#### Phase Template
+````markdown
+## Phase 0: Git Setup and Pre-Implementation Validation
+
+**Goal:** Ensure correct git branch setup and verify no work has already been completed
+
+**Estimated Time:** 5-10 minutes
+
+**⚠️ CRITICAL: This phase MUST be completed before any implementation work begins**
+
+### Step 1: Verify Current Branch
+
+```bash
+# Check what branch you're currently on
+git branch --show-current
+```
+
+**Expected outcomes:**
+
+- ✅ **If on feature branch matching this plan:** Proceed to Step 2
+- ❌ **If on `main` branch:** STOP and proceed to Step 1b
+- ❌ **If on different feature branch:** Confirm with user before proceeding
+
+**Step 1b: Create Feature Branch (if needed)**
+
+**ONLY run these commands if you're on `main` or wrong branch:**
+
+```bash
+# Ensure main is up to date
+git checkout main
+git pull origin main
+
+# Create and switch to feature branch
+git checkout -b feature/[feature-name]
+
+# Verify you're on the correct branch
+git branch --show-current
+# Should output: feature/[feature-name] (NOT main)
+```
+
+**🛑 DO NOT PROCEED if `git branch --show-current` still returns `main`**
+
+### Step 2: Check for Existing Work
+
+Before starting implementation, verify the work hasn't already been done:
+
+```bash
+# Check recent commit history
+git log --oneline -15
+
+# Look for commits related to this task
+git log --oneline --all --grep="[keyword-from-task]"
+
+# Check if key files already exist
+ls [path-to-files-this-plan-will-create]
+```
+
+**If work is already complete:**
+
+- Inform user: "This work appears to be already completed. Found commits: [list] and files: [list]"
+- Ask: "Would you like me to verify the implementation or move to the next phase?"
+- DO NOT re-implement already completed work
+
+**If work is partially complete:**
+
+- List what's done and what remains
+- Ask user how to proceed
+
+### Step 3: Review Pre-Implementation Checklist
+
+Verify you understand the requirements:
+
+- [ ] Read related documentation (PRD, technical specs)
+- [ ] Understand current implementation patterns
+- [ ] Identify files that will be created/modified
+- [ ] Review project architectural standards (CLAUDE.md)
+- [ ] Understand import/export patterns
+- [ ] Know where types should be defined (`src/types/`)
+- [ ] Know where schemas should be defined (`src/schemas/`)
+
+### Step 4: Confirm Environment
+
+```bash
+# Verify Node.js and pnpm versions
+node --version  # Should match project requirements
+pnpm --version  # Should match project requirements
+
+# Ensure dependencies are installed
+pnpm install
+
+# Verify dev server can start (don't keep running)
+pnpm dev
+# Press Ctrl+C to stop after confirming it starts
+```
+
+**Validation:**
+
+- [ ] On correct feature branch: `git branch --show-current`
+- [ ] No existing work that would be duplicated
+- [ ] Pre-implementation checklist reviewed
+- [ ] Environment verified and dependencies installed
+
+**Checkpoint: Confirm Setup**
+
+```bash
+# Create initial commit to mark branch creation
+git commit --allow-empty -m "chore: initialize feature branch for [feature-name]"
+```
+
+**✅ Phase 0 Complete - Ready to begin Phase 1**
+````
+
+---
+
+#### Phase N Template (For Implementation Phases)
 
 ````markdown
 ### Phase N: [Phase Name]
@@ -922,15 +1017,20 @@ git clean -fd  # Remove untracked files
 
 Before presenting the execution plan to the user, verify:
 
-### Git Workflow Verification (NEW - CRITICAL)
+### Phase 0 Verification (CRITICAL - MANDATORY)
 
-- [ ] **Branch creation is mandatory** - Plan explicitly requires feature branch creation
-- [ ] **Git setup included as Phase 0 or pre-Phase 1** - Not buried in middle of plan
-- [ ] **Branch verification command included:** `git branch --show-current`
-- [ ] **Warning added:** Clear warning if user is on `main` branch
-- [ ] **Branch name specified:** Execution plan specifies exact feature branch name
-- [ ] **Git setup checklist added** before Phase 1 implementation starts
-- [ ] **Instructions to STOP if on main:** Explicit instruction to not proceed if on `main`
+- [ ] **Phase 0 is present** - Execution plan MUST start with Phase 0 (Git Setup and Pre-Implementation Validation)
+- [ ] **Phase 0 includes all 4 steps:**
+  - [ ] Step 1: Verify Current Branch (with `git branch --show-current`)
+  - [ ] Step 2: Check for Existing Work (git log, ls commands)
+  - [ ] Step 3: Review Pre-Implementation Checklist
+  - [ ] Step 4: Confirm Environment (node, pnpm, dev server)
+- [ ] **Branch creation instructions** - Clear commands for creating feature branch if needed
+- [ ] **Branch name specified** - Exact feature branch name provided (e.g., `feature/page-layout-component`)
+- [ ] **STOP warnings** - Explicit instruction to not proceed if on `main` branch
+- [ ] **Existing work check** - Commands to verify work hasn't already been done
+- [ ] **Phase 0 checkpoint** - Empty commit to mark branch creation
+- [ ] **Phase 0 is numbered "0"** - Not called "Setup" or "Pre-Phase 1"
 
 ### Import/Export Verification
 
@@ -1397,9 +1497,14 @@ When creating an execution plan, ensure it includes:
 
 - [ ] Overview with clear goal and success criteria
 - [ ] List of files to create/modify
-- [ ] Pre-implementation checklist
-- [ ] Git setup commands
-- [ ] Multiple phases with clear goals
+- [ ] Pre-implementation checklist (now part of Phase 0)
+- [ ] **Phase 0: Git Setup and Pre-Implementation Validation** (MANDATORY)
+  - [ ] Step 1: Verify Current Branch
+  - [ ] Step 2: Check for Existing Work
+  - [ ] Step 3: Review Pre-Implementation Checklist
+  - [ ] Step 4: Confirm Environment
+  - [ ] Empty commit checkpoint
+- [ ] Phase 1-N: Implementation phases with clear goals
 - [ ] Validation steps after each phase
 - [ ] Strategic commit points
 - [ ] Cost optimization clear points
@@ -1407,6 +1512,7 @@ When creating an execution plan, ensure it includes:
 - [ ] Manual review checklist
 - [ ] Push and PR strategy
 - [ ] Rollback plan
+- [ ] Post-merge tasks
 
 ---
 
@@ -1431,9 +1537,11 @@ When creating an execution plan, ensure it includes:
 CRITICAL - ALWAYS perform these checks in order BEFORE starting work:
 
 1. **FIRST: Check current git branch**
+
    ```bash
    git branch --show-current
    ```
+
    - **If on `main`:** STOP immediately and inform user:
      - "⚠️ STOP: You are currently on the `main` branch. The execution plan requires work to be done on a feature branch."
      - "Please create the feature branch specified in the plan: `git checkout -b feature/your-feature-name`"
@@ -1441,6 +1549,7 @@ CRITICAL - ALWAYS perform these checks in order BEFORE starting work:
    - **If on feature branch:** Confirm branch name matches the plan, then proceed to step 2
 
 2. **Check git history** for commits related to that phase
+
    ```bash
    git log --oneline -10
    ```

@@ -235,6 +235,7 @@ import { bc } from "@/utils/breadcrumbs";
 **Available Routes:**
 
 **Static Routes:**
+
 - `bc.home` - Dashboard home page (`/`)
 - `bc.mailchimp` - Mailchimp section (`/mailchimp`)
 - `bc.reports` - Reports list (`/mailchimp/reports`)
@@ -244,12 +245,14 @@ import { bc } from "@/utils/breadcrumbs";
 - `bc.integrations` - Integrations settings (`/settings/integrations`)
 
 **Dynamic Functions:**
+
 - `bc.report(id)` - Individual report page (`/mailchimp/reports/{id}`)
 - `bc.list(id)` - Individual list page (`/mailchimp/lists/{id}`)
 - `bc.reportOpens(id)` - Report opens page (`/mailchimp/reports/{id}/opens`)
 - `bc.reportAbuseReports(id)` - Abuse reports page (`/mailchimp/reports/{id}/abuse-reports`)
 
 **Helper Functions:**
+
 - `bc.current(label)` - Mark breadcrumb as current page (no href, `isCurrent: true`)
 - `bc.custom(label, href)` - Create custom breadcrumb for non-standard routes
 
