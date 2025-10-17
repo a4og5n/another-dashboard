@@ -23,7 +23,7 @@ import type { ReportOpenListSuccess, CampaignReport } from "@/types/mailchimp";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import type { Metadata } from "next";
-import { handleApiError } from "@/utils";
+import { handleApiError, bc } from "@/utils";
 
 async function CampaignOpensPageContent({
   opensData,
@@ -133,11 +133,11 @@ async function BreadcrumbContent({
   return (
     <BreadcrumbNavigation
       items={[
-        { label: "Dashboard", href: "/" },
-        { label: "Mailchimp", href: "/mailchimp" },
-        { label: "Reports", href: `/mailchimp/reports` },
-        { label: "Report", href: `/mailchimp/reports/${id}` },
-        { label: "Opens", isCurrent: true },
+        bc.home,
+        bc.mailchimp,
+        bc.reports,
+        bc.report(id),
+        bc.current("Opens"),
       ]}
     />
   );
