@@ -1,0 +1,17 @@
+{
+  "Page Header Comment": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "pageheader",
+    "description": "Insert standard page component header",
+    "body": [
+      "/**",
+      " * ${1:Page Title}",
+      " * ${2:Brief description of what this page does}",
+      " *",
+      " * @route ${3:/path/to/page}",
+      " * @requires ${4|None,Kinde Auth,Mailchimp connection,Kinde Auth + Mailchimp connection|}",
+      " * @features ${5:Key features (comma-separated)}",
+      " */"
+    ]
+  }
+}
