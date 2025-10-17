@@ -210,6 +210,61 @@ if (error) {
 - **Unexpected errors** (bugs, exceptions): Let error boundaries catch them
 - Reference: [Next.js Error Handling Docs](https://nextjs.org/docs/app/getting-started/error-handling)
 
+### Breadcrumb Pattern
+
+The project includes a centralized breadcrumb builder utility for consistent navigation across all pages in `src/utils/breadcrumbs/`:
+
+**Core Object:**
+
+- `bc` - Breadcrumb builder with static routes, dynamic functions, and helpers
+
+**Usage Pattern:**
+
+```tsx
+import { bc } from "@/utils/breadcrumbs";
+
+// Simple static breadcrumbs
+<BreadcrumbNavigation items={[bc.home, bc.mailchimp, bc.current("Reports")]} />
+
+// Breadcrumbs with dynamic IDs
+<BreadcrumbNavigation
+  items={[bc.home, bc.mailchimp, bc.reports, bc.report(id), bc.current("Opens")]}
+/>
+```
+
+**Available Routes:**
+
+**Static Routes:**
+- `bc.home` - Dashboard home page (`/`)
+- `bc.mailchimp` - Mailchimp section (`/mailchimp`)
+- `bc.reports` - Reports list (`/mailchimp/reports`)
+- `bc.lists` - Lists list (`/mailchimp/lists`)
+- `bc.generalInfo` - General info page (`/mailchimp/general-info`)
+- `bc.settings` - Settings section (`/settings`)
+- `bc.integrations` - Integrations settings (`/settings/integrations`)
+
+**Dynamic Functions:**
+- `bc.report(id)` - Individual report page (`/mailchimp/reports/{id}`)
+- `bc.list(id)` - Individual list page (`/mailchimp/lists/{id}`)
+- `bc.reportOpens(id)` - Report opens page (`/mailchimp/reports/{id}/opens`)
+- `bc.reportAbuseReports(id)` - Abuse reports page (`/mailchimp/reports/{id}/abuse-reports`)
+
+**Helper Functions:**
+- `bc.current(label)` - Mark breadcrumb as current page (no href, `isCurrent: true`)
+- `bc.custom(label, href)` - Create custom breadcrumb for non-standard routes
+
+**Benefits:**
+
+- Eliminates 5-8 lines of boilerplate per page
+- Centralized route definitions prevent typos in labels and URLs
+- Type-safe using existing `BreadcrumbItem` type
+- Consistent breadcrumb experience across all pages
+- Easy to maintain - update labels/URLs in one place
+
+**When to Add New Routes:**
+
+If you find yourself using `bc.custom()` multiple times for the same route, add it as a static route or dynamic function in the breadcrumb builder instead.
+
 ### Schema & API Patterns
 
 - **Error response strategy**: Compare fields to shared error schema, extend with `.extend({ ... })` if needed, or create custom schema if fundamentally different
