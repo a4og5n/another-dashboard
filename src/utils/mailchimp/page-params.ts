@@ -8,52 +8,148 @@
  */
 
 import { redirect } from "next/navigation";
-import type { ZodSchema } from "zod";
+import type { ZodType } from "zod";
 import { getRedirectUrlIfNeeded } from "@/utils/pagination-url-builders";
 import { transformPaginationParams } from "@/utils/mailchimp/query-params";
 
 /**
  * Result of validating and transforming page parameters
+ *
+ * This interface represents the complete output of the `validatePageParams` function,
+ * providing both API-ready parameters and UI display values.
+ *
+ * @template T - UI parameter type (typically with `page?: string` and `perPage?: string`)
+ * @template U - API parameter type (typically with `count?: number` and `offset?: number`)
+ *
+ * @example
+ * ```typescript
+ * // Typical return value structure
+ * const result: ValidatedPageParams<ListsPageSearchParams, ListsParams> = {
+ *   apiParams: { count: 20, offset: 20 },    // Ready for API call
+ *   uiParams: { page: "2", perPage: "20" },  // Original validated params
+ *   currentPage: 2,                          // Parsed integer for UI
+ *   pageSize: 20                             // Parsed integer for UI
+ * };
+ * ```
  */
 export interface ValidatedPageParams<T, U> {
-  /** Validated and transformed parameters ready for API calls */
+  /**
+   * Validated and transformed parameters ready for API calls
+   *
+   * These parameters have been converted from UI format (page/perPage)
+   * to API format (count/offset) and validated against the API schema.
+   *
+   * @example { count: 20, offset: 20, type: "regular" }
+   */
   apiParams: U;
-  /** Validated UI parameters (page, perPage, etc.) */
+
+  /**
+   * Validated UI parameters from the URL query string
+   *
+   * These are the original parameters after validation but before
+   * transformation, in string format as received from the URL.
+   *
+   * @example { page: "2", perPage: "20", type: "regular" }
+   */
   uiParams: T;
-  /** Extracted currentPage number for UI display */
+
+  /**
+   * Extracted current page number for UI display
+   *
+   * Parsed from `uiParams.page` or defaults to 1 if not present.
+   * This is a convenience value for rendering pagination components.
+   *
+   * @example 2
+   */
   currentPage: number;
-  /** Extracted pageSize number for UI display */
+
+  /**
+   * Extracted page size for UI display
+   *
+   * Parsed from `uiParams.perPage` or defaults to the API schema default
+   * (typically 10). This is a convenience value for rendering pagination components.
+   *
+   * @example 20
+   */
   pageSize: number;
 }
 
 /**
- * Validate, transform, and redirect page parameters
+ * Validate, transform, and redirect page parameters for paginated list pages
  *
- * This function handles the complete flow of URL parameter processing:
- * 1. Parse and validate raw params from URL
- * 2. Check if redirect is needed (to clean default values from URL)
- * 3. Convert validated params to API format
- * 4. Extract UI display values (currentPage, pageSize)
+ * This function handles the complete flow of URL parameter processing for pages
+ * with pagination (`?page=N&perPage=M` query parameters). It validates params,
+ * redirects to clean URLs when needed, transforms UI params to API format, and
+ * returns both API-ready parameters and UI display values.
  *
- * @param options Configuration object
- * @param options.searchParams Promise of raw URL search parameters
- * @param options.uiSchema Zod schema for validating UI parameters
- * @param options.apiSchema Zod schema for validating API parameters
- * @param options.basePath Base URL path for redirect (e.g., "/mailchimp/lists")
- * @param options.transformer Optional function to convert UI params to API format
- * @returns Validated parameters ready for API and UI
+ * **Processing Flow:**
+ * 1. **Parse & Validate** - Await and validate raw URL search params using UI schema
+ * 2. **Check Redirect** - Determine if URL cleanup is needed (remove default values)
+ * 3. **Transform** - Convert UI params (`page`, `perPage`) to API params (`count`, `offset`)
+ * 4. **Extract Display Values** - Parse integer values for currentPage and pageSize
+ *
+ * **When to use this utility:**
+ * - Pages with `?page=N&perPage=M` query parameters
+ * - List pages displaying paginated data (reports, lists, campaigns)
+ * - Pages where you want clean URLs (automatic redirect when defaults present)
+ *
+ * **Related utilities:**
+ * - For dynamic route params (`/lists/[id]`), use `processRouteParams()` instead
+ * - See `src/utils/params/README.md` for complete decision guide
+ *
+ * @template T - UI parameter type (must include `page?: string` and `perPage?: string`)
+ * @template U - API parameter type (must include `count?: number`)
+ *
+ * @param options - Configuration object
+ * @param options.searchParams - Promise of raw URL search parameters from Next.js page props
+ * @param options.uiSchema - Zod schema for validating UI parameters (e.g., `listsPageSearchParamsSchema`)
+ * @param options.apiSchema - Zod schema for validating API parameters (e.g., `listsParamsSchema`)
+ * @param options.basePath - Base URL path for redirect (e.g., `"/mailchimp/lists"`)
+ * @param options.transformer - Optional function to convert UI params to API format (defaults to `transformPaginationParams`)
+ *
+ * @returns Promise resolving to validated parameters with API params, UI params, and display values
+ *
+ * @throws {ZodError} When validation fails (invalid param format or unrecognized keys)
+ * @throws {Error} When redirect fails (handled by Next.js internally)
  *
  * @example
  * ```typescript
+ * // Basic usage in a paginated list page
+ * import { validatePageParams } from "@/utils/mailchimp/page-params";
+ * import { listsPageSearchParamsSchema } from "@/schemas/components";
+ * import { listsParamsSchema } from "@/schemas/mailchimp";
+ *
+ * async function ListsPageContent({ searchParams }: ListsPageProps) {
+ *   const { apiParams, currentPage, pageSize } = await validatePageParams({
+ *     searchParams,
+ *     uiSchema: listsPageSearchParamsSchema,
+ *     apiSchema: listsParamsSchema,
+ *     basePath: "/mailchimp/lists",
+ *   });
+ *
+ *   // Use apiParams for API call
+ *   const response = await mailchimpDAL.fetchLists(apiParams);
+ *
+ *   // Use display values for UI
+ *   return <ListsOverview data={response.data} currentPage={currentPage} pageSize={pageSize} />;
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // With custom transformer
  * const result = await validatePageParams({
  *   searchParams,
- *   uiSchema: listsPageSearchParamsSchema,
- *   apiSchema: listsParamsSchema,
- *   basePath: "/mailchimp/lists",
+ *   uiSchema: reportsPageSearchParamsSchema,
+ *   apiSchema: reportListParamsSchema,
+ *   basePath: "/mailchimp/reports",
+ *   transformer: transformCampaignReportsParams, // Custom transformer
  * });
- *
- * const response = await mailchimpDAL.fetchLists(result.apiParams);
  * ```
+ *
+ * @see {@link ValidatedPageParams} - Return type interface
+ * @see {@link processRouteParams} - For dynamic route validation
+ * @see `src/utils/params/README.md` - Complete usage guide
  */
 export async function validatePageParams<
   T extends { page?: string; perPage?: string },
@@ -68,8 +164,8 @@ export async function validatePageParams<
   ) => Partial<U>,
 }: {
   searchParams: Promise<unknown>;
-  uiSchema: ZodSchema<T>;
-  apiSchema: ZodSchema<U>;
+  uiSchema: ZodType<T>;
+  apiSchema: ZodType<U>;
   basePath: string;
   transformer?: (params: T) => Partial<U>;
 }): Promise<ValidatedPageParams<T, U>> {

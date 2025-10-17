@@ -268,6 +268,84 @@ import { bc } from "@/utils/breadcrumbs";
 
 If you find yourself using `bc.custom()` multiple times for the same route, add it as a static route or dynamic function in the breadcrumb builder instead.
 
+### URL Params Processing Pattern
+
+The project provides two utilities for processing URL parameters, each serving a distinct purpose.
+
+**Quick Decision Guide:**
+
+```
+Does your page have pagination? (?page=N&perPage=M)
+├─ YES → Use validatePageParams()
+│         Location: src/utils/mailchimp/page-params.ts
+│         Example: /mailchimp/lists?page=2&perPage=10
+│
+└─ NO → Does your page have route params? ([id], [slug])
+         ├─ YES → Use processRouteParams()
+         │         Location: src/utils/mailchimp/route-params.ts
+         │         Example: /mailchimp/lists/[id]
+         │
+         └─ NO → No utility needed
+                  Example: /mailchimp/general-info
+```
+
+**validatePageParams() - For List/Table Pages:**
+
+Used for pages with pagination (page, perPage in URL):
+
+- Validates URL search parameters
+- Checks for redirects to clean default values from URL
+- Transforms UI params to API format
+- Returns both API params and UI display values
+
+```tsx
+import { validatePageParams } from "@/utils/mailchimp/page-params";
+
+// In your page.tsx
+const result = await validatePageParams({
+  searchParams,
+  uiSchema: listsPageSearchParamsSchema,
+  apiSchema: listsParamsSchema,
+  basePath: "/mailchimp/lists",
+});
+
+const response = await mailchimpDAL.fetchLists(result.apiParams);
+// Use result.currentPage and result.pageSize for UI
+```
+
+**processRouteParams() - For Detail Pages:**
+
+Used for pages with dynamic route segments ([id], [slug]):
+
+- Validates route parameters
+- Triggers 404 for invalid route params
+- Validates search params if present
+- Returns validated data only
+
+```tsx
+import { processRouteParams } from "@/utils/mailchimp/route-params";
+import { emptySearchParamsSchema } from "@/schemas/components";
+
+// In your page.tsx with [id] route
+const { validatedParams, validatedSearchParams } = await processRouteParams({
+  params,
+  searchParams,
+  paramsSchema: reportPageParamsSchema,
+  searchParamsSchema: emptySearchParamsSchema, // Or specific schema if needed
+});
+
+const { id } = validatedParams;
+const response = await mailchimpDAL.fetchCampaignReport(id);
+```
+
+**Schema Naming Conventions:**
+
+- Page search params: `listsPageSearchParamsSchema` (used with validatePageParams)
+- Route params: `reportPageParamsSchema` (used with processRouteParams)
+- API params: `listsParamsSchema` (Mailchimp API format)
+
+**Detailed Documentation:** See [src/utils/params/README.md](src/utils/params/README.md) for comprehensive guide with examples.
+
 ### PageLayout Component Pattern
 
 The project uses a centralized `PageLayout` component to reduce boilerplate across all dashboard pages.
