@@ -7,7 +7,7 @@
  */
 
 import { Suspense } from "react";
-import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
+import { BreadcrumbNavigation, PageLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignOpensSkeleton } from "@/skeletons/mailchimp";
 import {
@@ -92,33 +92,24 @@ export default async function CampaignOpensPage({
     : null;
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation - params will be awaited inside Suspense */}
+    <PageLayout
+      breadcrumbsSlot={
         <Suspense fallback={null}>
           <BreadcrumbContent params={params} />
         </Suspense>
-
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Campaign Report</h1>
-          <p className="text-muted-foreground">
-            Members who opened this campaign
-          </p>
-        </div>
-
-        {/* Main Content */}
-        <Suspense fallback={<CampaignOpensSkeleton />}>
-          <CampaignOpensPageContent
-            opensData={opensData}
-            campaignId={campaignId}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            errorCode={response.errorCode}
-          />
-        </Suspense>
-      </div>
-    </DashboardLayout>
+      }
+      title="Campaign Report"
+      description="Members who opened this campaign"
+      skeleton={<CampaignOpensSkeleton />}
+    >
+      <CampaignOpensPageContent
+        opensData={opensData}
+        campaignId={campaignId}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        errorCode={response.errorCode}
+      />
+    </PageLayout>
   );
 }
 
