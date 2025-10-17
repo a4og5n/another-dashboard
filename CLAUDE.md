@@ -386,16 +386,50 @@ The Kinde Next.js SDK needs explicit cookie domain configuration for HTTPS on `1
 
 **Troubleshooting OAuth "State not found" Errors:**
 
-If you still encounter "State not found" errors after setting `KINDE_COOKIE_DOMAIN`:
+If you encounter "State not found" errors after setting `KINDE_COOKIE_DOMAIN`, follow these steps in order:
 
-1. **Restart your development server** after adding/changing `KINDE_COOKIE_DOMAIN`
-2. **Clear browser state** using the utility endpoint: `https://127.0.0.1:3000/api/auth/clear-state`
-3. **Clear browser cache**: Cmd+Shift+Delete (Mac) or Ctrl+Shift+Delete (Windows)
+1. **Kill all Next.js dev servers** (multiple instances cause state conflicts):
+
+   ```bash
+   pkill -f "next dev"
+   ```
+
+2. **Clear Next.js cache**:
+
+   ```bash
+   pnpm clean
+   ```
+
+3. **Verify environment variables are set**:
+
+   ```bash
+   grep KINDE_COOKIE_DOMAIN .env.local
+   # Should output: KINDE_COOKIE_DOMAIN=127.0.0.1
+   ```
+
+4. **Start fresh dev server**:
+
+   ```bash
+   pnpm dev
+   ```
+
+5. **Clear browser state** using the utility endpoint: `https://127.0.0.1:3000/api/auth/clear-state`
+
+6. **Clear browser cache completely**: Cmd+Shift+Delete (Mac) or Ctrl+Shift+Delete (Windows)
    - Select "Cookies and other site data"
    - Choose "All time"
    - Click "Clear data"
-4. **Verify configuration** using the health endpoint: `https://127.0.0.1:3000/api/auth/health`
-5. **Alternative**: Use incognito/private browsing mode for development
+
+7. **Verify configuration** using the health endpoint: `https://127.0.0.1:3000/api/auth/health`
+
+8. **Test login in incognito/private browsing mode** (eliminates browser cache issues)
+
+**Common Causes:**
+
+- Multiple dev servers running (check with `ps aux | grep "next dev"`)
+- Stale Next.js cache in `.next/` directory
+- Browser cached cookies from previous sessions
+- `KINDE_COOKIE_DOMAIN` not set or server not restarted after setting it
 
 **Production Note:** In production on Vercel, remove `KINDE_COOKIE_DOMAIN` or set it to your custom domain (e.g., `KINDE_COOKIE_DOMAIN=yourdomain.com`). Do not use `127.0.0.1` in production.
 
