@@ -9,11 +9,10 @@
 
 import { GeneralInfoOverview } from "@/components/mailchimp/general-info";
 import { GeneralInfoOverviewSkeleton } from "@/skeletons/mailchimp";
-import { BreadcrumbNavigation } from "@/components/layout";
-import { DashboardLayout } from "@/components/layout";
+import { PageLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
-import { Suspense } from "react";
+import { bc } from "@/utils";
 
 async function GeneralInfoPageContent() {
   // Fetch data (validation happens at DAL layer)
@@ -36,34 +35,14 @@ async function GeneralInfoPageContent() {
 
 export default function GeneralInfoPage() {
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation */}
-        <BreadcrumbNavigation
-          items={[
-            { label: "Dashboard", href: "/" },
-            { label: "Mailchimp", href: "/mailchimp" },
-            { label: "General Info", isCurrent: true },
-          ]}
-        />
-
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            General Information
-          </h1>
-          <p className="text-muted-foreground">
-            View your Mailchimp general information, contact details, and
-            industry benchmarks
-          </p>
-        </div>
-
-        {/* Main Content - Suspense wraps async component */}
-        <Suspense fallback={<GeneralInfoOverviewSkeleton />}>
-          <GeneralInfoPageContent />
-        </Suspense>
-      </div>
-    </DashboardLayout>
+    <PageLayout
+      breadcrumbs={[bc.home, bc.mailchimp, bc.current("General Info")]}
+      title="General Information"
+      description="View your Mailchimp general information, contact details, and industry benchmarks"
+      skeleton={<GeneralInfoOverviewSkeleton />}
+    >
+      <GeneralInfoPageContent />
+    </PageLayout>
   );
 }
 

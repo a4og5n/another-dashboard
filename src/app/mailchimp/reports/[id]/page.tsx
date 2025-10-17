@@ -6,10 +6,9 @@
  * Following Next.js 15 App Router patterns and established page structures
  */
 
-import { Suspense } from "react";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignReportDetail } from "@/components/dashboard";
-import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
+import { PageLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignReportSkeleton } from "@/skeletons/mailchimp";
 import {
@@ -72,31 +71,18 @@ export default async function CampaignReportPage({
   handleApiError(response);
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation */}
-        <BreadcrumbNavigation
-          items={[bc.home, bc.mailchimp, bc.reports, bc.current("Report")]}
-        />
-
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Campaign Report</h1>
-          <p className="text-muted-foreground">
-            View detailed analytics and performance metrics for this campaign
-          </p>
-        </div>
-
-        {/* Main Content */}
-        <Suspense fallback={<CampaignReportSkeleton />}>
-          <CampaignReportPageContent
-            report={response.success ? (response.data as CampaignReport) : null}
-            activeTab={activeTab}
-            errorCode={response.errorCode}
-          />
-        </Suspense>
-      </div>
-    </DashboardLayout>
+    <PageLayout
+      breadcrumbs={[bc.home, bc.mailchimp, bc.reports, bc.current("Report")]}
+      title="Campaign Report"
+      description="View detailed analytics and performance metrics for this campaign"
+      skeleton={<CampaignReportSkeleton />}
+    >
+      <CampaignReportPageContent
+        report={response.success ? (response.data as CampaignReport) : null}
+        activeTab={activeTab}
+        errorCode={response.errorCode}
+      />
+    </PageLayout>
   );
 }
 

@@ -5,10 +5,9 @@
  * Following Next.js 15 App Router patterns and established page structures
  */
 
-import { Suspense } from "react";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { ListDetail } from "@/components/mailchimp/lists";
-import { BreadcrumbNavigation, DashboardLayout } from "@/components/layout";
+import { PageLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { ListDetailSkeleton } from "@/skeletons/mailchimp";
 import {
@@ -86,33 +85,20 @@ export default async function ListPage({
   handleApiError(response);
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb Navigation */}
-        <BreadcrumbNavigation
-          items={[bc.home, bc.mailchimp, bc.lists, bc.current("List")]}
-        />
-
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold">List Details</h1>
-          <p className="text-muted-foreground">
-            View detailed information and performance metrics for this list
-          </p>
-        </div>
-
-        {/* Main Content - Suspense only used for streaming */}
-        <Suspense fallback={<ListDetailSkeleton />}>
-          <ListPageContent
-            list={response.success ? (response.data as List) : null}
-            error={response.error}
-            activeTab={activeTab}
-            serverPrefix={serverPrefix ?? undefined}
-            errorCode={response.errorCode}
-          />
-        </Suspense>
-      </div>
-    </DashboardLayout>
+    <PageLayout
+      breadcrumbs={[bc.home, bc.mailchimp, bc.lists, bc.current("List")]}
+      title="List Details"
+      description="View detailed information and performance metrics for this list"
+      skeleton={<ListDetailSkeleton />}
+    >
+      <ListPageContent
+        list={response.success ? (response.data as List) : null}
+        error={response.error}
+        activeTab={activeTab}
+        serverPrefix={serverPrefix ?? undefined}
+        errorCode={response.errorCode}
+      />
+    </PageLayout>
   );
 }
 
