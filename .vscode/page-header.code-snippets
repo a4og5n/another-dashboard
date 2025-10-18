@@ -11,7 +11,7 @@
       " * @route ${3:/path/to/page}",
       " * @requires ${4|None,Kinde Auth,Mailchimp connection,Kinde Auth + Mailchimp connection|}",
       " * @features ${5:Key features (comma-separated)}",
-      " */"
-    ]
-  }
+      " */",
+    ],
+  },
 }
