@@ -15,10 +15,13 @@ import { abuseReportsPageParamsSchema } from "@/schemas/components";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignAbuseReportsTable } from "@/components/dashboard/reports";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
-import type { AbuseReportListSuccess, CampaignReport } from "@/types/mailchimp";
+import type { AbuseReportListSuccess } from "@/types/mailchimp";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import type { GenerateMetadata } from "@/types/components/metadata";
-import { handleApiError, bc } from "@/utils";
+import {
+  handleApiError,
+  bc,
+  generateCampaignAbuseReportsMetadata,
+} from "@/utils";
 
 async function CampaignAbuseReportsPageContent({
   abuseReportsData,
@@ -119,35 +122,4 @@ async function BreadcrumbContent({
 export const dynamic = "force-dynamic";
 
 // Generate metadata for the page
-export const generateMetadata: GenerateMetadata = async ({ params }) => {
-  const rawParams = await params;
-  const { id } = abuseReportsPageParamsSchema.parse(rawParams);
-
-  // Fetch campaign report for metadata
-  const response = await mailchimpDAL.fetchCampaignReport(id);
-
-  if (!response.success || !response.data) {
-    return {
-      title: "Abuse Reports - Campaign Not Found",
-      description: "The requested campaign could not be found.",
-    };
-  }
-
-  const report = response.data as CampaignReport;
-
-  // Get abuse report count from the report data
-  const abuseReportCount = report.abuse_reports || 0;
-
-  return {
-    title: `${report.campaign_title} - Abuse Reports`,
-    description: `View abuse reports and spam complaints for ${report.campaign_title}. ${abuseReportCount === 0 ? "No abuse reports recorded." : `${abuseReportCount.toLocaleString()} ${abuseReportCount === 1 ? "report" : "reports"} received.`}`,
-    openGraph: {
-      title: `${report.campaign_title} - Abuse Reports`,
-      description:
-        abuseReportCount === 0
-          ? `No abuse reports - Campaign sent to ${report.emails_sent.toLocaleString()} recipients`
-          : `${abuseReportCount.toLocaleString()} abuse ${abuseReportCount === 1 ? "report" : "reports"} from ${report.emails_sent.toLocaleString()} recipients`,
-      type: "website",
-    },
-  };
-};
+export const generateMetadata = generateCampaignAbuseReportsMetadata;
