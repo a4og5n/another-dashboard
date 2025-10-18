@@ -1,10 +1,10 @@
 /**
- * Mailchimp General Info Page (OAuth-based)
- * Displays general information from the API Root endpoint
+ * Mailchimp General Info Page
+ * Displays general account information and API statistics from Mailchimp
  *
- * Issue #122: General Info navigation and routing
- * Uses components from: @/components/mailchimp/general-info
- * Uses MailchimpConnectionGuard for automatic connection validation
+ * @route /mailchimp/general-info
+ * @requires Mailchimp connection
+ * @features Account info, API stats, Connection status, Real-time data
  */
 
 import { GeneralInfoOverview } from "@/components/mailchimp/general-info";

@@ -1,8 +1,10 @@
 /**
- * List Detail Page
- * Server component that fetches list data and displays detailed information
+ * Mailchimp List Detail Page
+ * Displays detailed information and stats for a specific Mailchimp audience (list)
  *
- * Following Next.js 15 App Router patterns and established page structures
+ * @route /mailchimp/lists/[id]
+ * @requires Mailchimp connection
+ * @features Dynamic routing, List metrics, Member stats, Real-time data
  */
 
 import { mailchimpDAL } from "@/dal/mailchimp.dal";

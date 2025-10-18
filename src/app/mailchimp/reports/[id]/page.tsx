@@ -1,9 +1,10 @@
 /**
  * Campaign Report Detail Page
- * Server component that fetches campaign report data and displays detailed analytics
+ * Displays detailed analytics and metrics for a specific campaign report
  *
- * Issue #135: Agent 4 - Campaign report detail routing and pages
- * Following Next.js 15 App Router patterns and established page structures
+ * @route /mailchimp/reports/[id]
+ * @requires Mailchimp connection
+ * @features Dynamic routing, Tab navigation, Real-time metrics, Export data
  */
 
 import { mailchimpDAL } from "@/dal/mailchimp.dal";

@@ -1,9 +1,10 @@
 /**
- * Campaign Opens Page
- * Server component that displays members who opened the campaign
+ * Campaign Opens Detail Page
+ * Displays list of members who opened a specific campaign
  *
- * Issue #135: Campaign opens list page implementation
- * Following Next.js 15 App Router patterns and established page structures
+ * @route /mailchimp/reports/[id]/opens
+ * @requires Mailchimp connection
+ * @features Pagination, Dynamic routing, Member details, Export data
  */
 
 import { Suspense } from "react";
