@@ -1,13 +1,10 @@
 /**
  * Authentication Error Page
- * Handles authentication errors with user-friendly messages and automatic recovery
+ * Displays authentication errors and provides recovery options
  *
- * Features:
- * - Detects "State not found" errors from Kinde OAuth
- * - Automatic cookie cleanup on page load
- * - Clear recovery instructions
- * - One-click retry with automatic state cleanup
- * - Links to clear browser cache
+ * @route /auth-error
+ * @requires None
+ * @features Error display, Recovery actions, Retry login
  */
 import { Suspense } from "react";
 import { Metadata } from "next";

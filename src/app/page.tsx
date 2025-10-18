@@ -1,3 +1,12 @@
+/**
+ * Dashboard Home Page
+ * Main dashboard landing page with navigation to all app sections
+ *
+ * @route /
+ * @requires Kinde Auth
+ * @features Navigation cards, Real-time status, Quick actions
+ */
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

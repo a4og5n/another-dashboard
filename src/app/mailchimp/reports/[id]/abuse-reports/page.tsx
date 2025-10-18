@@ -1,9 +1,10 @@
 /**
  * Campaign Abuse Reports Page
- * Server component that displays abuse/spam complaints for a specific campaign
+ * Displays abuse reports and complaints for a specific campaign
  *
- * Following Next.js 15 App Router patterns and established page structures
- * Pattern based on: src/app/mailchimp/reports/[id]/opens/page.tsx
+ * @route /mailchimp/reports/[id]/abuse-reports
+ * @requires Mailchimp connection
+ * @features Pagination, Dynamic routing, Abuse report details, Export data
  */
 
 import { Suspense } from "react";

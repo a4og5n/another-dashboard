@@ -1,3 +1,12 @@
+/**
+ * Mailchimp Lists Page
+ * Displays paginated list of Mailchimp audiences (lists) with filtering
+ *
+ * @route /mailchimp/lists
+ * @requires Mailchimp connection
+ * @features Pagination, Filtering, Real-time data, Audience management
+ */
+
 import { ListOverview } from "@/components/mailchimp/lists/list-overview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";

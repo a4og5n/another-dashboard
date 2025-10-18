@@ -1,3 +1,12 @@
+/**
+ * Mailchimp Dashboard Page
+ * Main Mailchimp section with navigation to reports, lists, and settings
+ *
+ * @route /mailchimp
+ * @requires Mailchimp connection
+ * @features Navigation cards, Connection status, Quick links
+ */
+
 import Link from "next/link";
 import { Suspense } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
