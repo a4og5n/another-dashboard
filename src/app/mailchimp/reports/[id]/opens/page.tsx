@@ -20,11 +20,10 @@ import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignOpensTable } from "@/components/dashboard/reports";
 import { openListQueryParamsSchema } from "@/schemas/mailchimp/report-open-details-params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
-import type { ReportOpenListSuccess, CampaignReport } from "@/types/mailchimp";
+import type { ReportOpenListSuccess } from "@/types/mailchimp";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import type { GenerateMetadata } from "@/types/components/metadata";
-import { handleApiError, bc } from "@/utils";
+import { handleApiError, bc, generateCampaignOpensMetadata } from "@/utils";
 
 async function CampaignOpensPageContent({
   opensData,
@@ -138,30 +137,5 @@ async function BreadcrumbContent({
 // Force dynamic rendering to prevent build-time API calls
 export const dynamic = "force-dynamic";
 
-// Generate metadata for the page
-export const generateMetadata: GenerateMetadata = async ({ params }) => {
-  const rawParams = await params;
-  const { id } = reportOpensPageParamsSchema.parse(rawParams);
-
-  // Fetch campaign report for metadata
-  const response = await mailchimpDAL.fetchCampaignReport(id);
-
-  if (!response.success || !response.data) {
-    return {
-      title: "Campaign Opens - Campaign Not Found",
-      description: "The requested campaign could not be found.",
-    };
-  }
-
-  const report = response.data as CampaignReport;
-
-  return {
-    title: `${report.campaign_title} - Opens`,
-    description: `View all members who opened ${report.campaign_title}. Total opens: ${report.opens.opens_total.toLocaleString()}`,
-    openGraph: {
-      title: `${report.campaign_title} - Campaign Opens`,
-      description: `${report.opens.opens_total.toLocaleString()} total opens from ${report.emails_sent.toLocaleString()} recipients`,
-      type: "website",
-    },
-  };
-};
+// Generate metadata for the page using the utility function
+export const generateMetadata = generateCampaignOpensMetadata;
