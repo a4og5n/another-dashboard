@@ -3,6 +3,12 @@
 /**
  * Campaign Report Opens Card Component
  * Displays email open statistics with a toggle between regular and proxy-excluded metrics
+ *
+ * NOTE: This component uses custom Card implementation due to complex interactive features
+ * (toggle switch, conditional data display). Standard StatsGridCard would not provide
+ * sufficient flexibility for this use case.
+ *
+ * For simpler multi-stat displays without interactive features, consider using StatsGridCard.
  */
 
 import { useState } from "react";

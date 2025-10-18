@@ -3,7 +3,21 @@
  * Displays the campaign delivery status information in a card format
  *
  * Issue #135: Campaign report detail UI components - Delivery Status
- * Following established patterns from existing dashboard components
+ *
+ * NOTE: This component could potentially be refactored to use StatusCard component,
+ * but would require adapting the custom progress bar logic and conditional rendering.
+ * Consider migration in future refactoring pass.
+ *
+ * Example StatusCard usage for simpler status displays:
+ * <StatusCard
+ *   title="Delivery Status"
+ *   status={deliveryStatus.status}
+ *   statusVariant={getBadgeVariant(deliveryStatus.status)}
+ *   metrics={[
+ *     { label: "Emails Sent", value: deliveryStatus.emails_sent },
+ *     { label: "Emails Canceled", value: deliveryStatus.emails_canceled }
+ *   ]}
+ * />
  */
 
 import { Badge } from "@/components/ui/badge";
