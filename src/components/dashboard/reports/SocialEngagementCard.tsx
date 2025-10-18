@@ -4,9 +4,10 @@
  *
  * Issue #135: Campaign report detail UI components - Social Engagement Card
  * Following established patterns from existing dashboard components
+ * Migrated to StatsGridCard for consistency and reduced boilerplate
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatsGridCard } from "@/components/ui/stats-grid-card";
 import { Share2 } from "lucide-react";
 import type { SocialEngagementCardProps } from "@/types/components/dashboard/reports";
 
@@ -15,33 +16,26 @@ export function SocialEngagementCard({
   className,
 }: SocialEngagementCardProps) {
   return (
-    <Card className={className}>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center space-x-2">
-          <Share2 className="h-4 w-4 text-purple-600" />
-          <span>Social Engagement</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Facebook Likes</span>
-          <span className="font-medium">
-            {facebookLikes.facebook_likes.toLocaleString()}
-          </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Unique Likes</span>
-          <span className="font-medium">
-            {facebookLikes.unique_likes.toLocaleString()}
-          </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Recipient Likes</span>
-          <span className="font-medium">
-            {facebookLikes.recipient_likes.toLocaleString()}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
+    <StatsGridCard
+      title="Social Engagement"
+      icon={Share2}
+      iconColor="text-purple-600"
+      stats={[
+        {
+          value: facebookLikes.facebook_likes.toLocaleString(),
+          label: "Facebook Likes",
+        },
+        {
+          value: facebookLikes.unique_likes.toLocaleString(),
+          label: "Unique Likes",
+        },
+        {
+          value: facebookLikes.recipient_likes.toLocaleString(),
+          label: "Recipient Likes",
+        },
+      ]}
+      columns={3}
+      className={className}
+    />
   );
 }
