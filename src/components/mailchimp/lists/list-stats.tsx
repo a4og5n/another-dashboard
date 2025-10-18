@@ -1,6 +1,11 @@
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Users, TrendingUp, Eye } from "lucide-react";
+/**
+ * List Stats Component
+ * Displays Mailchimp lists statistics overview
+ * Migrated to StatsGridCard for consistency and reduced boilerplate
+ */
+
+import { StatsGridCard } from "@/components/ui/stats-grid-card";
+import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ListStatsProps } from "@/types/components/mailchimp/list";
 
@@ -13,72 +18,26 @@ export function ListStats({ stats, className }: ListStatsProps) {
 
   const totalMembers = stats.total_members;
   const totalLists = stats.total_audiences;
+  const publicLists = stats.audiences_by_visibility.pub;
+  const privateLists = stats.audiences_by_visibility.prv;
 
   return (
     <div className={cn("space-y-6", className)}>
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Total Lists
-                </p>
-                <p className="text-2xl font-bold">{formatNumber(totalLists)}</p>
-              </div>
-              <Users className="h-8 w-8 text-blue-600" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Active email lists
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Total Members
-                </p>
-                <p className="text-2xl font-bold">
-                  {formatNumber(totalMembers)}
-                </p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Across all lists
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Visibility
-                </p>
-                <div className="text-2xl font-bold">
-                  <span className="text-blue-600">
-                    {stats.audiences_by_visibility.pub}
-                  </span>
-                  <span className="text-muted-foreground mx-1">/</span>
-                  <span className="text-gray-600">
-                    {stats.audiences_by_visibility.prv}
-                  </span>
-                </div>
-              </div>
-              <Eye className="h-8 w-8 text-blue-600" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Public / Private
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatsGridCard
+        title="List Statistics"
+        icon={Users}
+        iconColor="text-blue-500"
+        stats={[
+          { value: formatNumber(totalLists), label: "Total Lists" },
+          { value: formatNumber(totalMembers), label: "Total Members" },
+          {
+            value: `${publicLists} / ${privateLists}`,
+            label: "Visibility (Pub/Prv)",
+          },
+        ]}
+        columns={3}
+      />
     </div>
   );
 }

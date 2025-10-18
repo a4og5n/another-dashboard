@@ -252,7 +252,7 @@ describe("Lists Page Integration", () => {
 
       expect(screen.getByText("Total Lists")).toBeInTheDocument();
       expect(screen.getAllByText("Total Members").length).toBeGreaterThan(0);
-      expect(screen.getByText("Visibility")).toBeInTheDocument();
+      expect(screen.getByText("Visibility (Pub/Prv)")).toBeInTheDocument();
 
       // Check calculated values - use getAllByText for the number "2" which appears multiple times
       const totalLists = screen.getAllByText("2").find((el) => {
@@ -362,8 +362,8 @@ describe("Lists Page Integration", () => {
       });
       expect(totalLists).toBeInTheDocument();
 
-      // Simple categorization: visibility card should be present
-      expect(screen.getByText("Visibility")).toBeInTheDocument();
+      // Simple categorization: visibility stat should be present
+      expect(screen.getByText("Visibility (Pub/Prv)")).toBeInTheDocument();
     });
   });
 
