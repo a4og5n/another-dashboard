@@ -7,9 +7,10 @@
  * @features Dynamic routing, List metrics, Member stats, Real-time data
  */
 
+import { Suspense } from "react";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { ListDetail } from "@/components/mailchimp/lists";
-import { PageLayout } from "@/components/layout";
+import { BreadcrumbNavigation, PageLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { ListDetailSkeleton } from "@/skeletons/mailchimp";
 import {
@@ -88,7 +89,11 @@ export default async function ListPage({
 
   return (
     <PageLayout
-      breadcrumbs={[bc.home, bc.mailchimp, bc.lists, bc.current("List")]}
+      breadcrumbsSlot={
+        <Suspense fallback={null}>
+          <BreadcrumbContent params={params} />
+        </Suspense>
+      }
       title="List Details"
       description="View detailed information and performance metrics for this list"
       skeleton={<ListDetailSkeleton />}
@@ -101,6 +106,27 @@ export default async function ListPage({
         errorCode={response.errorCode}
       />
     </PageLayout>
+  );
+}
+
+async function BreadcrumbContent({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const rawParams = await params;
+  const { id } = listPageParamsSchema.parse(rawParams);
+
+  return (
+    <BreadcrumbNavigation
+      items={[
+        bc.home,
+        bc.mailchimp,
+        bc.lists,
+        bc.list(id),
+        bc.current("Details"),
+      ]}
+    />
   );
 }
 

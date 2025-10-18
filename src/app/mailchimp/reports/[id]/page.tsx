@@ -7,9 +7,10 @@
  * @features Dynamic routing, Tab navigation, Real-time metrics, Export data
  */
 
+import { Suspense } from "react";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignReportDetail } from "@/components/dashboard";
-import { PageLayout } from "@/components/layout";
+import { BreadcrumbNavigation, PageLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignReportSkeleton } from "@/skeletons/mailchimp";
 import {
@@ -73,7 +74,11 @@ export default async function CampaignReportPage({
 
   return (
     <PageLayout
-      breadcrumbs={[bc.home, bc.mailchimp, bc.reports, bc.current("Report")]}
+      breadcrumbsSlot={
+        <Suspense fallback={null}>
+          <BreadcrumbContent params={params} />
+        </Suspense>
+      }
       title="Campaign Report"
       description="View detailed analytics and performance metrics for this campaign"
       skeleton={<CampaignReportSkeleton />}
@@ -84,6 +89,27 @@ export default async function CampaignReportPage({
         errorCode={response.errorCode}
       />
     </PageLayout>
+  );
+}
+
+async function BreadcrumbContent({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const rawParams = await params;
+  const { id } = reportPageParamsSchema.parse(rawParams);
+
+  return (
+    <BreadcrumbNavigation
+      items={[
+        bc.home,
+        bc.mailchimp,
+        bc.reports,
+        bc.report(id),
+        bc.current("Details"),
+      ]}
+    />
   );
 }
 
