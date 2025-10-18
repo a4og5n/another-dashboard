@@ -12,3 +12,4 @@ export * from "@/utils/mailchimp";
 export * from "@/utils/mailchimp-urls";
 export * from "@/utils/pagination";
 export * from "@/utils/pagination-url-builders";
+export * from "@/utils/metadata";

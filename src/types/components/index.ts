@@ -5,3 +5,4 @@ export * from "@/types/components/mailchimp";
 export * from "@/types/components/avatar";
 export * from "@/types/components/auth";
 export * from "@/types/components/not-found";
+export * from "@/types/components/metadata";
