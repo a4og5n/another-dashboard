@@ -589,6 +589,99 @@ export const generateMetadata: GenerateMetadata = async ({ params }) => {
 };
 ```
 
+### Metadata Helper Functions
+
+**Problem:** Metadata generation involves repetitive API calls and data formatting across multiple pages.
+
+**Solution:** Centralized metadata helpers in `src/utils/mailchimp/metadata.ts` and `src/utils/metadata.ts`
+
+**Available Helpers:**
+
+```tsx
+import {
+  generateCampaignMetadata, // Generic campaign metadata with pageType param
+  generateCampaignReportMetadata, // Campaign report detail pages
+  generateCampaignOpensMetadata, // Campaign opens pages
+  generateCampaignAbuseReportsMetadata, // Campaign abuse reports pages
+} from "@/utils/metadata";
+```
+
+**Usage Pattern:**
+
+```tsx
+// In your page.tsx with dynamic [id] route
+import { generateCampaignOpensMetadata } from "@/utils/metadata";
+
+// Simple one-line metadata export
+export const generateMetadata = generateCampaignOpensMetadata;
+```
+
+**Before (30+ lines inline):**
+
+```tsx
+export const generateMetadata: GenerateMetadata = async ({ params }) => {
+  const rawParams = await params;
+  const { id } = reportOpensPageParamsSchema.parse(rawParams);
+
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Opens | Another Dashboard",
+      description: "View members who opened this campaign",
+    };
+  }
+
+  const report = response.data as CampaignReport;
+
+  return {
+    title: `${report.campaign_title} - Opens | Another Dashboard`,
+    description: `View the ${report.opens.opens_total} members who opened ${report.campaign_title}`,
+  };
+};
+```
+
+**After (1 line):**
+
+```tsx
+import { generateCampaignOpensMetadata } from "@/utils/metadata";
+export const generateMetadata = generateCampaignOpensMetadata;
+```
+
+**Key Features:**
+
+- Eliminates 30+ lines of boilerplate per page
+- Consistent metadata format across all campaign pages
+- Centralized error handling and fallback metadata
+- OpenGraph metadata included automatically
+- Type-safe with proper params validation
+
+**When to Use:**
+
+- Campaign report pages (`/mailchimp/reports/[id]`)
+- Campaign opens pages (`/mailchimp/reports/[id]/opens`)
+- Campaign abuse reports pages (`/mailchimp/reports/[id]/abuse-reports`)
+- Any future campaign-related pages
+
+**Creating New Helpers:**
+
+Follow the pattern in `src/utils/mailchimp/metadata.ts`:
+
+1. Accept `params: Promise<{ id: string }>` parameter
+2. Validate params with appropriate Zod schema
+3. Make async DAL call to fetch data
+4. Return fallback metadata if fetch fails
+5. Build and return metadata object with title, description, openGraph
+6. Export from `src/utils/metadata.ts` for unified imports
+
+**Benefits:**
+
+- 30+ lines saved per page using helpers
+- Consistent metadata structure across pages
+- Single source of truth for campaign metadata
+- Easier to update metadata format globally
+- Improved maintainability and testability
+
 ### Quality Assurance Workflow
 
 1. **Automatic pre-commit validation** (enforced by Husky hooks):
