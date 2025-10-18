@@ -518,6 +518,77 @@ All page components should include a standardized JSDoc header at the top of the
 - **@requires:** Options: `None`, `Kinde Auth`, `Mailchimp connection`, `Kinde Auth + Mailchimp connection`
 - **@features:** List 2-4 key features, comma-separated
 
+#### Metadata Type Safety
+
+**Problem:** `generateMetadata` functions in dynamic pages require manual type annotations that are repetitive and error-prone.
+
+**Solution:** Use type-safe helpers from `@/types/components/metadata`:
+
+```tsx
+import type { GenerateMetadata } from "@/types/components/metadata";
+
+// Simple usage with default { id: string } params
+export const generateMetadata: GenerateMetadata = async ({ params }) => {
+  const { id } = await params;
+  return {
+    title: `Report ${id}`,
+    description: "View campaign analytics",
+  };
+};
+
+// Custom params shape (if you have multiple dynamic segments)
+import type { GenerateMetadata } from "@/types/components/metadata";
+
+export const generateMetadata: GenerateMetadata<{
+  id: string;
+  slug: string;
+}> = async ({ params }) => {
+  const { id, slug } = await params;
+  return {
+    title: `${slug} - Report ${id}`,
+  };
+};
+```
+
+**Available Types:**
+
+- `GenerateMetadata<TParams>` - Type for the metadata function with custom params shape
+- `MetadataProps<TParams>` - Props shape for metadata functions (for advanced use cases)
+
+**Benefits:**
+
+- Type inference and autocomplete for params
+- No repetitive manual type annotations
+- Supports custom parameter shapes via generics
+- Consistent typing across all pages
+- Eliminates common type errors
+
+**When to use:**
+
+- All dynamic pages with `generateMetadata` and route params (`[id]`, `[slug]`, etc.)
+- Pages with custom parameter shapes (multiple dynamic segments like `[category]/[id]`)
+- Any page where you want type safety without manual annotations
+
+**Before:**
+
+```tsx
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  // 5 lines of type annotations
+}
+```
+
+**After:**
+
+```tsx
+export const generateMetadata: GenerateMetadata = async ({ params }) => {
+  // 1 line with type inference
+};
+```
+
 ### Quality Assurance Workflow
 
 1. **Automatic pre-commit validation** (enforced by Husky hooks):
