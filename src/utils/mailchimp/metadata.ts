@@ -11,6 +11,7 @@ import { Metadata } from "next";
 import {
   reportPageParamsSchema,
   reportOpensPageParamsSchema,
+  abuseReportsPageParamsSchema,
 } from "@/schemas/components";
 import type { CampaignReport } from "@/types/mailchimp";
 
@@ -132,6 +133,50 @@ export async function generateCampaignOpensMetadata({
     openGraph: {
       title: `${report.campaign_title} - Campaign Opens`,
       description: `${report.opens.opens_total.toLocaleString()} total opens from ${report.emails_sent.toLocaleString()} recipients`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for campaign abuse reports pages
+ * @param params - Object containing the campaign ID
+ * @returns Next.js Metadata object for the abuse reports page
+ */
+export async function generateCampaignAbuseReportsMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = abuseReportsPageParamsSchema.parse(rawParams);
+
+  // Fetch campaign report for metadata
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Abuse Reports - Campaign Not Found",
+      description: "The requested campaign could not be found.",
+    };
+  }
+
+  const report = response.data as CampaignReport;
+  const abuseReportCount = report.abuse_reports || 0;
+
+  return {
+    title: `${report.campaign_title} - Abuse Reports`,
+    description: `View abuse reports and spam complaints for ${report.campaign_title}. ${
+      abuseReportCount === 0
+        ? "No abuse reports recorded."
+        : `${abuseReportCount.toLocaleString()} ${abuseReportCount === 1 ? "report" : "reports"} received.`
+    }`,
+    openGraph: {
+      title: `${report.campaign_title} - Abuse Reports`,
+      description:
+        abuseReportCount === 0
+          ? `No abuse reports for campaign sent to ${report.emails_sent.toLocaleString()} recipients`
+          : `${abuseReportCount} ${abuseReportCount === 1 ? "abuse report" : "abuse reports"} from ${report.emails_sent.toLocaleString()} recipients`,
       type: "website",
     },
   };
