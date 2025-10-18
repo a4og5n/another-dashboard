@@ -1,3 +1,12 @@
+/**
+ * Example Page
+ * Demonstration page for testing components and patterns (development only)
+ *
+ * @route /example
+ * @requires None
+ * @features Component demos, Pattern examples, Development utilities
+ */
+
 import type { Metadata } from "next";
 import {
   generateMetadata,

@@ -1,13 +1,10 @@
 /**
- * Login Page - Custom UI with Google OAuth Only
- * Users stay on our domain throughout the entire authentication flow
+ * Login Page
+ * Authentication entry point redirecting to Kinde OAuth flow
  *
- * Features:
- * - Google OAuth sign-in with custom UI (only authentication method)
- * - No redirect to Kinde's hosted pages
- * - Clean, branded user experience
- * - Single sign-on via Google for simplicity
- * - Error detection and automatic redirect to error page
+ * @route /login
+ * @requires None
+ * @features OAuth redirect, Post-login redirect handling
  */
 import { redirect } from "next/navigation";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";

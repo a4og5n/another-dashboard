@@ -1,6 +1,10 @@
 /**
  * Settings - Integrations Page
- * Centralized management for all OAuth connections and API integrations
+ * Manage OAuth connections and API integrations for third-party services
+ *
+ * @route /settings/integrations
+ * @requires Kinde Auth
+ * @features OAuth management, Connection status, Connect/disconnect actions
  */
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
