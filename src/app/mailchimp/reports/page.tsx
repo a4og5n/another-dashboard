@@ -1,10 +1,10 @@
 /**
  * Mailchimp Reports Page
- * Displays reports with server-side data fetching
+ * Displays paginated list of campaign reports with filtering and search
  *
- * Issue #140: Reports page implementation following App Router patterns
- * Based on ListsPage pattern with server-side URL cleanup and proper prop handling
- * Implements Next.js best practices for error handling and layout consistency
+ * @route /mailchimp/reports
+ * @requires Mailchimp connection
+ * @features Pagination, Filtering, Real-time data, Server-side URL cleanup
  */
 
 import type { ReportsPageProps } from "@/types/components/mailchimp";
