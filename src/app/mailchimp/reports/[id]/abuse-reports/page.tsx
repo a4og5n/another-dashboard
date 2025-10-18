@@ -17,7 +17,7 @@ import { CampaignAbuseReportsTable } from "@/components/dashboard/reports";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import type { AbuseReportListSuccess, CampaignReport } from "@/types/mailchimp";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import type { Metadata } from "next";
+import type { GenerateMetadata } from "@/types/components/metadata";
 import { handleApiError, bc } from "@/utils";
 
 async function CampaignAbuseReportsPageContent({
@@ -119,11 +119,7 @@ async function BreadcrumbContent({
 export const dynamic = "force-dynamic";
 
 // Generate metadata for the page
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}): Promise<Metadata> {
+export const generateMetadata: GenerateMetadata = async ({ params }) => {
   const rawParams = await params;
   const { id } = abuseReportsPageParamsSchema.parse(rawParams);
 
@@ -154,4 +150,4 @@ export async function generateMetadata({
       type: "website",
     },
   };
-}
+};
