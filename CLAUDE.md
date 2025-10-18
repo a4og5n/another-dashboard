@@ -459,6 +459,65 @@ async function BreadcrumbContent({
 - **shadcn/ui**: Use as base building blocks
 - **JSDoc**: Document component usage with comments
 
+#### Page Component Headers
+
+All page components should include a standardized JSDoc header at the top of the file:
+
+**Standard Template:**
+
+```tsx
+/**
+ * [Page Title]
+ * [Brief 1-2 sentence description]
+ *
+ * @route [/path/to/page]
+ * @requires [Authentication requirement]
+ * @features [Key features]
+ */
+```
+
+**VSCode Snippet:** Type `pageheader` and press Tab to insert the template
+
+**Examples:**
+
+```tsx
+// List page
+/**
+ * Mailchimp Lists Page
+ * Displays paginated list of Mailchimp audiences with filtering and search
+ *
+ * @route /mailchimp/lists
+ * @requires Mailchimp connection
+ * @features Pagination, Filtering, Real-time data
+ */
+
+// Detail page with dynamic route
+/**
+ * Campaign Report Detail Page
+ * Displays detailed analytics and metrics for a specific campaign
+ *
+ * @route /mailchimp/reports/[id]
+ * @requires Mailchimp connection
+ * @features Dynamic routing, Tab navigation, Real-time metrics
+ */
+
+// Settings page
+/**
+ * Settings - Integrations Page
+ * Manage OAuth connections and API integrations
+ *
+ * @route /settings/integrations
+ * @requires Kinde Auth
+ * @features OAuth management, Connection status
+ */
+```
+
+**Guidelines:**
+
+- **@route:** Use exact route path with `[id]` for dynamic segments
+- **@requires:** Options: `None`, `Kinde Auth`, `Mailchimp connection`, `Kinde Auth + Mailchimp connection`
+- **@features:** List 2-4 key features, comma-separated
+
 ### Quality Assurance Workflow
 
 1. **Automatic pre-commit validation** (enforced by Husky hooks):
