@@ -3,26 +3,23 @@
  * Displays the total number of emails sent in a campaign
  *
  * Issue #135: Campaign report detail UI components - Emails Sent Card
- * Following established patterns from existing dashboard components
+ * Migrated to use standardized StatCard component
  */
 
 "use client";
 
-import { BaseMetricCard } from "@/components/dashboard/reports/BaseMetricCard";
+import { StatCard } from "@/components/ui/stat-card";
 import { Mail } from "lucide-react";
 import type { EmailsSentCardProps } from "@/types/components/dashboard/reports";
 
 export function EmailsSentCard({ emailsSent, className }: EmailsSentCardProps) {
   return (
-    <BaseMetricCard
+    <StatCard
       icon={Mail}
+      value={emailsSent}
+      label="Emails Sent"
       iconColor="var(--muted-foreground)"
       className={className}
-      simpleCard={true}
-      compact={true}
-    >
-      <div className="text-2xl font-bold">{emailsSent.toLocaleString()}</div>
-      <div className="text-xs text-muted-foreground">Emails Sent</div>
-    </BaseMetricCard>
+    />
   );
 }

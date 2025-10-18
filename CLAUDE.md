@@ -268,6 +268,97 @@ import { bc } from "@/utils/breadcrumbs";
 
 If you find yourself using `bc.custom()` multiple times for the same route, add it as a static route or dynamic function in the breadcrumb builder instead.
 
+### Standard Card Components
+
+The project includes three standardized Card components for consistent metric display across all pages in `src/components/ui/`:
+
+**Core Components:**
+
+- `StatCard` - Simple metric card (icon + value + label + optional trend)
+- `StatsGridCard` - Multi-stat grid card (header + grid of stats + optional footer)
+- `StatusCard` - Status card with badge (title + badge + metrics + progress + actions)
+
+**Usage Patterns:**
+
+**StatCard - Simple Metric Display:**
+
+```tsx
+import { StatCard } from "@/components/ui/stat-card";
+import { Mail } from "lucide-react";
+
+<StatCard
+  icon={Mail}
+  value={12500}
+  label="Emails Sent"
+  trend="up"
+  change={5.2}
+  description="Compared to last month"
+/>;
+```
+
+**StatsGridCard - Multi-Stat Display:**
+
+```tsx
+import { StatsGridCard } from "@/components/ui/stats-grid-card";
+import { MailOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+<StatsGridCard
+  title="Email Opens"
+  icon={MailOpen}
+  iconColor="text-blue-500"
+  stats={[
+    { value: 1250, label: "Total Opens" },
+    { value: 980, label: "Unique Opens" },
+    { value: "23.4%", label: "Open Rate" },
+  ]}
+  columns={3}
+  footer={<Button>View Details</Button>}
+/>;
+```
+
+**StatusCard - Status with Metrics:**
+
+```tsx
+import { StatusCard } from "@/components/ui/status-card";
+
+<StatusCard
+  title="Delivery Status"
+  status="delivered"
+  statusVariant="default"
+  description="Campaign delivery information"
+  metrics={[
+    { label: "Emails Sent", value: 5000 },
+    { label: "Emails Canceled", value: 0 },
+  ]}
+  progress={100}
+/>;
+```
+
+**Benefits:**
+
+- Eliminates 20-50 lines of boilerplate per card usage
+- Consistent styling and behavior across all cards
+- Built-in loading states (skeleton UI)
+- Full TypeScript type safety
+- Accessibility tested (WCAG 2.1 AA compliant)
+- Responsive grid layouts
+
+**When to Use:**
+
+- **StatCard:** Single metric display (emails sent, click rate, revenue)
+- **StatsGridCard:** Multiple related metrics (opens breakdown, performance stats)
+- **StatusCard:** Status information with badge (delivery status, connection status, campaign state)
+- **Custom Card:** Complex interactive features or non-standard layouts (use base Card primitives)
+
+**Type Imports:**
+
+```tsx
+import type { StatCardProps } from "@/types/components/ui";
+import type { StatsGridCardProps, StatGridItem } from "@/types/components/ui";
+import type { StatusCardProps, StatusMetric } from "@/types/components/ui";
+```
+
 ### URL Params Processing Pattern
 
 The project provides two utilities for processing URL parameters, each serving a distinct purpose.
