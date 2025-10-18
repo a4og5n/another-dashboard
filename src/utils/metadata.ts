@@ -45,3 +45,11 @@ export function createMetadataFunction<TParams = { id: string }>(
 ): GenerateMetadata<TParams> {
   return fn;
 }
+
+// Re-export mailchimp metadata helpers for convenience
+export {
+  generateCampaignMetadata,
+  generateCampaignReportMetadata,
+  generateCampaignOpensMetadata,
+  generateCampaignAbuseReportsMetadata,
+} from "@/utils/mailchimp/metadata";
