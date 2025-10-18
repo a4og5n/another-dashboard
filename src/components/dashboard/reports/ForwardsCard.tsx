@@ -1,9 +1,10 @@
 /**
  * Campaign Report Forwards Card Component
  * Displays email forwarding statistics
+ * Migrated to StatsGridCard for consistency and reduced boilerplate
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatsGridCard } from "@/components/ui/stats-grid-card";
 import { Share } from "lucide-react";
 import type { ForwardsCardProps } from "@/types/components/dashboard/reports";
 
@@ -15,36 +16,27 @@ export function ForwardsCard({ forwards }: ForwardsCardProps) {
       : "0.0";
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center space-x-2 text-base">
-          <Share className="h-4 w-4 text-blue-500" />
-          <span>Email Forwards</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-2xl font-bold">
-              {forwards.forwards_count.toLocaleString()}
-            </p>
-            <p className="text-sm text-muted-foreground">Total Forwards</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold">
-              {forwards.forwards_opens.toLocaleString()}
-            </p>
-            <p className="text-sm text-muted-foreground">Opens from Forwards</p>
-          </div>
-        </div>
-
-        <div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-medium">{engagementRate}%</span> of forwarded
-            emails were opened
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+    <StatsGridCard
+      title="Email Forwards"
+      icon={Share}
+      iconColor="text-blue-500"
+      stats={[
+        {
+          value: forwards.forwards_count.toLocaleString(),
+          label: "Total Forwards",
+        },
+        {
+          value: forwards.forwards_opens.toLocaleString(),
+          label: "Opens from Forwards",
+        },
+      ]}
+      columns={2}
+      footer={
+        <p className="text-sm text-muted-foreground">
+          <span className="font-medium">{engagementRate}%</span> of forwarded
+          emails were opened
+        </p>
+      }
+    />
   );
 }

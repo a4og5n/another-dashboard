@@ -15,12 +15,18 @@ const mockStats: ListStatsType = {
 
 describe("ListStats", () => {
   describe("Basic Rendering", () => {
-    it("renders all three stat cards", () => {
+    it("renders stats grid card with title", () => {
+      render(<ListStats stats={mockStats} />);
+
+      expect(screen.getByText("List Statistics")).toBeInTheDocument();
+    });
+
+    it("renders all three stat items", () => {
       render(<ListStats stats={mockStats} />);
 
       expect(screen.getByText("Total Lists")).toBeInTheDocument();
       expect(screen.getByText("Total Members")).toBeInTheDocument();
-      expect(screen.getByText("Visibility")).toBeInTheDocument();
+      expect(screen.getByText("Visibility (Pub/Prv)")).toBeInTheDocument();
     });
 
     it("displays correct stat values", () => {
@@ -28,24 +34,15 @@ describe("ListStats", () => {
 
       expect(screen.getByText("3")).toBeInTheDocument(); // total audiences
       expect(screen.getByText("5.3K")).toBeInTheDocument(); // total members formatted
-      expect(screen.getByText("2")).toBeInTheDocument(); // public audiences
-      expect(screen.getByText("1")).toBeInTheDocument(); // private audiences
+      expect(screen.getByText("2 / 1")).toBeInTheDocument(); // public / private
     });
 
-    it("displays proper card descriptions", () => {
+    it("displays icon correctly", () => {
       render(<ListStats stats={mockStats} />);
 
-      expect(screen.getByText("Active email lists")).toBeInTheDocument();
-      expect(screen.getByText("Across all lists")).toBeInTheDocument();
-      expect(screen.getByText("Public / Private")).toBeInTheDocument();
-    });
-
-    it("displays icons correctly", () => {
-      render(<ListStats stats={mockStats} />);
-
-      // Icons are rendered as SVG elements with specific classes
+      // Single Users icon in the StatsGridCard header
       const icons = document.querySelectorAll("svg");
-      expect(icons.length).toBeGreaterThanOrEqual(3); // At least one for each card
+      expect(icons.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -94,12 +91,9 @@ describe("ListStats", () => {
     it("shows public and private counts with proper formatting", () => {
       render(<ListStats stats={mockStats} />);
 
-      // Check for the inline format: "2/1" (public/private)
-      const visibilityCard = screen.getByText("Visibility").closest(".p-6");
-      expect(visibilityCard).toBeInTheDocument();
-
-      expect(screen.getByText("2")).toBeInTheDocument(); // public count
-      expect(screen.getByText("1")).toBeInTheDocument(); // private count
+      // Check for the inline format: "2 / 1" (public/private)
+      expect(screen.getByText("2 / 1")).toBeInTheDocument();
+      expect(screen.getByText("Visibility (Pub/Prv)")).toBeInTheDocument();
     });
 
     it("handles zero counts correctly", () => {
@@ -113,9 +107,8 @@ describe("ListStats", () => {
 
       render(<ListStats stats={zeroStats} />);
 
-      // Both counts should show as "0"
-      const visibilityCard = screen.getByText("Visibility").closest(".p-6");
-      expect(visibilityCard).toBeInTheDocument();
+      // Both counts should show as "0 / 0"
+      expect(screen.getByText("0 / 0")).toBeInTheDocument();
     });
   });
 
@@ -123,13 +116,15 @@ describe("ListStats", () => {
   // Loading states are now handled at the parent level with Suspense boundaries.
 
   describe("Grid Layout", () => {
-    it("uses correct grid classes for responsive layout", () => {
+    it("uses correct grid classes for stats layout", () => {
       const { container } = render(<ListStats stats={mockStats} />);
 
-      const gridContainer = container.querySelector(".grid");
-      expect(gridContainer).toHaveClass("grid-cols-1");
-      expect(gridContainer).toHaveClass("md:grid-cols-2");
-      expect(gridContainer).toHaveClass("lg:grid-cols-3");
+      // The grid-cols-3 class is applied to the stats grid inside CardContent
+      const gridContainers = container.querySelectorAll(".grid");
+      const statsGrid = Array.from(gridContainers).find((el) =>
+        el.classList.contains("grid-cols-3"),
+      );
+      expect(statsGrid).toBeInTheDocument();
     });
   });
 
@@ -148,10 +143,11 @@ describe("ListStats", () => {
     it("has proper semantic structure", () => {
       render(<ListStats stats={mockStats} />);
 
-      // Should have cards with proper text content
+      // Should have StatsGridCard with proper text content
+      expect(screen.getByText("List Statistics")).toBeInTheDocument();
       expect(screen.getByText("Total Lists")).toBeInTheDocument();
       expect(screen.getByText("Total Members")).toBeInTheDocument();
-      expect(screen.getByText("Visibility")).toBeInTheDocument();
+      expect(screen.getByText("Visibility (Pub/Prv)")).toBeInTheDocument();
     });
   });
 
