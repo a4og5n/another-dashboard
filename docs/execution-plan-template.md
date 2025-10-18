@@ -2,7 +2,7 @@
 
 **Purpose:** This document provides a standard template for creating detailed, step-by-step execution plans for development tasks. Use this template to ensure consistent, cost-effective, and safe implementation of features and improvements.
 
-**Last Updated:** 2025-10-15
+**Last Updated:** 2025-10-18
 
 ---
 
@@ -13,6 +13,81 @@
 3. **Review the generated plan** before starting implementation
 4. **Follow the plan step-by-step** to ensure nothing is missed
 5. **Update the plan** as you discover new requirements or blockers
+
+---
+
+## Plan Size Guidelines (CRITICAL)
+
+### When to Split Into Multiple Files
+
+**⚠️ IMPORTANT:** Execution plans longer than ~800 lines risk instructions being missed due to:
+
+- Cognitive overload (too much information to process)
+- Token/context limits
+- Critical details buried in walls of text
+
+**Split into separate phase files if:**
+
+- Total plan exceeds 800 lines
+- Project has 4+ implementation phases
+- Multiple independent components being created
+- Plan includes extensive code examples
+
+**Example Structure for Split Plans:**
+
+```
+docs/
+├── execution-plan-[feature-name].md          # Main overview (keep short, ~150-200 lines)
+└── [feature-name]/
+    ├── README.md                              # Explains structure, how to use
+    ├── phase-0-setup.md                       # Git setup
+    ├── phase-1-[component-a].md               # First component
+    ├── phase-2-[component-b].md               # Second component
+    ├── phase-3-[component-c].md               # Third component
+    ├── phase-4-migrations.md                  # Example migrations
+    ├── phase-5-documentation.md               # Final docs
+    └── reference-checklists.md                # PR template, rollback, manual review
+```
+
+**Main Overview Should Contain:**
+
+- Task summary and success criteria
+- Files affected (high-level summary only)
+- Phase breakdown with links to phase files
+- How to use this plan
+- Expected benefits
+
+**Each Phase File Should Contain:**
+
+- Pre-phase validation checklist (check if already done)
+- Files to create/modify (specific to this phase)
+- Implementation steps with code examples
+- Validation steps
+- Commit checkpoint
+- Cost optimization note
+
+**Reference File Should Contain:**
+
+- Manual review checklist
+- PR template and push strategy
+- Rollback procedures
+- Common issues and solutions
+- Post-merge tasks
+
+**Benefits of Split Structure:**
+
+- ✅ Load only what you need when you need it
+- ✅ Clearer focus on current task
+- ✅ Better cost optimization (clear context between phases)
+- ✅ Easier to update individual phases
+- ✅ Reusable templates for similar projects
+
+**Keep Single File When:**
+
+- Total plan is under 800 lines
+- Only 1-3 simple phases
+- Minimal code examples
+- Quick implementation (under 2 hours)
 
 ## Pre-Generation Checklist for AI
 
@@ -1011,11 +1086,76 @@ git clean -fd  # Remove untracked files
   # Response: "Phase 2 appears to be already completed. I can see commit 20799c6..."
   ```
 
+**Pitfall 16: Creating Monolithic Execution Plans (NEW - CRITICAL)**
+
+- **Problem:** Creating a single 2,000+ line execution plan instead of splitting into focused phase files
+- **Impact:**
+  - Instructions get missed due to cognitive overload
+  - Token/context limits make it hard to reference entire plan
+  - Critical details buried in walls of text
+  - Harder to update and maintain
+  - Poor developer experience
+- **Solution:** Split execution plans over 800 lines into separate phase documents
+- **When to split:**
+  - Total plan exceeds 800 lines
+  - 4+ implementation phases
+  - Multiple independent components being created
+  - Extensive code examples included
+- **How to split:**
+  - Main overview: ~150-200 lines (summary, phase links, benefits)
+  - Phase files: 300-600 lines each (self-contained, focused)
+  - Reference file: Manual review, PR template, rollback strategies
+  - README: Explains structure and how to use
+- **Example:**
+
+  ```
+  ❌ WRONG - Single 2,130 line file
+  docs/execution-plan-card-standardization.md (2,130 lines)
+
+  ✅ RIGHT - Split into focused files
+  docs/execution-plan-card-standardization.md (162 lines)
+  docs/card-standardization/
+    ├── README.md
+    ├── phase-0-setup.md (182 lines)
+    ├── phase-1-stat-card.md (465 lines)
+    ├── phase-2-stats-grid-card.md (469 lines)
+    ├── phase-3-status-card.md (545 lines)
+    ├── phase-4-migrations.md (264 lines)
+    ├── phase-5-documentation.md (265 lines)
+    └── reference-checklists.md (418 lines)
+  ```
+
+- **Benefits of splitting:**
+  - ✅ Load only what you need when you need it (82% smaller per file)
+  - ✅ Clearer focus on current task
+  - ✅ Better cost optimization (clear context between phases)
+  - ✅ Easier to update individual phases
+  - ✅ Reusable phase templates for future projects
+- **AI behavior:** Check plan size BEFORE generating. If it will exceed 800 lines, automatically use split structure
+
 ---
 
 ## AI Self-Check Before Submitting Execution Plan
 
 Before presenting the execution plan to the user, verify:
+
+### Plan Size and Structure Check (CRITICAL)
+
+- [ ] **Count total lines** - If plan exceeds 800 lines, MUST split into separate phase files
+- [ ] **Phase count** - If 4+ implementation phases, MUST use split structure
+- [ ] **Multiple components** - If creating 3+ independent components, MUST use split structure
+- [ ] **If splitting required:**
+  - [ ] Create main overview document (~150-200 lines)
+  - [ ] Create separate phase-X-[name].md files
+  - [ ] Create reference-checklists.md for manual review, PR, rollback
+  - [ ] Create README.md explaining structure
+  - [ ] Link all phase files from main overview
+  - [ ] Each phase file is self-contained (300-600 lines max)
+- [ ] **If keeping single file:**
+  - [ ] Total lines under 800
+  - [ ] Only 1-3 phases
+  - [ ] Minimal code examples
+  - [ ] Quick implementation (under 2 hours)
 
 ### Phase 0 Verification (CRITICAL - MANDATORY)
 
