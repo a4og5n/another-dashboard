@@ -4,3 +4,4 @@ export * from "@/types/components/ui/date-filter";
 export * from "@/types/components/ui/campaign-status-badge";
 export * from "@/types/components/ui/pricing-plan-badge";
 export * from "@/types/components/ui/stat-card";
+export * from "@/types/components/ui/stats-grid-card";
