@@ -40,24 +40,19 @@ This template is **comprehensive reference documentation** for AI agents creatin
 
 Before delivering an execution plan to the user, verify:
 
-- [ ] **[CRITICAL]** Phase 0: Git Setup (lines 310-420) - Mandatory first phase
-- [ ] **[CRITICAL]** Hybrid approach explained - Offer to create GitHub Issue
-- [ ] **[CRITICAL]** Success criteria clearly defined
-- [ ] **[IMPORTANT]** Files to create/modify listed
+- [ ] **[CRITICAL]** Phase 0: Git Setup included (see Phase 0 Template section)
+- [ ] **[CRITICAL]** Success criteria clearly defined in Overview
+- [ ] **[CRITICAL]** Both markdown plan AND GitHub issue body generated simultaneously
+- [ ] **[IMPORTANT]** Files to create/modify listed in Overview
 - [ ] **[IMPORTANT]** Verification steps after each phase
 - [ ] **[IMPORTANT]** Commit checkpoints with messages
 - [ ] **[IMPORTANT]** Time estimates per phase
 - [ ] **[OPTIONAL]** Cost optimization clear points
 - [ ] **[OPTIONAL]** Rollback strategy
 
-**During plan generation, ALWAYS:**
+**Delivery Format (CRITICAL):**
 
-1. Generate the execution plan (markdown)
-2. Generate the GitHub issue body (markdown format ready to paste)
-3. Present both to the user simultaneously
-4. Explain the hybrid approach benefits
-
-**Format:**
+Present both artifacts together using this exact format:
 
 > "I've created both:
 >
@@ -72,23 +67,20 @@ Before delivering an execution plan to the user, verify:
 
 For AI agents generating execution plans, these sections are **mandatory**:
 
-| Section                | Priority   | Line Reference  | Must Include                     |
-| ---------------------- | ---------- | --------------- | -------------------------------- |
-| **Hybrid Approach**    | [CRITICAL] | Lines 57-104    | Explain Markdown + GitHub Issues |
-| **Phase 0 Template**   | [CRITICAL] | Lines 521-632   | Git setup, branch verification   |
-| **Git Workflow**       | [CRITICAL] | Lines 403-510   | Branch strategy, commit format   |
-| **Success Criteria**   | [CRITICAL] | Throughout      | What "done" looks like           |
-| **GitHub Issue Offer** | [CRITICAL] | After plan      | Always ask if user wants issue   |
-| **AI Self-Check**      | [CRITICAL] | Lines 1401-1515 | Verify before submitting         |
+| Section              | Priority   | Must Include                                    |
+| -------------------- | ---------- | ----------------------------------------------- |
+| **Phase 0 Template** | [CRITICAL] | Git setup, branch verification, existing work check |
+| **Hybrid Approach**  | [CRITICAL] | Generate BOTH markdown plan + GitHub issue body |
+| **Success Criteria** | [CRITICAL] | Clear definition of "done" in Overview          |
+| **AI Self-Check**    | [CRITICAL] | Verify all requirements before submitting       |
 
-**Non-negotiable checklist before delivering plan:**
+**Quick Validation (run before submitting):**
 
-1. ✅ Phase 0 is first phase (git setup)
-2. ✅ Hybrid approach explained
-3. ✅ Offer to create GitHub Issue
-4. ✅ Success criteria defined
-5. ✅ Time estimates included
-6. ✅ Verification steps after each phase
+1. ✅ Phase 0 is first phase
+2. ✅ Both plan + issue generated
+3. ✅ Success criteria defined
+4. ✅ Time estimates included
+5. ✅ Verification steps after each phase
 
 ---
 
@@ -181,6 +173,11 @@ For users who prefer GitHub Issues as primary tool:
 ### [IMPORTANT] Issue Structure Template
 
 When creating a GitHub issue from an execution plan, use this structure:
+
+**Plan Size Determines Issue Strategy:**
+
+- **Small Plans (< 800 lines, 1-3 phases):** Create 1 issue with all phases as checkboxes
+- **Large Plans (> 800 lines, 4+ phases):** Create 1 issue per phase OR 1 epic issue with phase checkboxes
 
 ```markdown
 ## Title Format:
@@ -354,31 +351,6 @@ Add `.github/workflows/issue-sync.yml` to auto-update issues:
 
 ---
 
-### Converting Execution Plans to Issues
-
-**For Small Plans (< 800 lines, 1-3 phases):**
-
-- Create 1 GitHub issue with all phases as checkboxes
-- Link to markdown plan for details
-
-**For Large Plans (> 800 lines, 4+ phases):**
-
-- Option A: Create 1 issue per phase (more granular)
-- Option B: Create 1 epic issue with phase checkboxes
-- Always link to phase-specific markdown files
-
-**Example Multi-Issue Structure:**
-
-```
-Epic Issue: "Refactor Component DRY Issues"
-├── Issue #1: Extract Card Utilities (Priority 1) → links to phase-1.md
-├── Issue #2: Create Table Wrapper (Priority 2) → links to phase-2.md
-├── Issue #3: Empty State Component (Priority 3) → links to phase-3.md
-└── Project Board tracks all issues
-```
-
----
-
 ## [CRITICAL] Plan Size Guidelines
 
 ### When to Split Into Multiple Files
@@ -537,17 +509,7 @@ Organize by category for clarity:
 
 ### [IMPORTANT] 2. Pre-Implementation Checklist
 
-Before writing any code:
-
-- [ ] **Review related documentation** (PRD, technical specs, patterns)
-- [ ] **Understand the current implementation** (if modifying existing code)
-- [ ] **Identify existing patterns** to follow (e.g., similar components/pages)
-- [ ] **Verify import/export patterns** (read existing index.ts files)
-- [ ] **Verify type locations** (read src/types/index.ts and understand barrel exports)
-- [ ] **Check for reusable utilities** that already exist
-- [ ] **Review test requirements** (what needs to be tested?)
-- [ ] **Verify environment setup** (dependencies installed, servers running)
-- [ ] **Check official docs** if implementing framework-specific features (Next.js, React, etc.)
+**Note:** This checklist is included in Phase 0 Template. See Phase 0 for detailed steps.
 
 ---
 
@@ -572,47 +534,11 @@ docs/description-of-docs-change
 
 **⚠️ CRITICAL: Branch Creation is MANDATORY**
 
-**Before starting ANY implementation work, you MUST:**
+See Phase 0 Template for detailed branch verification steps. Summary:
 
-1. **Verify current branch:**
-
-   ```bash
-   git branch --show-current
-   ```
-
-2. **If on `main`, STOP immediately and create feature branch:**
-
-   ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Confirm you're on the feature branch:**
-   ```bash
-   git branch --show-current
-   # Should output: feature/your-feature-name (NOT main)
-   ```
-
-**Initial Setup (REQUIRED FIRST STEP):**
-
-```bash
-# Ensure you're on main and up to date
-git checkout main
-git pull origin main
-
-# Create new feature branch
-git branch feature/your-feature-name
-git checkout feature/your-feature-name
-
-# Or use shorthand
-git checkout -b feature/your-feature-name
-
-# VERIFY you're on the correct branch
-git branch --show-current
-```
-
-**❌ DO NOT PROCEED if `git branch --show-current` returns `main`**
+1. Check current branch: `git branch --show-current`
+2. If on `main`, create feature branch: `git checkout -b feature/your-feature-name`
+3. Verify before proceeding: Must NOT be on `main`
 
 #### Commit Strategy
 
