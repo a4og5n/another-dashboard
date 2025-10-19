@@ -4,7 +4,7 @@
 
 **Last Updated:** 2025-10-19
 
-**Status:** In Progress - Priority 1, 2 & 3 Complete ✅
+**Status:** In Progress - Priority 1, 2, 3 & 4 Complete ✅
 
 **Document Type:** Strategic Analysis & Refactoring Roadmap
 
@@ -34,8 +34,8 @@ This analysis identified **460+ lines of duplicated code** across **22+ files** 
 
 ### Total Impact (Updated)
 
-- **268+ lines eliminated so far** (Priority 1, 2 + 3 complete)
-- **~160+ lines remaining** (Priority 4-6 pending)
+- **308+ lines eliminated so far** (Priority 1, 2, 3 + 4 complete)
+- **~120+ lines remaining** (Priority 5-6 pending)
 - **Reduced maintenance burden** across 22+ files
 - **Improved consistency** in component styling and behavior
 - **Faster development** when adding new similar components
@@ -50,7 +50,7 @@ This analysis identified **460+ lines of duplicated code** across **22+ files** 
 | 1        | Card Utilities   | 5 files        | 78          | Low    | High   | ✅ Complete |
 | 2        | Table Wrapper    | 2 files        | 70          | Medium | High   | ✅ Complete |
 | 3        | Empty State Card | 4 files        | 120+        | Low    | Medium | ✅ Complete |
-| 4        | Badge Helpers    | 3 files        | 40+         | Low    | Medium | 📋 Planned  |
+| 4        | Badge Helpers    | 4 files        | 40+         | Low    | Medium | ✅ Complete |
 | 5        | Value Formatting | 5 files        | 40+         | Low    | Medium | 📋 Planned  |
 | 6        | Chart Utilities  | 2 files        | 30+         | Medium | Low    | 📋 Planned  |
 
@@ -275,9 +275,15 @@ export function EmptyStateCard({
 
 ---
 
-## Priority 4: Badge Helper Functions (MEDIUM IMPACT)
+## Priority 4: Badge Helper Functions (MEDIUM IMPACT) ✅ COMPLETE
 
-**Lines Saved:** 40+ | **Effort:** Low | **Impact:** Medium
+**Status:** ✅ **Complete** - Merged to main on 2025-10-19
+
+**Actual Results:** 40+ lines saved | 4 files modified | Low effort | Medium impact
+
+**PR:** [#198](https://github.com/a4og5n/another-dashboard/pull/198)
+
+**Execution Plan:** [execution-plan-priority-4-badge-helpers.md](execution-plan-priority-4-badge-helpers.md)
 
 ### Problem
 
@@ -285,26 +291,34 @@ Status badge logic scattered across multiple files with duplicate implementation
 
 ### Files Affected
 
-1. `src/components/ui/campaign-status-badge.tsx` (74 lines)
-2. `src/components/dashboard/reports/CampaignOpensTable.tsx` - `getStatusBadge()` (14 lines)
-3. `src/components/dashboard/reports/CampaignAbuseReportsTable.tsx` - Multiple functions (20+ lines)
+1. `src/components/ui/helpers/badge-utils.tsx` (added 2 new functions)
+2. `src/components/ui/helpers/badge-utils.test.tsx` (created with 26 tests)
+3. `src/components/mailchimp/lists/list-card.tsx` (refactored)
+4. `src/components/mailchimp/lists/list-overview.tsx` (refactored)
 
-### Duplicate Functions
+### Solution Implemented
 
-- `getStatusBadge()` logic scattered across 3+ locations
-- `getVipBadge()` implemented separately in each table (8+ lines duplicated)
-- Status color mapping scattered instead of centralized
-
-### Solution
-
-Create `src/components/ui/helpers/badge-helpers.ts`:
+Enhanced existing `src/components/ui/helpers/badge-utils.tsx` with:
 
 ```typescript
-export const getStatusBadge = (status: string): BadgeVariant
-export const getVipBadge = (isVip: boolean): React.ReactNode
-export const getListStatusBadge = (isActive: boolean): React.ReactNode
-export const getVisibilityBadge = (visibility: "pub" | "prv"): React.ReactNode
+// New functions added in Priority 4
+export function getVisibilityBadge(
+  visibility: "pub" | "prv",
+  variant: "simple" | "with-icon" = "simple",
+): React.ReactNode
+
+export function getCampaignStatusBadge(status: string): {
+  variant: "default" | "secondary" | "outline" | "destructive";
+  label: string;
+}
 ```
+
+### Refactor Impact (Achieved)
+
+- **list-card.tsx:** Removed inline `getVisibilityBadge()` function (11 lines saved)
+- **list-overview.tsx:** Replaced inline badge logic with utility (9 lines saved)
+- **badge-utils.test.tsx:** Created comprehensive test suite (26 tests, 100% coverage)
+- **Total:** 40+ lines of duplicate code eliminated across 4 files
 
 ---
 
