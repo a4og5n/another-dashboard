@@ -32,11 +32,13 @@ Extract remaining duplicate badge logic into centralized helpers to reduce code 
 ### Current State
 
 **Already Extracted (Priority 2):**
+
 - ✅ `getVipBadge()` - Used in CampaignOpensTable, CampaignAbuseReportsTable
 - ✅ `getMemberStatusBadge()` - Used in CampaignOpensTable
 - ✅ `getActiveStatusBadge()` - Used in CampaignAbuseReportsTable
 
 **Still Needs Extraction:**
+
 - ❌ `getVisibilityBadge()` - Inline in list-card.tsx (lines 21-31)
 - ❌ Visibility badge logic - Inline in list-overview.tsx (lines 134-142)
 - ❌ Campaign status badge - Exists as component (campaign-status-badge.tsx), need utility version
@@ -44,21 +46,26 @@ Extract remaining duplicate badge logic into centralized helpers to reduce code 
 ### Files to Create
 
 **Utilities:**
+
 - None (will add to existing `src/components/ui/helpers/badge-utils.tsx`)
 
 **Tests:**
+
 - None (will add to existing `src/components/ui/helpers/badge-utils.test.tsx` if it exists, or create it)
 
 ### Files to Modify
 
 **Badge Utilities:**
+
 - `src/components/ui/helpers/badge-utils.tsx` - Add `getVisibilityBadge()` and `getCampaignStatusBadge()`
 
 **List Components:**
+
 - `src/components/mailchimp/lists/list-card.tsx` - Remove inline `getVisibilityBadge()`, import from utils
 - `src/components/mailchimp/lists/list-overview.tsx` - Use `getVisibilityBadge()` utility
 
 **Tests:**
+
 - `src/components/mailchimp/lists/list-card.test.tsx` - Update if needed
 - Create or update badge-utils tests
 
@@ -86,6 +93,7 @@ git branch --show-current
 ```
 
 **Expected outcomes:**
+
 - ✅ **If on feature branch matching this plan:** Proceed to Step 2
 - ❌ **If on `main` branch:** STOP and proceed to Step 1b
 - ❌ **If on different feature branch:** Confirm with user before proceeding
@@ -125,11 +133,13 @@ grep -n "getVisibilityBadge" src/components/ui/helpers/badge-utils.tsx
 ```
 
 **If work is already complete:**
+
 - Inform user: "This work appears to be already completed. Found commits: [list] and functions: [list]"
 - Ask: "Would you like me to verify the implementation or move to the next phase?"
 - DO NOT re-implement already completed work
 
 **If work is partially complete:**
+
 - List what's done and what remains
 - Ask user how to proceed
 
@@ -206,7 +216,7 @@ Before starting this phase, verify it hasn't already been completed:
 
    Add this function after the existing badge functions:
 
-   ```tsx
+   ````tsx
    /**
     * Render a visibility badge for list visibility status
     *
@@ -241,15 +251,12 @@ Before starting this phase, verify it hasn't already been completed:
 
      // Simple variant
      return (
-       <Badge
-         variant={isPublic ? "outline" : "secondary"}
-         className="text-xs"
-       >
+       <Badge variant={isPublic ? "outline" : "secondary"} className="text-xs">
          {label}
        </Badge>
      );
    }
-   ```
+   ````
 
 3. **Add Eye icon import at the top of badge-utils.tsx**
 
@@ -302,7 +309,7 @@ git commit -m "feat(ui): add getVisibilityBadge helper to badge-utils
 
    Add this function after getVisibilityBadge():
 
-   ```tsx
+   ````tsx
    /**
     * Get badge variant for campaign status
     *
@@ -344,7 +351,7 @@ git commit -m "feat(ui): add getVisibilityBadge helper to badge-utils
          return { variant: "outline", label: status };
      }
    }
-   ```
+   ````
 
 **Note:** This utility function complements the existing `CampaignStatusBadge` component. The component remains for convenience, while this utility provides more flexibility for custom rendering scenarios.
 
@@ -441,13 +448,17 @@ git commit -m "feat(ui): add getCampaignStatusBadge utility
          const publicBadge = getVisibilityBadge("pub");
          const privateBadge = getVisibilityBadge("prv");
 
-         const { container: publicContainer } = render(<div>{publicBadge}</div>);
+         const { container: publicContainer } = render(
+           <div>{publicBadge}</div>,
+         );
          const { container: privateContainer } = render(
            <div>{privateBadge}</div>,
          );
 
          // Public should use outline variant, Private should use secondary
-         expect(publicContainer.querySelector("[class*='outline']")).toBeTruthy();
+         expect(
+           publicContainer.querySelector("[class*='outline']"),
+         ).toBeTruthy();
          expect(
            privateContainer.querySelector("[class*='secondary']"),
          ).toBeTruthy();
@@ -613,17 +624,20 @@ Check token usage before deciding:
 
 **IF >120K tokens used:**
 ✅ CLEAR - Safe because:
+
 - Phases 1-3 complete and committed
 - Badge utilities created and tested
 - Next phases are independent (refactoring components to use utilities)
 
 **IF <100K tokens used:**
 ⏩ CONTINUE - Reasons:
+
 - Sufficient budget remaining
 - Simple refactoring tasks ahead
 - Faster continuous execution
 
 📋 If clearing, keep:
+
 - This execution plan
 - Current task: "Phase 4 - Refactor list-card.tsx"
 
@@ -665,8 +679,11 @@ Check token usage before deciding:
 4. **Update usage**
 
    The usage should remain the same (line 69):
+
    ```tsx
-   {getVisibilityBadge(list.visibility)}
+   {
+     getVisibilityBadge(list.visibility);
+   }
    ```
 
 **Validation:**
@@ -724,6 +741,7 @@ git commit -m "refactor(lists): use getVisibilityBadge utility in list-card
    Find the visibility badge code (around lines 134-142):
 
    **Before:**
+
    ```tsx
    <Badge
      variant={list.visibility === "pub" ? "default" : "secondary"}
@@ -735,8 +753,11 @@ git commit -m "refactor(lists): use getVisibilityBadge utility in list-card
    ```
 
    **After:**
+
    ```tsx
-   {getVisibilityBadge(list.visibility, "with-icon")}
+   {
+     getVisibilityBadge(list.visibility, "with-icon");
+   }
    ```
 
 **Validation:**
@@ -926,14 +947,17 @@ Implements Priority 4 from the Component DRY Refactoring Plan. Consolidates dupl
 ## Changes
 
 ### New Utilities Added
+
 - `getVisibilityBadge()` - Renders public/private visibility badges with optional icon
 - `getCampaignStatusBadge()` - Returns variant and label for campaign statuses (utility version of CampaignStatusBadge component)
 
 ### Components Refactored
+
 - `list-card.tsx` - Removed inline `getVisibilityBadge()` function (~11 lines)
 - `list-overview.tsx` - Replaced inline badge logic with utility (~9 lines)
 
 ### Tests
+
 - Added comprehensive unit tests for all badge utilities
 - 100% coverage for badge-utils.tsx
 - All existing component tests pass
@@ -943,6 +967,7 @@ Implements Priority 4 from the Component DRY Refactoring Plan. Consolidates dupl
 **Total:** ~40+ lines of duplicate code eliminated
 
 **Breakdown:**
+
 - getVisibilityBadge function in list-card.tsx: 11 lines
 - Inline visibility badge logic in list-overview.tsx: 9 lines
 - Centralized status mapping logic: 20+ lines across multiple files
@@ -983,6 +1008,7 @@ _Optional: Add screenshots showing before/after of badge rendering if there are 
 ## Impact
 
 This refactoring:
+
 - ✅ Reduces maintenance burden (single source of truth for badge logic)
 - ✅ Improves consistency (all components use same badge styles)
 - ✅ Makes future badge changes easier (update once, apply everywhere)
@@ -1038,20 +1064,24 @@ git push
 ## Summary of Benefits
 
 **Code Reduction:**
+
 - ~40+ lines of duplicate code eliminated
 - 2 inline badge functions replaced with centralized utilities
 
 **Maintainability:**
+
 - Single source of truth for visibility badge logic
 - Centralized campaign status mapping
 - Consistent badge styling across all components
 
 **Developer Experience:**
+
 - Easy to use utilities with clear JSDoc documentation
 - Type-safe badge rendering with proper TypeScript types
 - Comprehensive test coverage for confidence in changes
 
 **Consistency:**
+
 - All visibility badges now render identically
 - Status badges use consistent color mapping
 - Icon placement standardized (with-icon variant)

@@ -67,6 +67,7 @@ Present both artifacts together using this exact format:
 > - Option B: You create manually later (issue body provided below)"
 
 **CRITICAL Timing:**
+
 - Issue creation is offered IMMEDIATELY after plan generation
 - User decides BEFORE Phase 0 begins
 - AI waits for user response (don't auto-proceed to Phase 0)
@@ -78,12 +79,12 @@ Present both artifacts together using this exact format:
 
 For AI agents generating execution plans, these sections are **mandatory**:
 
-| Section              | Priority   | Must Include                                    |
-| -------------------- | ---------- | ----------------------------------------------- |
+| Section              | Priority   | Must Include                                        |
+| -------------------- | ---------- | --------------------------------------------------- |
 | **Phase 0 Template** | [CRITICAL] | Git setup, branch verification, existing work check |
-| **Hybrid Approach**  | [CRITICAL] | Generate BOTH markdown plan + GitHub issue body |
-| **Success Criteria** | [CRITICAL] | Clear definition of "done" in Overview          |
-| **AI Self-Check**    | [CRITICAL] | Verify all requirements before submitting       |
+| **Hybrid Approach**  | [CRITICAL] | Generate BOTH markdown plan + GitHub issue body     |
+| **Success Criteria** | [CRITICAL] | Clear definition of "done" in Overview              |
+| **AI Self-Check**    | [CRITICAL] | Verify all requirements before submitting           |
 
 **Quick Validation (run before submitting):**
 
@@ -109,6 +110,7 @@ This template supports a **hybrid approach** that combines the best of both worl
 **Step 1: AI Generates Both Artifacts Simultaneously**
 
 When user requests an execution plan, AI generates:
+
 - 📄 Detailed markdown execution plan (saved to `docs/`)
 - 🎯 GitHub issue body (ready to paste, provided in code block)
 
@@ -117,6 +119,7 @@ When user requests an execution plan, AI generates:
 User has two options:
 
 **Option A: Create Issue Immediately (Recommended)**
+
 ```bash
 # AI offers: "Would you like me to create the issue via gh CLI?"
 # If user accepts, AI runs:
@@ -129,6 +132,7 @@ gh issue create --title "feat: description" \
 ```
 
 **Option B: Create Issue Manually Later**
+
 ```bash
 # User can copy the provided issue body and create manually
 # Can be done at any time (even mid-implementation)
@@ -138,6 +142,7 @@ gh issue create --title "feat: description" \
 **Step 3: Execute Phase 0 (Git Setup)**
 
 AFTER deciding on issue creation, start Phase 0:
+
 - Create/verify feature branch
 - Check for existing work
 - Confirm environment
@@ -337,6 +342,7 @@ Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
 ### Timing Decision Tree
 
 **WHEN creating execution plan:**
+
 1. ✅ **ALWAYS generate both** markdown plan + issue body simultaneously
 2. ✅ **ALWAYS offer to create** issue via `gh` CLI
 3. ⏸️ **WAIT for user decision** before proceeding to Phase 0
@@ -385,12 +391,14 @@ Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
 ### Why This Order Matters
 
 **✅ Benefits of creating issue BEFORE Phase 0:**
+
 - Can reference issue number in ALL commits (including Phase 0 setup commit)
 - Progress tracking available from start
 - Clear accountability from beginning
 - Team visibility from first commit
 
 **❌ Problems if issue creation was IN Phase 0:**
+
 - Phase 0 becomes dependent on external decision
 - Unclear whether to wait for user input mid-phase
 - Can't reference issue in Phase 0 commits
@@ -914,7 +922,7 @@ If working from GitHub Issue #XXX:
 - Reason: Explain why this is a good point to clear context
 - What to keep: List any important context to retain
 
-````
+`````
 
 ---
 
@@ -1719,7 +1727,7 @@ Dashboard cards duplicate helper functions like formatters, calculators, and con
 
 - **Execution Plan:** [docs/refactoring/card-utilities-plan.md](docs/refactoring/card-utilities-plan.md)
 - **Parent Epic:** Component DRY Refactoring
-````
+`````
 
 **Step 3: AI Offers Creation (BEFORE Phase 0)**
 
@@ -1730,12 +1738,14 @@ Dashboard cards duplicate helper functions like formatters, calculators, and con
 **Step 4: User Decision**
 
 **Option A - User accepts:**
+
 1. User: "Yes, create the issue"
 2. AI: Creates issue via `gh` CLI → Issue #195
 3. AI: Updates execution plan with issue link
 4. User can now proceed to Phase 0
 
 **Option B - User declines:**
+
 1. User: "No, I'll create it manually later" or "Skip for now"
 2. AI: Acknowledges, provides issue body in code block for later use
 3. User can now proceed to Phase 0
