@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Button } from "./button";
+import { Button } from "@/components/ui/button";
 import { PaginationProps } from "@/types/components/ui/pagination";
 
 export const Pagination: React.FC<PaginationProps> = ({

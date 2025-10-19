@@ -1,7 +1,7 @@
 /**
  * Test: Enforce usage of path aliases for imports and exports in shared, deeply nested, or frequently imported modules.
  *
- * This test scans the codebase for long relative import/export paths and fails if any are found in designated folders.
+ * This test scans the codebase for relative import/export paths and fails if any are found in designated folders.
  *
  * Folders checked: schemas, types, utils, components
  *
@@ -17,8 +17,8 @@ const ALIAS_FOLDERS = [
   "src/utils",
   "src/components",
 ];
-const RELATIVE_PATH_REGEX = /from ['"](\.\.\/)+/;
-const EXPORT_RELATIVE_PATH_REGEX = /export .*from ['"](\.\.\/)+/;
+const RELATIVE_PATH_REGEX = /from ['"]\.\.?\//;
+const EXPORT_RELATIVE_PATH_REGEX = /export .*from ['"]\.\.?\//;
 
 function getAllFiles(dir: string, ext: string[] = [".ts", ".tsx"]): string[] {
   let results: string[] = [];
@@ -29,7 +29,11 @@ function getAllFiles(dir: string, ext: string[] = [".ts", ".tsx"]): string[] {
     if (stat && stat.isDirectory()) {
       results = results.concat(getAllFiles(filePath, ext));
     } else if (ext.includes(path.extname(file))) {
-      results.push(filePath);
+      // Skip index.ts files as they are barrel exports and should use relative paths for same-directory exports
+      // Skip test files as they can use relative imports to their corresponding implementation files
+      if (path.basename(file) !== "index.ts" && !file.includes(".test.")) {
+        results.push(filePath);
+      }
     }
   });
   return results;
@@ -37,14 +41,14 @@ function getAllFiles(dir: string, ext: string[] = [".ts", ".tsx"]): string[] {
 
 describe("Path Alias Enforcement", () => {
   ALIAS_FOLDERS.forEach((folder) => {
-    it(`should not use long relative import paths in ${folder}`, () => {
+    it(`should not use relative import paths in ${folder}`, () => {
       const files = getAllFiles(path.resolve(folder));
       files.forEach((file) => {
         const content = fs.readFileSync(file, "utf8");
         expect(content).not.toMatch(RELATIVE_PATH_REGEX);
       });
     });
-    it(`should not use long relative export paths in ${folder}`, () => {
+    it(`should not use relative export paths in ${folder}`, () => {
       const files = getAllFiles(path.resolve(folder));
       files.forEach((file) => {
         const content = fs.readFileSync(file, "utf8");

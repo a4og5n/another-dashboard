@@ -8,7 +8,7 @@
 
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -24,7 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { formatDateTime } from "@/utils/format-date";
@@ -32,7 +31,12 @@ import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import { Mail, Eye, User, Clock } from "lucide-react";
 import type { ReportOpenListMember } from "@/types/mailchimp";
 import type { ReportOpensTableProps } from "@/types/components/mailchimp";
-import { CampaignOpensEmpty } from "./CampaignOpensEmpty";
+import { CampaignOpensEmpty } from "@/components/dashboard/reports/CampaignOpensEmpty";
+import { useTablePagination } from "@/hooks/use-table-pagination";
+import {
+  getVipBadge,
+  getMemberStatusBadge,
+} from "@/components/ui/helpers/badge-utils";
 
 export function CampaignOpensTable({
   opensData,
@@ -48,59 +52,11 @@ export function CampaignOpensTable({
   // Calculate pagination
   const totalPages = Math.ceil((total_items || 0) / pageSize);
 
-  // Helper functions for URL generation
-  const createPageUrl = useCallback(
-    (page: number) => {
-      const params = new URLSearchParams();
-      // Only add page if not page 1
-      if (page > 1) {
-        params.set("page", page.toString());
-      }
-      // Add perPage if it's not the default
-      if (pageSize !== 10) {
-        params.set("perPage", pageSize.toString());
-      }
-      return `${baseUrl}${params.toString() ? `?${params.toString()}` : ""}`;
-    },
-    [baseUrl, pageSize],
-  );
-
-  const createPerPageUrl = useCallback(
-    (newPerPage: number) => {
-      const params = new URLSearchParams();
-      // Reset to page 1 when changing page size
-      // Only add perPage if it's not the default
-      if (newPerPage !== 10) {
-        params.set("perPage", newPerPage.toString());
-      }
-      return `${baseUrl}${params.toString() ? `?${params.toString()}` : ""}`;
-    },
-    [baseUrl],
-  );
-
-  // Utility functions
-  const getVipBadge = (isVip: boolean) => {
-    return isVip ? (
-      <Badge variant="secondary" className="text-xs">
-        VIP
-      </Badge>
-    ) : null;
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "subscribed":
-        return <Badge variant="default">Active</Badge>;
-      case "unsubscribed":
-        return <Badge variant="secondary">Unsubscribed</Badge>;
-      case "cleaned":
-        return <Badge variant="destructive">Cleaned</Badge>;
-      case "pending":
-        return <Badge variant="outline">Pending</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
+  // Use shared pagination hook for URL generation
+  const { createPageUrl, createPerPageUrl } = useTablePagination({
+    baseUrl,
+    pageSize,
+  });
 
   // Column definitions for TanStack Table
   const columns = useMemo<ColumnDef<ReportOpenListMember>[]>(
@@ -125,7 +81,7 @@ export function CampaignOpensTable({
         header: () => (
           <div className="h-8 px-2 lg:px-3 flex items-center">Status</div>
         ),
-        cell: ({ row }) => getStatusBadge(row.getValue("contact_status")),
+        cell: ({ row }) => getMemberStatusBadge(row.getValue("contact_status")),
       },
       {
         accessorKey: "opens_count",
