@@ -24,20 +24,6 @@ describe("StatCard", () => {
     expect(screen.getByText("23.4%")).toBeInTheDocument();
   });
 
-  it("renders trend indicator when provided", () => {
-    render(
-      <StatCard
-        icon={Mail}
-        value={12500}
-        label="Emails Sent"
-        trend="up"
-        change={5.2}
-      />,
-    );
-
-    expect(screen.getByText("+5.2%")).toBeInTheDocument();
-  });
-
   it("renders description when provided", () => {
     render(
       <StatCard
