@@ -50,9 +50,21 @@ Before delivering an execution plan to the user, verify:
 - [ ] **[OPTIONAL]** Cost optimization clear points
 - [ ] **[OPTIONAL]** Rollback strategy
 
-**After generating plan, always ask:**
+**During plan generation, ALWAYS:**
 
-> "I can also generate a GitHub issue from this plan for easier tracking. Would you like me to create the issue body?"
+1. Generate the execution plan (markdown)
+2. Generate the GitHub issue body (markdown format ready to paste)
+3. Present both to the user simultaneously
+4. Explain the hybrid approach benefits
+
+**Format:**
+
+> "I've created both:
+>
+> 1. 📄 Execution plan with detailed implementation steps
+> 2. 🎯 GitHub issue body (ready to paste) for progress tracking
+>
+> Would you like me to create the issue via `gh` CLI, or would you prefer to create it manually?"
 
 ---
 
@@ -133,6 +145,34 @@ This template supports a **hybrid approach** that combines the best of both worl
 - ✅ **Issues** persist across conversations
 - ✅ **Markdown** provides detailed reference when needed
 - ✅ Best of both worlds: depth + trackability
+
+---
+
+## [OPTIONAL] Issue-First Workflow
+
+For users who prefer GitHub Issues as primary tool:
+
+### Workflow:
+
+1. **Create GitHub Issue First**
+   - User creates issue with high-level requirements
+   - Issue becomes source of truth for scope
+
+2. **Generate Execution Plan from Issue**
+   - AI reads issue via `gh issue view <number>`
+   - Generates detailed execution plan linked to issue
+   - Saves plan to `docs/` with issue reference
+
+3. **Execute with Bidirectional Updates**
+   - Check off tasks in GitHub Issue as completed
+   - Update markdown plan if requirements change
+   - Reference issue number in all commits
+
+### When to Use:
+
+- Team environments with issue-based workflows
+- Projects with PM/stakeholder visibility needs
+- When issue comments are used for discussion
 
 ---
 
@@ -249,6 +289,70 @@ Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
 5. **Close with PR Reference**
    - Use "Closes #XXX" in PR description
    - Automatically closes issue when PR merges
+
+---
+
+## [IMPORTANT] Creating Issues via GitHub CLI
+
+### AI Agent Workflow
+
+When user accepts GitHub Issue creation, use `gh` CLI:
+
+```bash
+# Verify gh is authenticated
+gh auth status
+
+# Create issue from file
+gh issue create --title "feat: description" \
+                --body-file issue-body.md \
+                --label "refactor,priority-high" \
+                --assignee "@me"
+
+# Or create inline
+gh issue create --title "feat: description" \
+                --body "$(cat <<'EOF'
+[issue body here]
+EOF
+)"
+```
+
+### Benefits of CLI Creation
+
+- ✅ Instant issue creation from conversation
+- ✅ Automatic linking in execution plan
+- ✅ Consistent formatting
+- ✅ No copy-paste errors
+
+---
+
+## [REFERENCE] GitHub Issue Automation
+
+### Automatic Issue Updates from Commits
+
+Use commit message conventions to update issues:
+
+```bash
+# Reference issue (adds commit to issue timeline)
+git commit -m "feat(scope): description (#123)"
+
+# Mark task complete
+git commit -m "feat(scope): complete Phase 1 tasks
+
+- Task 1 done
+- Task 2 done
+
+Closes #123"  # Closes issue when PR merges
+```
+
+### GitHub Actions Integration (Optional)
+
+Add `.github/workflows/issue-sync.yml` to auto-update issues:
+
+- ✅ Check off tasks when commits reference them
+- ✅ Add labels based on commit types
+- ✅ Update issue status from PR events
+
+---
 
 ### Converting Execution Plans to Issues
 
@@ -755,12 +859,20 @@ Before starting this phase, verify it hasn't already been completed:
 - [ ] Run: `pnpm lint`
 - [ ] Run: `pnpm test [specific-test-file]`
 
-**Checkpoint: COMMIT**
+**Checkpoint: COMMIT + UPDATE ISSUE**
 
 ```bash
 git add .
 git commit -m "feat(scope): description of what was completed"
 ```
+
+**📋 GitHub Issue Checkpoint:**
+
+If working from GitHub Issue #XXX:
+
+- [ ] Check off completed tasks in issue
+- [ ] Add comment with commit hash and summary
+- [ ] Update issue if you discovered new requirements
 
 **💰 Cost Optimization: CLEAR CONVERSATION**
 
@@ -1499,6 +1611,103 @@ git clean -fd  # Remove untracked files
 
 ---
 
+## [REFERENCE] Real Hybrid Workflow Example
+
+### Example: Component Refactoring Task
+
+**Step 1: User Request**
+
+"Create an execution plan for extracting card helper utilities"
+
+**Step 2: AI Generates Both**
+
+📄 **Execution Plan:** `docs/refactoring/card-utilities-plan.md`
+
+- Detailed analysis of duplication
+- Code examples showing problems
+- Implementation steps with examples
+
+🎯 **GitHub Issue Body:** (ready to paste)
+
+````markdown
+## Title: Refactor: Extract Card Helper Utilities (Priority 1)
+
+### Summary
+
+Extract 7 repeated helper patterns from dashboard cards into reusable utilities.
+
+**Lines Saved:** 210+ | **Effort:** Medium | **Impact:** High
+
+### Problem
+
+Dashboard cards duplicate helper functions like formatters, calculators, and conditionals across multiple components.
+
+### Implementation Checklist
+
+#### Phase 0: Setup (5-10 min)
+
+- [ ] Create feature branch: `refactor/card-utilities`
+- [ ] Verify no existing work: `git log --oneline -10`
+- [ ] Review related documentation
+
+#### Phase 1: Create Utilities (30 min)
+
+- [ ] Create `src/utils/cards/helpers.ts`
+- [ ] Write unit tests
+- [ ] Run validation: `pnpm type-check`
+- [ ] Commit: "feat(utils): add card helper utilities"
+
+#### Phase 2: Update Components (45 min)
+
+- [ ] Update metric-card.tsx
+- [ ] Update stat-card.tsx
+- [ ] Update stats-grid-card.tsx
+- [ ] Update status-card.tsx
+- [ ] Run tests: `pnpm test`
+- [ ] Commit: "refactor(components): use centralized card helpers"
+
+#### Phase 3: Validation & PR (15 min)
+
+- [ ] Manual testing
+- [ ] Run full validation: `pnpm validate`
+- [ ] Push branch
+- [ ] Create PR linking this issue
+
+### Success Criteria
+
+- [ ] All helper functions extracted to utilities
+- [ ] All tests pass
+- [ ] No visual regressions
+- [ ] 210+ lines of code removed
+
+### Related
+
+- **Execution Plan:** [docs/refactoring/card-utilities-plan.md](docs/refactoring/card-utilities-plan.md)
+- **Parent Epic:** Component DRY Refactoring
+````
+
+**Step 3: AI Offers Creation**
+
+> "I've created both the execution plan and GitHub issue body. Would you like me to create the issue now using `gh` CLI? (Labels: refactor, priority-high, effort-medium, impact-high)"
+
+**Step 4: Execution**
+
+1. User: "Yes, create the issue"
+2. AI: Creates issue via `gh` CLI → Issue #195
+3. AI: Updates execution plan with issue link
+4. User: Opens issue in GitHub for tracking
+5. User: Opens execution plan for implementation details
+6. User: Checks off tasks in GitHub as they complete phases
+
+**Step 5: Benefits Realized**
+
+- ✅ Progress visible at a glance in GitHub Issue
+- ✅ Detailed context available in execution plan
+- ✅ Issue persists across conversation clears
+- ✅ Team can see progress without reading full plan
+
+---
+
 ## [CRITICAL] AI Self-Check Before Submitting Execution Plan
 
 ### [CRITICAL] For Hybrid Approach (Markdown + GitHub Issue)
@@ -1525,11 +1734,13 @@ When generating both markdown plan and GitHub issue:
 - [ ] Success criteria checkboxes
 - [ ] Appropriate labels and milestone
 
-**Offer to User:**
-After generating execution plan, explicitly offer:
+**Delivery to User (CRITICAL):**
 
-- "I can also generate a GitHub issue from this plan for easier tracking. Would you like me to create the issue body?"
-- "This plan can be tracked via GitHub Issue. Should I generate the issue template?"
+- [ ] Present both markdown plan AND issue body simultaneously
+- [ ] Issue body is in markdown code block ready to paste
+- [ ] Offer to create issue via `gh` CLI
+- [ ] Explain hybrid workflow benefits
+- [ ] Link issue number in markdown plan after creation
 
 ### [CRITICAL] Standard Self-Check
 
