@@ -12,8 +12,8 @@ import Link from "next/link";
 import {
   BaseMetricCard,
   MetricRow,
-  formatPercentage,
 } from "@/components/dashboard/reports/BaseMetricCard";
+import { formatPercentageValue } from "@/utils/format-number";
 import { Users } from "lucide-react";
 import type { ListHealthCardProps } from "@/types/components/dashboard/reports";
 
@@ -63,7 +63,7 @@ export function ListHealthCard({
       )}
 
       <div className="text-xs text-muted-foreground">
-        Unsub rate: {formatPercentage(unsubRate)}%
+        Unsub rate: {formatPercentageValue(unsubRate)}%
       </div>
     </BaseMetricCard>
   );

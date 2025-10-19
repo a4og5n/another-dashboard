@@ -9,7 +9,6 @@
 export {
   BaseMetricCard,
   MetricRow,
-  formatPercentage,
 } from "@/components/dashboard/reports/BaseMetricCard";
 
 // Report components
