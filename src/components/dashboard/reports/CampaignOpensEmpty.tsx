@@ -6,7 +6,7 @@
  * Following established patterns from existing dashboard components
  */
 
-import { Card, CardContent } from "@/components/ui/card";
+import { EmptyStateCard } from "@/components/ui/empty-state-card";
 import { Button } from "@/components/ui/button";
 import { Mail, RefreshCw, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -29,45 +29,33 @@ export function CampaignOpensEmpty({
   onRetry,
 }: CampaignOpensEmptyProps) {
   return (
-    <Card>
-      <CardContent className="flex flex-col items-center justify-center py-12">
-        {/* Icon */}
-        <div className="rounded-full bg-muted p-3 mb-4">
-          <Mail className="h-8 w-8 text-muted-foreground" />
-        </div>
-
-        {/* Title */}
-        <h3 className="text-lg font-semibold mb-2">
-          {title || "No Opens Data Available"}
-        </h3>
-
-        {/* Message */}
-        <p className="text-muted-foreground text-center max-w-md mb-6">
-          {message ||
-            "There's no opens data available for this campaign. This could mean the campaign hasn't been opened yet, or there might be an issue loading the data."}
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-3">
+    <EmptyStateCard
+      icon={Mail}
+      variant="empty"
+      title={title || "No Opens Data Available"}
+      message={
+        message ||
+        "There's no opens data available for this campaign. This could mean the campaign hasn't been opened yet, or there might be an issue loading the data."
+      }
+      actions={
+        <>
           {onRetry && (
             <Button onClick={onRetry} variant="outline" size="sm">
               <RefreshCw className="h-4 w-4 mr-2" />
               Try Again
             </Button>
           )}
-
           <Button asChild variant="outline" size="sm">
             <Link href={`/mailchimp/campaigns/${campaignId}/report`}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Report
             </Link>
           </Button>
-
           <Button asChild size="sm">
             <Link href="/mailchimp/campaigns">View All Campaigns</Link>
           </Button>
-        </div>
-      </CardContent>
-    </Card>
+        </>
+      }
+    />
   );
 }
