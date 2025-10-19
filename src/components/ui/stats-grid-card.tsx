@@ -24,6 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/skeletons";
 import type { StatsGridCardProps } from "@/types/components/ui";
 import { cn } from "@/lib/utils";
+import { formatValue } from "@/components/ui/helpers/card-utils";
 
 export function StatsGridCard({
   title,
@@ -36,10 +37,6 @@ export function StatsGridCard({
   className = "",
   loading = false,
 }: StatsGridCardProps) {
-  const formatValue = (val: string | number): string => {
-    return typeof val === "number" ? val.toLocaleString() : val;
-  };
-
   const getGridCols = () => {
     switch (columns) {
       case 2:

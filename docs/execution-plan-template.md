@@ -2,21 +2,280 @@
 
 **Purpose:** This document provides a standard template for creating detailed, step-by-step execution plans for development tasks. Use this template to ensure consistent, cost-effective, and safe implementation of features and improvements.
 
-**Last Updated:** 2025-10-18
+**Last Updated:** 2025-10-19
+
+**Document Length:** 2,130 lines (comprehensive AI reference documentation)
 
 ---
 
-## How to Use This Template
+## 🤖 For AI: How to Use This Template
 
-1. **Share this document** with Claude Code along with your specific development task
-2. **Request an execution plan** following this template structure
-3. **Review the generated plan** before starting implementation
-4. **Follow the plan step-by-step** to ensure nothing is missed
-5. **Update the plan** as you discover new requirements or blockers
+This template is **comprehensive reference documentation** for AI agents creating execution plans.
+
+### Do NOT:
+
+- ❌ Load entire file into every context unnecessarily
+- ❌ Reference all sections for every plan
+- ❌ Create 2,000+ line plans for users (plans should be < 800 lines)
+- ❌ Skip critical sections marked [CRITICAL]
+
+### DO:
+
+- ✅ Reference specific sections as needed for the task
+- ✅ Extract relevant patterns for the task at hand
+- ✅ Generate focused plans (< 800 lines) following these guidelines
+- ✅ **ALWAYS include Phase 0** (Git Setup - mandatory)
+- ✅ **ALWAYS offer to create GitHub Issue** (Hybrid Approach)
+- ✅ **ALWAYS check AI Self-Check section** before delivering plan to user
+- ✅ Use priority markers to focus on critical elements first
+
+### Section Priority Guide:
+
+- **[CRITICAL]** - Must include in every execution plan
+- **[IMPORTANT]** - Should include in most execution plans
+- **[REFERENCE]** - Use as needed for specific situations
+- **[OPTIONAL]** - Include if relevant to specific task
+
+### AI Checklist: Every Execution Plan MUST Include
+
+Before delivering an execution plan to the user, verify:
+
+- [ ] **[CRITICAL]** Phase 0: Git Setup (lines 310-420) - Mandatory first phase
+- [ ] **[CRITICAL]** Hybrid approach explained - Offer to create GitHub Issue
+- [ ] **[CRITICAL]** Success criteria clearly defined
+- [ ] **[IMPORTANT]** Files to create/modify listed
+- [ ] **[IMPORTANT]** Verification steps after each phase
+- [ ] **[IMPORTANT]** Commit checkpoints with messages
+- [ ] **[IMPORTANT]** Time estimates per phase
+- [ ] **[OPTIONAL]** Cost optimization clear points
+- [ ] **[OPTIONAL]** Rollback strategy
+
+**After generating plan, always ask:**
+
+> "I can also generate a GitHub issue from this plan for easier tracking. Would you like me to create the issue body?"
 
 ---
 
-## Plan Size Guidelines (CRITICAL)
+## 📑 Quick Reference: Critical Sections
+
+For AI agents generating execution plans, these sections are **mandatory**:
+
+| Section                | Priority   | Line Reference  | Must Include                     |
+| ---------------------- | ---------- | --------------- | -------------------------------- |
+| **Hybrid Approach**    | [CRITICAL] | Lines 57-104    | Explain Markdown + GitHub Issues |
+| **Phase 0 Template**   | [CRITICAL] | Lines 521-632   | Git setup, branch verification   |
+| **Git Workflow**       | [CRITICAL] | Lines 403-510   | Branch strategy, commit format   |
+| **Success Criteria**   | [CRITICAL] | Throughout      | What "done" looks like           |
+| **GitHub Issue Offer** | [CRITICAL] | After plan      | Always ask if user wants issue   |
+| **AI Self-Check**      | [CRITICAL] | Lines 1401-1515 | Verify before submitting         |
+
+**Non-negotiable checklist before delivering plan:**
+
+1. ✅ Phase 0 is first phase (git setup)
+2. ✅ Hybrid approach explained
+3. ✅ Offer to create GitHub Issue
+4. ✅ Success criteria defined
+5. ✅ Time estimates included
+6. ✅ Verification steps after each phase
+
+---
+
+## [CRITICAL] How to Use This Template
+
+### [CRITICAL] Hybrid Approach: Markdown + GitHub Issues
+
+This template supports a **hybrid approach** that combines the best of both worlds:
+
+**📄 Markdown Documentation** = Strategic depth, code examples, architectural decisions
+**🎯 GitHub Issues** = Tactical execution, progress tracking, accountability
+
+### Usage Workflow:
+
+1. **Create Strategic Plan** (Markdown)
+   - Share this template with Claude Code
+   - Generate execution plan with analysis, code examples, decisions
+   - Save in `docs/` as reference documentation
+
+2. **Create Tactical Issue** (GitHub)
+   - Convert plan phases into GitHub issue with checkboxes
+   - Track progress with interactive task lists
+   - Use labels, milestones, and project boards
+   - Link to markdown plan for context
+
+3. **Execute with Both**
+   - Open GitHub issue for task tracking
+   - Reference markdown plan for code examples and details
+   - Check off tasks in GitHub as you complete them
+   - Update markdown plan if you discover new requirements
+
+### When to Use Each:
+
+**Use Markdown Plan For:**
+
+- Detailed code examples and snippets
+- Architectural decisions and rationale
+- Complex multi-step procedures
+- Reference documentation
+- Understanding the "why"
+
+**Use GitHub Issues For:**
+
+- Daily task tracking (check off items)
+- Progress visibility
+- Discussion and questions
+- Blockers and decisions
+- Understanding "what's left"
+
+### Benefits of Hybrid:
+
+- ✅ **Markdown** preserves deep context and examples
+- ✅ **Issues** make execution trackable and visible
+- ✅ **Issues** persist across conversations
+- ✅ **Markdown** provides detailed reference when needed
+- ✅ Best of both worlds: depth + trackability
+
+---
+
+## [IMPORTANT] GitHub Issue Creation Guidelines
+
+### [IMPORTANT] Issue Structure Template
+
+When creating a GitHub issue from an execution plan, use this structure:
+
+```markdown
+## Title Format:
+
+[Type]: [Short Description] (Priority N)
+
+Examples:
+
+- Refactor: Extract Card Helper Utilities (Priority 1)
+- Feature: Create Empty State Component (Priority 3)
+- Fix: Consolidate Badge Helper Functions (Priority 4)
+
+## Labels:
+
+- Type: `refactor`, `feature`, `fix`, `chore`
+- Priority: `priority-high`, `priority-medium`, `priority-low`
+- Effort: `effort-low`, `effort-medium`, `effort-high`
+- Impact: `impact-high`, `impact-medium`, `impact-low`
+- Category: `technical-debt`, `dx-improvement`, `performance`
+
+## Milestone:
+
+Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
+
+## Issue Body Template:
+
+### Summary
+
+[1-2 sentence description]
+
+**Lines Saved:** XX+ | **Effort:** Low/Medium/High | **Impact:** High/Medium/Low
+
+### Problem
+
+[What's duplicated or broken]
+
+### Files Affected
+
+- [ ] path/to/file1.ts
+- [ ] path/to/file2.tsx
+- [ ] path/to/file3.ts
+
+### Implementation Checklist
+
+#### Phase 0: Setup (5-10 min)
+
+- [ ] Create feature branch: `refactor/feature-name`
+- [ ] Verify no existing work: `git log --oneline -10`
+- [ ] Review related documentation
+
+#### Phase 1: [Phase Name] (XX min)
+
+- [ ] Specific task 1
+- [ ] Specific task 2
+- [ ] Run validation: `pnpm type-check`
+- [ ] Commit: "feat(scope): description"
+
+#### Phase 2: [Phase Name] (XX min)
+
+- [ ] Specific task 1
+- [ ] Specific task 2
+- [ ] Run tests: `pnpm test`
+- [ ] Commit: "test(scope): description"
+
+#### Phase 3: Validation & PR (15 min)
+
+- [ ] Manual testing
+- [ ] Run full validation: `pnpm validate`
+- [ ] Push branch
+- [ ] Create PR linking this issue
+
+### Success Criteria
+
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] All tests pass
+- [ ] No visual regressions
+
+### Related
+
+- **Execution Plan:** [docs/path/to/plan.md](../path/to/plan.md)
+- **Parent Epic:** #XXX (if applicable)
+- **Related Issues:** #XXX, #XXX
+```
+
+### Issue Best Practices
+
+1. **Keep Checkboxes Granular**
+   - Each checkbox = 5-30 minutes of work
+   - Too large = never checked off
+   - Too small = checkbox fatigue
+
+2. **Link to Markdown Plan**
+   - Always include link to detailed markdown plan
+   - Issue = checklist, Markdown = context
+
+3. **Use Time Estimates**
+   - Helps with sprint planning
+   - Track actual vs estimated time in comments
+
+4. **Update as You Go**
+   - Check off tasks immediately after completing
+   - Add new tasks if discovered during work
+   - Comment on blockers or decisions
+
+5. **Close with PR Reference**
+   - Use "Closes #XXX" in PR description
+   - Automatically closes issue when PR merges
+
+### Converting Execution Plans to Issues
+
+**For Small Plans (< 800 lines, 1-3 phases):**
+
+- Create 1 GitHub issue with all phases as checkboxes
+- Link to markdown plan for details
+
+**For Large Plans (> 800 lines, 4+ phases):**
+
+- Option A: Create 1 issue per phase (more granular)
+- Option B: Create 1 epic issue with phase checkboxes
+- Always link to phase-specific markdown files
+
+**Example Multi-Issue Structure:**
+
+```
+Epic Issue: "Refactor Component DRY Issues"
+├── Issue #1: Extract Card Utilities (Priority 1) → links to phase-1.md
+├── Issue #2: Create Table Wrapper (Priority 2) → links to phase-2.md
+├── Issue #3: Empty State Component (Priority 3) → links to phase-3.md
+└── Project Board tracks all issues
+```
+
+---
+
+## [CRITICAL] Plan Size Guidelines
 
 ### When to Split Into Multiple Files
 
@@ -89,7 +348,7 @@ docs/
 - Minimal code examples
 - Quick implementation (under 2 hours)
 
-## Pre-Generation Checklist for AI
+## [CRITICAL] Pre-Generation Checklist for AI
 
 **Before generating an execution plan, Claude Code should:**
 
@@ -122,9 +381,9 @@ docs/
 
 ---
 
-## Execution Plan Structure
+## [IMPORTANT] Execution Plan Structure
 
-### 1. Overview Section
+### [IMPORTANT] 1. Overview Section
 
 **Task Summary**
 
@@ -172,7 +431,7 @@ Organize by category for clarity:
 
 ---
 
-### 2. Pre-Implementation Checklist
+### [IMPORTANT] 2. Pre-Implementation Checklist
 
 Before writing any code:
 
@@ -188,9 +447,9 @@ Before writing any code:
 
 ---
 
-### 3. Git Workflow
+### [CRITICAL] 3. Git Workflow
 
-#### Branch Strategy
+#### [CRITICAL] Branch Strategy
 
 **Branch Naming Convention:**
 
@@ -298,15 +557,15 @@ git commit -m "docs: update CLAUDE.md with error handling patterns"
 
 ---
 
-### 4. Implementation Phases
+### [CRITICAL] 4. Implementation Phases
 
 Break down the implementation into phases with clear checkpoints.
 
-**IMPORTANT:** All execution plans MUST start with Phase 0 for git setup and pre-implementation validation.
+**CRITICAL:** All execution plans MUST start with Phase 0 for git setup and pre-implementation validation.
 
 ---
 
-#### Phase 0 Template (MANDATORY - Always Include This)
+#### [CRITICAL] Phase 0 Template (MANDATORY - Always Include This)
 
 ````markdown
 ## Phase 0: Git Setup and Pre-Implementation Validation
@@ -421,7 +680,7 @@ git commit --allow-empty -m "chore: initialize feature branch for [feature-name]
 
 ---
 
-#### Phase N Template (For Implementation Phases)
+#### [IMPORTANT] Phase N Template (For Implementation Phases)
 
 ````markdown
 ### Phase N: [Phase Name]
@@ -512,7 +771,7 @@ git commit -m "feat(scope): description of what was completed"
 
 ---
 
-### 5. Cost Optimization Strategy
+### [OPTIONAL] 5. Cost Optimization Strategy
 
 **Token Management**
 
@@ -568,9 +827,9 @@ Clearing conversation context helps reduce costs. Here are optimal points to cle
 
 ---
 
-### 6. Code Examples in Execution Plans
+### [IMPORTANT] 6. Code Examples in Execution Plans
 
-**Quality Standards for Code Examples:**
+**[IMPORTANT] Quality Standards for Code Examples:**
 
 All code examples in execution plans must follow project conventions exactly. Before writing any code example:
 
@@ -706,7 +965,7 @@ When creating new components that need type definitions:
 
 ---
 
-### 7. Testing Strategy
+### [IMPORTANT] 7. Testing Strategy
 
 **Test Levels:**
 
@@ -772,7 +1031,7 @@ pnpm pre-commit
 
 ---
 
-### 8. Manual Review Checklist
+### [IMPORTANT] 8. Manual Review Checklist
 
 **Before Pushing to Origin**
 
@@ -821,7 +1080,7 @@ Perform a thorough manual review:
 
 ---
 
-### 9. Push and PR Strategy
+### [REFERENCE] 9. Push and PR Strategy
 
 #### Before Pushing
 
@@ -896,7 +1155,7 @@ Brief description of what this PR does
 
 ---
 
-### 10. Rollback Strategy
+### [REFERENCE] 10. Rollback Strategy
 
 **If Something Goes Wrong**
 
@@ -944,7 +1203,7 @@ git clean -fd  # Remove untracked files
 
 ---
 
-### 11. Common Pitfalls and How to Avoid Them
+### [REFERENCE] 11. Common Pitfalls and How to Avoid Them
 
 **Pitfall 1: Using Incorrect Import Paths in Code Examples**
 
@@ -1086,7 +1345,7 @@ git clean -fd  # Remove untracked files
   # Response: "Phase 2 appears to be already completed. I can see commit 20799c6..."
   ```
 
-**Pitfall 16: Creating Monolithic Execution Plans (NEW - CRITICAL)**
+**Pitfall 16: Creating Monolithic Execution Plans (CRITICAL)**
 
 - **Problem:** Creating a single 2,000+ line execution plan instead of splitting into focused phase files
 - **Impact:**
@@ -1133,13 +1392,96 @@ git clean -fd  # Remove untracked files
   - ✅ Reusable phase templates for future projects
 - **AI behavior:** Check plan size BEFORE generating. If it will exceed 800 lines, automatically use split structure
 
+**Pitfall 17: Markdown-Only Execution Without Progress Tracking (NEW)**
+
+- **Problem:** Using only markdown execution plans without GitHub Issues for tracking
+- **Impact:**
+  - Hard to see what's done vs. pending at a glance
+  - Progress lost when conversation context clears
+  - No persistence across sessions
+  - Tasks get forgotten or repeated
+  - No accountability or reminders
+  - Difficult to collaborate or get help
+- **Solution:** Use hybrid approach with GitHub Issues for task tracking
+- **When to create GitHub Issue:**
+  - Multi-phase refactoring (like the 6 priorities we identified)
+  - Work spanning multiple sessions
+  - When you need accountability/reminders
+  - When progress visibility is important
+  - For collaborative projects
+- **How to hybrid:**
+  - Markdown plan = Strategic depth, code examples, decisions
+  - GitHub Issue = Tactical checklist, progress tracking
+  - Open both: reference plan for "how", check off issue for "done"
+- **Example:**
+
+  ```
+  ✅ RIGHT - Hybrid Approach
+
+  📄 docs/refactoring/component-dry-refactoring-plan.md
+     - Analysis of duplication
+     - Code examples showing problems
+     - Proposed solutions with details
+
+  🎯 GitHub Issue #123: "Refactor: Extract Card Utilities (Priority 1)"
+     ✅ Phase 0: Setup (complete)
+     ✅ Phase 1: Create utilities (complete)
+     ⏳ Phase 2: Update components (in progress)
+       ✅ Update metric-card.tsx
+       ✅ Update stat-card.tsx
+       ⬜ Update stats-grid-card.tsx
+       ⬜ Update status-card.tsx
+     ⬜ Phase 3: Validation & PR
+  ```
+
+- **Benefits of hybrid:**
+  - ✅ Visual progress at a glance
+  - ✅ Persists across conversation clears
+  - ✅ Can pick up where you left off days later
+  - ✅ Notifications when issues are updated
+  - ✅ Automatic PR linkage
+  - ✅ Project board visualization
+- **AI behavior:** After generating execution plan, always offer to create GitHub issue for tracking
+
 ---
 
-## AI Self-Check Before Submitting Execution Plan
+## [CRITICAL] AI Self-Check Before Submitting Execution Plan
+
+### [CRITICAL] For Hybrid Approach (Markdown + GitHub Issue)
+
+When generating both markdown plan and GitHub issue:
+
+**Markdown Plan Should Include:**
+
+- [ ] Detailed problem analysis with code examples
+- [ ] All duplicate code snippets side-by-side
+- [ ] File paths with line numbers
+- [ ] Architectural decisions and rationale
+- [ ] Complete implementation examples
+- [ ] All phases with detailed steps
+- [ ] Reference for "how" and "why"
+
+**GitHub Issue Should Include:**
+
+- [ ] Concise summary (1-2 sentences)
+- [ ] Impact metrics (lines saved, effort, impact)
+- [ ] Task checklist with granular items (5-30 min each)
+- [ ] Time estimates per phase
+- [ ] Link to markdown plan for details
+- [ ] Success criteria checkboxes
+- [ ] Appropriate labels and milestone
+
+**Offer to User:**
+After generating execution plan, explicitly offer:
+
+- "I can also generate a GitHub issue from this plan for easier tracking. Would you like me to create the issue body?"
+- "This plan can be tracked via GitHub Issue. Should I generate the issue template?"
+
+### [CRITICAL] Standard Self-Check
 
 Before presenting the execution plan to the user, verify:
 
-### Plan Size and Structure Check (CRITICAL)
+### [CRITICAL] Plan Size and Structure Check
 
 - [ ] **Count total lines** - If plan exceeds 800 lines, MUST split into separate phase files
 - [ ] **Phase count** - If 4+ implementation phases, MUST use split structure
@@ -1157,7 +1499,7 @@ Before presenting the execution plan to the user, verify:
   - [ ] Minimal code examples
   - [ ] Quick implementation (under 2 hours)
 
-### Phase 0 Verification (CRITICAL - MANDATORY)
+### [CRITICAL] Phase 0 Verification (MANDATORY)
 
 - [ ] **Phase 0 is present** - Execution plan MUST start with Phase 0 (Git Setup and Pre-Implementation Validation)
 - [ ] **Phase 0 includes all 4 steps:**
@@ -1223,7 +1565,7 @@ Before presenting the execution plan to the user, verify:
 
 ---
 
-## Example Execution Plan
+## [REFERENCE] Example Execution Plan
 
 Here's a concrete example of how an execution plan might look:
 
@@ -1656,9 +1998,9 @@ When creating an execution plan, ensure it includes:
 
 ---
 
-## Additional Best Practices
+## [REFERENCE] Additional Best Practices
 
-### Working with Claude Code
+### [REFERENCE] Working with Claude Code
 
 **Context Management:**
 
@@ -1672,7 +2014,7 @@ When creating an execution plan, ensure it includes:
 - Don't skip validation steps
 - Commit frequently for safety
 
-**When User Says "Start Phase X":**
+**When User Says "Start Phase X" or References a GitHub Issue:**
 
 CRITICAL - ALWAYS perform these checks in order BEFORE starting work:
 
@@ -1701,15 +2043,24 @@ CRITICAL - ALWAYS perform these checks in order BEFORE starting work:
    - Inform user: "Phase X appears to be already completed. I can see commit [hash] with message [message] and files [file list] already exist."
    - Provide summary of what was completed
    - Ask: "Would you like me to verify the phase is working correctly, or should we move to the next phase?"
+   - **If working from GitHub Issue:** Remind user to check off completed tasks in the issue
 
 5. **If phase is partially complete:**
    - List what's done and what remains
    - Ask user how to proceed
+   - **If working from GitHub Issue:** Remind user which checkboxes should be marked
 
 6. **If phase is not started AND on correct branch:**
    - Proceed with implementation as planned
+   - **If working from GitHub Issue:** Remind user to check off tasks as they're completed
 
 **❌ DO NOT START IMPLEMENTATION if user is on `main` branch**
+
+**When Working from GitHub Issue:**
+
+- After completing each major task, remind user: "✅ You can now check off [task name] in GitHub Issue #XXX"
+- Keep track of what's been completed vs what remains
+- At end of phase, summarize: "Phase complete. Please check off the following items in Issue #XXX: [list]"
 
 **Communication:**
 
@@ -1749,7 +2100,7 @@ CRITICAL - ALWAYS perform these checks in order BEFORE starting work:
 
 ---
 
-## Questions to Ask When Creating an Execution Plan
+## [REFERENCE] Questions to Ask When Creating an Execution Plan
 
 1. **Scope:**
    - Is this task too large and should be broken down?
@@ -1778,7 +2129,7 @@ CRITICAL - ALWAYS perform these checks in order BEFORE starting work:
 
 ---
 
-## Appendix: Useful Git Commands
+## [REFERENCE] Appendix: Useful Git Commands
 
 **Status and Information:**
 
@@ -1834,7 +2185,7 @@ git stash pop                # Apply stashed changes
 
 ---
 
-## Appendix: Useful pnpm Commands
+## [REFERENCE] Appendix: Useful pnpm Commands
 
 **Development:**
 

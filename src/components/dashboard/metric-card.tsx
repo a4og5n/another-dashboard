@@ -1,7 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/skeletons";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import {
+  getTrendIcon,
+  getTrendColor,
+} from "@/components/ui/helpers/card-utils";
 
 interface MetricCardProps {
   title: string;
@@ -22,28 +25,6 @@ export function MetricCard({
   description,
   loading = false,
 }: MetricCardProps) {
-  const getTrendIcon = () => {
-    switch (trend) {
-      case "up":
-        return <TrendingUp className="h-4 w-4 text-green-600" />;
-      case "down":
-        return <TrendingDown className="h-4 w-4 text-red-600" />;
-      default:
-        return <Minus className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const getTrendColor = () => {
-    switch (trend) {
-      case "up":
-        return "text-green-600";
-      case "down":
-        return "text-red-600";
-      default:
-        return "text-gray-600";
-    }
-  };
-
   if (loading) {
     return (
       <Card>
@@ -66,14 +47,14 @@ export function MetricCard({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {trend && getTrendIcon()}
+        {trend && getTrendIcon(trend)}
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
         {(change !== undefined || changeLabel) && (
           <div className="flex items-center space-x-2 mt-2">
             {change !== undefined && (
-              <Badge variant="outline" className={getTrendColor()}>
+              <Badge variant="outline" className={getTrendColor(trend)}>
                 {change > 0 ? "+" : ""}
                 {change}%
               </Badge>
