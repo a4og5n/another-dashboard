@@ -6,3 +6,4 @@ export * from "@/types/components/ui/pricing-plan-badge";
 export * from "@/types/components/ui/stat-card";
 export * from "@/types/components/ui/stats-grid-card";
 export * from "@/types/components/ui/status-card";
+export * from "@/types/components/ui/empty-state-card";
