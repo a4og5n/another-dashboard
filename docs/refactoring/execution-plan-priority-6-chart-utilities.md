@@ -26,6 +26,7 @@
 **Context:**
 
 Currently, the codebase has duplicate custom tooltip implementations for Recharts:
+
 - `TimeseriesCard.tsx` has a `CustomTooltip` component (~23 lines)
 - `ReportCharts.tsx` has different tooltip formatting logic
 - Chart color schemes and formatting utilities are scattered across files
@@ -307,7 +308,7 @@ mkdir -p src/components/dashboard/helpers
 
 Create `src/components/dashboard/helpers/chart-utils.tsx`:
 
-```typescript
+````typescript
 /**
  * Chart utility functions and components for Recharts
  *
@@ -428,7 +429,7 @@ export function formatChartDate(date: string | Date): string {
     day: "numeric",
   });
 }
-```
+````
 
 ### 2. Create barrel export
 
@@ -717,7 +718,10 @@ Remove the inline `CustomTooltip` component and import from shared utilities:
 **At the top of the file, add import:**
 
 ```typescript
-import { CustomChartTooltip, formatChartNumber } from "@/components/dashboard/helpers";
+import {
+  CustomChartTooltip,
+  formatChartNumber,
+} from "@/components/dashboard/helpers";
 ```
 
 **Remove the inline CustomTooltip component** (approximately lines with the component definition)
@@ -1035,6 +1039,7 @@ Closes #TBD
 ## Problem
 
 The codebase had duplicate custom tooltip implementations:
+
 - `TimeseriesCard.tsx` had inline `CustomTooltip` component (~23 lines)
 - Chart formatting utilities scattered across files
 - No consistent color scheme for charts

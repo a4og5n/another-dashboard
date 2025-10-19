@@ -26,6 +26,7 @@ import type {
   ReportTimeseries,
   ReportTimewarp,
 } from "@/types/mailchimp/reports";
+import { formatChartNumber } from "@/components/dashboard/helpers";
 
 interface ReportChartsProps {
   report: CampaignReport;
@@ -87,7 +88,7 @@ export function ReportCharts({ report }: ReportChartsProps) {
                       if (name?.toString().includes("Rate")) {
                         return [`${Number(value).toFixed(1)}%`, name];
                       }
-                      return [Number(value).toLocaleString(), name];
+                      return [formatChartNumber(Number(value)), name];
                     }}
                   />
                   <Line
@@ -164,7 +165,7 @@ export function ReportCharts({ report }: ReportChartsProps) {
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip
                       formatter={(value, name) => [
-                        Number(value).toLocaleString(),
+                        formatChartNumber(Number(value)),
                         name
                           ?.toString()
                           .replace(/([A-Z])/g, " $1")

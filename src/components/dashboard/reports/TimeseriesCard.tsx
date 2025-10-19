@@ -28,42 +28,15 @@ import {
 } from "recharts";
 import { format, parseISO } from "date-fns";
 import type { CampaignReport } from "@/types/mailchimp";
+import {
+  CustomChartTooltip,
+  formatChartNumber,
+} from "@/components/dashboard/helpers";
 
 interface TimeseriesCardProps {
   report: CampaignReport;
   className?: string;
 }
-
-interface TooltipData {
-  name?: string;
-  value?: number;
-  color?: string;
-}
-
-// Custom tooltip component
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-}: {
-  active?: boolean;
-  payload?: TooltipData[];
-  label?: string;
-}) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-background border rounded-md shadow-sm p-3">
-        <p className="text-sm font-medium">{label}</p>
-        {payload.map((entry, index: number) => (
-          <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.name}: {entry.value?.toLocaleString()}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
 
 export function TimeseriesCard({ report, className }: TimeseriesCardProps) {
   const [showProxy, setShowProxy] = useState(false);
@@ -160,7 +133,11 @@ export function TimeseriesCard({ report, className }: TimeseriesCardProps) {
                   tickFormatter={(value) => value}
                 />
                 <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip
+                  content={
+                    <CustomChartTooltip valueFormatter={formatChartNumber} />
+                  }
+                />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Line
                   type="monotone"

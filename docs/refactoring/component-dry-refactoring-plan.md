@@ -354,7 +354,10 @@ Enhanced `src/utils/format-number.ts` with comprehensive formatting utilities:
 ```typescript
 // New functions added in Priority 5
 export function formatPercentage(value: number, decimals: number = 1): string;
-export function formatPercentageValue(value: number, decimals: number = 1): string;
+export function formatPercentageValue(
+  value: number,
+  decimals: number = 1,
+): string;
 export function formatValue(val: string | number): string;
 
 // Existing functions (already present)
