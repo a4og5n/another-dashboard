@@ -42,7 +42,8 @@ Before delivering an execution plan to the user, verify:
 
 - [ ] **[CRITICAL]** Phase 0: Git Setup included (see Phase 0 Template section)
 - [ ] **[CRITICAL]** Success criteria clearly defined in Overview
-- [ ] **[CRITICAL]** Both markdown plan AND GitHub issue body generated simultaneously
+- [ ] **[CRITICAL]** Both markdown plan AND GitHub issue body generated simultaneously (MANDATORY, not optional)
+- [ ] **[CRITICAL]** GitHub issue creation offered immediately after plan generation (MANDATORY step)
 - [ ] **[IMPORTANT]** Files to create/modify listed in Overview
 - [ ] **[IMPORTANT]** Verification steps after each phase
 - [ ] **[IMPORTANT]** Commit checkpoints with messages
@@ -57,21 +58,22 @@ Present both artifacts together using this exact format:
 > "I've created both:
 >
 > 1. 📄 Execution plan with detailed implementation steps - [docs/path/to/plan.md](docs/path/to/plan.md)
-> 2. 🎯 GitHub issue body (ready to paste below) for progress tracking
+> 2. 🎯 GitHub issue body (provided below) for progress tracking
 >
-> **Issue Creation (Pre-Phase 0 Decision):**
+> **GitHub Issue Creation (MANDATORY - Pre-Phase 0 Step):**
 >
-> Would you like me to create the issue now via `gh` CLI? This should be decided BEFORE starting Phase 0 so you can reference the issue number in all commits.
+> I will now create the GitHub issue via `gh` CLI. This must be done BEFORE starting Phase 0 so you can reference the issue number in all commits.
 >
-> - Option A: Create now via CLI (recommended - can reference issue # in all commits)
-> - Option B: You create manually later (issue body provided below)"
+> The issue will include: [Title, Labels, Checklist]"
 
 **CRITICAL Timing:**
 
-- Issue creation is offered IMMEDIATELY after plan generation
-- User decides BEFORE Phase 0 begins
-- AI waits for user response (don't auto-proceed to Phase 0)
-- Only after issue decision should AI suggest "Ready to start Phase 0?"
+- GitHub issue creation is MANDATORY when creating execution plans
+- Issue body is generated simultaneously with markdown plan (not optional)
+- Issue creation happens IMMEDIATELY after plan generation (before Phase 0)
+- AI creates issue via `gh` CLI after presenting both artifacts
+- User confirms, then AI creates the issue
+- Only after issue is created should AI suggest "Ready to start Phase 0?"
 
 ---
 
@@ -98,31 +100,31 @@ For AI agents generating execution plans, these sections are **mandatory**:
 
 ## [CRITICAL] How to Use This Template
 
-### [CRITICAL] Hybrid Approach: Markdown + GitHub Issues
+### [CRITICAL] Hybrid Approach: Markdown + GitHub Issues (MANDATORY)
 
-This template supports a **hybrid approach** that combines the best of both worlds:
+This template requires a **hybrid approach** that combines the best of both worlds:
 
 **📄 Markdown Documentation** = Strategic depth, code examples, architectural decisions
 **🎯 GitHub Issues** = Tactical execution, progress tracking, accountability
 
+**IMPORTANT:** Both artifacts are MANDATORY and generated together when creating execution plans.
+
 ### Usage Workflow:
 
-**Step 1: AI Generates Both Artifacts Simultaneously**
+**Step 1: AI Generates Both Artifacts Simultaneously (MANDATORY)**
 
-When user requests an execution plan, AI generates:
+When user requests an execution plan, AI MUST generate both:
 
 - 📄 Detailed markdown execution plan (saved to `docs/`)
-- 🎯 GitHub issue body (ready to paste, provided in code block)
+- 🎯 GitHub issue body (provided in markdown code block)
 
-**Step 2: User Decides on Issue Creation (BEFORE Phase 0)**
+**Step 2: AI Creates GitHub Issue (MANDATORY - BEFORE Phase 0)**
 
-User has two options:
-
-**Option A: Create Issue Immediately (Recommended)**
+AI MUST offer to create the issue immediately:
 
 ```bash
-# AI offers: "Would you like me to create the issue via gh CLI?"
-# If user accepts, AI runs:
+# AI says: "I will now create the GitHub issue via gh CLI."
+# User confirms, then AI runs:
 gh issue create --title "feat: description" \
                 --body-file issue-body.md \
                 --label "refactor,priority-high"
@@ -131,22 +133,21 @@ gh issue create --title "feat: description" \
 # Benefits: Can reference issue in all commits, progress tracking from start
 ```
 
-**Option B: Create Issue Manually Later**
+**Why This is Mandatory:**
 
-```bash
-# User can copy the provided issue body and create manually
-# Can be done at any time (even mid-implementation)
-# Trade-off: Can't reference issue number in early commits
-```
+- Ensures progress tracking from day 1
+- Enables issue reference in all commits (including Phase 0)
+- Provides accountability and visibility
+- Prevents lost progress across conversation clears
 
 **Step 3: Execute Phase 0 (Git Setup)**
 
-AFTER deciding on issue creation, start Phase 0:
+AFTER creating the GitHub issue, start Phase 0:
 
 - Create/verify feature branch
 - Check for existing work
 - Confirm environment
-- Make initial commit
+- Make initial commit (referencing issue #)
 
 **Step 4: Execute Implementation Phases**
 
@@ -178,41 +179,15 @@ AFTER deciding on issue creation, start Phase 0:
 - Blockers and decisions
 - Understanding "what's left"
 
-### Benefits of Hybrid:
+### Benefits of Hybrid (Mandatory Approach):
 
 - ✅ **Markdown** preserves deep context and examples
 - ✅ **Issues** make execution trackable and visible
 - ✅ **Issues** persist across conversations
 - ✅ **Markdown** provides detailed reference when needed
 - ✅ Best of both worlds: depth + trackability
-
----
-
-## [OPTIONAL] Issue-First Workflow
-
-For users who prefer GitHub Issues as primary tool:
-
-### Workflow:
-
-1. **Create GitHub Issue First**
-   - User creates issue with high-level requirements
-   - Issue becomes source of truth for scope
-
-2. **Generate Execution Plan from Issue**
-   - AI reads issue via `gh issue view <number>`
-   - Generates detailed execution plan linked to issue
-   - Saves plan to `docs/` with issue reference
-
-3. **Execute with Bidirectional Updates**
-   - Check off tasks in GitHub Issue as completed
-   - Update markdown plan if requirements change
-   - Reference issue number in all commits
-
-### When to Use:
-
-- Team environments with issue-based workflows
-- Projects with PM/stakeholder visibility needs
-- When issue comments are used for discussion
+- ✅ **Progress tracking** ensures accountability
+- ✅ **Issue references** in all commits create clear audit trail
 
 ---
 
@@ -337,15 +312,21 @@ Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
 
 ---
 
-## [IMPORTANT] When to Create GitHub Issues
+## [CRITICAL] When to Create GitHub Issues
 
-### Timing Decision Tree
+### MANDATORY: GitHub Issues Are Part of Plan Creation
+
+**CRITICAL:** When creating execution plans, GitHub issues are NOT optional. They are created as part of the plan creation process.
+
+### Timing (MANDATORY Process)
 
 **WHEN creating execution plan:**
 
-1. ✅ **ALWAYS generate both** markdown plan + issue body simultaneously
-2. ✅ **ALWAYS offer to create** issue via `gh` CLI
-3. ⏸️ **WAIT for user decision** before proceeding to Phase 0
+1. ✅ **ALWAYS generate both** markdown plan + issue body simultaneously (MANDATORY)
+2. ✅ **ALWAYS create issue** via `gh` CLI immediately after presenting plan (MANDATORY)
+3. ⏸️ **WAIT for user confirmation** before running gh CLI command
+4. ✅ **Update plan with issue #** after creation
+5. ✅ **Then proceed to Phase 0** with issue number available
 
 **Issue creation happens in this order:**
 
@@ -355,68 +336,77 @@ Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│ Step 2: AI generates BOTH artifacts:                   │
+│ Step 2: AI generates BOTH artifacts (MANDATORY):       │
 │   - Markdown plan (detailed implementation)            │
 │   - GitHub issue body (task checklist)                 │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│ Step 3: AI asks: "Create issue now via gh CLI?"        │
+│ Step 3: AI says "I will create the issue via gh CLI"   │
+│         (Not optional - issue creation is mandatory)   │
 └─────────────────────────────────────────────────────────┘
                           ↓
-              ┌───────────┴───────────┐
-              ↓                       ↓
-      ┌──────────────┐        ┌──────────────┐
-      │ User: YES    │        │ User: NO     │
-      └──────────────┘        └──────────────┘
-              ↓                       ↓
-      ┌──────────────┐        ┌──────────────┐
-      │ AI creates   │        │ User can     │
-      │ issue via gh │        │ create later │
-      └──────────────┘        └──────────────┘
-              ↓                       ↓
-      ┌──────────────┐        ┌──────────────┐
-      │ AI updates   │        │ Continue     │
-      │ plan with #  │        │ without #    │
-      └──────────────┘        └──────────────┘
-              └───────────┬───────────┘
+┌─────────────────────────────────────────────────────────┐
+│ Step 4: User confirms                                   │
+└─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│ Step 4: User proceeds to Phase 0 (Git Setup)           │
+│ Step 5: AI creates issue via gh CLI                    │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ Step 6: AI updates plan with issue number              │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ Step 7: User proceeds to Phase 0 (Git Setup)           │
+│         (Can now reference issue # in all commits)     │
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Key Principle:** Issue creation is a **pre-implementation decision**, not a phase within the execution plan.
+**Key Principle:** GitHub issue creation is **mandatory** and happens BEFORE Phase 0 begins.
 
-### Why This Order Matters
+### Why This is Mandatory
 
-**✅ Benefits of creating issue BEFORE Phase 0:**
+**✅ Benefits of mandatory GitHub issues:**
 
 - Can reference issue number in ALL commits (including Phase 0 setup commit)
 - Progress tracking available from start
 - Clear accountability from beginning
 - Team visibility from first commit
+- Work persists across conversation clears
+- No lost progress when context resets
+- Clear audit trail linking commits to tasks
 
-**❌ Problems if issue creation was IN Phase 0:**
+**❌ Problems if issues were optional:**
 
-- Phase 0 becomes dependent on external decision
-- Unclear whether to wait for user input mid-phase
-- Can't reference issue in Phase 0 commits
-- Confuses git workflow with project management
+- Progress gets lost when conversation clears
+- No accountability or tracking
+- Tasks get forgotten or repeated
+- Can't reference issue in commits
+- Hard to see what's done vs. pending
+- No visibility for team or collaborators
 
 ---
 
-## [IMPORTANT] Creating Issues via GitHub CLI
+## [CRITICAL] Creating Issues via GitHub CLI (MANDATORY)
 
-### AI Agent Workflow
+### AI Agent Workflow (MANDATORY)
 
-After generating both artifacts and receiving user approval, use `gh` CLI:
+After generating both artifacts, AI MUST create the issue via `gh` CLI:
+
+**Step-by-Step:**
+
+1. Present both markdown plan and issue body to user
+2. State: "I will now create the GitHub issue via `gh` CLI"
+3. Wait for user confirmation
+4. Execute gh CLI command
 
 ```bash
 # Verify gh is authenticated
 gh auth status
 
-# Create issue from file
+# Create issue from file (preferred)
 gh issue create --title "feat: description" \
                 --body-file issue-body.md \
                 --label "refactor,priority-high" \
@@ -430,12 +420,14 @@ EOF
 )"
 ```
 
-### Benefits of CLI Creation
+### Benefits of Mandatory CLI Creation
 
-- ✅ Instant issue creation from conversation
+- ✅ Instant issue creation as part of plan creation
 - ✅ Automatic linking in execution plan
-- ✅ Consistent formatting
+- ✅ Consistent formatting across all issues
 - ✅ No copy-paste errors
+- ✅ Issue # available for all commits from Phase 0 onward
+- ✅ Progress tracking from day 1
 
 ---
 
@@ -1662,7 +1654,7 @@ git clean -fd  # Remove untracked files
 
 "Create an execution plan for extracting card helper utilities"
 
-**Step 2: AI Generates Both**
+**Step 2: AI Generates Both (MANDATORY)**
 
 📄 **Execution Plan:** `docs/refactoring/card-utilities-plan.md`
 
@@ -1670,7 +1662,7 @@ git clean -fd  # Remove untracked files
 - Code examples showing problems
 - Implementation steps with examples
 
-🎯 **GitHub Issue Body:** (ready to paste)
+🎯 **GitHub Issue Body:** (provided in code block, will be created via gh CLI)
 
 ````markdown
 ## Title: Refactor: Extract Card Helper Utilities (Priority 1)
@@ -1729,32 +1721,24 @@ Dashboard cards duplicate helper functions like formatters, calculators, and con
 - **Parent Epic:** Component DRY Refactoring
 `````
 
-**Step 3: AI Offers Creation (BEFORE Phase 0)**
+**Step 3: AI Creates Issue (MANDATORY - BEFORE Phase 0)**
 
-> "I've created both the execution plan and GitHub issue body. Would you like me to create the issue now using `gh` CLI? (Labels: refactor, priority-high, effort-medium, impact-high)"
+> "I've created both the execution plan and GitHub issue body. I will now create the GitHub issue using `gh` CLI. (Labels: refactor, priority-high, effort-medium, impact-high)"
 
-**IMPORTANT:** This happens BEFORE starting Phase 0 (Git Setup)
+**IMPORTANT:** This is MANDATORY and happens BEFORE starting Phase 0 (Git Setup)
 
-**Step 4: User Decision**
+**Step 4: User Confirms and AI Creates Issue**
 
-**Option A - User accepts:**
-
-1. User: "Yes, create the issue"
+1. User: Confirms "Yes" or "Create the issue"
 2. AI: Creates issue via `gh` CLI → Issue #195
 3. AI: Updates execution plan with issue link
-4. User can now proceed to Phase 0
+4. AI: States "Issue #195 created successfully. Ready to start Phase 0?"
 
-**Option B - User declines:**
-
-1. User: "No, I'll create it manually later" or "Skip for now"
-2. AI: Acknowledges, provides issue body in code block for later use
-3. User can now proceed to Phase 0
-
-**Step 5: Execution (After issue decision)**
+**Step 5: Execution (After issue creation)**
 
 1. User starts Phase 0 (Git Setup)
-2. User references issue in commits (if created): `git commit -m "chore: initialize (#195)"`
-3. User checks off tasks in GitHub as they complete phases (if using issue)
+2. User references issue in ALL commits: `git commit -m "chore: initialize (#195)"`
+3. User checks off tasks in GitHub issue as they complete phases
 4. User references execution plan for detailed implementation steps
 
 **Step 6: Benefits Realized**
@@ -1764,14 +1748,15 @@ Dashboard cards duplicate helper functions like formatters, calculators, and con
 - ✅ Issue persists across conversation clears
 - ✅ Team can see progress without reading full plan
 - ✅ Issue number referenced in ALL commits (including Phase 0)
+- ✅ Clear audit trail from first commit to PR merge
 
 ---
 
 ## [CRITICAL] AI Self-Check Before Submitting Execution Plan
 
-### [CRITICAL] For Hybrid Approach (Markdown + GitHub Issue)
+### [CRITICAL] For Hybrid Approach (Markdown + GitHub Issue) - MANDATORY
 
-When generating both markdown plan and GitHub issue:
+When generating execution plans, both artifacts are MANDATORY:
 
 **Markdown Plan Should Include:**
 
@@ -1793,15 +1778,16 @@ When generating both markdown plan and GitHub issue:
 - [ ] Success criteria checkboxes
 - [ ] Appropriate labels and milestone
 
-**Delivery to User (CRITICAL):**
+**Delivery to User (CRITICAL - MANDATORY PROCESS):**
 
-- [ ] Present both markdown plan AND issue body simultaneously
-- [ ] Issue body is in markdown code block ready to paste
-- [ ] Offer to create issue via `gh` CLI (BEFORE Phase 0)
-- [ ] Make clear this is a pre-Phase 0 decision
-- [ ] Explain: "Issue creation happens BEFORE starting Phase 0"
-- [ ] Wait for user decision before suggesting Phase 0 start
-- [ ] Link issue number in markdown plan after creation (if user accepts)
+- [ ] Present both markdown plan AND issue body simultaneously (MANDATORY)
+- [ ] Issue body is in markdown code block ready to use
+- [ ] State: "I will now create the issue via `gh` CLI" (MANDATORY, not optional)
+- [ ] Make clear this is a pre-Phase 0 step (not a decision point)
+- [ ] Explain: "Issue creation is mandatory and happens BEFORE starting Phase 0"
+- [ ] Wait for user confirmation before running gh CLI
+- [ ] Link issue number in markdown plan after creation
+- [ ] Only then suggest "Ready to start Phase 0?"
 
 ### [CRITICAL] Standard Self-Check
 
