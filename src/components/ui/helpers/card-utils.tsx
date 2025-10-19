@@ -7,11 +7,7 @@
 
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { ReactNode } from "react";
-
-/**
- * Trend direction type
- */
-export type TrendDirection = "up" | "down" | "neutral";
+import type { StatTrend } from "@/types/components/ui";
 
 /**
  * Get the appropriate icon for a trend direction
@@ -19,7 +15,7 @@ export type TrendDirection = "up" | "down" | "neutral";
  * @param trend - The trend direction (up, down, or neutral)
  * @returns React node with the appropriate icon component
  */
-export function getTrendIcon(trend?: TrendDirection): ReactNode {
+export function getTrendIcon(trend?: StatTrend): ReactNode {
   switch (trend) {
     case "up":
       return <TrendingUp className="h-4 w-4 text-green-600" />;
@@ -36,7 +32,7 @@ export function getTrendIcon(trend?: TrendDirection): ReactNode {
  * @param trend - The trend direction (up, down, or neutral)
  * @returns Tailwind CSS text color class
  */
-export function getTrendColor(trend?: TrendDirection): string {
+export function getTrendColor(trend?: StatTrend): string {
   switch (trend) {
     case "up":
       return "text-green-600";
