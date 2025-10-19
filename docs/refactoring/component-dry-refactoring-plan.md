@@ -4,7 +4,7 @@
 
 **Last Updated:** 2025-10-19
 
-**Status:** In Progress - Priority 1, 2, 3 & 4 Complete ✅
+**Status:** In Progress - Priority 1, 2, 3, 4 & 5 Complete ✅
 
 **Document Type:** Strategic Analysis & Refactoring Roadmap
 
@@ -34,8 +34,8 @@ This analysis identified **460+ lines of duplicated code** across **22+ files** 
 
 ### Total Impact (Updated)
 
-- **308+ lines eliminated so far** (Priority 1, 2, 3 + 4 complete)
-- **~120+ lines remaining** (Priority 5-6 pending)
+- **348+ lines eliminated so far** (Priority 1, 2, 3, 4 + 5 complete)
+- **~80+ lines remaining** (Priority 6 pending)
 - **Reduced maintenance burden** across 22+ files
 - **Improved consistency** in component styling and behavior
 - **Faster development** when adding new similar components
@@ -51,7 +51,7 @@ This analysis identified **460+ lines of duplicated code** across **22+ files** 
 | 2        | Table Wrapper    | 2 files        | 70          | Medium | High   | ✅ Complete |
 | 3        | Empty State Card | 4 files        | 120+        | Low    | Medium | ✅ Complete |
 | 4        | Badge Helpers    | 4 files        | 40+         | Low    | Medium | ✅ Complete |
-| 5        | Value Formatting | 5 files        | 40+         | Low    | Medium | 📋 Planned  |
+| 5        | Value Formatting | 5 files        | 40+         | Low    | Medium | ✅ Complete |
 | 6        | Chart Utilities  | 2 files        | 30+         | Medium | Low    | 📋 Planned  |
 
 ---
@@ -322,30 +322,56 @@ export function getCampaignStatusBadge(status: string): {
 
 ---
 
-## Priority 5: Value Formatting Utilities (MEDIUM IMPACT)
+## Priority 5: Value Formatting Utilities (MEDIUM IMPACT) ✅ COMPLETE
 
-**Lines Saved:** 40+ | **Effort:** Low | **Impact:** Medium
+**Status:** ✅ **Complete** - Merged to main on 2025-10-19
+
+**Actual Results:** 40+ lines saved | 5 files modified | Low effort | Medium impact
+
+**PR:** [#200](https://github.com/a4og5n/another-dashboard/pull/200) (Initial migration) + [#201](https://github.com/a4og5n/another-dashboard/pull/201) (Cleanup)
+
+**Execution Plan:** [execution-plan-priority-5-format-utilities.md](execution-plan-priority-5-format-utilities.md)
 
 ### Problem
 
-**5 different implementations** of essentially the same number/value formatting logic across components.
+**5+ different implementations** of essentially the same number/value formatting logic across components with inconsistent behavior.
 
 ### Files Affected
 
-1. `src/components/dashboard/reports/BaseMetricCard.tsx` - `formatPercentage()`
-2. `src/components/ui/stat-card.tsx` - `formatValue()`
-3. `src/components/ui/stats-grid-card.tsx` - `formatValue()`
-4. `src/components/ui/status-card.tsx` - `formatValue()`
-5. `src/components/mailchimp/lists/list-card.tsx` - `formatNumber()`
+1. `src/utils/format-number.ts` (enhanced with new functions)
+2. `src/utils/format-number.test.ts` (created with 27 tests)
+3. `src/components/ui/helpers/card-utils.tsx` (removed duplicate)
+4. `src/components/dashboard/reports/BaseMetricCard.tsx` (removed duplicate)
+5. `src/components/dashboard/reports/ListPerformanceCard.tsx` (removed duplicate)
+6. `src/components/dashboard/reports/DeliveryIssuesCard.tsx` (updated imports)
+7. `src/components/dashboard/reports/ListHealthCard.tsx` (updated imports)
+8. `src/components/dashboard/reports/index.ts` (updated barrel export)
 
-### Impact
+### Solution Implemented
 
-- Inconsistent number formatting across the app
-- ~40 lines of duplicated utility logic
+Enhanced `src/utils/format-number.ts` with comprehensive formatting utilities:
 
-### Solution
+```typescript
+// New functions added in Priority 5
+export function formatPercentage(value: number, decimals: number = 1): string;
+export function formatPercentageValue(value: number, decimals: number = 1): string;
+export function formatValue(val: string | number): string;
 
-Consolidate into centralized formatting utilities (possibly in card-utils.ts from Priority 1).
+// Existing functions (already present)
+export function formatNumber(num: number): string;
+export function formatPercent(value: number | null | undefined): string;
+```
+
+### Refactor Impact (Achieved)
+
+- **card-utils.tsx:** Removed duplicate `formatPercentage()` (10 lines)
+- **BaseMetricCard.tsx:** Removed duplicate `formatPercentage()` (8 lines)
+- **ListPerformanceCard.tsx:** Removed inline `formatPercentage()` (6 lines)
+- **DeliveryIssuesCard.tsx:** Updated to import from centralized location
+- **ListHealthCard.tsx:** Updated to import from centralized location
+- **format-number.test.ts:** Added comprehensive test suite (27 tests, 100% coverage)
+- **PR #201:** Removed unnecessary "backward compatibility" re-exports (14 lines cleaned)
+- **Total:** 40+ lines of duplicate code eliminated, enforced single source of truth
 
 ---
 
@@ -445,8 +471,12 @@ The project already has good standardization in place:
    - Refactored 2 table components (CampaignOpensTable, CampaignAbuseReportsTable)
    - Removed ~70 lines of duplicate code
 
-2. ⏳ Consolidate formatting utilities - **PENDING**
-   - Merge 5 format function implementations
+2. ✅ Consolidate formatting utilities - **COMPLETE**
+   - Enhanced `src/utils/format-number.ts` with 3 new formatting functions
+   - Removed 5+ duplicate implementations across components
+   - Added comprehensive test suite (27 tests, 100% coverage)
+   - Removed unnecessary re-exports (PR #201 cleanup)
+   - Removed ~40 lines of duplicate code
 
 ### Sprint 3: Polish (Optional)
 
