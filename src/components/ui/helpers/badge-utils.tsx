@@ -13,36 +13,35 @@ import { User } from "lucide-react";
  *
  * @param isVip - Whether the member has VIP status
  * @param variant - Badge variant style ('simple' or 'with-icon')
- * @returns Badge component or null
+ * @returns Badge component or null (simple variant returns null for non-VIP)
  *
  * @example
  * ```tsx
- * {getVipBadge(member.vip)} // Simple version
- * {getVipBadge(member.vip, 'with-icon')} // With icon
+ * {getVipBadge(member.vip)} // Simple version - shows badge or null
+ * {getVipBadge(member.vip, 'with-icon')} // With icon - shows VIP/No badge
  * ```
  */
 export function getVipBadge(
   isVip: boolean,
   variant: "simple" | "with-icon" = "simple",
 ) {
-  if (!isVip) {
-    return null;
-  }
-
   if (variant === "with-icon") {
-    return (
+    return isVip ? (
       <Badge variant="default" className="flex items-center gap-1 w-fit">
         <User className="h-3 w-3" />
         VIP
       </Badge>
+    ) : (
+      <Badge variant="outline">No</Badge>
     );
   }
 
-  return (
+  // Simple variant: only show badge for VIP users
+  return isVip ? (
     <Badge variant="secondary" className="text-xs">
       VIP
     </Badge>
-  );
+  ) : null;
 }
 
 /**

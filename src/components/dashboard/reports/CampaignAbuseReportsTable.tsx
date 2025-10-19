@@ -8,7 +8,7 @@
 
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import {
   ColumnDef,
@@ -25,15 +25,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { formatDateTime } from "@/utils/format-date";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
-import { Mail, Clock, User, ShieldAlert } from "lucide-react";
+import { Mail, Clock, ShieldAlert } from "lucide-react";
 import type { AbuseReport } from "@/types/mailchimp";
 import type { AbuseReportsTableProps } from "@/types/components/mailchimp/reports";
 import { CampaignAbuseReportsEmpty } from "./CampaignAbuseReportsEmpty";
+import { useTablePagination } from "@/hooks/use-table-pagination";
+import {
+  getVipBadge,
+  getActiveStatusBadge,
+} from "@/components/ui/helpers/badge-utils";
 
 export function CampaignAbuseReportsTable({
   abuseReportsData,
@@ -48,55 +52,11 @@ export function CampaignAbuseReportsTable({
   // Calculate pagination
   const totalPages = Math.ceil((total_items || 0) / pageSize);
 
-  // Helper functions for URL generation
-  const createPageUrl = useCallback(
-    (page: number) => {
-      const params = new URLSearchParams();
-      // Only add page if not page 1
-      if (page > 1) {
-        params.set("page", page.toString());
-      }
-      // Add perPage if it's not the default
-      if (pageSize !== 10) {
-        params.set("perPage", pageSize.toString());
-      }
-      return `${baseUrl}${params.toString() ? `?${params.toString()}` : ""}`;
-    },
-    [baseUrl, pageSize],
-  );
-
-  const createPerPageUrl = useCallback(
-    (newPerPage: number) => {
-      const params = new URLSearchParams();
-      // Reset to page 1 when changing page size
-      // Only add perPage if it's not the default
-      if (newPerPage !== 10) {
-        params.set("perPage", newPerPage.toString());
-      }
-      return `${baseUrl}${params.toString() ? `?${params.toString()}` : ""}`;
-    },
-    [baseUrl],
-  );
-
-  // Utility functions
-  const getVipBadge = (isVip: boolean) => {
-    return isVip ? (
-      <Badge variant="default" className="flex items-center gap-1 w-fit">
-        <User className="h-3 w-3" />
-        VIP
-      </Badge>
-    ) : (
-      <Badge variant="outline">No</Badge>
-    );
-  };
-
-  const getListStatusBadge = (isActive: boolean) => {
-    return isActive ? (
-      <Badge variant="default">Active</Badge>
-    ) : (
-      <Badge variant="secondary">Inactive</Badge>
-    );
-  };
+  // Use shared pagination hook for URL generation
+  const { createPageUrl, createPerPageUrl } = useTablePagination({
+    baseUrl,
+    pageSize,
+  });
 
   const formatMergeFields = (
     mergeFields?: Record<string, string | number | unknown>,
@@ -185,7 +145,7 @@ export function CampaignAbuseReportsTable({
         cell: ({ row }) => {
           const listId = row.original.list_id;
           const isActive = row.getValue("list_is_active") as boolean;
-          const badge = getListStatusBadge(isActive);
+          const badge = getActiveStatusBadge(isActive);
 
           return (
             <Link
@@ -202,7 +162,7 @@ export function CampaignAbuseReportsTable({
         header: () => (
           <div className="h-8 px-2 lg:px-3 flex items-center">VIP</div>
         ),
-        cell: ({ row }) => getVipBadge(row.getValue("vip")),
+        cell: ({ row }) => getVipBadge(row.getValue("vip"), "with-icon"),
       },
       {
         accessorKey: "merge_fields",
