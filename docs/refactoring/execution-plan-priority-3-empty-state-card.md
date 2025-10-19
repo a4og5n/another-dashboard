@@ -281,7 +281,7 @@ export * from "@/types/components/ui/empty-state-card";
 
 Create `src/components/ui/empty-state-card.tsx`:
 
-```typescript
+````typescript
 /**
  * EmptyStateCard Component
  * Generic empty state card for consistent empty/error states across the dashboard
@@ -380,7 +380,7 @@ export function EmptyStateCard({
     </Card>
   );
 }
-```
+````
 
 Update `src/components/ui/index.ts` to export the component:
 
