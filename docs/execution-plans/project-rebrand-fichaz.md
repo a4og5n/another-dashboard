@@ -1,23 +1,23 @@
-# Execution Plan: Rebrand Another Dashboard to Fichaz
+# Execution Plan: Rebrand Fichaz to Fichaz
 
 **Status:** Ready for Implementation
 **Created:** 2025-10-19
 **Approach:** Incremental phased implementation
-**Target:** Rebrand project from "Another Dashboard" to "Fichaz" across code, UI, infrastructure, and OAuth providers
+**Target:** Rebrand project from "Fichaz" to "Fichaz" across code, UI, infrastructure, and OAuth providers
 
 ## Problem Statement
 
-The project is currently named "Another Dashboard" throughout the codebase, UI, documentation, OAuth provider registrations, and infrastructure. We need to rebrand to "Fichaz" with the custom domain `fichaz.app`.
+The project is currently named "Fichaz" throughout the codebase, UI, documentation, OAuth provider registrations, and infrastructure. We need to rebrand to "Fichaz" with the custom domain `fichaz.app`.
 
 **Current State:**
 
 - Project name: "another-dashboard" (package.json)
 - GitHub repository: Current repo name (needs verification)
-- UI displays: "Another Dashboard" in sidebar, header, empty states
-- OAuth apps registered with Kinde, Mailchimp (potentially Google) using "Another Dashboard"
+- UI displays: "Fichaz" in sidebar, header, empty states
+- OAuth apps registered with Kinde, Mailchimp (potentially Google) using "Fichaz"
 - Vercel project: `another-dashboard` with preview URLs `another-dashboard-*.vercel.app`
 - Custom domain available: `fichaz.app` (not yet configured)
-- Documentation: 20+ files reference "Another Dashboard"
+- Documentation: 20+ files reference "Fichaz"
 - Production status: Development only, no live users
 
 **Why This Matters:**
@@ -51,9 +51,9 @@ Each phase includes validation steps and can be rolled back independently.
 ```bash
 # Generate issue from this plan
 gh issue create \
-  --title "Rebrand: Another Dashboard → Fichaz" \
+  --title "Rebrand: Fichaz → Fichaz" \
   --body-file <(cat <<'EOF'
-# Rebrand Project from Another Dashboard to Fichaz
+# Rebrand Project from Fichaz to Fichaz
 
 ## Overview
 Incremental rebrand across code, UI, infrastructure, and OAuth providers.
@@ -132,7 +132,7 @@ git status
 
 ## Phase 1: Update Code/UI Strings
 
-**Objective:** Update all code and UI component strings from "Another Dashboard" to "Fichaz".
+**Objective:** Update all code and UI component strings from "Fichaz" to "Fichaz".
 
 **Risk Level:** Low (no external dependencies)
 
@@ -163,7 +163,7 @@ cat package.json | grep '"name"'
 
 **Expected Changes:**
 
-- Search for "Another Dashboard v1.0" string
+- Search for "Fichaz v1.0" string
 - Replace with "Fichaz v1.0"
 
 ### 1.3 Update Dashboard Header
@@ -172,7 +172,7 @@ cat package.json | grep '"name"'
 
 **Expected Changes:**
 
-- Search for "Another Dashboard" string
+- Search for "Fichaz" string
 - Replace with "Fichaz"
 
 ### 1.4 Update Mailchimp Empty State
@@ -181,14 +181,14 @@ cat package.json | grep '"name"'
 
 **Expected Changes:**
 
-- Search for "Another Dashboard" in OAuth message
+- Search for "Fichaz" in OAuth message
 - Replace with "Fichaz"
 
 ### 1.5 Validate Changes
 
 ```bash
-# Search for remaining "Another Dashboard" references in code
-grep -r "Another Dashboard" src/ --exclude-dir=node_modules
+# Search for remaining "Fichaz" references in code
+grep -r "Fichaz" src/ --exclude-dir=node_modules
 
 # Run type check
 pnpm type-check
@@ -202,7 +202,7 @@ pnpm lint
 
 **Validation Checklist:**
 
-- [ ] No "Another Dashboard" strings found in `src/` directory
+- [ ] No "Fichaz" strings found in `src/` directory
 - [ ] Type check passes
 - [ ] All tests pass
 - [ ] Lint passes
@@ -212,7 +212,7 @@ pnpm lint
 ```bash
 git add package.json src/components/layout/dashboard-sidebar.tsx src/components/layout/dashboard-header.tsx src/components/mailchimp/mailchimp-empty-state.tsx
 
-git commit -m "chore: rebrand UI strings from Another Dashboard to Fichaz
+git commit -m "chore: rebrand UI strings from Fichaz to Fichaz
 
 - Update package.json name field
 - Update dashboard sidebar branding
@@ -243,7 +243,7 @@ cat public/manifest.json
 
 **Expected Changes:**
 
-- `"name": "Another Dashboard"` → `"name": "Fichaz"`
+- `"name": "Fichaz"` → `"name": "Fichaz"`
 - `"short_name": "Dashboard"` → `"short_name": "Fichaz"`
 - `"description": "..."` → Update to include "Fichaz"
 - Keep all other properties (icons, theme_color, etc.) unchanged
@@ -259,7 +259,7 @@ grep -A 10 "export const metadata" src/app/layout.tsx
 
 **Expected Changes:**
 
-- `title: "Another Dashboard"` → `title: "Fichaz"`
+- `title: "Fichaz"` → `title: "Fichaz"`
 - `description: "..."` → Update to include "Fichaz"
 - OpenGraph metadata updates if present
 
@@ -272,14 +272,14 @@ grep -r "export const metadata" src/app/ --include="*.tsx" --include="*.ts"
 
 **Update any found metadata exports:**
 
-- Replace "Another Dashboard" with "Fichaz" in titles
+- Replace "Fichaz" with "Fichaz" in titles
 - Update descriptions to reference "Fichaz"
 
 ### 2.4 Validate Changes
 
 ```bash
-# Search for remaining "Another Dashboard" in metadata files
-grep -r "Another Dashboard" src/app/ public/ --include="*.json" --include="*.tsx" --include="*.ts"
+# Search for remaining "Fichaz" in metadata files
+grep -r "Fichaz" src/app/ public/ --include="*.json" --include="*.tsx" --include="*.ts"
 
 # Run type check
 pnpm type-check
@@ -293,7 +293,7 @@ cat public/manifest.json | jq .
 
 **Validation Checklist:**
 
-- [ ] No "Another Dashboard" in metadata files
+- [ ] No "Fichaz" in metadata files
 - [ ] manifest.json is valid JSON
 - [ ] Type check passes
 - [ ] All tests pass
@@ -321,15 +321,15 @@ Related to #[ISSUE_NUMBER]"
 
 ## Phase 3: Update Documentation Files
 
-**Objective:** Update all documentation references from "Another Dashboard" to "Fichaz".
+**Objective:** Update all documentation references from "Fichaz" to "Fichaz".
 
 **Risk Level:** Zero (documentation only)
 
 ### 3.1 Identify Documentation Files
 
 ```bash
-# Find all markdown files with "Another Dashboard"
-grep -rl "Another Dashboard" docs/ README.md CLAUDE.md --include="*.md"
+# Find all markdown files with "Fichaz"
+grep -rl "Fichaz" docs/ README.md CLAUDE.md --include="*.md"
 ```
 
 ### 3.2 Update Documentation Files
@@ -347,7 +347,7 @@ grep -rl "Another Dashboard" docs/ README.md CLAUDE.md --include="*.md"
 
 **Changes:**
 
-- Replace "Another Dashboard" with "Fichaz"
+- Replace "Fichaz" with "Fichaz"
 - Update any URLs containing "another-dashboard"
 - Update screenshots/images if they show old branding (note for future)
 
@@ -356,14 +356,14 @@ grep -rl "Another Dashboard" docs/ README.md CLAUDE.md --include="*.md"
 # Open each file and replace strings
 
 # Option 2: Automated with sed (review carefully)
-# sed -i '' 's/Another Dashboard/Fichaz/g' file.md
+# sed -i '' 's/Fichaz/Fichaz/g' file.md
 ```
 
 ### 3.3 Validate Changes
 
 ```bash
-# Verify no "Another Dashboard" remains in docs
-grep -r "Another Dashboard" docs/ README.md CLAUDE.md --include="*.md"
+# Verify no "Fichaz" remains in docs
+grep -r "Fichaz" docs/ README.md CLAUDE.md --include="*.md"
 
 # Check for broken links (if any internal doc links)
 # Manual review of changed files
@@ -371,7 +371,7 @@ grep -r "Another Dashboard" docs/ README.md CLAUDE.md --include="*.md"
 
 **Validation Checklist:**
 
-- [ ] No "Another Dashboard" found in documentation files
+- [ ] No "Fichaz" found in documentation files
 - [ ] README.md updated
 - [ ] CLAUDE.md updated
 - [ ] All markdown files still valid
@@ -381,7 +381,7 @@ grep -r "Another Dashboard" docs/ README.md CLAUDE.md --include="*.md"
 ```bash
 git add README.md CLAUDE.md docs/
 
-git commit -m "docs: rebrand documentation from Another Dashboard to Fichaz
+git commit -m "docs: rebrand documentation from Fichaz to Fichaz
 
 - Update README.md
 - Update CLAUDE.md
@@ -417,7 +417,7 @@ Related to #[ISSUE_NUMBER]"
 
 2. **Locate Application:**
    - Go to Settings → Applications
-   - Find your current application (likely named "Another Dashboard")
+   - Find your current application (likely named "Fichaz")
 
 3. **Update Application Settings:**
    - **Name:** Change to "Fichaz"
@@ -483,7 +483,7 @@ pnpm dev
    - Click "Registered Apps" or "OAuth Apps" section
 
 2. **Locate OAuth Application:**
-   - Find application currently named "Another Dashboard"
+   - Find application currently named "Fichaz"
 
 3. **Update Application Settings:**
    - **App Name:** Change to "Fichaz"
@@ -598,8 +598,8 @@ git remote -v
 
 **Document Current State:**
 
-- Current repository name: ******\_\_\_******
-- Repository owner: ******\_\_\_******
+- Current repository name: **\*\***\_\_\_**\*\***
+- Repository owner: **\*\***\_\_\_**\*\***
 - Current clone URLs documented
 
 ### 5.2 Pre-Rename Checklist
@@ -1218,8 +1218,8 @@ git push origin feature/rebrand-fichaz
 # Run full validation suite
 pnpm pre-commit
 
-# Verify no "Another Dashboard" strings remain in code
-grep -r "Another Dashboard" src/ public/ --exclude-dir=node_modules
+# Verify no "Fichaz" strings remain in code
+grep -r "Fichaz" src/ public/ --exclude-dir=node_modules
 
 # Verify no "another-dashboard" in URLs (except old OAuth URIs being kept)
 grep -r "another-dashboard" src/ public/ docs/ CLAUDE.md README.md --exclude-dir=node_modules
@@ -1231,7 +1231,7 @@ grep -r "another-dashboard" src/ public/ docs/ CLAUDE.md README.md --exclude-dir
 - [ ] No type errors
 - [ ] No lint errors
 - [ ] No formatting issues
-- [ ] No "Another Dashboard" in code/UI
+- [ ] No "Fichaz" in code/UI
 - [ ] No "another-dashboard" URLs (except documented legacy OAuth URIs)
 
 ### 7.3 Update GitHub Issue
@@ -1271,10 +1271,10 @@ git push origin feature/rebrand-fichaz
 
 # Create PR
 gh pr create \
-  --title "Rebrand: Another Dashboard → Fichaz" \
+  --title "Rebrand: Fichaz → Fichaz" \
   --body "## Overview
 
-Complete rebrand from 'Another Dashboard' to 'Fichaz' across code, UI, infrastructure, and OAuth providers.
+Complete rebrand from 'Fichaz' to 'Fichaz' across code, UI, infrastructure, and OAuth providers.
 
 ## Changes
 
@@ -1335,7 +1335,7 @@ Code quality:
 - ✅ All tests passing
 - ✅ No type errors
 - ✅ No lint errors
-- ✅ No 'Another Dashboard' strings remaining in code
+- ✅ No 'Fichaz' strings remaining in code
 
 ## Related Issue
 
@@ -1379,7 +1379,7 @@ See: docs/execution-plans/project-rebrand-fichaz.md" \
 
 ✅ **Code/UI:**
 
-- All "Another Dashboard" strings replaced with "Fichaz"
+- All "Fichaz" strings replaced with "Fichaz"
 - package.json name updated
 - PWA manifest updated
 - Next.js metadata updated
@@ -1542,10 +1542,10 @@ gh pr create --title "..." --body "..."
 
 ```bash
 # Find string in codebase
-grep -r "Another Dashboard" src/ --exclude-dir=node_modules
+grep -r "Fichaz" src/ --exclude-dir=node_modules
 
 # Find string in markdown files
-grep -r "Another Dashboard" docs/ README.md CLAUDE.md --include="*.md"
+grep -r "Fichaz" docs/ README.md CLAUDE.md --include="*.md"
 
 # Find URLs
 grep -r "another-dashboard" . --exclude-dir=node_modules

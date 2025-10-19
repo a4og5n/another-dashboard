@@ -125,7 +125,7 @@ POSTGRES_PRISMA_URL=postgres://...
 **In Mailchimp Dashboard:**
 
 1. Go to Account → Extras → API Keys → Your Apps
-2. Select "Another Dashboard" app
+2. Select "Fichaz" app
 3. Add redirect URIs:
    - [ ] Production: `https://your-domain.vercel.app/api/auth/mailchimp/callback`
    - [ ] Preview: `https://*-your-project.vercel.app/api/auth/mailchimp/callback`

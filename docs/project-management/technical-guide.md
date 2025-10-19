@@ -1,6 +1,6 @@
 # Technical Implementation Guide
 
-**Project:** Another Dashboard MVP  
+**Project:** Fichaz MVP  
 **Created:** August 25, 2025  
 **Purpose:** Detailed technical steps and architecture decisions
 
@@ -261,7 +261,7 @@ import { Header } from '@/components/layout/header';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Another Dashboard',
+  title: 'Fichaz',
   description: 'Unified analytics and content management dashboard',
 };
 

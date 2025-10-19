@@ -1,4 +1,4 @@
-# Another Dashboard
+# Fichaz
 
 A modern, production-ready Next.js application for unified marketing analytics. Connect your Mailchimp account via OAuth 2.0 and view campaigns, audiences, and performance metrics in one beautiful dashboard.
 
@@ -112,7 +112,7 @@ src/
 
 5. **Register Mailchimp OAuth app**
    - Login to Mailchimp → Account → Extras → API Keys → "Register an App"
-   - App Name: `Another Dashboard`
+   - App Name: `Fichaz`
    - Redirect URI (local): `https://127.0.0.1:3000/api/auth/mailchimp/callback`
    - Copy Client ID and Client Secret
 

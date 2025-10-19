@@ -44,7 +44,7 @@ Phase 9 (Production Deployment) is **95% complete**. All code is deployed and wo
 1. Go to https://mailchimp.com → Account → Extras → API Keys
 2. Click **"Register An App"** or **"Create New App"**
 3. Fill in the form:
-   - **App Name:** `Another Dashboard - Production`
+   - **App Name:** `Fichaz - Production`
    - **Company/Organization:** `La Noticia, Inc`
    - **App Website:** `https://another-dashboard-caddwo3l8-alvaros-projects-b3e953f8.vercel.app/`
    - **Redirect URI:** `https://another-dashboard-caddwo3l8-alvaros-projects-b3e953f8.vercel.app/api/auth/mailchimp/callback`

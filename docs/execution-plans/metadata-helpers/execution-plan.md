@@ -631,7 +631,7 @@ export const generateMetadata: GenerateMetadata = async ({ params }) => {
 
   if (!response.success || !response.data) {
     return {
-      title: "Campaign Opens | Another Dashboard",
+      title: "Campaign Opens | Fichaz",
       description: "View members who opened this campaign",
     };
   }
@@ -639,7 +639,7 @@ export const generateMetadata: GenerateMetadata = async ({ params }) => {
   const report = response.data as CampaignReport;
 
   return {
-    title: `${report.campaign_title} - Opens | Another Dashboard`,
+    title: `${report.campaign_title} - Opens | Fichaz`,
     description: `View the ${report.opens.opens_total} members who opened ${report.campaign_title}`,
   };
 };
