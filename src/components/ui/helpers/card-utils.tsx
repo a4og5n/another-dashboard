@@ -8,6 +8,7 @@
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { ReactNode } from "react";
 import type { StatTrend } from "@/types/components/ui";
+import { formatPercentage } from "@/utils/format-number";
 
 /**
  * Get the appropriate icon for a trend direction
@@ -63,13 +64,5 @@ export function formatNumber(num: number): string {
   return num.toLocaleString();
 }
 
-/**
- * Format a decimal value as a percentage
- *
- * @param value - The decimal value to format (e.g., 0.156 for 15.6%)
- * @param decimals - Number of decimal places (default: 1)
- * @returns Formatted percentage string (e.g., "15.6%")
- */
-export function formatPercentage(value: number, decimals: number = 1): string {
-  return `${(value * 100).toFixed(decimals)}%`;
-}
+// Re-export formatPercentage from centralized utilities for convenience
+export { formatPercentage };

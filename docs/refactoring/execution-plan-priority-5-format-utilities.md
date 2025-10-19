@@ -27,6 +27,7 @@
 **Context:**
 
 Currently, the codebase has inconsistent formatting implementations:
+
 - `BaseMetricCard.tsx` has `formatPercentage()` that takes already-converted percentages (23.5 → "23.5")
 - `card-utils.tsx` has `formatPercentage()` that converts decimals (0.235 → "23.5%")
 - `ListPerformanceCard.tsx` has inline `formatPercentage()` for decimal conversion
@@ -248,7 +249,10 @@ export function formatPercentage(value: number, decimals: number = 1): string {
  * formatPercentageValue(23.456) // "23.5"
  * formatPercentageValue(23.456, 2) // "23.46"
  */
-export function formatPercentageValue(value: number, decimals: number = 1): string {
+export function formatPercentageValue(
+  value: number,
+  decimals: number = 1,
+): string {
   return value.toFixed(decimals);
 }
 
@@ -624,19 +628,20 @@ import { formatPercentage } from "@/utils/format-number";
 **Update usages on lines 36, 43, and 73:**
 
 The existing code divides by 100 then multiplies by 100 in formatPercentage:
+
 ```typescript
 // BEFORE:
-formatPercentage(listStats.open_rate / 100) // listStats.open_rate is already a percentage like 23.5
+formatPercentage(listStats.open_rate / 100); // listStats.open_rate is already a percentage like 23.5
 
 // AFTER: Use formatPercentageValue since value is already a percentage
-formatPercentageValue(listStats.open_rate)
+formatPercentageValue(listStats.open_rate);
 ```
 
 **Actually, let's check the data type first.** Since the code does `listStats.open_rate / 100`, it seems like `open_rate` might be stored as a whole number (2350 for 23.5%). Let's use `formatPercentage()` which expects a decimal:
 
 ```typescript
 // If open_rate is 23.5 (percentage), convert to decimal first
-formatPercentage(listStats.open_rate / 100) // Converts 23.5/100 = 0.235 → "23.5%"
+formatPercentage(listStats.open_rate / 100); // Converts 23.5/100 = 0.235 → "23.5%"
 ```
 
 This is correct - keep the existing logic but use the centralized function.
@@ -720,6 +725,7 @@ pnpm dev
 ```
 
 **Test these components:**
+
 - [ ] Campaign report cards (BaseMetricCard usage)
 - [ ] List performance card (ListPerformanceCard usage)
 - [ ] Any stat cards using formatPercentage
@@ -845,6 +851,7 @@ Closes #199
 ## Problem
 
 The codebase had inconsistent formatting implementations:
+
 - `BaseMetricCard.tsx` had `formatPercentage()` for already-converted percentages
 - `card-utils.tsx` had `formatPercentage()` for decimal conversion
 - `ListPerformanceCard.tsx` had inline `formatPercentage()` for decimal conversion
