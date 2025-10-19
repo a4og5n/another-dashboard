@@ -4,7 +4,7 @@
 
 **Last Updated:** 2025-10-19
 
-**Status:** In Progress - Priority 1 Complete ✅
+**Status:** In Progress - Priority 1 & 2 Complete ✅
 
 **Document Type:** Strategic Analysis & Refactoring Roadmap
 
@@ -32,9 +32,10 @@ This document provides **strategic analysis** of code duplication across the cod
 
 This analysis identified **460+ lines of duplicated code** across **22+ files** that can be consolidated through refactoring.
 
-### Total Potential Impact
+### Total Impact (Updated)
 
-- **430+ lines eliminated**
+- **148 lines eliminated so far** (Priority 1 + 2 complete)
+- **~280+ lines remaining** (Priority 3-6 pending)
 - **Reduced maintenance burden** across 22+ files
 - **Improved consistency** in component styling and behavior
 - **Faster development** when adding new similar components
@@ -47,7 +48,7 @@ This analysis identified **460+ lines of duplicated code** across **22+ files** 
 | Priority | Component Type   | Files Affected | Lines Saved | Effort | Impact | Status      |
 | -------- | ---------------- | -------------- | ----------- | ------ | ------ | ----------- |
 | 1        | Card Utilities   | 5 files        | 78          | Low    | High   | ✅ Complete |
-| 2        | Table Wrapper    | 2 files        | 120+        | Medium | High   | 📋 Planned  |
+| 2        | Table Wrapper    | 2 files        | 70          | Medium | High   | ✅ Complete |
 | 3        | Empty State Card | 4 files        | 120+        | Low    | Medium | 📋 Planned  |
 | 4        | Badge Helpers    | 3 files        | 40+         | Low    | Medium | 📋 Planned  |
 | 5        | Value Formatting | 5 files        | 40+         | Low    | Medium | 📋 Planned  |
@@ -121,11 +122,13 @@ const getTrendColor = () => {
 
 ---
 
-## Priority 2: Table Pagination Hook (HIGH IMPACT) 📋 READY
+## Priority 2: Table Pagination Hook (HIGH IMPACT) ✅ COMPLETE
 
-**Status:** 📋 **Ready for Implementation** - Execution plan complete
+**Status:** ✅ **Complete** - Merged to main on 2025-10-19
 
-**Estimated Results:** 70+ lines saved | 2 files modified | Medium effort | High impact
+**Actual Results:** 70 lines saved | 2 files modified | Medium effort | High impact
+
+**PR:** [#195](https://github.com/a4og5n/another-dashboard/pull/195)
 
 **Execution Plan:** [execution-plan-priority-2-table-pagination.md](execution-plan-priority-2-table-pagination.md)
 
@@ -168,24 +171,28 @@ const createPerPageUrl = useCallback(
 );
 ```
 
-### Solution
+### Solution Implemented
 
-Create `src/components/ui/data-table-wrapper.tsx`:
+Created `src/hooks/use-table-pagination.ts` - Custom hook for table pagination URL management:
 
 ```typescript
-export function DataTableWrapper<T>({
-  data: T[],
-  columns: ColumnDef<T>[],
-  pagination,
+export function useTablePagination({
   baseUrl,
-  onPerPageChange,
-  emptyComponent,
-  summaryCards?,
-  paginationPlacement = "bottom",
-})
+  pageSize,
+  defaultPageSize = 10,
+}): UseTablePaginationReturn {
+  // createPageUrl() - Generate URL for specific page
+  // createPerPageUrl() - Generate URL for page size change
+}
 ```
 
-Or create `useTablePagination()` hook for URL generation logic.
+Also created `src/components/ui/helpers/badge-utils.tsx` for shared badge utilities:
+
+```typescript
+export function getVipBadge(isVip: boolean, variant: 'simple' | 'with-icon' = 'simple')
+export function getMemberStatusBadge(status: string)
+export function getActiveStatusBadge(isActive: boolean)
+```
 
 ---
 
@@ -405,11 +412,13 @@ The project already has good standardization in place:
 
 **Estimated Savings: 160+ lines**
 
-1. ✅ Extract table pagination logic
-   - Create `useTablePagination()` hook or `DataTableWrapper`
-   - Refactor 2 table components
+1. ✅ Extract table pagination logic - **COMPLETE**
+   - Created `useTablePagination()` hook for URL generation
+   - Created badge utilities (`getVipBadge`, `getMemberStatusBadge`, `getActiveStatusBadge`)
+   - Refactored 2 table components (CampaignOpensTable, CampaignAbuseReportsTable)
+   - Removed ~70 lines of duplicate code
 
-2. ✅ Consolidate formatting utilities
+2. ⏳ Consolidate formatting utilities - **PENDING**
    - Merge 5 format function implementations
 
 ### Sprint 3: Polish (Optional)
