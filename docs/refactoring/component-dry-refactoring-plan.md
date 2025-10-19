@@ -189,9 +189,12 @@ export function useTablePagination({
 Also created `src/components/ui/helpers/badge-utils.tsx` for shared badge utilities:
 
 ```typescript
-export function getVipBadge(isVip: boolean, variant: 'simple' | 'with-icon' = 'simple')
-export function getMemberStatusBadge(status: string)
-export function getActiveStatusBadge(isActive: boolean)
+export function getVipBadge(
+  isVip: boolean,
+  variant: "simple" | "with-icon" = "simple",
+);
+export function getMemberStatusBadge(status: string);
+export function getActiveStatusBadge(isActive: boolean);
 ```
 
 ---
