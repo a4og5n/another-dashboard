@@ -1,7 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/skeletons";
-import { getTrendIcon, getTrendColor } from "@/components/ui/helpers/card-utils";
+import {
+  getTrendIcon,
+  getTrendColor,
+} from "@/components/ui/helpers/card-utils";
 
 interface MetricCardProps {
   title: string;

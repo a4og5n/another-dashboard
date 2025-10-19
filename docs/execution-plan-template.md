@@ -13,12 +13,14 @@
 This template is **comprehensive reference documentation** for AI agents creating execution plans.
 
 ### Do NOT:
+
 - ❌ Load entire file into every context unnecessarily
 - ❌ Reference all sections for every plan
 - ❌ Create 2,000+ line plans for users (plans should be < 800 lines)
 - ❌ Skip critical sections marked [CRITICAL]
 
 ### DO:
+
 - ✅ Reference specific sections as needed for the task
 - ✅ Extract relevant patterns for the task at hand
 - ✅ Generate focused plans (< 800 lines) following these guidelines
@@ -28,6 +30,7 @@ This template is **comprehensive reference documentation** for AI agents creatin
 - ✅ Use priority markers to focus on critical elements first
 
 ### Section Priority Guide:
+
 - **[CRITICAL]** - Must include in every execution plan
 - **[IMPORTANT]** - Should include in most execution plans
 - **[REFERENCE]** - Use as needed for specific situations
@@ -48,6 +51,7 @@ Before delivering an execution plan to the user, verify:
 - [ ] **[OPTIONAL]** Rollback strategy
 
 **After generating plan, always ask:**
+
 > "I can also generate a GitHub issue from this plan for easier tracking. Would you like me to create the issue body?"
 
 ---
@@ -56,16 +60,17 @@ Before delivering an execution plan to the user, verify:
 
 For AI agents generating execution plans, these sections are **mandatory**:
 
-| Section | Priority | Line Reference | Must Include |
-|---------|----------|----------------|--------------|
-| **Hybrid Approach** | [CRITICAL] | Lines 57-104 | Explain Markdown + GitHub Issues |
-| **Phase 0 Template** | [CRITICAL] | Lines 521-632 | Git setup, branch verification |
-| **Git Workflow** | [CRITICAL] | Lines 403-510 | Branch strategy, commit format |
-| **Success Criteria** | [CRITICAL] | Throughout | What "done" looks like |
-| **GitHub Issue Offer** | [CRITICAL] | After plan | Always ask if user wants issue |
-| **AI Self-Check** | [CRITICAL] | Lines 1401-1515 | Verify before submitting |
+| Section                | Priority   | Line Reference  | Must Include                     |
+| ---------------------- | ---------- | --------------- | -------------------------------- |
+| **Hybrid Approach**    | [CRITICAL] | Lines 57-104    | Explain Markdown + GitHub Issues |
+| **Phase 0 Template**   | [CRITICAL] | Lines 521-632   | Git setup, branch verification   |
+| **Git Workflow**       | [CRITICAL] | Lines 403-510   | Branch strategy, commit format   |
+| **Success Criteria**   | [CRITICAL] | Throughout      | What "done" looks like           |
+| **GitHub Issue Offer** | [CRITICAL] | After plan      | Always ask if user wants issue   |
+| **AI Self-Check**      | [CRITICAL] | Lines 1401-1515 | Verify before submitting         |
 
 **Non-negotiable checklist before delivering plan:**
+
 1. ✅ Phase 0 is first phase (git setup)
 2. ✅ Hybrid approach explained
 3. ✅ Offer to create GitHub Issue
@@ -106,6 +111,7 @@ This template supports a **hybrid approach** that combines the best of both worl
 ### When to Use Each:
 
 **Use Markdown Plan For:**
+
 - Detailed code examples and snippets
 - Architectural decisions and rationale
 - Complex multi-step procedures
@@ -113,6 +119,7 @@ This template supports a **hybrid approach** that combines the best of both worl
 - Understanding the "why"
 
 **Use GitHub Issues For:**
+
 - Daily task tracking (check off items)
 - Progress visibility
 - Discussion and questions
@@ -120,6 +127,7 @@ This template supports a **hybrid approach** that combines the best of both worl
 - Understanding "what's left"
 
 ### Benefits of Hybrid:
+
 - ✅ **Markdown** preserves deep context and examples
 - ✅ **Issues** make execution trackable and visible
 - ✅ **Issues** persist across conversations
@@ -136,14 +144,17 @@ When creating a GitHub issue from an execution plan, use this structure:
 
 ```markdown
 ## Title Format:
+
 [Type]: [Short Description] (Priority N)
 
 Examples:
+
 - Refactor: Extract Card Helper Utilities (Priority 1)
 - Feature: Create Empty State Component (Priority 3)
 - Fix: Consolidate Badge Helper Functions (Priority 4)
 
 ## Labels:
+
 - Type: `refactor`, `feature`, `fix`, `chore`
 - Priority: `priority-high`, `priority-medium`, `priority-low`
 - Effort: `effort-low`, `effort-medium`, `effort-high`
@@ -151,19 +162,23 @@ Examples:
 - Category: `technical-debt`, `dx-improvement`, `performance`
 
 ## Milestone:
+
 Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
 
 ## Issue Body Template:
 
 ### Summary
+
 [1-2 sentence description]
 
 **Lines Saved:** XX+ | **Effort:** Low/Medium/High | **Impact:** High/Medium/Low
 
 ### Problem
+
 [What's duplicated or broken]
 
 ### Files Affected
+
 - [ ] path/to/file1.ts
 - [ ] path/to/file2.tsx
 - [ ] path/to/file3.ts
@@ -171,35 +186,41 @@ Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
 ### Implementation Checklist
 
 #### Phase 0: Setup (5-10 min)
+
 - [ ] Create feature branch: `refactor/feature-name`
 - [ ] Verify no existing work: `git log --oneline -10`
 - [ ] Review related documentation
 
 #### Phase 1: [Phase Name] (XX min)
+
 - [ ] Specific task 1
 - [ ] Specific task 2
 - [ ] Run validation: `pnpm type-check`
 - [ ] Commit: "feat(scope): description"
 
 #### Phase 2: [Phase Name] (XX min)
+
 - [ ] Specific task 1
 - [ ] Specific task 2
 - [ ] Run tests: `pnpm test`
 - [ ] Commit: "test(scope): description"
 
 #### Phase 3: Validation & PR (15 min)
+
 - [ ] Manual testing
 - [ ] Run full validation: `pnpm validate`
 - [ ] Push branch
 - [ ] Create PR linking this issue
 
 ### Success Criteria
+
 - [ ] Criterion 1
 - [ ] Criterion 2
 - [ ] All tests pass
 - [ ] No visual regressions
 
 ### Related
+
 - **Execution Plan:** [docs/path/to/plan.md](../path/to/plan.md)
 - **Parent Epic:** #XXX (if applicable)
 - **Related Issues:** #XXX, #XXX
@@ -232,15 +253,18 @@ Link to sprint/epic milestone (e.g., "Component Refactoring Sprint")
 ### Converting Execution Plans to Issues
 
 **For Small Plans (< 800 lines, 1-3 phases):**
+
 - Create 1 GitHub issue with all phases as checkboxes
 - Link to markdown plan for details
 
 **For Large Plans (> 800 lines, 4+ phases):**
+
 - Option A: Create 1 issue per phase (more granular)
 - Option B: Create 1 epic issue with phase checkboxes
 - Always link to phase-specific markdown files
 
 **Example Multi-Issue Structure:**
+
 ```
 Epic Issue: "Refactor Component DRY Issues"
 ├── Issue #1: Extract Card Utilities (Priority 1) → links to phase-1.md
@@ -1428,6 +1452,7 @@ git clean -fd  # Remove untracked files
 When generating both markdown plan and GitHub issue:
 
 **Markdown Plan Should Include:**
+
 - [ ] Detailed problem analysis with code examples
 - [ ] All duplicate code snippets side-by-side
 - [ ] File paths with line numbers
@@ -1437,6 +1462,7 @@ When generating both markdown plan and GitHub issue:
 - [ ] Reference for "how" and "why"
 
 **GitHub Issue Should Include:**
+
 - [ ] Concise summary (1-2 sentences)
 - [ ] Impact metrics (lines saved, effort, impact)
 - [ ] Task checklist with granular items (5-30 min each)
@@ -1447,6 +1473,7 @@ When generating both markdown plan and GitHub issue:
 
 **Offer to User:**
 After generating execution plan, explicitly offer:
+
 - "I can also generate a GitHub issue from this plan for easier tracking. Would you like me to create the issue body?"
 - "This plan can be tracked via GitHub Issue. Should I generate the issue template?"
 
@@ -2030,6 +2057,7 @@ CRITICAL - ALWAYS perform these checks in order BEFORE starting work:
 **❌ DO NOT START IMPLEMENTATION if user is on `main` branch**
 
 **When Working from GitHub Issue:**
+
 - After completing each major task, remind user: "✅ You can now check off [task name] in GitHub Issue #XXX"
 - Keep track of what's been completed vs what remains
 - At end of phase, summarize: "Phase complete. Please check off the following items in Issue #XXX: [list]"

@@ -24,6 +24,7 @@
 **Files to Create:**
 
 **Utilities:**
+
 - `src/components/ui/helpers/card-utils.ts` - Shared card utility functions
 - `src/components/ui/helpers/index.ts` - Barrel export
 
@@ -184,10 +185,12 @@ First, let's examine the duplicate code we'll be extracting:
 ```
 
 Use the Read tool to examine:
+
 - `src/components/dashboard/metric-card.tsx`
 - `src/components/ui/stat-card.tsx`
 
 Look for:
+
 - `getTrendIcon()` function
 - `getTrendColor()` function
 - `formatValue()` function
@@ -348,7 +351,11 @@ We'll update each component one at a time to make the changes manageable.
 1. **Read the current file** to see the duplicate functions
 2. **Add import** at the top of the file:
    ```typescript
-   import { getTrendIcon, getTrendColor, formatValue } from "@/components/ui/helpers/card-utils";
+   import {
+     getTrendIcon,
+     getTrendColor,
+     formatValue,
+   } from "@/components/ui/helpers/card-utils";
    ```
 3. **Remove the duplicate functions:**
    - Delete `getTrendIcon()` function (approximately lines 25-35)
@@ -363,7 +370,11 @@ We'll update each component one at a time to make the changes manageable.
 1. **Read the current file**
 2. **Add import:**
    ```typescript
-   import { getTrendIcon, getTrendColor, formatValue } from "@/components/ui/helpers/card-utils";
+   import {
+     getTrendIcon,
+     getTrendColor,
+     formatValue,
+   } from "@/components/ui/helpers/card-utils";
    ```
 3. **Remove the duplicate functions:**
    - Delete `getTrendIcon()` function
@@ -448,11 +459,13 @@ git commit -m "refactor(components): use shared card utilities in 6 components
 **💰 Cost Optimization: CLEAR CONVERSATION**
 
 ✅ Safe to clear because:
+
 - Phase 1 & 2 are complete and committed
 - Utilities are created and being used
 - Next phase is independent validation and testing
 
 📋 What to keep:
+
 - This execution plan document
 - Current task: "Phase 3 - Validation and testing"
 
@@ -530,6 +543,7 @@ pnpm dev
 ### Step 4: Check for Console Errors
 
 Open browser DevTools console and verify:
+
 - [ ] No React errors
 - [ ] No import errors
 - [ ] No runtime errors
@@ -597,6 +611,7 @@ git diff main --stat
 ```
 
 **Verify:**
+
 - [ ] Only the expected files were modified
 - [ ] Commit messages follow conventions
 - [ ] No unintended changes were included
@@ -687,7 +702,7 @@ Closes #[ISSUE_NUMBER]
 
 ## Screenshots
 
-*(If applicable, add before/after screenshots showing components render identically)*
+_(If applicable, add before/after screenshots showing components render identically)_
 
 ## Checklist
 
@@ -753,6 +768,7 @@ This execution plan will:
 **Estimated Total Time:** 1.5-2 hours
 
 **Key Benefits:**
+
 - Improved maintainability
 - Consistent behavior across components
 - Reduced code duplication
@@ -765,16 +781,19 @@ This execution plan will:
 ### What Was Completed
 
 **Phase 0: Git Setup** ✅
+
 - Created feature branch `refactor/card-utilities`
 - Verified environment and dependencies
 - Created initial commit
 
 **Phase 1: Create Card Utilities Module** ✅
+
 - Created `src/components/ui/helpers/card-utils.tsx` with utility functions
 - Created `src/components/ui/helpers/index.ts` barrel export
 - Committed: `feat(ui): create card helper utilities`
 
 **Phase 2: Update Components** ✅
+
 - Updated 5 components to use shared utilities:
   - `src/components/dashboard/metric-card.tsx`
   - `src/components/ui/stat-card.tsx`
@@ -785,6 +804,7 @@ This execution plan will:
 - Committed: `refactor(components): use shared card utilities in 5 components`
 
 **Phase 3: Validation and Testing** ✅
+
 - All type checks passed
 - All linting checks passed
 - Test suite: 612 passed / 620 total (8 skipped)
@@ -795,6 +815,7 @@ This execution plan will:
   - Fixed architectural violation by using existing `StatTrend` type
 
 **Phase 4: Final Validation** ✅
+
 - Full test suite passed
 - Execution plan updated with completion status
 

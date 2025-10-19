@@ -22,6 +22,7 @@ This document provides **strategic analysis** of code duplication across the cod
 6. **Reference this plan** for context and code examples
 
 **Hybrid Approach:**
+
 - 📄 **This Markdown Plan** = Analysis, examples, architectural decisions
 - 🎯 **GitHub Issues** = Task tracking, progress visibility, accountability
 
@@ -32,6 +33,7 @@ This document provides **strategic analysis** of code duplication across the cod
 This analysis identified **460+ lines of duplicated code** across **22+ files** that can be consolidated through refactoring.
 
 ### Total Potential Impact
+
 - **430+ lines eliminated**
 - **Reduced maintenance burden** across 22+ files
 - **Improved consistency** in component styling and behavior
@@ -42,14 +44,14 @@ This analysis identified **460+ lines of duplicated code** across **22+ files** 
 
 ## Priority Overview
 
-| Priority | Component Type | Files Affected | Lines Saved | Effort | Impact |
-|----------|----------------|----------------|-------------|--------|--------|
-| 1 | Card Utilities | 6 files | 80+ | Low | High |
-| 2 | Table Wrapper | 2 files | 120+ | Medium | High |
-| 3 | Empty State Card | 4 files | 120+ | Low | Medium |
-| 4 | Badge Helpers | 3 files | 40+ | Low | Medium |
-| 5 | Value Formatting | 5 files | 40+ | Low | Medium |
-| 6 | Chart Utilities | 2 files | 30+ | Medium | Low |
+| Priority | Component Type   | Files Affected | Lines Saved | Effort | Impact |
+| -------- | ---------------- | -------------- | ----------- | ------ | ------ |
+| 1        | Card Utilities   | 6 files        | 80+         | Low    | High   |
+| 2        | Table Wrapper    | 2 files        | 120+        | Medium | High   |
+| 3        | Empty State Card | 4 files        | 120+        | Low    | Medium |
+| 4        | Badge Helpers    | 3 files        | 40+         | Low    | Medium |
+| 5        | Value Formatting | 5 files        | 40+         | Low    | Medium |
+| 6        | Chart Utilities  | 2 files        | 30+         | Medium | Low    |
 
 ---
 
@@ -58,7 +60,9 @@ This analysis identified **460+ lines of duplicated code** across **22+ files** 
 **Lines Saved:** 80+ | **Effort:** Low | **Impact:** High
 
 ### Problem
+
 Helper functions duplicated across 6 card components:
+
 - `getTrendIcon()` - identical in [metric-card.tsx](../../src/components/dashboard/metric-card.tsx:25-35) and [stat-card.tsx](../../src/components/ui/stat-card.tsx:36-46)
 - `getTrendColor()` - identical in both files
 - `formatValue()` - duplicated in 4 files
@@ -66,6 +70,7 @@ Helper functions duplicated across 6 card components:
 - `formatNumber()` - in [list-card.tsx](../../src/components/mailchimp/lists/list-card.tsx)
 
 ### Files Affected
+
 1. `src/components/dashboard/metric-card.tsx`
 2. `src/components/ui/stat-card.tsx`
 3. `src/components/ui/stats-grid-card.tsx`
@@ -74,7 +79,9 @@ Helper functions duplicated across 6 card components:
 6. `src/components/mailchimp/lists/list-card.tsx`
 
 ### Solution
+
 Create `src/components/ui/helpers/card-utils.ts`:
+
 ```typescript
 export const getTrendIcon = (trend?: "up" | "down" | "neutral")
 export const getTrendColor = (trend?: "up" | "down" | "neutral")
@@ -84,7 +91,9 @@ export const formatPercentage = (value: number): string
 ```
 
 ### Duplicate Code Example
+
 **In metric-card.tsx (lines 25-45):**
+
 ```typescript
 const getTrendIcon = () => {
   switch (trend) {
@@ -111,18 +120,23 @@ const getTrendColor = () => {
 **Lines Saved:** 120+ | **Effort:** Medium | **Impact:** High
 
 ### Problem
+
 Two table components have **identical code** for:
+
 1. **URL Parameter Generation** (30+ lines duplicated)
 2. **Empty State Handling** (10+ lines each)
 3. **TanStack Table Setup** (15+ lines each)
 4. **Badge Functions** (`getStatusBadge()`, `getVipBadge()`)
 
 ### Files Affected
+
 1. `src/components/dashboard/reports/CampaignOpensTable.tsx` (343 lines)
 2. `src/components/dashboard/reports/CampaignAbuseReportsTable.tsx` (355 lines)
 
 ### Duplicate Code Example
+
 **Identical URL generation in both files (lines 52-79):**
+
 ```typescript
 const createPageUrl = useCallback(
   (page: number) => {
@@ -145,7 +159,9 @@ const createPerPageUrl = useCallback(
 ```
 
 ### Solution
+
 Create `src/components/ui/data-table-wrapper.tsx`:
+
 ```typescript
 export function DataTableWrapper<T>({
   data: T[],
@@ -168,16 +184,20 @@ Or create `useTablePagination()` hook for URL generation logic.
 **Lines Saved:** 120+ | **Effort:** Low | **Impact:** Medium
 
 ### Problem
+
 Four components use nearly identical empty state patterns with the same card structure, icon display, and button groups.
 
 ### Files Affected
+
 1. `src/components/dashboard/reports/CampaignOpensEmpty.tsx` (74 lines)
 2. `src/components/dashboard/reports/CampaignAbuseReportsEmpty.tsx` (64 lines)
 3. `src/components/mailchimp/mailchimp-empty-state.tsx` (188 lines)
 4. `src/components/dashboard/shared/dashboard-error.tsx` (58 lines)
 
 ### Duplicate Pattern
+
 All use identical structure:
+
 ```tsx
 <Card>
   <CardContent className="flex flex-col items-center justify-center py-12">
@@ -186,22 +206,26 @@ All use identical structure:
     </div>
     <h3 className="text-lg font-semibold mb-2">{title}</h3>
     <p className="text-muted-foreground text-center max-w-md">{message}</p>
-    <div className="flex items-center gap-3">
-      {/* Action Buttons */}
-    </div>
+    <div className="flex items-center gap-3">{/* Action Buttons */}</div>
   </CardContent>
 </Card>
 ```
 
 ### Solution
+
 Create `src/components/ui/empty-state-card.tsx`:
+
 ```typescript
 export interface EmptyStateCardProps {
   icon: LucideIcon;
   iconColor?: "default" | "success" | "error" | "info" | "warning";
   title: string;
   message: string;
-  actions?: Array<{ label: string; onClick: () => void; variant?: "default" | "outline" }>;
+  actions?: Array<{
+    label: string;
+    onClick: () => void;
+    variant?: "default" | "outline";
+  }>;
   variant?: "empty" | "error" | "success";
 }
 
@@ -212,10 +236,11 @@ export function EmptyStateCard({
   message,
   actions,
   variant = "empty",
-})
+});
 ```
 
 ### Refactor Impact
+
 - CampaignOpensEmpty: -50 lines → Convert to 5 line wrapper
 - CampaignAbuseReportsEmpty: -45 lines → Convert to 5 line wrapper
 - DashboardError: -40 lines → Convert to 5 line wrapper
@@ -227,20 +252,25 @@ export function EmptyStateCard({
 **Lines Saved:** 40+ | **Effort:** Low | **Impact:** Medium
 
 ### Problem
+
 Status badge logic scattered across multiple files with duplicate implementations.
 
 ### Files Affected
+
 1. `src/components/ui/campaign-status-badge.tsx` (74 lines)
 2. `src/components/dashboard/reports/CampaignOpensTable.tsx` - `getStatusBadge()` (14 lines)
 3. `src/components/dashboard/reports/CampaignAbuseReportsTable.tsx` - Multiple functions (20+ lines)
 
 ### Duplicate Functions
+
 - `getStatusBadge()` logic scattered across 3+ locations
 - `getVipBadge()` implemented separately in each table (8+ lines duplicated)
 - Status color mapping scattered instead of centralized
 
 ### Solution
+
 Create `src/components/ui/helpers/badge-helpers.ts`:
+
 ```typescript
 export const getStatusBadge = (status: string): BadgeVariant
 export const getVipBadge = (isVip: boolean): React.ReactNode
@@ -255,9 +285,11 @@ export const getVisibilityBadge = (visibility: "pub" | "prv"): React.ReactNode
 **Lines Saved:** 40+ | **Effort:** Low | **Impact:** Medium
 
 ### Problem
+
 **5 different implementations** of essentially the same number/value formatting logic across components.
 
 ### Files Affected
+
 1. `src/components/dashboard/reports/BaseMetricCard.tsx` - `formatPercentage()`
 2. `src/components/ui/stat-card.tsx` - `formatValue()`
 3. `src/components/ui/stats-grid-card.tsx` - `formatValue()`
@@ -265,10 +297,12 @@ export const getVisibilityBadge = (visibility: "pub" | "prv"): React.ReactNode
 5. `src/components/mailchimp/lists/list-card.tsx` - `formatNumber()`
 
 ### Impact
+
 - Inconsistent number formatting across the app
 - ~40 lines of duplicated utility logic
 
 ### Solution
+
 Consolidate into centralized formatting utilities (possibly in card-utils.ts from Priority 1).
 
 ---
@@ -278,17 +312,23 @@ Consolidate into centralized formatting utilities (possibly in card-utils.ts fro
 **Lines Saved:** 30+ | **Effort:** Medium | **Impact:** Low
 
 ### Problem
+
 Similar custom tooltip implementations for Recharts with duplicate styling and formatting logic.
 
 ### Files Affected
+
 1. `src/components/dashboard/reports/TimeseriesCard.tsx` - `CustomTooltip` component (23 lines)
 2. `src/components/dashboard/reports/ReportCharts.tsx` - Different tooltip formatting
 
 ### Solution
+
 Create `src/components/dashboard/helpers/chart-utils.ts`:
+
 ```typescript
-export const CustomTooltip = ({ active, payload, label })
-export const chartColorScheme = { /* color definitions */ }
+export const CustomTooltip = { active, payload, label };
+export const chartColorScheme = {
+  /* color definitions */
+};
 ```
 
 ---
@@ -298,6 +338,7 @@ export const chartColorScheme = { /* color definitions */ }
 The project already has good standardization in place:
 
 ### Well-Designed Components
+
 1. **StatCard** (`src/components/ui/stat-card.tsx`) - Standard single metric display ✓
 2. **StatsGridCard** (`src/components/ui/stats-grid-card.tsx`) - Multi-stat grid ✓
 3. **StatusCard** (`src/components/ui/status-card.tsx`) - Status with badge ✓
@@ -305,6 +346,7 @@ The project already has good standardization in place:
 5. **Card/CardHeader/CardContent** - Base primitives ✓
 
 ### Components Using Standardized Card Components
+
 - **ClicksCard** - Migrated to `StatsGridCard` ✓
 - **ForwardsCard** - Migrated to `StatsGridCard` ✓
 - **SocialEngagementCard** - Migrated to `StatsGridCard` ✓
@@ -335,6 +377,7 @@ The project already has good standardization in place:
 ## Recommended Action Plan
 
 ### Sprint 1: Quick Wins (Low effort, high impact)
+
 **Estimated Savings: 170+ lines**
 
 1. ✅ Create `src/components/ui/helpers/card-utils.ts`
@@ -349,6 +392,7 @@ The project already has good standardization in place:
    - Refactor 4 empty state components to use it
 
 ### Sprint 2: Medium Effort (Medium effort, high impact)
+
 **Estimated Savings: 160+ lines**
 
 1. ✅ Extract table pagination logic
@@ -359,6 +403,7 @@ The project already has good standardization in place:
    - Merge 5 format function implementations
 
 ### Sprint 3: Polish (Optional)
+
 1. Extract chart utilities
 2. Add component library documentation
 3. Create usage examples
@@ -415,6 +460,7 @@ Extract duplicated helper functions from 6 card components into a shared utility
 ### Problem
 
 Helper functions duplicated across 6 card components:
+
 - `getTrendIcon()` - identical in metric-card.tsx and stat-card.tsx
 - `getTrendColor()` - identical in both files
 - `formatValue()` - duplicated in 4 files
@@ -433,11 +479,13 @@ Helper functions duplicated across 6 card components:
 ### Implementation Checklist
 
 #### Phase 0: Setup (5-10 min)
+
 - [ ] Create feature branch: `refactor/card-utilities`
 - [ ] Verify no existing work: `git log --oneline -10`
 - [ ] Review component-dry-refactoring-plan.md Priority 1
 
 #### Phase 1: Create Utilities (30 min)
+
 - [ ] Create `src/components/ui/helpers/` directory
 - [ ] Create `src/components/ui/helpers/card-utils.ts`
 - [ ] Implement `getTrendIcon()` function
@@ -451,6 +499,7 @@ Helper functions duplicated across 6 card components:
 - [ ] Commit: "feat(ui): create card helper utilities"
 
 #### Phase 2: Update Components (45 min)
+
 - [ ] Update metric-card.tsx to import utilities
 - [ ] Update stat-card.tsx to import utilities
 - [ ] Update stats-grid-card.tsx to import utilities
@@ -463,6 +512,7 @@ Helper functions duplicated across 6 card components:
 - [ ] Commit: "refactor(components): use shared card utilities"
 
 #### Phase 3: Validation & PR (15 min)
+
 - [ ] Manual testing - verify all cards render correctly
 - [ ] Test trend icons display properly
 - [ ] Test value formatting is consistent
@@ -506,6 +556,7 @@ Extract duplicated table pagination URL generation logic into a reusable hook or
 ### Problem
 
 Two table components have identical code for:
+
 - URL Parameter Generation (30+ lines duplicated)
 - Empty State Handling (10+ lines each)
 - TanStack Table Setup (15+ lines each)
@@ -519,11 +570,13 @@ Two table components have identical code for:
 ### Implementation Checklist
 
 #### Phase 0: Setup (5-10 min)
+
 - [ ] Create feature branch: `refactor/table-pagination`
 - [ ] Verify no existing work
 - [ ] Review component-dry-refactoring-plan.md Priority 2
 
 #### Phase 1: Create Hook/Wrapper (45 min)
+
 - [ ] Decide: Hook vs Component (useTablePagination or DataTableWrapper)
 - [ ] Create implementation file
 - [ ] Extract URL generation logic
@@ -534,6 +587,7 @@ Two table components have identical code for:
 - [ ] Commit: "feat(ui): create table pagination utilities"
 
 #### Phase 2: Refactor First Table (30 min)
+
 - [ ] Update CampaignOpensTable.tsx
 - [ ] Remove duplicate pagination code
 - [ ] Use new hook/component
@@ -542,6 +596,7 @@ Two table components have identical code for:
 - [ ] Commit: "refactor(tables): use shared pagination in CampaignOpensTable"
 
 #### Phase 3: Refactor Second Table (30 min)
+
 - [ ] Update CampaignAbuseReportsTable.tsx
 - [ ] Remove duplicate pagination code
 - [ ] Use new hook/component
@@ -550,6 +605,7 @@ Two table components have identical code for:
 - [ ] Commit: "refactor(tables): use shared pagination in CampaignAbuseReportsTable"
 
 #### Phase 4: Validation & PR (15 min)
+
 - [ ] Manual testing - verify both tables work correctly
 - [ ] Test pagination edge cases
 - [ ] Run `pnpm validate`
@@ -601,11 +657,13 @@ Four components use nearly identical empty state patterns with the same card str
 ### Implementation Checklist
 
 #### Phase 0: Setup (5-10 min)
+
 - [ ] Create feature branch: `refactor/empty-state-component`
 - [ ] Verify no existing work
 - [ ] Review component-dry-refactoring-plan.md Priority 3
 
 #### Phase 1: Create Component (30 min)
+
 - [ ] Create `src/components/ui/empty-state-card.tsx`
 - [ ] Define EmptyStateCardProps interface
 - [ ] Implement EmptyStateCard component
@@ -618,6 +676,7 @@ Four components use nearly identical empty state patterns with the same card str
 - [ ] Commit: "feat(ui): create generic EmptyStateCard component"
 
 #### Phase 2: Refactor Components (45 min)
+
 - [ ] Refactor CampaignOpensEmpty.tsx
 - [ ] Refactor CampaignAbuseReportsEmpty.tsx
 - [ ] Refactor dashboard-error.tsx
@@ -627,6 +686,7 @@ Four components use nearly identical empty state patterns with the same card str
 - [ ] Commit: "refactor(components): use generic EmptyStateCard"
 
 #### Phase 3: Validation & PR (15 min)
+
 - [ ] Manual testing - verify all empty states display correctly
 - [ ] Test different variants
 - [ ] Test action buttons
