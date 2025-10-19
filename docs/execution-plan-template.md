@@ -795,7 +795,7 @@ Clearing conversation context helps reduce costs. Here are optimal points to cle
    - You've extracted the pattern/information needed
    - Don't need the full file content anymore
 
-5. **When context window is filling up**
+5. **When token usage exceeds 120K**
    - Monitor token usage in Claude Code
    - Clear before hitting limits
 
@@ -805,25 +805,79 @@ Clearing conversation context helps reduce costs. Here are optimal points to cle
 2. **Before committing work in progress**
 3. **When you haven't validated changes yet**
 4. **Before writing tests for code you just created**
+5. **When token usage is low (<100K) and task is simple**
+6. **During fast, continuous tasks (<3 hours estimated)**
 
 **What to Keep After Clearing:**
 - The execution plan document
 - Any error messages or issues encountered
 - Current task description and goals
 
-**Example Clear Points in Execution Plan:**
-```markdown
-**💰 Cost Optimization: CLEAR CONVERSATION**
-✅ Safe to clear because:
-- Phase 1 is complete and committed
-- Utilities are tested and working
-- Next phase is independent (just consuming the utilities)
+**Decision Framework for Clearing:**
 
-📋 What to keep:
+Use this framework to decide whether to clear at a suggested point:
+
+```markdown
+**💰 Cost Optimization Decision Point**
+
+Check token usage first:
+
+IF token usage > 120K:
+  ✅ CLEAR conversation
+  - High cost risk
+  - Need to free up context
+  Keep: execution plan, current phase, error messages
+
+ELSE IF token usage < 100K AND task is simple (<3 hours):
+  ⏩ CONTINUE without clearing
+  - Sufficient budget remaining
+  - Faster execution
+  - Less context switching overhead
+
+ELSE IF token usage 100K-120K:
+  ⚖️ EVALUATE based on:
+  - Task complexity (simple = continue, complex = clear)
+  - Phase independence (independent = safe to clear)
+  - Debugging status (active debugging = don't clear)
+  - Time remaining (almost done = continue)
+```
+
+**Example Clear Points in Execution Plan:**
+
+For plans that suggest clearing, use this improved format:
+
+```markdown
+**💰 Cost Optimization: CLEAR CONVERSATION (Conditional)**
+
+Check token usage before deciding:
+
+IF >120K tokens used:
+  ✅ CLEAR - Safe because:
+  - Phase 1 & 2 complete and committed
+  - Utilities tested and working
+  - Next phase is independent
+
+IF <100K tokens used:
+  ⏩ CONTINUE - Reasons:
+  - Sufficient budget remaining
+  - Simple refactoring task
+  - Faster continuous execution
+  - Plenty of token buffer
+
+📋 If clearing, keep:
 - This execution plan
-- File: docs/page-pattern-improvements.md
-- Current task: "Implement error handling utility and update 3 pages"
-````
+- Current task: "Phase 3 - Validation and testing"
+```
+
+**AI Guidance:**
+
+When reaching a suggested clear point, AI should:
+
+1. **Check actual token usage** (not assume)
+2. **Evaluate task complexity** (simple vs complex)
+3. **Consider time remaining** (almost done vs long way to go)
+4. **Make informed decision** based on criteria above
+5. **Continue by default** if token budget allows and task is straightforward`
 
 ---
 
