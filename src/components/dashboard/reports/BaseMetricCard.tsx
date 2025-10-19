@@ -10,6 +10,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BaseMetricCardProps, MetricRowProps } from "@/types/components";
+import { formatPercentageValue } from "@/utils/format-number";
 
 export function BaseMetricCard({
   title,
@@ -55,12 +56,10 @@ export function BaseMetricCard({
 /**
  * Formats percentage for display with one decimal place
  *
- * Note: This is a re-export of the shared utility for backward compatibility.
+ * Re-exported from centralized utilities for backward compatibility.
  * The value is expected to already be a percentage (e.g., 23.5 for 23.5%).
  */
-export function formatPercentage(value: number): string {
-  return value.toFixed(1);
-}
+export { formatPercentageValue as formatPercentage };
 
 /**
  * Standard metric row for detailed cards
