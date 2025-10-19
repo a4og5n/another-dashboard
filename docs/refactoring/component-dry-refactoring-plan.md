@@ -424,7 +424,10 @@ export const defaultChartColors: ChartColorScheme = {
 
 // Formatting utilities
 export function formatChartNumber(value: number | string): string;
-export function formatChartPercentage(value: number | string, decimals?: number): string;
+export function formatChartPercentage(
+  value: number | string,
+  decimals?: number,
+): string;
 export function formatChartDate(date: string | Date): string;
 ```
 

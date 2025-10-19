@@ -18,7 +18,9 @@ describe("LoadingState", () => {
 
       expect(screen.getByText(/Loading dashboard data/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/Fetching the latest data from your Mailchimp account/i),
+        screen.getByText(
+          /Fetching the latest data from your Mailchimp account/i,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -124,7 +126,9 @@ describe("LoadingState", () => {
       const onRetry = vi.fn();
       render(<LoadingState type="error" onRetry={onRetry} />);
 
-      expect(screen.getByRole("button", { name: /Try again/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Try again/i }),
+      ).toBeInTheDocument();
     });
 
     it("does not render retry button when onRetry is not provided", () => {
@@ -148,14 +152,12 @@ describe("LoadingState", () => {
     it("uses custom retry label when provided", () => {
       const onRetry = vi.fn();
       render(
-        <LoadingState
-          type="error"
-          onRetry={onRetry}
-          retryLabel="Retry Now"
-        />,
+        <LoadingState type="error" onRetry={onRetry} retryLabel="Retry Now" />,
       );
 
-      expect(screen.getByRole("button", { name: "Retry Now" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Retry Now" }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -188,7 +190,9 @@ describe("LoadingState", () => {
       const onRetry = vi.fn();
       render(<LoadingState type="network-error" onRetry={onRetry} />);
 
-      expect(screen.getByRole("button", { name: /Try again/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Try again/i }),
+      ).toBeInTheDocument();
     });
 
     it("calls onRetry when retry button is clicked", () => {
@@ -224,7 +228,9 @@ describe("LoadingState", () => {
       );
 
       expect(screen.getByText("No Items")).toBeInTheDocument();
-      expect(screen.getByText("Add some items to get started")).toBeInTheDocument();
+      expect(
+        screen.getByText("Add some items to get started"),
+      ).toBeInTheDocument();
     });
 
     it("does not render retry button in empty state", () => {
@@ -350,11 +356,7 @@ describe("ProgressiveLoading", () => {
     const onRetry = vi.fn();
 
     render(
-      <ProgressiveLoading
-        isLoading={false}
-        hasError={true}
-        onRetry={onRetry}
-      >
+      <ProgressiveLoading isLoading={false} hasError={true} onRetry={onRetry}>
         <div>Content</div>
       </ProgressiveLoading>,
     );
