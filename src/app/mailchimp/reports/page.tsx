@@ -68,7 +68,7 @@ export default function ReportsPage({ searchParams }: ReportsPageProps) {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Reports | Mailchimp Dashboard",
+  title: "Reports | Fichaz",
   description:
     "View and analyze your Mailchimp reports and their performance metrics",
 };

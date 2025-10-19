@@ -1,5 +1,5 @@
 /**
- * Mailchimp Dashboard Page
+ * Fichaz Page
  * Main Mailchimp section with navigation to reports, lists, and settings
  *
  * @route /mailchimp
@@ -37,7 +37,7 @@ async function MailchimpDashboardContent({
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="space-y-8 text-center">
           <div>
-            <h1 className="text-4xl font-bold mb-4">Mailchimp Dashboard</h1>
+            <h1 className="text-4xl font-bold mb-4">Fichaz</h1>
             <p className="text-muted-foreground text-lg">
               Choose a section to manage your Mailchimp data
             </p>
@@ -98,7 +98,7 @@ export default function MailchimpPage({
 }
 
 export const metadata = {
-  title: "Mailchimp Dashboard",
+  title: "Fichaz",
   description:
     "Choose a section to manage your Mailchimp data - account settings, audiences, and campaigns",
 };

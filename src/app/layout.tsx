@@ -5,8 +5,8 @@ import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: {
-    default: "Mailchimp Dashboard",
-    template: "%s | Mailchimp Dashboard",
+    default: "Fichaz",
+    template: "%s | Fichaz",
   },
   description:
     "Professional dashboard for Mailchimp campaign and audience analytics with real-time insights.",
@@ -17,9 +17,10 @@ export const metadata: Metadata = {
     "campaigns",
     "email marketing",
     "audience",
+    "fichaz",
   ],
-  authors: [{ name: "Dashboard Developer" }],
-  creator: "Mailchimp Dashboard",
+  authors: [{ name: "Fichaz" }],
+  creator: "Fichaz",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
   ),
@@ -30,14 +31,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    title: "Mailchimp Dashboard",
+    title: "Fichaz",
     description:
       "Professional dashboard for Mailchimp campaign and audience analytics with real-time insights.",
-    siteName: "Mailchimp Dashboard",
+    siteName: "Fichaz",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mailchimp Dashboard",
+    title: "Fichaz",
     description:
       "Professional dashboard for Mailchimp campaign and audience analytics with real-time insights.",
   },
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Mailchimp Dashboard",
+    title: "Fichaz",
     startupImage: ["/icons/icon-192x192.png"],
   },
   icons: {
@@ -94,10 +95,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="application-name" content="NextJS Project" />
+        <meta name="application-name" content="Fichaz" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="NextJS Project" />
+        <meta name="apple-mobile-web-app-title" content="Fichaz" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
@@ -124,21 +125,21 @@ export default function RootLayout({
           name="twitter:url"
           content={process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000"}
         />
-        <meta name="twitter:title" content="NextJS Project" />
+        <meta name="twitter:title" content="Fichaz" />
         <meta
           name="twitter:description"
-          content="A modern Next.js application with comprehensive tooling and best practices."
+          content="Professional dashboard for Mailchimp campaign and audience analytics with real-time insights."
         />
         <meta name="twitter:image" content="/icons/icon-192x192.png" />
-        <meta name="twitter:creator" content="@nextjsproject" />
+        <meta name="twitter:creator" content="@fichaz" />
 
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="NextJS Project" />
+        <meta property="og:title" content="Fichaz" />
         <meta
           property="og:description"
-          content="A modern Next.js application with comprehensive tooling and best practices."
+          content="Professional dashboard for Mailchimp campaign and audience analytics with real-time insights."
         />
-        <meta property="og:site_name" content="NextJS Project" />
+        <meta property="og:site_name" content="Fichaz" />
         <meta
           property="og:url"
           content={process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000"}

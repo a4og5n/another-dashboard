@@ -134,7 +134,7 @@ async function BreadcrumbContent({
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "List Details | Mailchimp Dashboard",
+  title: "List Details | Fichaz",
   description:
     "View detailed information and performance metrics for this list",
 };

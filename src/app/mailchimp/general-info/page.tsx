@@ -50,6 +50,6 @@ export default function GeneralInfoPage() {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "General Info | Mailchimp Dashboard",
+  title: "General Info | Fichaz",
   description: "View your Mailchimp general information and settings",
 };
