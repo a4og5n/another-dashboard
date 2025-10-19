@@ -29,7 +29,11 @@ function getAllFiles(dir: string, ext: string[] = [".ts", ".tsx"]): string[] {
     if (stat && stat.isDirectory()) {
       results = results.concat(getAllFiles(filePath, ext));
     } else if (ext.includes(path.extname(file))) {
-      results.push(filePath);
+      // Skip index.ts files as they are barrel exports and should use relative paths for same-directory exports
+      // Skip test files as they can use relative imports to their corresponding implementation files
+      if (path.basename(file) !== "index.ts" && !file.includes(".test.")) {
+        results.push(filePath);
+      }
     }
   });
   return results;

@@ -31,7 +31,7 @@ import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import { Mail, Eye, User, Clock } from "lucide-react";
 import type { ReportOpenListMember } from "@/types/mailchimp";
 import type { ReportOpensTableProps } from "@/types/components/mailchimp";
-import { CampaignOpensEmpty } from "./CampaignOpensEmpty";
+import { CampaignOpensEmpty } from "@/components/dashboard/reports/CampaignOpensEmpty";
 import { useTablePagination } from "@/hooks/use-table-pagination";
 import {
   getVipBadge,

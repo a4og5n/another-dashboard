@@ -32,7 +32,7 @@ import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import { Mail, Clock, ShieldAlert } from "lucide-react";
 import type { AbuseReport } from "@/types/mailchimp";
 import type { AbuseReportsTableProps } from "@/types/components/mailchimp/reports";
-import { CampaignAbuseReportsEmpty } from "./CampaignAbuseReportsEmpty";
+import { CampaignAbuseReportsEmpty } from "@/components/dashboard/reports/CampaignAbuseReportsEmpty";
 import { useTablePagination } from "@/hooks/use-table-pagination";
 import {
   getVipBadge,
