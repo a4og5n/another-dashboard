@@ -9,13 +9,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import type { ListPerformanceCardProps } from "@/types/components/dashboard/reports";
-
-/**
- * Formats percentage for display
- */
-function formatPercentage(value: number): string {
-  return (value * 100).toFixed(1);
-}
+import { formatPercentage } from "@/utils/format-number";
 
 export function ListPerformanceCard({
   listStats,
