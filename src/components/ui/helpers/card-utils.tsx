@@ -8,7 +8,6 @@
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { ReactNode } from "react";
 import type { StatTrend } from "@/types/components/ui";
-import { formatPercentage } from "@/utils/format-number";
 
 /**
  * Get the appropriate icon for a trend direction
@@ -63,6 +62,3 @@ export function formatValue(val: string | number): string {
 export function formatNumber(num: number): string {
   return num.toLocaleString();
 }
-
-// Re-export formatPercentage from centralized utilities for convenience
-export { formatPercentage };

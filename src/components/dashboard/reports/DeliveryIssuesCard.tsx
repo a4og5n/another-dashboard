@@ -11,8 +11,8 @@
 import {
   BaseMetricCard,
   MetricRow,
-  formatPercentage,
 } from "@/components/dashboard/reports/BaseMetricCard";
+import { formatPercentageValue } from "@/utils/format-number";
 import { AlertTriangle } from "lucide-react";
 import type { DeliveryIssuesCardProps } from "@/types/components/dashboard/reports";
 
@@ -52,7 +52,7 @@ export function DeliveryIssuesCard({
       />
 
       <div className="text-xs text-muted-foreground">
-        Total bounce rate: {formatPercentage(bounceRate)}%
+        Total bounce rate: {formatPercentageValue(bounceRate)}%
       </div>
     </BaseMetricCard>
   );
