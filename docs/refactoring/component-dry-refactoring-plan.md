@@ -305,12 +305,12 @@ Enhanced existing `src/components/ui/helpers/badge-utils.tsx` with:
 export function getVisibilityBadge(
   visibility: "pub" | "prv",
   variant: "simple" | "with-icon" = "simple",
-): React.ReactNode
+): React.ReactNode;
 
 export function getCampaignStatusBadge(status: string): {
   variant: "default" | "secondary" | "outline" | "destructive";
   label: string;
-}
+};
 ```
 
 ### Refactor Impact (Achieved)
