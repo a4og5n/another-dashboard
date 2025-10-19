@@ -128,3 +128,45 @@ export function getVisibilityBadge(
     </Badge>
   );
 }
+
+/**
+ * Get badge variant for campaign status
+ *
+ * Utility function that returns just the variant and label for a given campaign status.
+ * Use this when you need to render a custom Badge with campaign status styling.
+ * For a complete component, use CampaignStatusBadge instead.
+ *
+ * @param status - Campaign status string from Mailchimp API
+ * @returns Object with variant and display label
+ *
+ * @example
+ * ```tsx
+ * const { variant, label } = getCampaignStatusBadge(campaign.status);
+ * <Badge variant={variant}>{label}</Badge>
+ * ```
+ */
+export function getCampaignStatusBadge(status: string): {
+  variant: "default" | "secondary" | "outline" | "destructive";
+  label: string;
+} {
+  const normalizedStatus = status.toLowerCase();
+
+  switch (normalizedStatus) {
+    case "sent":
+      return { variant: "default", label: "Sent" };
+    case "sending":
+      return { variant: "secondary", label: "Sending" };
+    case "schedule":
+      return { variant: "outline", label: "Scheduled" };
+    case "save":
+      return { variant: "secondary", label: "Draft" };
+    case "paused":
+      return { variant: "outline", label: "Paused" };
+    case "draft":
+      return { variant: "outline", label: "Draft" };
+    case "canceled":
+      return { variant: "outline", label: "Canceled" };
+    default:
+      return { variant: "outline", label: status };
+  }
+}
