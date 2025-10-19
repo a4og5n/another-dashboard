@@ -22,6 +22,7 @@
 **Files to Create:**
 
 **Hooks:**
+
 - `src/hooks/use-table-pagination.ts` - Custom hook for table pagination URL management
 - `src/components/ui/helpers/badge-utils.tsx` - Shared badge utility functions
 
@@ -172,10 +173,12 @@ Before starting this phase, verify it hasn't already been completed:
 First, examine the duplicate code we'll be extracting:
 
 Use the Read tool to examine:
+
 - `src/components/dashboard/reports/CampaignOpensTable.tsx` (lines 52-79)
 - `src/components/dashboard/reports/CampaignAbuseReportsTable.tsx` (lines 52-79)
 
 Look for:
+
 - `createPageUrl()` function
 - `createPerPageUrl()` function
 - `getVipBadge()` function
@@ -185,7 +188,7 @@ Look for:
 
 Create `src/hooks/use-table-pagination.ts`:
 
-```typescript
+````typescript
 /**
  * Custom hook for table pagination URL management
  *
@@ -299,13 +302,13 @@ export function useTablePagination({
     createPerPageUrl,
   };
 }
-```
+````
 
 ### Step 3: Create Badge Utilities
 
 Create `src/components/ui/helpers/badge-utils.tsx`:
 
-```typescript
+````typescript
 /**
  * Badge utility functions for consistent badge rendering
  *
@@ -394,7 +397,7 @@ export function getActiveStatusBadge(isActive: boolean) {
     <Badge variant="secondary">Inactive</Badge>
   );
 }
-```
+````
 
 ### Step 4: Update helpers/index.ts
 
@@ -511,7 +514,10 @@ We'll update each component one at a time to make the changes manageable.
 2. **Add imports** at the top of the file:
    ```typescript
    import { useTablePagination } from "@/hooks/use-table-pagination";
-   import { getVipBadge, getMemberStatusBadge } from "@/components/ui/helpers/badge-utils";
+   import {
+     getVipBadge,
+     getMemberStatusBadge,
+   } from "@/components/ui/helpers/badge-utils";
    ```
 3. **Replace the URL generation functions** (lines 52-79):
    - Remove `createPageUrl()` function
@@ -539,7 +545,10 @@ We'll update each component one at a time to make the changes manageable.
 2. **Add imports:**
    ```typescript
    import { useTablePagination } from "@/hooks/use-table-pagination";
-   import { getVipBadge, getActiveStatusBadge } from "@/components/ui/helpers/badge-utils";
+   import {
+     getVipBadge,
+     getActiveStatusBadge,
+   } from "@/components/ui/helpers/badge-utils";
    ```
 3. **Replace the URL generation functions** (lines 52-79):
    - Remove `createPageUrl()` function
@@ -587,11 +596,13 @@ git commit -m "refactor(components): use shared pagination hook in table compone
 **💰 Cost Optimization: CLEAR CONVERSATION**
 
 ✅ Safe to clear because:
+
 - Phase 1 & 2 are complete and committed
 - Hook and utilities are created and being used
 - Next phase is independent validation and testing
 
 📋 What to keep:
+
 - This execution plan document
 - Current task: "Phase 3 - Validation and testing"
 
@@ -672,6 +683,7 @@ pnpm dev
 ### Step 4: Check for Console Errors
 
 Open browser DevTools console and verify:
+
 - [ ] No React errors
 - [ ] No import errors
 - [ ] No runtime errors
@@ -762,6 +774,7 @@ git diff main --stat
 ```
 
 **Verify:**
+
 - [ ] Only the expected files were modified
 - [ ] Commit messages follow conventions
 - [ ] No unintended changes were included
@@ -818,6 +831,7 @@ Implements Priority 2 from [component-dry-refactoring-plan.md](https://github.co
 ## Changes
 
 ### New Files Created
+
 - **`src/hooks/use-table-pagination.ts`** - Custom hook for table pagination URL management
   - `createPageUrl()` - Generate URL for specific page
   - `createPerPageUrl()` - Generate URL for page size change
@@ -828,11 +842,14 @@ Implements Priority 2 from [component-dry-refactoring-plan.md](https://github.co
 - **`src/types/hooks/use-table-pagination.ts`** - TypeScript types for hook
 
 ### Components Updated
+
 Updated 2 table components to use shared utilities (removed duplicate code):
+
 - `src/components/dashboard/reports/CampaignOpensTable.tsx` (~35 lines removed)
 - `src/components/dashboard/reports/CampaignAbuseReportsTable.tsx` (~35 lines removed)
 
 ### Additional Improvements
+
 - **Architecture Compliance:** Hook types in `types/` folder
 - **Documentation:** JSDoc comments for all functions
 - **Clean URLs:** Maintains existing URL parameter optimization
@@ -937,6 +954,7 @@ This execution plan will:
 **Estimated Total Time:** 2-3 hours
 
 **Key Benefits:**
+
 - Improved maintainability of pagination logic
 - Consistent URL generation across all table components
 - Reduced code duplication
