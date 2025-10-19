@@ -1,10 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Users, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { List } from "@/types/mailchimp";
+import { getVisibilityBadge } from "@/components/ui/helpers/badge-utils";
 
 interface ListCardProps {
   list: List;
@@ -16,18 +16,6 @@ export function ListCard({ list, className }: ListCardProps) {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
     return num.toString();
-  };
-
-  const getVisibilityBadge = (visibility: "pub" | "prv") => {
-    return visibility === "pub" ? (
-      <Badge variant="outline" className="text-xs">
-        Public
-      </Badge>
-    ) : (
-      <Badge variant="secondary" className="text-xs">
-        Private
-      </Badge>
-    );
   };
 
   const getGrowthIndicator = () => {

@@ -17,7 +17,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import { Eye, Star, Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import Link from "next/link";
@@ -31,6 +31,7 @@ import {
 import type { ListOverviewProps } from "@/types/components/mailchimp";
 import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui";
+import { getVisibilityBadge } from "@/components/ui/helpers/badge-utils";
 
 export function ListOverview({
   data,
@@ -131,15 +132,7 @@ export function ListOverview({
                         <span>{formatNumber(list.stats.member_count)}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={
-                            list.visibility === "pub" ? "default" : "secondary"
-                          }
-                          className="text-xs"
-                        >
-                          <Eye className="h-3 w-3 mr-1" />
-                          {list.visibility === "pub" ? "Public" : "Private"}
-                        </Badge>
+                        {getVisibilityBadge(list.visibility, "with-icon")}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-0.5">
