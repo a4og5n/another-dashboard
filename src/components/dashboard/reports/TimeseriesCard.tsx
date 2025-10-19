@@ -134,7 +134,9 @@ export function TimeseriesCard({ report, className }: TimeseriesCardProps) {
                 />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
-                  content={<CustomChartTooltip valueFormatter={formatChartNumber} />}
+                  content={
+                    <CustomChartTooltip valueFormatter={formatChartNumber} />
+                  }
                 />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Line

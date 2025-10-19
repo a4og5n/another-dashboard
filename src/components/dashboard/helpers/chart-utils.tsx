@@ -46,9 +46,7 @@ export function CustomChartTooltip<T = Record<string, unknown>>({
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-sm text-muted-foreground">
-              {entry.name}:
-            </span>
+            <span className="text-sm text-muted-foreground">{entry.name}:</span>
             <span className="text-sm font-medium text-foreground">
               {valueFormatter(entry.value)}
             </span>

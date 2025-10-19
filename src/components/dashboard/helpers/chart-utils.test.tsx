@@ -32,7 +32,9 @@ describe("CustomChartTooltip", () => {
       },
     ];
 
-    render(<CustomChartTooltip active={true} payload={payload} label="Jan 1" />);
+    render(
+      <CustomChartTooltip active={true} payload={payload} label="Jan 1" />,
+    );
 
     expect(screen.getByText("Jan 1")).toBeInTheDocument();
     expect(screen.getByText("Sales:")).toBeInTheDocument();
@@ -45,7 +47,9 @@ describe("CustomChartTooltip", () => {
       { value: 200, name: "Revenue", color: "#82ca9d" },
     ];
 
-    render(<CustomChartTooltip active={true} payload={payload} label="Jan 1" />);
+    render(
+      <CustomChartTooltip active={true} payload={payload} label="Jan 1" />,
+    );
 
     expect(screen.getByText("Sales:")).toBeInTheDocument();
     expect(screen.getByText("100")).toBeInTheDocument();
