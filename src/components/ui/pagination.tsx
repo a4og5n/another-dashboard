@@ -1,14 +1,13 @@
-import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PaginationProps } from "@/types/components/ui/pagination";
 
-export const Pagination: React.FC<PaginationProps> = ({
+export function Pagination({
   currentPage,
   totalPages,
   onPageChange,
   createPageUrl,
-}) => {
+}: PaginationProps) {
   if (totalPages <= 1) {
     return null;
   }
@@ -71,4 +70,4 @@ export const Pagination: React.FC<PaginationProps> = ({
       </Button>
     </div>
   );
-};
+}
