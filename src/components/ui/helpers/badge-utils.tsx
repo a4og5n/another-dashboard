@@ -6,7 +6,7 @@
  */
 
 import { Badge } from "@/components/ui/badge";
-import { User } from "lucide-react";
+import { User, Eye } from "lucide-react";
 
 /**
  * Render a VIP badge for a member
@@ -86,5 +86,45 @@ export function getActiveStatusBadge(isActive: boolean) {
     <Badge variant="default">Active</Badge>
   ) : (
     <Badge variant="secondary">Inactive</Badge>
+  );
+}
+
+/**
+ * Render a visibility badge for list visibility status
+ *
+ * @param visibility - List visibility ("pub" for public, "prv" for private)
+ * @param variant - Badge variant style ('simple' or 'with-icon')
+ * @returns Badge component
+ *
+ * @example
+ * ```tsx
+ * {getVisibilityBadge(list.visibility)} // Simple version
+ * {getVisibilityBadge(list.visibility, 'with-icon')} // With icon
+ * ```
+ */
+export function getVisibilityBadge(
+  visibility: "pub" | "prv",
+  variant: "simple" | "with-icon" = "simple",
+) {
+  const isPublic = visibility === "pub";
+  const label = isPublic ? "Public" : "Private";
+
+  if (variant === "with-icon") {
+    return (
+      <Badge
+        variant={isPublic ? "default" : "secondary"}
+        className="text-xs flex items-center gap-1 w-fit"
+      >
+        <Eye className="h-3 w-3" />
+        {label}
+      </Badge>
+    );
+  }
+
+  // Simple variant
+  return (
+    <Badge variant={isPublic ? "outline" : "secondary"} className="text-xs">
+      {label}
+    </Badge>
   );
 }
