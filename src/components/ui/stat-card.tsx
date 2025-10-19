@@ -19,8 +19,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/skeletons";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import type { StatCardProps, StatTrend } from "@/types/components/ui";
+import { getTrendIcon, getTrendColor, formatValue } from "@/components/ui/helpers/card-utils";
+import type { StatCardProps } from "@/types/components/ui";
 
 export function StatCard({
   icon: Icon,
@@ -33,32 +33,6 @@ export function StatCard({
   className = "",
   loading = false,
 }: StatCardProps) {
-  const getTrendIcon = (trendValue: StatTrend) => {
-    switch (trendValue) {
-      case "up":
-        return <TrendingUp className="h-4 w-4 text-green-600" />;
-      case "down":
-        return <TrendingDown className="h-4 w-4 text-red-600" />;
-      default:
-        return <Minus className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const getTrendColor = (trendValue: StatTrend) => {
-    switch (trendValue) {
-      case "up":
-        return "text-green-600";
-      case "down":
-        return "text-red-600";
-      default:
-        return "text-gray-600";
-    }
-  };
-
-  const formatValue = (val: string | number): string => {
-    return typeof val === "number" ? val.toLocaleString() : val;
-  };
-
   if (loading) {
     return (
       <Card className={className}>

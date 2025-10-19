@@ -33,6 +33,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/skeletons";
 import type { StatusCardProps } from "@/types/components/ui";
 import { cn } from "@/lib/utils";
+import { formatValue } from "@/components/ui/helpers/card-utils";
 
 export function StatusCard({
   title,
@@ -46,10 +47,6 @@ export function StatusCard({
   className = "",
   loading = false,
 }: StatusCardProps) {
-  const formatValue = (val: string | number): string => {
-    return typeof val === "number" ? val.toLocaleString() : val;
-  };
-
   if (loading) {
     return (
       <Card className={className}>

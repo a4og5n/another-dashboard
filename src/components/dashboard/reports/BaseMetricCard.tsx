@@ -54,6 +54,9 @@ export function BaseMetricCard({
 
 /**
  * Formats percentage for display with one decimal place
+ *
+ * Note: This is a re-export of the shared utility for backward compatibility.
+ * The value is expected to already be a percentage (e.g., 23.5 for 23.5%).
  */
 export function formatPercentage(value: number): string {
   return value.toFixed(1);
