@@ -15,6 +15,7 @@ pnpm generate:page
 ```
 
 The interactive CLI will guide you through:
+
 1. Schema selection (with validation)
 2. Route configuration (with smart defaults)
 3. API setup (auto-suggested)
@@ -32,30 +33,30 @@ The interactive CLI will guide you through:
 ```typescript
 export interface PageConfig {
   schemas: {
-    apiParams: string;      // Path to API params schema
-    apiResponse: string;    // Path to API response schema
-    apiError?: string;      // Optional, defaults to common/error.schema.ts
+    apiParams: string; // Path to API params schema
+    apiResponse: string; // Path to API response schema
+    apiError?: string; // Optional, defaults to common/error.schema.ts
   };
   route: {
-    path: string;           // Next.js route (e.g., "/mailchimp/reports/[id]/clicks")
-    params?: string[];      // Dynamic params (e.g., ["id"])
+    path: string; // Next.js route (e.g., "/mailchimp/reports/[id]/clicks")
+    params?: string[]; // Dynamic params (e.g., ["id"])
   };
   api: {
-    endpoint: string;       // Mailchimp API endpoint
-    method: HttpMethod;     // GET | POST | PATCH | PUT | DELETE
-    dalMethod?: string;     // Optional DAL method name
+    endpoint: string; // Mailchimp API endpoint
+    method: HttpMethod; // GET | POST | PATCH | PUT | DELETE
+    dalMethod?: string; // Optional DAL method name
   };
   page: {
-    type: PageType;         // list | detail | nested-detail
-    title: string;          // Page title
-    description: string;    // Page description
-    features: string[];     // Feature tags for JSDoc
+    type: PageType; // list | detail | nested-detail
+    title: string; // Page title
+    description: string; // Page description
+    features: string[]; // Feature tags for JSDoc
   };
   ui: {
     hasPagination: boolean; // Pagination support
     breadcrumbs: {
-      parent?: string;      // Parent page config key
-      label: string;        // Breadcrumb label
+      parent?: string; // Parent page config key
+      label: string; // Breadcrumb label
     };
   };
 }
@@ -69,16 +70,16 @@ The CLI provides smart defaults based on schema analysis:
 
 ### Auto-Detection
 
-| Field | Detection Logic | Example |
-|-------|----------------|---------|
-| **Route Path** | Infer from schema param names | `campaign_id` → `/reports/[id]` |
-| **Page Type** | Based on route depth | 4+ segments → `nested-detail` |
-| **HTTP Method** | Schema structure | Only params → `GET` |
-| **Pagination** | Schema fields | `count`/`offset` → `true` |
-| **DAL Method** | Endpoint to camelCase | `/click-details` → `fetchCampaignClickDetails` |
-| **Breadcrumb Label** | Route last segment | `/clicks` → `"Clicks"` |
-| **Parent Page** | Route hierarchy | `/reports/[id]/clicks` → parent is `/reports/[id]` |
-| **Features** | Capabilities | Pagination + [id] → `["Pagination", "Dynamic routing"]` |
+| Field                | Detection Logic               | Example                                                 |
+| -------------------- | ----------------------------- | ------------------------------------------------------- |
+| **Route Path**       | Infer from schema param names | `campaign_id` → `/reports/[id]`                         |
+| **Page Type**        | Based on route depth          | 4+ segments → `nested-detail`                           |
+| **HTTP Method**      | Schema structure              | Only params → `GET`                                     |
+| **Pagination**       | Schema fields                 | `count`/`offset` → `true`                               |
+| **DAL Method**       | Endpoint to camelCase         | `/click-details` → `fetchCampaignClickDetails`          |
+| **Breadcrumb Label** | Route last segment            | `/clicks` → `"Clicks"`                                  |
+| **Parent Page**      | Route hierarchy               | `/reports/[id]/clicks` → parent is `/reports/[id]`      |
+| **Features**         | Capabilities                  | Pagination + [id] → `["Pagination", "Dynamic routing"]` |
 
 ### Default Values
 
@@ -164,11 +165,13 @@ The CLI provides smart defaults based on schema analysis:
 
 ```typescript
 // src/schemas/mailchimp/clicks-params.schema.ts
-export const clicksParamsSchema = z.object({
-  campaign_id: z.string(),
-  count: z.number().min(1).max(1000).default(10),
-  offset: z.number().min(0).default(0),
-}).strict();
+export const clicksParamsSchema = z
+  .object({
+    campaign_id: z.string(),
+    count: z.number().min(1).max(1000).default(10),
+    offset: z.number().min(0).default(0),
+  })
+  .strict();
 
 // src/schemas/mailchimp/clicks-success.schema.ts
 export const clicksSuccessSchema = z.object({
@@ -233,26 +236,32 @@ pnpm generate:page
 The generator creates:
 
 **Pages:**
+
 - `src/app/mailchimp/reports/[id]/clicks/page.tsx` - Complete working page
 - `src/app/mailchimp/reports/[id]/clicks/not-found.tsx` - 404 page
 - `src/app/mailchimp/reports/[id]/clicks/loading.tsx` - Loading page
 
 **Schemas:**
+
 - `src/schemas/components/mailchimp/clicks-page-params.ts` - UI schema (auto-generated from API schema)
 
 **Types:**
+
 - `src/types/components/mailchimp/clicks-page.ts` - Page props types
 
 **Components:**
+
 - `src/components/mailchimp/reports/campaign-clicks-table.tsx` - Placeholder with TODO card
 - `src/skeletons/mailchimp/campaign-clicks-skeleton.tsx` - Loading skeleton
 
 **Infrastructure Updates:**
+
 - `src/dal/mailchimp.dal.ts` - Added `fetchCampaignClickDetails` method
 - `src/utils/breadcrumbs/breadcrumb-builder.ts` - Added `reportClicks` function
 - `src/utils/metadata.ts` - Added `generateCampaignClicksMetadata` function
 
 **Index Updates:**
+
 - All relevant `index.ts` files updated with new exports
 
 ---
@@ -290,6 +299,7 @@ The generator creates:
 ### Automatic Validation
 
 After generation, runs automatically:
+
 - `pnpm type-check` - TypeScript validation
 - `pnpm lint` - ESLint validation
 - `pnpm test` - Test suite
@@ -327,6 +337,7 @@ export function CampaignClicksTable({ clicksData, ...props }) {
 ```
 
 **Benefits:**
+
 - Page loads and renders immediately
 - Clear visual indicator
 - Shows actual data available
@@ -343,11 +354,12 @@ All configs use `satisfies PageConfig` for compile-time validation:
 export const pageConfigs = {
   "my-page": {
     // ... config
-  } satisfies PageConfig,  // ← Type safety
+  } satisfies PageConfig, // ← Type safety
 } as const;
 ```
 
 **Benefits:**
+
 - IDE autocomplete
 - Catch typos immediately
 - Enforce required fields
@@ -358,7 +370,11 @@ export const pageConfigs = {
 ## Helper Functions
 
 ```typescript
-import { getPageConfig, hasPageConfig, getPageConfigKeys } from "@/generation/page-configs";
+import {
+  getPageConfig,
+  hasPageConfig,
+  getPageConfigKeys,
+} from "@/generation/page-configs";
 
 // Get specific config
 const config = getPageConfig("report-clicks");

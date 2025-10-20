@@ -166,6 +166,7 @@ git log --oneline -1
 ---
 
 **Related:**
+
 - Main Plan: [page-generator-execution-plan.md](../page-generator-execution-plan.md)
 - GitHub Issue: [#206](https://github.com/a4og5n/fichaz/issues/206)
 - Next Phase: [phase-1-config-structure.md](phase-1-config-structure.md)

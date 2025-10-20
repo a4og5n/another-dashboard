@@ -65,17 +65,20 @@ Work through these phases sequentially:
 ## Key Features
 
 ### Schema-First Approach
+
 - Developer creates pure Zod schemas manually (high-value work)
 - Metadata stored in separate registry (used only during generation)
 - Schemas remain clean and runtime-usable
 
 ### Interactive CLI
+
 - Beautiful prompts using Clack library
 - Smart defaults based on schema analysis
 - Validation at every step
 - Clear error messages and guidance
 
 ### Smart Defaults
+
 - Auto-detect pagination from schema (count/offset fields)
 - Infer route structure from param names (campaign_id → [id])
 - Suggest HTTP method based on schema structure
@@ -83,6 +86,7 @@ Work through these phases sequentially:
 - Detect parent pages from route hierarchy
 
 ### Complete Code Generation
+
 - Full working page infrastructure
 - Placeholder components with TODO cards
 - UI schema auto-generated from API schema
@@ -92,6 +96,7 @@ Work through these phases sequentially:
 - All exports and imports
 
 ### Safety Features
+
 - Pre-flight check for existing files
 - Overwrite protection with options (skip/backup/overwrite)
 - Conflict detection in DAL methods
@@ -139,6 +144,7 @@ pnpm generate:page
 ---
 
 **Related:**
+
 - GitHub Issue: #206
 - Parent Doc: [docs/page-pattern-improvements.md](../../page-pattern-improvements.md)
 - Template: [docs/execution-plan-template.md](../../execution-plan-template.md)

@@ -226,7 +226,8 @@ export const pageConfigs = {
   "report-opens": {
     schemas: {
       apiParams: "src/schemas/mailchimp/report-open-details-params.schema.ts",
-      apiResponse: "src/schemas/mailchimp/report-open-details-success.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/report-open-details-success.schema.ts",
       // apiError omitted - will default to common/error.schema.ts
     },
     route: {
