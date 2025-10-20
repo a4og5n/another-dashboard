@@ -3,11 +3,17 @@
  *
  * Prompts user to select API schemas for page generation.
  * Validates that schema files exist before proceeding.
+ * Returns schema analysis for smart defaults.
  */
 
 import * as clack from "@clack/prompts";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+import {
+  analyzeSchema,
+  getSchemaDescription,
+  type SchemaAnalysis,
+} from "../analyzers/schema-analyzer";
 
 /**
  * Schema configuration from user prompts
@@ -16,6 +22,7 @@ export interface SchemaConfig {
   apiParams: string;
   apiResponse: string;
   apiError?: string;
+  analysis: SchemaAnalysis;
 }
 
 /**
@@ -103,11 +110,17 @@ export async function schemaPrompts(): Promise<SchemaConfig> {
     apiError = customError;
   }
 
+  // Analyze the API params schema
+  const analysis = analyzeSchema(apiParams);
+  const description = getSchemaDescription(analysis);
+
   clack.log.success("✓ Schema configuration validated");
+  clack.log.info(`Schema capabilities: ${description}`);
 
   return {
     apiParams,
     apiResponse,
     apiError,
+    analysis,
   };
 }

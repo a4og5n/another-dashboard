@@ -6,10 +6,12 @@
  */
 
 import * as clack from "@clack/prompts";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import type { SchemaConfig } from "./schema-prompts";
 import type { RouteConfig } from "./route-prompts";
+import {
+  analyzeProject,
+  suggestParentConfigKey,
+} from "../analyzers/project-analyzer";
 
 /**
  * UI configuration from user prompts
@@ -22,30 +24,7 @@ export interface UiConfig {
   };
 }
 
-/**
- * Detect pagination from schema file
- * Looks for count/offset or page/perPage fields
- */
-function detectPagination(schemaPath: string): boolean {
-  try {
-    const absolutePath = resolve(process.cwd(), schemaPath);
-    const content = readFileSync(absolutePath, "utf-8");
-
-    // Look for common pagination field names
-    const paginationPatterns = [
-      /count\s*:/,
-      /offset\s*:/,
-      /page\s*:/,
-      /perPage\s*:/,
-      /per_page\s*:/,
-      /limit\s*:/,
-    ];
-
-    return paginationPatterns.some((pattern) => pattern.test(content));
-  } catch {
-    return false;
-  }
-}
+// Removed - now using schema analysis from schema-prompts
 
 /**
  * Generate breadcrumb label from route path
@@ -65,28 +44,7 @@ function generateBreadcrumbLabel(path: string): string {
     .join(" ");
 }
 
-/**
- * Detect parent page from route hierarchy
- * @example "/mailchimp/reports/[id]/clicks" → suggests parent is reports detail page
- */
-function detectParentPage(routePath: string, pageType: string): string | null {
-  if (pageType !== "nested-detail") {
-    return null;
-  }
-
-  const segments = routePath.split("/").filter(Boolean);
-
-  // Find the dynamic segment index
-  const dynamicIndex = segments.findIndex((s) => s.includes("["));
-
-  if (dynamicIndex === -1 || dynamicIndex === segments.length - 1) {
-    return null;
-  }
-
-  // Suggest parent is the detail page (segment before dynamic)
-  const parentSegment = segments[dynamicIndex - 1];
-  return `${parentSegment}-detail`;
-}
+// Removed - now using project analyzer
 
 /**
  * Prompt user for UI configuration
@@ -97,12 +55,12 @@ export async function uiPrompts(
 ): Promise<UiConfig> {
   clack.log.info("Configure UI behavior and navigation.");
 
-  // Auto-detect pagination from schema
-  const detectedPagination = detectPagination(schemaConfig.apiParams);
+  // Use pagination detection from schema analysis
+  const detectedPagination = schemaConfig.analysis.hasPagination;
 
   const hasPagination = await clack.confirm({
     message: detectedPagination
-      ? "Pagination detected in schema. Enable pagination?"
+      ? `Pagination detected in schema (${schemaConfig.analysis.paginationType}). Enable pagination?`
       : "Enable pagination for this page?",
     initialValue: detectedPagination,
   });
@@ -132,9 +90,11 @@ export async function uiPrompts(
   let parent: string | undefined;
 
   if (routeConfig.type === "nested-detail") {
-    const suggestedParent = detectParentPage(
+    // Use project analyzer to suggest parent
+    const projectAnalysis = analyzeProject();
+    const suggestedParent = suggestParentConfigKey(
       routeConfig.path,
-      routeConfig.type,
+      projectAnalysis,
     );
 
     const hasParent = await clack.confirm({

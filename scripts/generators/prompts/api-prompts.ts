@@ -7,6 +7,7 @@
 
 import * as clack from "@clack/prompts";
 import type { RouteConfig } from "./route-prompts";
+import type { SchemaConfig } from "./schema-prompts";
 import type { HttpMethod } from "@/generation/page-configs";
 
 /**
@@ -60,23 +61,15 @@ function generateDalMethodName(endpoint: string): string {
   return `fetch${camelCase.charAt(0).toUpperCase() + camelCase.slice(1)}`;
 }
 
-/**
- * Suggest HTTP method based on endpoint structure
- */
-function suggestHttpMethod(endpoint: string): HttpMethod {
-  // If endpoint has parameters, likely a GET
-  if (endpoint.includes("{")) {
-    return "GET";
-  }
-
-  // Default to GET for list endpoints
-  return "GET";
-}
+// Removed - now using schema analysis for HTTP method suggestion
 
 /**
  * Prompt user for API configuration
  */
-export async function apiPrompts(routeConfig: RouteConfig): Promise<ApiConfig> {
+export async function apiPrompts(
+  schemaConfig: SchemaConfig,
+  routeConfig: RouteConfig,
+): Promise<ApiConfig> {
   clack.log.info("Configure the Mailchimp API endpoint.");
 
   // Suggest endpoint from route
@@ -97,8 +90,8 @@ export async function apiPrompts(routeConfig: RouteConfig): Promise<ApiConfig> {
     throw new Error("Operation cancelled");
   }
 
-  // Suggest HTTP method
-  const suggestedMethod = suggestHttpMethod(endpoint);
+  // Use schema analysis for HTTP method suggestion (more accurate)
+  const suggestedMethod = schemaConfig.analysis.suggestedHttpMethod;
 
   const method = (await clack.select({
     message: "HTTP method:",

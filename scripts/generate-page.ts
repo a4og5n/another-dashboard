@@ -44,7 +44,7 @@ async function main() {
 
     // Step 2: Route Configuration
     clack.log.step("Step 2: Route Configuration");
-    const routeConfig = await routePrompts();
+    const routeConfig = await routePrompts(schemaConfig);
 
     if (clack.isCancel(routeConfig)) {
       clack.cancel("Operation cancelled");
@@ -53,7 +53,7 @@ async function main() {
 
     // Step 3: API Configuration
     clack.log.step("Step 3: API Configuration");
-    const apiConfig = await apiPrompts(routeConfig);
+    const apiConfig = await apiPrompts(schemaConfig, routeConfig);
 
     if (clack.isCancel(apiConfig)) {
       clack.cancel("Operation cancelled");

@@ -7,6 +7,7 @@
 
 import * as clack from "@clack/prompts";
 import type { PageType } from "@/generation/page-configs";
+import type { SchemaConfig } from "./schema-prompts";
 
 /**
  * Route configuration from user prompts
@@ -90,7 +91,9 @@ function suggestFeatures(type: PageType, hasDynamic: boolean): string[] {
 /**
  * Prompt user for route configuration
  */
-export async function routePrompts(): Promise<RouteConfig> {
+export async function routePrompts(
+  schemaConfig: SchemaConfig,
+): Promise<RouteConfig> {
   clack.log.info("Configure the Next.js route for this page.");
 
   // Route path
@@ -175,12 +178,30 @@ export async function routePrompts(): Promise<RouteConfig> {
     throw new Error("Operation cancelled");
   }
 
-  // Features
-  const suggestedFeatures = suggestFeatures(type, params.length > 0);
+  // Features - enhanced with schema analysis
+  const baseSuggestedFeatures = suggestFeatures(type, params.length > 0);
+  const schemaFeatures: string[] = [];
+
+  if (schemaConfig.analysis.hasPagination) {
+    if (!baseSuggestedFeatures.includes("Pagination")) {
+      schemaFeatures.push("Pagination");
+    }
+  }
+
+  if (schemaConfig.analysis.hasFilters) {
+    schemaFeatures.push("Filtering");
+  }
+
+  if (schemaConfig.analysis.hasSorting) {
+    schemaFeatures.push("Sorting");
+  }
+
+  const allSuggestedFeatures = [...baseSuggestedFeatures, ...schemaFeatures];
+
   const featuresInput = await clack.text({
     message: "Page features (comma-separated for JSDoc @features):",
-    placeholder: suggestedFeatures.join(", "),
-    initialValue: suggestedFeatures.join(", "),
+    placeholder: allSuggestedFeatures.join(", "),
+    initialValue: allSuggestedFeatures.join(", "),
     validate: (value) => {
       if (!value) return "At least one feature is required";
       return undefined;
