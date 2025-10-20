@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Fichaz" }],
   creator: "Fichaz",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
+    process.env.NEXT_PUBLIC_APP_URL || "https://127.0.0.1:3000",
   ),
   alternates: {
     canonical: "/",
@@ -123,7 +123,7 @@ export default function RootLayout({
         <meta name="twitter:card" content="summary" />
         <meta
           name="twitter:url"
-          content={process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000"}
+          content={process.env.NEXT_PUBLIC_APP_URL || "https://127.0.0.1:3000"}
         />
         <meta name="twitter:title" content="Fichaz" />
         <meta
@@ -142,7 +142,7 @@ export default function RootLayout({
         <meta property="og:site_name" content="Fichaz" />
         <meta
           property="og:url"
-          content={process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000"}
+          content={process.env.NEXT_PUBLIC_APP_URL || "https://127.0.0.1:3000"}
         />
         <meta property="og:image" content="/icons/icon-512x512.png" />
       </head>
