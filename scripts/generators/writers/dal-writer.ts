@@ -11,7 +11,7 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { PageConfig } from "../../../src/generation/page-configs";
+import type { PageConfig } from "@/generation/page-configs";
 
 /**
  * Generate DAL method name from config

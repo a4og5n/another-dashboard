@@ -10,7 +10,7 @@
 
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
-import type { PageConfig } from "../../../src/generation/page-configs";
+import type { PageConfig } from "@/generation/page-configs";
 
 /**
  * Determine component category from route path

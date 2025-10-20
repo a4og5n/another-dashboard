@@ -10,7 +10,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
-import type { PageConfig } from "../../../src/generation/page-configs";
+import type { PageConfig } from "@/generation/page-configs";
 
 /**
  * Generate UI schema content from API schema
