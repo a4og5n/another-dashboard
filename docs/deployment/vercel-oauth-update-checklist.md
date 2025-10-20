@@ -7,11 +7,13 @@ This checklist covers the OAuth redirect URI updates needed when deploying the r
 ## Current Status (Phase 6 Complete)
 
 ### Completed:
+
 - ✅ Vercel project renamed from "another-dashboard" to "fichaz"
 - ✅ Local development OAuth working with 127.0.0.1
 - ✅ GitHub repository renamed to "fichaz"
 
 ### Pending Deployment:
+
 - ⏳ Production deployment (intentionally paused during development)
 - ⏳ OAuth redirect URI updates for Vercel URLs
 
@@ -24,14 +26,17 @@ This checklist covers the OAuth redirect URI updates needed when deploying the r
 After deploying, your Vercel URLs will change:
 
 **Old Production URL:**
+
 - `another-dashboard-eight.vercel.app`
 
 **New Production URL (Expected):**
+
 - `fichaz.vercel.app` (if available)
 - OR `fichaz-[hash].vercel.app`
 - OR `fichaz-[hash]-alvaros-projects-b3e953f8.vercel.app`
 
 **Preview URLs:**
+
 - `fichaz-[branch]-[hash].vercel.app`
 
 ---
@@ -39,6 +44,7 @@ After deploying, your Vercel URLs will change:
 ## Step 1: Deploy and Confirm New URLs
 
 1. **Merge rebrand branch to main:**
+
    ```bash
    git checkout main
    git merge feature/rebrand-fichaz
@@ -54,19 +60,24 @@ After deploying, your Vercel URLs will change:
 ## Step 2: Update Kinde OAuth Redirect URIs
 
 ### Access Kinde Settings:
+
 1. Go to: https://app.kinde.com/
 2. Settings → Applications → Fichaz
 3. Find "Allowed callback URLs"
 
 ### Add New Vercel URL:
+
 **Current URLs:**
+
 - `https://127.0.0.1:3000/api/auth/kinde_callback` ✅ Keep
 - `https://another-dashboard-eight.vercel.app/api/auth/kinde_callback` ⏳ Keep temporarily
 
 **Add New URL:**
+
 - `https://[NEW-VERCEL-URL]/api/auth/kinde_callback`
 
 ### Strategy:
+
 1. **ADD** new Vercel URL (don't remove old one yet)
 2. **Test** authentication on new URL
 3. **Remove** old URL once confirmed working
@@ -76,15 +87,19 @@ After deploying, your Vercel URLs will change:
 ## Step 3: Update Mailchimp OAuth Redirect URIs
 
 ### Access Mailchimp Settings:
+
 1. Go to: https://admin.mailchimp.com/account/api/
 2. Registered Apps → Fichaz, Inc
 3. Find "Redirect URI"
 
 ### Add New Vercel URL:
+
 **Current URLs:**
+
 - `https://127.0.0.1:3000/api/auth/mailchimp/callback` ✅ Keep
 
 **Add New URL (if using Vercel for OAuth):**
+
 - `https://[NEW-VERCEL-URL]/api/auth/mailchimp/callback`
 
 **Note:** If you only use local development for Mailchimp OAuth, no Vercel URL update needed.
@@ -106,6 +121,7 @@ After deploying, your Vercel URLs will change:
    - Verify successful connection
 
 ### Expected Results:
+
 - ✅ Kinde login works without errors
 - ✅ Mailchimp connection works
 - ✅ No OAuth redirect errors in console
@@ -118,11 +134,13 @@ After deploying, your Vercel URLs will change:
 Once new Vercel URLs are confirmed working:
 
 ### Kinde:
+
 - ✅ Keep: `https://127.0.0.1:3000/api/auth/kinde_callback`
 - ✅ Keep: `https://[NEW-VERCEL-URL]/api/auth/kinde_callback`
 - ❌ Remove: `https://another-dashboard-eight.vercel.app/api/auth/kinde_callback`
 
 ### Mailchimp:
+
 - ✅ Keep: `https://127.0.0.1:3000/api/auth/mailchimp/callback`
 - ✅ Keep: `https://[NEW-VERCEL-URL]/api/auth/mailchimp/callback` (if added)
 - ❌ Remove: Old Vercel URLs (if any)
@@ -136,6 +154,7 @@ Once new Vercel URLs are confirmed working:
 **Cause:** OAuth provider doesn't recognize the redirect URI
 
 **Fix:**
+
 1. Verify the exact URL in the error message
 2. Add that exact URL to OAuth provider settings
 3. Make sure URL includes `https://` and exact path
@@ -146,6 +165,7 @@ Once new Vercel URLs are confirmed working:
 **Cause:** Cookie domain mismatch or state validation failure
 
 **Fix:**
+
 1. Clear browser cookies
 2. Check that `NEXT_PUBLIC_APP_URL` environment variable is set correctly in Vercel
 3. Verify cookie domain settings in Kinde
@@ -157,6 +177,7 @@ Once new Vercel URLs are confirmed working:
 Before deploying, verify these environment variables are set in Vercel:
 
 ### Required for Kinde:
+
 - `KINDE_CLIENT_ID`
 - `KINDE_CLIENT_SECRET`
 - `KINDE_ISSUER_URL`
@@ -166,12 +187,14 @@ Before deploying, verify these environment variables are set in Vercel:
 - `KINDE_COOKIE_DOMAIN` (set to your Vercel domain, not 127.0.0.1)
 
 ### Required for Mailchimp:
+
 - `MAILCHIMP_CLIENT_ID`
 - `MAILCHIMP_CLIENT_SECRET`
 - `MAILCHIMP_REDIRECT_URI` (should be your Vercel URL)
 - `ENCRYPTION_KEY`
 
 ### General:
+
 - `NEXT_PUBLIC_APP_URL` (should be your Vercel URL)
 - `DATABASE_URL`
 

@@ -25,8 +25,7 @@ export async function GET(request: NextRequest) {
   const errorDescription = searchParams.get("error_description");
 
   // Use environment variable for redirects to ensure correct domain (127.0.0.1 not localhost)
-  const baseUrl =
-    process.env.NEXT_PUBLIC_APP_URL || "https://127.0.0.1:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://127.0.0.1:3000";
 
   try {
     // 1. Handle OAuth errors (user denied, etc.)
@@ -112,9 +111,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 7. Redirect to dashboard with success message
-    return NextResponse.redirect(
-      new URL("/mailchimp?connected=true", baseUrl),
-    );
+    return NextResponse.redirect(new URL("/mailchimp?connected=true", baseUrl));
   } catch (error) {
     console.error("OAuth callback error:", error);
 

@@ -11,6 +11,7 @@ This guide covers configuring the `fichaz.app` custom domain for the Fichaz appl
 ## Prerequisites
 
 Before starting Phase 7:
+
 - [ ] Domain `fichaz.app` registered (or ready to register)
 - [ ] Access to domain registrar DNS settings
 - [ ] Vercel project "fichaz" ready for production
@@ -22,17 +23,20 @@ Before starting Phase 7:
 ## Step 1: Register Domain (If Not Done)
 
 ### Option A: Register with Vercel Domains
+
 - **Pros:** Automatic DNS configuration, managed by Vercel
 - **Cons:** Vercel pricing, tied to Vercel platform
 - **Link:** https://vercel.com/domains
 
 ### Option B: Register with Third-Party Registrar
+
 - **Options:** Namecheap, GoDaddy, Google Domains, Cloudflare
 - **Pros:** More control, potentially cheaper
 - **Cons:** Manual DNS configuration required
 - **Recommended:** Namecheap or Cloudflare
 
 ### Cost Estimate:
+
 - `.app` domain: ~$15-20/year
 - Vercel hosting: Free tier (Hobby) or $20/month (Pro)
 
@@ -52,6 +56,7 @@ Before starting Phase 7:
 ### Vercel Will Show Required DNS Records:
 
 **A Record (for root domain):**
+
 ```
 Type: A
 Name: @
@@ -60,6 +65,7 @@ TTL: 3600
 ```
 
 **CNAME Record (for www subdomain):**
+
 ```
 Type: CNAME
 Name: www
@@ -74,11 +80,13 @@ TTL: 3600
 ## Step 3: Configure DNS Records
 
 ### If Using Vercel Domains:
+
 ✅ **Skip this step** - DNS is configured automatically
 
 ### If Using Third-Party Registrar:
 
 #### Access Your DNS Settings:
+
 1. Log in to your domain registrar
 2. Find DNS management section
 3. Locate DNS records or nameserver settings
@@ -86,6 +94,7 @@ TTL: 3600
 #### Add DNS Records (as shown by Vercel):
 
 **Root Domain (fichaz.app):**
+
 ```
 Type: A
 Host/Name: @ (or leave blank)
@@ -94,6 +103,7 @@ TTL: 3600 or Auto
 ```
 
 **WWW Subdomain (www.fichaz.app):**
+
 ```
 Type: CNAME
 Host/Name: www
@@ -102,6 +112,7 @@ TTL: 3600 or Auto
 ```
 
 #### DNS Propagation:
+
 - **Time:** Can take 24-48 hours (usually much faster)
 - **Check status:** https://dnschecker.org/
 - **Vercel will show:** "Pending" → "Valid" when ready
@@ -113,14 +124,17 @@ TTL: 3600 or Auto
 ### In Vercel Domain Settings:
 
 **Redirect www to root:**
+
 - Enable: "Redirect www.fichaz.app to fichaz.app"
 - Or vice versa based on preference
 
 **SSL Certificate:**
+
 - ✅ Automatic via Vercel (Let's Encrypt)
 - ✅ No action needed - Vercel handles it
 
 **Git Branch:**
+
 - Production Branch: `main`
 - Preview Branches: Automatic for all branches
 
@@ -133,6 +147,7 @@ TTL: 3600 or Auto
 Update these to use custom domain:
 
 **For Production Environment:**
+
 ```
 NEXT_PUBLIC_APP_URL=https://fichaz.app
 KINDE_SITE_URL=https://fichaz.app
@@ -142,6 +157,7 @@ MAILCHIMP_REDIRECT_URI=https://fichaz.app/api/auth/mailchimp/callback
 ```
 
 **Important:**
+
 - Set these for **Production** environment only
 - Keep different values for Preview/Development if needed
 - Don't use `127.0.0.1` or `.vercel.app` domains in production
@@ -164,6 +180,7 @@ MAILCHIMP_REDIRECT_URI=https://fichaz.app/api/auth/mailchimp/callback
    ```
 
 **Keep existing URLs during transition:**
+
 - ✅ `https://127.0.0.1:3000/api/auth/kinde_callback` (local dev)
 - ✅ `https://fichaz.vercel.app/api/auth/kinde_callback` (if using Vercel preview)
 - ✅ `https://fichaz.app/api/auth/kinde_callback` (production)
@@ -177,6 +194,7 @@ MAILCHIMP_REDIRECT_URI=https://fichaz.app/api/auth/mailchimp/callback
    - **Redirect URI:** Add `https://fichaz.app/api/auth/mailchimp/callback`
 
 **Keep existing URL during transition:**
+
 - ✅ `https://127.0.0.1:3000/api/auth/mailchimp/callback` (local dev)
 - ✅ `https://fichaz.app/api/auth/mailchimp/callback` (production)
 
@@ -201,6 +219,7 @@ git push origin main
 ```
 
 ### Vercel Will Automatically:
+
 1. Detect the push to `main`
 2. Build the application
 3. Deploy to `fichaz.app`
@@ -208,6 +227,7 @@ git push origin main
 5. Configure redirects
 
 ### Monitor Deployment:
+
 - Watch Vercel dashboard for deployment status
 - Deployment typically takes 2-5 minutes
 - Check for any build errors
@@ -226,6 +246,7 @@ git push origin main
 ### Test Authentication:
 
 **Kinde Login:**
+
 1. Click login button
 2. Sign in with Google
 3. Verify successful authentication
@@ -233,6 +254,7 @@ git push origin main
 5. No console errors
 
 **Mailchimp OAuth:**
+
 1. Go to Settings → Integrations
 2. Connect Mailchimp account
 3. Verify OAuth flow completes
@@ -255,14 +277,17 @@ git push origin main
 ### Update These Files:
 
 **README.md:**
+
 - Update live demo link to `https://fichaz.app`
 - Update project name references
 
 **Environment Variable Examples:**
+
 - `.env.example` - Show production domain examples
 - Documentation - Update all URL references
 
 **CLAUDE.md:**
+
 - Update any production URL references
 - Update OAuth configuration examples
 
@@ -275,11 +300,13 @@ git push origin main
 ### Remove Old OAuth URLs:
 
 **Kinde:**
+
 - Remove: Old Vercel preview URLs
 - Keep: `https://127.0.0.1:3000/api/auth/kinde_callback` (local dev)
 - Keep: `https://fichaz.app/api/auth/kinde_callback` (production)
 
 **Mailchimp:**
+
 - Remove: Old Vercel preview URLs
 - Keep: `https://127.0.0.1:3000/api/auth/mailchimp/callback` (local dev)
 - Keep: `https://fichaz.app/api/auth/mailchimp/callback` (production)
@@ -293,6 +320,7 @@ git push origin main
 **Symptoms:** `fichaz.app` doesn't load or shows DNS error
 
 **Solutions:**
+
 1. Check DNS propagation: https://dnschecker.org/
 2. Verify A record points to correct Vercel IP
 3. Wait 24-48 hours for full propagation
@@ -303,6 +331,7 @@ git push origin main
 **Symptoms:** Browser shows "Not Secure" or certificate error
 
 **Solutions:**
+
 1. Wait for Vercel to issue certificate (can take 10-15 minutes)
 2. Check Vercel dashboard for certificate status
 3. Try accessing via https:// explicitly
@@ -313,6 +342,7 @@ git push origin main
 **Symptoms:** "redirect_uri_mismatch" after login
 
 **Solutions:**
+
 1. Verify exact URL in error message
 2. Add that URL to OAuth provider settings
 3. Ensure URL matches exactly (including https://)
@@ -323,6 +353,7 @@ git push origin main
 **Symptoms:** Kinde returns "state not found" error
 
 **Solutions:**
+
 1. Check `KINDE_COOKIE_DOMAIN` in Vercel env vars
 2. Should be `fichaz.app` (not 127.0.0.1)
 3. Clear browser cookies
@@ -335,6 +366,7 @@ git push origin main
 If issues occur in production:
 
 ### Option 1: Revert Deployment
+
 ```bash
 # In Vercel dashboard
 1. Go to Deployments
@@ -343,6 +375,7 @@ If issues occur in production:
 ```
 
 ### Option 2: Revert Code
+
 ```bash
 # Revert merge commit
 git revert -m 1 <merge-commit-hash>
@@ -350,6 +383,7 @@ git push origin main
 ```
 
 ### Option 3: Restore Old Domain
+
 1. Revert Vercel domain to old URL
 2. Restore old OAuth redirect URIs
 3. Redeploy with old branding
@@ -361,24 +395,28 @@ git push origin main
 Mark each item when complete:
 
 ### Domain Setup:
+
 - [ ] Domain registered (`fichaz.app`)
 - [ ] DNS records configured
 - [ ] Domain verified in Vercel
 - [ ] SSL certificate issued
 
 ### Configuration:
+
 - [ ] Environment variables updated
 - [ ] Kinde OAuth redirect URIs updated
 - [ ] Mailchimp OAuth redirect URIs updated
 - [ ] All URLs using `fichaz.app`
 
 ### Deployment:
+
 - [ ] Code merged to main
 - [ ] Production deployment successful
 - [ ] Site accessible at `fichaz.app`
 - [ ] SSL working (HTTPS)
 
 ### Testing:
+
 - [ ] All pages load correctly
 - [ ] Kinde login working
 - [ ] Mailchimp OAuth working
@@ -387,6 +425,7 @@ Mark each item when complete:
 - [ ] Mobile responsive working
 
 ### Documentation:
+
 - [ ] README updated with new domain
 - [ ] Documentation URLs updated
 - [ ] Monitoring/analytics updated
@@ -432,13 +471,16 @@ Mark each item when complete:
 ## Support Contacts
 
 **Domain Issues:**
+
 - Registrar support (Namecheap, GoDaddy, etc.)
 
 **Hosting Issues:**
+
 - Vercel Support: support@vercel.com
 - Vercel Community: https://github.com/vercel/vercel/discussions
 
 **OAuth Issues:**
+
 - Kinde Support: https://kinde.com/contact
 - Mailchimp Support: https://mailchimp.com/contact/support/
 
