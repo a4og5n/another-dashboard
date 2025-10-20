@@ -250,7 +250,7 @@ This checklist is designed for a **two-phase testing approach**:
 
 - [ ] Connect Mailchimp successfully
 - [ ] Go to Mailchimp dashboard → Account → Connected Sites
-- [ ] Revoke access for "Another Dashboard"
+- [ ] Revoke access for "Fichaz"
 - [ ] Return to application at `/mailchimp`
 - [ ] Page should detect invalid token
 - [ ] Show reconnection prompt

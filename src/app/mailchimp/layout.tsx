@@ -17,7 +17,7 @@ export default async function MailchimpLayout({
 
   // Redirect unauthenticated users (server-side)
   if (!isAuthenticated) {
-    redirect("/api/auth/login?post_login_redirect_url=/mailchimp");
+    redirect("/login?post_login_redirect_url=/mailchimp");
   }
 
   // Render children for authenticated users

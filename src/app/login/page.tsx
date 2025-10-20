@@ -47,9 +47,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Welcome</h1>
-          <p className="text-muted-foreground">
-            Access your Mailchimp Dashboard
-          </p>
+          <p className="text-muted-foreground">Access Fichaz</p>
         </div>
 
         <Card>

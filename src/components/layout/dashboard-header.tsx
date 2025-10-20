@@ -39,11 +39,9 @@ export function DashboardHeader({
             aria-label="Dashboard"
             role="img"
           >
-            AD
+            F
           </div>
-          <h1 className="text-xl font-semibold hidden md:inline">
-            Another Dashboard
-          </h1>
+          <h1 className="text-xl font-semibold hidden md:inline">Fichaz</h1>
         </div>
         {/* Spacer to maintain layout */}
         <div className="flex-1" />

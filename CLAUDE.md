@@ -931,7 +931,7 @@ export const generateMetadata: GenerateMetadata = async ({ params }) => {
 
   if (!response.success || !response.data) {
     return {
-      title: "Campaign Opens | Another Dashboard",
+      title: "Campaign Opens | Fichaz",
       description: "View members who opened this campaign",
     };
   }
@@ -939,7 +939,7 @@ export const generateMetadata: GenerateMetadata = async ({ params }) => {
   const report = response.data as CampaignReport;
 
   return {
-    title: `${report.campaign_title} - Opens | Another Dashboard`,
+    title: `${report.campaign_title} - Opens | Fichaz`,
     description: `View the ${report.opens.opens_total} members who opened ${report.campaign_title}`,
   };
 };
@@ -1053,7 +1053,7 @@ Follow the pattern in `src/utils/mailchimp/metadata.ts`:
 3. **Register OAuth App at Mailchimp:**
    - Login to Mailchimp → Account → Extras → API Keys → "Register an App"
    - Fill in app details:
-     - App Name: Another Dashboard
+     - App Name: Fichaz
      - App Website: Your production Vercel URL
      - Redirect URI (local): `https://127.0.0.1:3000/api/auth/mailchimp/callback`
      - Redirect URI (production): `https://your-domain.vercel.app/api/auth/mailchimp/callback`

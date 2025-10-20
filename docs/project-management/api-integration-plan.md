@@ -1,6 +1,6 @@
 # API Integration Planning
 
-**Project:** Another Dashboard MVP  
+**Project:** Fichaz MVP  
 **Created:** August 25, 2025  
 **Purpose:** Detailed planning for each API integration
 

@@ -24,19 +24,22 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
 
+  // Use environment variable for redirects to ensure correct domain (127.0.0.1 not localhost)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://127.0.0.1:3000";
+
   try {
     // 1. Handle OAuth errors (user denied, etc.)
     if (error) {
       console.error("OAuth error:", error, errorDescription);
       return NextResponse.redirect(
-        new URL(`/mailchimp?error=${encodeURIComponent(error)}`, request.url),
+        new URL(`/mailchimp?error=${encodeURIComponent(error)}`, baseUrl),
       );
     }
 
     // 2. Verify required parameters
     if (!code || !state) {
       return NextResponse.redirect(
-        new URL("/mailchimp?error=missing_parameters", request.url),
+        new URL("/mailchimp?error=missing_parameters", baseUrl),
       );
     }
 
@@ -46,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     if (!user || !user.id) {
       return NextResponse.redirect(
-        new URL("/mailchimp?error=unauthorized", request.url),
+        new URL("/mailchimp?error=unauthorized", baseUrl),
       );
     }
 
@@ -62,7 +65,7 @@ export async function GET(request: NextRequest) {
         "OAuth state verification failed - invalid or expired state",
       );
       return NextResponse.redirect(
-        new URL("/mailchimp?error=invalid_state", request.url),
+        new URL("/mailchimp?error=invalid_state", baseUrl),
       );
     }
 
@@ -108,9 +111,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 7. Redirect to dashboard with success message
-    return NextResponse.redirect(
-      new URL("/mailchimp?connected=true", request.url),
-    );
+    return NextResponse.redirect(new URL("/mailchimp?connected=true", baseUrl));
   } catch (error) {
     console.error("OAuth callback error:", error);
 
@@ -143,7 +144,7 @@ export async function GET(request: NextRequest) {
     console.error(`Mailchimp OAuth callback failed with code: ${errorCode}`);
 
     return NextResponse.redirect(
-      new URL(`/mailchimp?error=${encodeURIComponent(errorCode)}`, request.url),
+      new URL(`/mailchimp?error=${encodeURIComponent(errorCode)}`, baseUrl),
     );
   }
 }

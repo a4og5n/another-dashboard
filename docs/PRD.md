@@ -87,7 +87,7 @@ This structure supports scalability, maintainability, and clear separation of co
 
 # Product Requirements Document (PRD)
 
-## Another Dashboard
+## Fichaz
 
 **Version:** 1.0  
 **Date:** August 24, 2025  

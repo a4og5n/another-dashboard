@@ -260,7 +260,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }): Promise<Metadata> {
   // Fetch campaign name for title
-  // Return: "Abuse Reports - {Campaign Name} | Another Dashboard"
+  // Return: "Abuse Reports - {Campaign Name} | Fichaz"
 }
 
 export default async function AbuseReportsPage({

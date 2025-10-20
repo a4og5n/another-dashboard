@@ -418,7 +418,7 @@ export async function generateMetadata({
 
   if (!response.success) {
     return {
-      title: "Campaign Opens | Another Dashboard",
+      title: "Campaign Opens | Fichaz",
       description: "View members who opened this campaign",
     };
   }
@@ -426,7 +426,7 @@ export async function generateMetadata({
   const report = response.data as CampaignReport;
 
   return {
-    title: `${report.campaign_title} - Opens | Another Dashboard`,
+    title: `${report.campaign_title} - Opens | Fichaz`,
     description: `View the ${report.opens.opens_total} members who opened ${report.campaign_title}`,
   };
 }
@@ -443,7 +443,7 @@ export const generateMetadata = createMetadataFunction(async ({ params }) => {
 
   if (!response.success) {
     return {
-      title: "Campaign Opens | Another Dashboard",
+      title: "Campaign Opens | Fichaz",
       description: "View members who opened this campaign",
     };
   }
@@ -451,7 +451,7 @@ export const generateMetadata = createMetadataFunction(async ({ params }) => {
   const report = response.data as CampaignReport;
 
   return {
-    title: `${report.campaign_title} - Opens | Another Dashboard`,
+    title: `${report.campaign_title} - Opens | Fichaz`,
     description: `View the ${report.opens.opens_total} members who opened ${report.campaign_title}`,
   };
 });

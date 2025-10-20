@@ -1,4 +1,4 @@
-# Task Tracking - Another Dashboard MVP
+# Task Tracking - Fichaz MVP
 
 **Last Updated:** August 25, 2025
 

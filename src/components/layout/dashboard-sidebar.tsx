@@ -264,7 +264,7 @@ export function DashboardSidebar() {
         </nav>
         {/* Footer fixed to bottom */}
         <div className="p-4 border-t text-xs text-muted-foreground w-full sticky bottom-0 bg-background">
-          <div>Another Dashboard v1.0</div>
+          <div>Fichaz v1.0</div>
           <div className="mt-1">API Status: Connected</div>
         </div>
       </aside>

@@ -66,6 +66,6 @@ export default function ListsPage({ searchParams }: ListsPageProps) {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Lists | Mailchimp Dashboard",
+  title: "Lists | Fichaz",
   description: "Manage your Mailchimp lists and monitor their performance",
 };

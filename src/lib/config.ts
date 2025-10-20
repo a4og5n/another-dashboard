@@ -14,8 +14,8 @@ const envSchema = z.object({
     .url()
     .default(
       process.env.NODE_ENV === "development"
-        ? "https://localhost:3000"
-        : "http://localhost:3000",
+        ? "https://127.0.0.1:3000"
+        : "http://127.0.0.1:3000",
     ),
 
   // Neon Postgres Database (via Vercel)
@@ -135,7 +135,7 @@ function parseEnv(): Env {
       ...process.env,
       NODE_ENV: process.env.NODE_ENV || "development",
       NEXT_PUBLIC_APP_URL:
-        process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
+        process.env.NEXT_PUBLIC_APP_URL || "https://127.0.0.1:3000",
       DATABASE_URL: process.env.DATABASE_URL,
       DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
       POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL,
@@ -186,7 +186,7 @@ function parseEnv(): Env {
       // Create a more comprehensive fallback environment
       const fallbackEnv = {
         NODE_ENV: "development",
-        NEXT_PUBLIC_APP_URL: "https://localhost:3000",
+        NEXT_PUBLIC_APP_URL: "https://127.0.0.1:3000",
         DATABASE_URL: undefined,
         DATABASE_URL_UNPOOLED: undefined,
         POSTGRES_PRISMA_URL: undefined,

@@ -1,8 +1,8 @@
-# Project Management - Another Dashboard
+# Project Management - Fichaz
 
-**Welcome to the project management hub for Another Dashboard MVP**
+**Welcome to the project management hub for Fichaz MVP**
 
-This directory contains all planning, tracking, and implementation documentation for the development of Another Dashboard.
+This directory contains all planning, tracking, and implementation documentation for the development of Fichaz.
 
 ---
 

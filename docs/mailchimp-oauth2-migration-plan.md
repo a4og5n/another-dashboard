@@ -1,6 +1,6 @@
 # Mailchimp OAuth2 Migration - Detailed Implementation Plan
 
-**Project**: Another Dashboard - OAuth2 Migration
+**Project**: Fichaz - OAuth2 Migration
 **Target Completion**: 2-3 days
 **Database**: Neon Postgres (via Vercel) + Drizzle ORM
 **Authentication**: Kinde (existing)
@@ -122,7 +122,7 @@ pnpm add nanoid  # For generating secure state parameters
 2. **Fill Registration Form**
 
    ```
-   App Name: Another Dashboard
+   App Name: Fichaz
    App Description: Unified marketing analytics dashboard
    Company/Organization: [Your Company Name]
    App Website: https://your-domain.vercel.app (use your production Vercel URL)
@@ -1497,7 +1497,7 @@ export function MailchimpEmptyState({ error }: MailchimpEmptyStateProps) {
           </div>
 
           <p className="text-xs text-center text-muted-foreground">
-            By connecting, you authorize Another Dashboard to access your Mailchimp data.
+            By connecting, you authorize Fichaz to access your Mailchimp data.
           </p>
         </CardContent>
       </Card>

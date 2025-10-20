@@ -177,8 +177,7 @@ export function MailchimpEmptyState({ error }: MailchimpEmptyStateProps) {
           </div>
 
           <p className="text-xs text-center text-muted-foreground">
-            By connecting, you authorize Another Dashboard to access your
-            Mailchimp data.
+            By connecting, you authorize Fichaz to access your Mailchimp data.
           </p>
         </CardContent>
       </Card>
