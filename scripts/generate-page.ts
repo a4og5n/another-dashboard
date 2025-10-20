@@ -76,7 +76,10 @@ function validateConfig(config: PageConfig): string[] {
     errors.push("List page type should not have route params");
   }
 
-  if (config.page.type === "detail" && (!hasParams || pathSegments.length > 3)) {
+  if (
+    config.page.type === "detail" &&
+    (!hasParams || pathSegments.length > 3)
+  ) {
     errors.push(
       "Detail page type should have exactly one param at depth 3 (e.g., /mailchimp/reports/[id])",
     );
@@ -94,10 +97,7 @@ function validateConfig(config: PageConfig): string[] {
   }
 
   // Validate breadcrumb parent exists for nested pages
-  if (
-    config.page.type === "nested-detail" &&
-    !config.ui.breadcrumbs.parent
-  ) {
+  if (config.page.type === "nested-detail" && !config.ui.breadcrumbs.parent) {
     errors.push("Nested-detail pages must specify a breadcrumb parent");
   }
 
@@ -121,10 +121,7 @@ function checkFilesWillBeGenerated(
 
   // Page files
   const pageDir = resolve(process.cwd(), `src/app${config.route.path}`);
-  const pageFiles = [
-    `${pageDir}/page.tsx`,
-    `${pageDir}/loading.tsx`,
-  ];
+  const pageFiles = [`${pageDir}/page.tsx`, `${pageDir}/loading.tsx`];
 
   if (config.page.type === "detail" || config.page.type === "nested-detail") {
     pageFiles.push(`${pageDir}/not-found.tsx`);
@@ -133,7 +130,9 @@ function checkFilesWillBeGenerated(
   pageFiles.forEach((file) => {
     if (existsSync(file)) {
       willModify.push(file.replace(process.cwd(), "."));
-      warnings.push(`Page file already exists: ${file.replace(process.cwd(), ".")}`);
+      warnings.push(
+        `Page file already exists: ${file.replace(process.cwd(), ".")}`,
+      );
     } else {
       willCreate.push(file.replace(process.cwd(), "."));
     }
@@ -146,7 +145,9 @@ function checkFilesWillBeGenerated(
   );
   if (existsSync(schemaFile)) {
     willModify.push(schemaFile.replace(process.cwd(), "."));
-    warnings.push(`Schema file already exists: ${schemaFile.replace(process.cwd(), ".")}`);
+    warnings.push(
+      `Schema file already exists: ${schemaFile.replace(process.cwd(), ".")}`,
+    );
   } else {
     willCreate.push(schemaFile.replace(process.cwd(), "."));
   }
@@ -159,7 +160,9 @@ function checkFilesWillBeGenerated(
   );
   if (existsSync(componentFile)) {
     willModify.push(componentFile.replace(process.cwd(), "."));
-    warnings.push(`Component file already exists: ${componentFile.replace(process.cwd(), ".")}`);
+    warnings.push(
+      `Component file already exists: ${componentFile.replace(process.cwd(), ".")}`,
+    );
   } else {
     willCreate.push(componentFile.replace(process.cwd(), "."));
   }

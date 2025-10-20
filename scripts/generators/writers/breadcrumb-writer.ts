@@ -51,7 +51,10 @@ function generateStaticBreadcrumb(config: PageConfig, name: string): string {
 function generateDynamicBreadcrumb(config: PageConfig, name: string): string {
   const label = config.ui.breadcrumbs.label;
   const paramName = config.route.params![0];
-  const pathTemplate = config.route.path.replace(`[${paramName}]`, `\${${paramName}}`);
+  const pathTemplate = config.route.path.replace(
+    `[${paramName}]`,
+    `\${${paramName}}`,
+  );
 
   return `  /**
    * ${config.page.title} breadcrumb
@@ -111,7 +114,9 @@ function findInsertionPoint(
 
     if (insertAfter) {
       // Find the end of this function (next function or section divider)
-      const nextFunction = functions.find((f) => f.position > insertAfter.position);
+      const nextFunction = functions.find(
+        (f) => f.position > insertAfter.position,
+      );
       if (nextFunction) {
         return nextFunction.position;
       }
@@ -129,7 +134,10 @@ function findInsertionPoint(
     }
 
     // Find all static route names in this section
-    const sectionEnd = content.indexOf("// Dynamic Route Functions", sectionStart);
+    const sectionEnd = content.indexOf(
+      "// Dynamic Route Functions",
+      sectionStart,
+    );
     const section = content.slice(sectionStart, sectionEnd);
 
     // Extract static route names
@@ -228,7 +236,12 @@ export function writeBreadcrumb(
     : generateStaticBreadcrumb(config, name);
 
   // Insert breadcrumb
-  const updatedContent = insertBreadcrumb(content, newBreadcrumb, isDynamic ?? false, name);
+  const updatedContent = insertBreadcrumb(
+    content,
+    newBreadcrumb,
+    isDynamic ?? false,
+    name,
+  );
 
   // Write back to file
   writeFileSync(breadcrumbPath, updatedContent, "utf-8");

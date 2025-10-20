@@ -24,7 +24,9 @@ function generateDalMethodName(config: PageConfig): string {
   // Generate from endpoint path
   // /reports/{campaign_id}/click-details → fetchCampaignClickDetails
   const endpoint = config.api.endpoint;
-  const parts = endpoint.split("/").filter((part) => part && !part.startsWith("{"));
+  const parts = endpoint
+    .split("/")
+    .filter((part) => part && !part.startsWith("{"));
 
   return (
     "fetch" +
@@ -43,7 +45,10 @@ function generateDalMethodName(config: PageConfig): string {
 /**
  * Generate method signature
  */
-function generateMethodSignature(config: PageConfig, methodName: string): string {
+function generateMethodSignature(
+  config: PageConfig,
+  methodName: string,
+): string {
   const hasParams = config.route.params && config.route.params.length > 0;
   const hasPagination = config.ui.hasPagination;
 

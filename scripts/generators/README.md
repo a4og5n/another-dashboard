@@ -56,14 +56,18 @@ Create `src/schemas/mailchimp/clicks-params.schema.ts`:
 ```typescript
 import { z } from "zod";
 
-export const clicksPathParamsSchema = z.object({
-  campaign_id: z.string().min(1),
-}).strict();
+export const clicksPathParamsSchema = z
+  .object({
+    campaign_id: z.string().min(1),
+  })
+  .strict();
 
-export const clicksQueryParamsSchema = z.object({
-  count: z.coerce.number().min(1).max(1000).default(10).optional(),
-  offset: z.coerce.number().min(0).default(0).optional(),
-}).strict();
+export const clicksQueryParamsSchema = z
+  .object({
+    count: z.coerce.number().min(1).max(1000).default(10).optional(),
+    offset: z.coerce.number().min(0).default(0).optional(),
+  })
+  .strict();
 ```
 
 Create `src/schemas/mailchimp/clicks-success.schema.ts`:
@@ -71,14 +75,18 @@ Create `src/schemas/mailchimp/clicks-success.schema.ts`:
 ```typescript
 import { z } from "zod";
 
-export const clicksSuccessSchema = z.object({
-  members: z.array(z.object({
-    email_address: z.string().email(),
-    clicks_count: z.number(),
-    // ... other fields
-  })),
-  total_items: z.number(),
-}).strict();
+export const clicksSuccessSchema = z
+  .object({
+    members: z.array(
+      z.object({
+        email_address: z.string().email(),
+        clicks_count: z.number(),
+        // ... other fields
+      }),
+    ),
+    total_items: z.number(),
+  })
+  .strict();
 ```
 
 **Step 2: Run Generator**

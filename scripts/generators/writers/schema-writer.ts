@@ -166,10 +166,7 @@ function toCamelCase(str: string): string {
  */
 function getOutputPath(configKey: string): string {
   const fileName = `${configKey}-page-params.ts`;
-  return resolve(
-    process.cwd(),
-    `src/schemas/components/mailchimp/${fileName}`,
-  );
+  return resolve(process.cwd(), `src/schemas/components/mailchimp/${fileName}`);
 }
 
 /**

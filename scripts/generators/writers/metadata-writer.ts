@@ -34,7 +34,10 @@ function generateMetadataFunctionName(config: PageConfig): string {
 /**
  * Generate metadata helper function
  */
-function generateMetadataFunction(config: PageConfig, functionName: string): string {
+function generateMetadataFunction(
+  config: PageConfig,
+  functionName: string,
+): string {
   const paramName = config.route.params?.[0] || "id";
   const schemaName = `${toCamelCase(config.page.title)}PageParamsSchema`;
 
@@ -106,7 +109,10 @@ function insertMetadataFunction(content: string, newFunction: string): string {
 /**
  * Check if metadata function already exists
  */
-function metadataFunctionExists(content: string, functionName: string): boolean {
+function metadataFunctionExists(
+  content: string,
+  functionName: string,
+): boolean {
   const pattern = new RegExp(`export async function ${functionName}\\(`);
   return pattern.test(content);
 }
@@ -190,7 +196,9 @@ export function writeMetadataHelper(
     files.push(resolve(process.cwd(), "src/utils/metadata.ts"));
   } catch (error) {
     warnings.push("Failed to update utils/metadata.ts exports");
-    warnings.push(`Manually add: export { ${functionName} } from "./mailchimp/metadata";`);
+    warnings.push(
+      `Manually add: export { ${functionName} } from "./mailchimp/metadata";`,
+    );
   }
 
   warnings.push(`Metadata function added: ${functionName}`);

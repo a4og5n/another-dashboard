@@ -40,8 +40,9 @@ function getComponentName(pageTitle: string): string {
  */
 function generateComponentContent(config: PageConfig): string {
   const componentName = getComponentName(config.page.title);
-  const hasParams =
-    Boolean(config.route.params && config.route.params.length > 0);
+  const hasParams = Boolean(
+    config.route.params && config.route.params.length > 0,
+  );
 
   // Generate props interface
   const propsInterface = generatePropsInterface(
@@ -115,8 +116,9 @@ function generateComponentBody(
   componentName: string,
   config: PageConfig,
 ): string {
-  const hasParams =
-    Boolean(config.route.params && config.route.params.length > 0);
+  const hasParams = Boolean(
+    config.route.params && config.route.params.length > 0,
+  );
   const hasPagination: boolean = config.ui.hasPagination ?? false;
   const paramName = hasParams ? config.route.params![0] : null;
 
