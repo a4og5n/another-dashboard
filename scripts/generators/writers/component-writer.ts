@@ -40,15 +40,15 @@ function getComponentName(pageTitle: string): string {
  */
 function generateComponentContent(config: PageConfig): string {
   const componentName = getComponentName(config.page.title);
-  const hasParams = config.route.params && config.route.params.length > 0;
-  const hasPagination = config.ui.hasPagination;
+  const hasParams =
+    Boolean(config.route.params && config.route.params.length > 0);
 
   // Generate props interface
   const propsInterface = generatePropsInterface(
     componentName,
     config,
     hasParams,
-    hasPagination,
+    config.ui.hasPagination,
   );
 
   // Generate component body
@@ -80,8 +80,9 @@ function generatePropsInterface(
   componentName: string,
   config: PageConfig,
   hasParams: boolean,
-  hasPagination: boolean | undefined,
+  hasPagination?: boolean,
 ): string {
+  const isPaginated = hasPagination ?? false;
   const props: string[] = [];
 
   // Data prop
@@ -94,7 +95,7 @@ function generatePropsInterface(
   }
 
   // Pagination props
-  if (hasPagination) {
+  if (isPaginated) {
     props.push("  currentPage: number;");
     props.push("  pageSize: number;");
   }
@@ -114,8 +115,9 @@ function generateComponentBody(
   componentName: string,
   config: PageConfig,
 ): string {
-  const hasParams = config.route.params && config.route.params.length > 0;
-  const hasPagination = config.ui.hasPagination;
+  const hasParams =
+    Boolean(config.route.params && config.route.params.length > 0);
+  const hasPagination: boolean = config.ui.hasPagination ?? false;
   const paramName = hasParams ? config.route.params![0] : null;
 
   // Build data structure description

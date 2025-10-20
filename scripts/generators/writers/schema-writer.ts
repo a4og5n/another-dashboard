@@ -20,7 +20,7 @@ function generateUiSchemaContent(
   configKey: string,
 ): string {
   const { schemas, route, page } = config;
-  const hasParams = route.params && route.params.length > 0;
+  const hasParams = Boolean(route.params && route.params.length > 0);
 
   // Read API schema file
   const apiSchemaPath = resolve(process.cwd(), schemas.apiParams);
@@ -126,6 +126,7 @@ function generateTypeExports(
   hasPagination: boolean | undefined,
   apiSchemaName: string,
 ): string {
+  const isPaginated = hasPagination ?? false;
   const types: string[] = [
     "/**",
     " * Inferred TypeScript types from schemas",
@@ -140,7 +141,7 @@ function generateTypeExports(
     );
   }
 
-  if (hasPagination) {
+  if (isPaginated) {
     types.push(
       `export type PageSearchParams = z.infer<typeof pageSearchParamsSchema>;`,
     );
