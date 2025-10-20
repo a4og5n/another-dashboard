@@ -20,12 +20,12 @@ export default async function IntegrationsPage() {
   const isAuthed = await isAuthenticated();
 
   if (!isAuthed) {
-    redirect("/api/auth/login?post_login_redirect_url=/settings/integrations");
+    redirect("/login?post_login_redirect_url=/settings/integrations");
   }
 
   const user = await getUser();
   if (!user) {
-    redirect("/api/auth/login");
+    redirect("/login");
   }
 
   // 2. Get Mailchimp connection status
