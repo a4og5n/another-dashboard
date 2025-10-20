@@ -8,15 +8,15 @@
 
 ## Quick Navigation
 
-| Phase | Status | Time | Description | File |
-|-------|--------|------|-------------|------|
-| 0 | ✅ Ready | 10min | Git Setup | [phase-0-setup.md](phase-0-setup.md) |
-| 1 | 📝 Next | 1-2h | Config Structure | Create when needed |
-| 2 | ⏳ Pending | 2-3h | CLI Prompts | Create when needed |
-| 3 | ⏳ Pending | 1-2h | Analyzers | Create when needed |
-| 4 | ⏳ Pending | 3-4h | Generators | Create when needed |
-| 5 | ⏳ Pending | 1-2h | Integration | Create when needed |
-| 6 | ⏳ Pending | 1h | Validation & Docs | Create when needed |
+| Phase | Status     | Time  | Description       | File                                 |
+| ----- | ---------- | ----- | ----------------- | ------------------------------------ |
+| 0     | ✅ Ready   | 10min | Git Setup         | [phase-0-setup.md](phase-0-setup.md) |
+| 1     | 📝 Next    | 1-2h  | Config Structure  | Create when needed                   |
+| 2     | ⏳ Pending | 2-3h  | CLI Prompts       | Create when needed                   |
+| 3     | ⏳ Pending | 1-2h  | Analyzers         | Create when needed                   |
+| 4     | ⏳ Pending | 3-4h  | Generators        | Create when needed                   |
+| 5     | ⏳ Pending | 1-2h  | Integration       | Create when needed                   |
+| 6     | ⏳ Pending | 1h    | Validation & Docs | Create when needed                   |
 
 ---
 
@@ -25,16 +25,19 @@
 **Goal:** Create PageConfig interface and central registry
 
 **Files to Create:**
+
 - `src/generation/page-configs.ts` - Central registry with TypeScript interface
 - `src/generation/README.md` - Usage documentation
 
 **Key Decisions:**
+
 - TypeScript-only config (no JSON)
 - Type-safe with `satisfies PageConfig`
 - Example configs for existing pages
 - Error schema with smart default
 
 **AI Tasks:**
+
 1. Create PageConfig interface with all fields
 2. Create empty registry with 1-2 example configs
 3. Document config structure in README
@@ -50,6 +53,7 @@
 **Goal:** Interactive CLI with Clack library
 
 **Files to Create:**
+
 - `scripts/generate-page.ts` - Main CLI entry
 - `scripts/generators/prompts/schema-prompts.ts`
 - `scripts/generators/prompts/route-prompts.ts`
@@ -57,6 +61,7 @@
 - `scripts/generators/prompts/ui-prompts.ts`
 
 **Key Features:**
+
 - Install Clack: `pnpm add @clack/prompts`
 - Beautiful prompts with validation
 - Smart defaults (pre-fill based on detection)
@@ -64,6 +69,7 @@
 - Ask if user wants to generate now
 
 **AI Tasks:**
+
 1. Install Clack
 2. Create main CLI with basic flow
 3. Implement each prompt module
@@ -79,10 +85,12 @@
 **Goal:** Smart defaults from schema analysis
 
 **Files to Create:**
+
 - `scripts/generators/analyzers/schema-analyzer.ts`
 - `scripts/generators/analyzers/project-analyzer.ts`
 
 **Key Features:**
+
 - Detect pagination (count/offset in schema)
 - Infer route params (campaign_id → [id])
 - Suggest HTTP method (GET if only params)
@@ -90,6 +98,7 @@
 - Scan existing pages for parent detection
 
 **AI Tasks:**
+
 1. Create schema analyzer with detection logic
 2. Create project analyzer for existing page scanning
 3. Integrate with CLI prompts (pass analyzed data)
@@ -105,6 +114,7 @@
 **Goal:** File generators for all artifacts
 
 **Files to Create:**
+
 - `scripts/generators/writers/page-writer.ts`
 - `scripts/generators/writers/schema-writer.ts`
 - `scripts/generators/writers/component-writer.ts`
@@ -113,6 +123,7 @@
 - `scripts/generators/writers/metadata-writer.ts`
 
 **Key Features:**
+
 - Generate complete working page.tsx
 - Generate not-found.tsx, loading.tsx
 - Generate UI schema from API schema
@@ -122,6 +133,7 @@
 - Generate metadata helper
 
 **AI Tasks:**
+
 1. Create page writer (most complex)
 2. Create schema writer (transform API → UI)
 3. Create component writer (placeholder with Construction card)
@@ -140,11 +152,13 @@
 **Goal:** Tie everything together with safety checks
 
 **Files to Create:**
+
 - `scripts/generators/validators/config-validator.ts`
 - `scripts/generators/validators/safety-checker.ts`
 - Update `package.json` - Add `generate:page` script
 
 **Key Features:**
+
 - Pre-flight check for existing files
 - Overwrite protection (skip/backup/overwrite options)
 - Conflict detection in DAL methods
@@ -153,6 +167,7 @@
 - Detailed generation log
 
 **AI Tasks:**
+
 1. Create safety checker with file existence checks
 2. Create config validator
 3. Integrate all generators in main CLI
@@ -170,10 +185,12 @@
 **Goal:** Verify everything works and document usage
 
 **Files to Modify:**
+
 - `CLAUDE.md` - Add page generator usage section
 - `docs/page-pattern-improvements.md` - Mark #8 complete
 
 **Key Tasks:**
+
 - Generate a test page using CLI
 - Verify generated code passes all checks
 - Update CLAUDE.md with usage instructions
@@ -182,6 +199,7 @@
 - Commit: "docs: add page generator documentation (#206)"
 
 **Final Steps:**
+
 - Manual testing with multiple page types
 - Push branch
 - Create PR with demo video/screenshots
@@ -219,6 +237,7 @@
 ## Key Patterns to Follow
 
 **Config Structure (Phase 1):**
+
 ```typescript
 export interface PageConfig {
   schemas: {
@@ -252,6 +271,7 @@ export interface PageConfig {
 ```
 
 **Generated Page Structure:**
+
 ```tsx
 /**
  * [Page Title]
@@ -297,6 +317,7 @@ export const generateMetadata = generatedMetadataHelper;
 ```
 
 **Component Placeholder:**
+
 ```tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Construction } from "lucide-react";

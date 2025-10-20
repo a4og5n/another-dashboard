@@ -27,7 +27,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "generate:page": "tsx scripts/generate-page.ts"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
@@ -75,6 +76,7 @@
   },
   "devDependencies": {
     "@axe-core/react": "^4.10.2",
+    "@clack/prompts": "^0.11.0",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.8.0",
@@ -105,7 +107,7 @@
     "typedoc": "^0.28.10",
     "typescript": "^5",
     "vercel": "^46.0.2",
-    "vite": "^7.1.5",
+    "vite": "^7.1.11",
     "vitest": "^3.2.4"
   }
 }
