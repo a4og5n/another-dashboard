@@ -53,7 +53,7 @@ import { z } from "zod";`;
 
   const types = generateTypeExports(
     hasParams,
-    Boolean(config.ui.hasPagination),
+    config.ui.hasPagination,
     apiSchemaName,
   );
 
@@ -123,7 +123,7 @@ export const pageSearchParamsSchema = z.object({
  */
 function generateTypeExports(
   hasParams: boolean,
-  hasPagination: boolean,
+  hasPagination: boolean | undefined,
   apiSchemaName: string,
 ): string {
   const types: string[] = [

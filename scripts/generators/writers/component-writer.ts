@@ -48,7 +48,7 @@ function generateComponentContent(config: PageConfig): string {
     componentName,
     config,
     hasParams,
-    Boolean(hasPagination),
+    hasPagination,
   );
 
   // Generate component body
@@ -80,7 +80,7 @@ function generatePropsInterface(
   componentName: string,
   config: PageConfig,
   hasParams: boolean,
-  hasPagination: boolean,
+  hasPagination: boolean | undefined,
 ): string {
   const props: string[] = [];
 
