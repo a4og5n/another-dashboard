@@ -194,7 +194,7 @@ export function writeMetadataHelper(
   try {
     updateMetadataExports(functionName);
     files.push(resolve(process.cwd(), "src/utils/metadata.ts"));
-  } catch (error) {
+  } catch (_error) {
     warnings.push("Failed to update utils/metadata.ts exports");
     warnings.push(
       `Manually add: export { ${functionName} } from "./mailchimp/metadata";`,
