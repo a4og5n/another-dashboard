@@ -20,6 +20,9 @@ import type {
   ReportListParams,
   OpenListQueryParams,
 } from "@/types/mailchimp";
+import { z } from "zod";
+import { clickListQueryParamsSchema } from "@/schemas/mailchimp/report-click-details-params.schema";
+import { reportClickListSuccessSchema } from "@/schemas/mailchimp/report-click-details-success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -104,6 +107,22 @@ export class MailchimpDAL {
 
   async healthCheck(): Promise<ApiResponse<unknown>> {
     return mailchimpApiCall((client) => client.get<unknown>("/ping"));
+  }
+
+  /**
+   * Campaign Click Details
+   * GET /reports/{campaign_id}/click-details
+   */
+  async fetchCampaignClickDetails(
+    id: string,
+    params?: z.infer<typeof clickListQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof reportClickListSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof reportClickListSuccessSchema>>(
+        `/reports/${id}/click-details`,
+        params,
+      ),
+    );
   }
 }
 

@@ -13,6 +13,7 @@ import {
   reportOpensPageParamsSchema,
   abuseReportsPageParamsSchema,
 } from "@/schemas/components";
+import { clickDetailsPageParamsSchema } from "@/schemas/components/mailchimp/reports-click-page-params";
 import type { CampaignReport } from "@/types/mailchimp";
 
 /**
@@ -177,6 +178,43 @@ export async function generateCampaignAbuseReportsMetadata({
         abuseReportCount === 0
           ? `No abuse reports for campaign sent to ${report.emails_sent.toLocaleString()} recipients`
           : `${abuseReportCount} ${abuseReportCount === 1 ? "abuse report" : "abuse reports"} from ${report.emails_sent.toLocaleString()} recipients`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for click details pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the click details page
+ */
+export async function generateClickDetailsMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = clickDetailsPageParamsSchema.parse(rawParams);
+
+  // Fetch data for metadata
+  // TODO: Implement proper data fetching using DAL method
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Click Details - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data as any; // TODO: Add proper type
+
+  return {
+    title: `${data.campaign_title || "Resource"} - Click Details`,
+    description: "Members who clicked links in this campaign",
+    openGraph: {
+      title: `${data.campaign_title || "Resource"} - Click Details`,
+      description: "Members who clicked links in this campaign",
       type: "website",
     },
   };

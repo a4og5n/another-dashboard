@@ -29,14 +29,14 @@ Campaign reporting and analytics endpoints.
   - Route: `/mailchimp/reports/[id]/abuse-reports`
   - Features: Pagination, abuse complaint tracking
 
-- ⭐ **Campaign Clicks** - `GET /reports/{id}/click-details`
+- ✅ **Campaign Clicks** - `GET /reports/{id}/click-details`
   - Route: `/mailchimp/reports/[id]/clicks`
-  - Features: Pagination, link click tracking
-  - **NEXT:** Ready for schema creation
+  - Features: Pagination, link click tracking, sorting, A/B split data
 
-- 📋 **Campaign Unsubscribes** - `GET /reports/{id}/unsubscribed`
+- ⭐ **Campaign Unsubscribes** - `GET /reports/{id}/unsubscribed`
   - Route: `/mailchimp/reports/[id]/unsubscribes`
   - Features: Pagination, unsubscribe tracking
+  - **NEXT:** Ready for implementation
 
 - 📋 **Campaign Bounces** - `GET /reports/{id}/bounces`
   - Route: `/mailchimp/reports/[id]/bounces`
@@ -129,12 +129,12 @@ Email template management endpoints.
 
 **Current Coverage:**
 
-- ✅ Implemented: 6 endpoints
+- ✅ Implemented: 7 endpoints
 - 🚧 In Progress: 0 endpoints
-- ⭐ Next Priority: 1 endpoint (Campaign Clicks)
-- 📋 Planned: 13 endpoints
+- ⭐ Next Priority: 1 endpoint (Campaign Unsubscribes)
+- 📋 Planned: 12 endpoints
 
-**Total Progress:** 6/20 endpoints (30%)
+**Total Progress:** 7/20 endpoints (35%)
 
 **Focus Areas:**
 

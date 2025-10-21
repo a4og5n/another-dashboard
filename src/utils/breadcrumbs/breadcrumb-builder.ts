@@ -91,6 +91,25 @@ export const bc = {
   // ============================================================================
 
   /**
+   * Click Details breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for click details
+   *
+   * @example
+   * ```tsx
+   * bc.clickDetails("abc123")
+   * // Returns: { label: "Clicks", href: "/mailchimp/reports/${id}/clicks" }
+   * ```
+   */
+  clickDetails(id: string): BreadcrumbItem {
+    return {
+      label: "Clicks",
+      href: `/mailchimp/reports/${id}/clicks`,
+    };
+  },
+
+  /**
    * Individual campaign report breadcrumb
    *
    * @param id - Campaign ID
