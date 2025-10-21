@@ -4,1279 +4,391 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-### Development
+**Development:** `pnpm dev` (HTTPS + Turbopack) | `pnpm build` | `pnpm start` | `pnpm clean`
 
-- `pnpm dev` - Start development server with HTTPS, Turbopack, and experimental features
-- `pnpm build` - Build production version with Turbopack
-- `pnpm start` - Start production server
-- `pnpm clean` - Remove build artifacts (.next, out, dist)
+**Quality:** `pnpm lint` | `pnpm lint:fix` | `pnpm type-check` | `pnpm format` | `pnpm format:check`
 
-### Quality Assurance
+**Testing:** `pnpm test` | `pnpm test:watch` | `pnpm test:ui` | `pnpm test:coverage` | `pnpm test:a11y`
 
-- `pnpm lint` - Run ESLint on src and scripts directories
-- `pnpm lint:fix` - Fix auto-fixable ESLint issues
-- `pnpm type-check` - Run TypeScript compiler without emitting files
-- `pnpm format` - Format code with Prettier
-- `pnpm format:check` - Check code formatting without fixing
+**Workflows:** `pnpm quick-check` (type + lint) | `pnpm pre-commit` (full validation) | `pnpm validate` (includes build)
 
-### Testing
+**Database:** `pnpm db:push` | `pnpm db:generate` | `pnpm db:migrate` | `pnpm db:studio`
 
-- `pnpm test` - Run all tests with Vitest
-- `pnpm test:watch` - Run tests in watch mode
-- `pnpm test:ui` - Run tests with Vitest UI interface
-- `pnpm test:coverage` - Generate test coverage report
-- `pnpm test:a11y` - Run accessibility-specific tests only
+**Docs:** `pnpm docs` | `pnpm docs:watch`
 
-### Validation Workflows
-
-- `pnpm quick-check` - Fast validation (type-check + lint)
-- `pnpm pre-commit` - Full validation: format, secrets check, lint, type-check, test, a11y
-- `pnpm validate` - Complete validation including production build
-- `pnpm check:no-secrets-logged` - Scan for suspicious logging patterns that could leak secrets
-
-### Documentation
-
-- `pnpm docs` - Generate TypeDoc documentation
-- `pnpm docs:watch` - Generate documentation in watch mode
+**Page Generator:** `pnpm generate:page` (interactive CLI for humans)
 
 ## Architecture
 
-### Project Status & Context
+**Stack:** Next.js 15 (App Router) + TypeScript (strict) + Tailwind v4 + Vitest + Zod + Drizzle ORM + Neon Postgres
 
-- **Status**: MVP Complete with OAuth 2.0 migration
-- **Current Phase**: Post-MVP feature development and multi-user OAuth implementation
-- **Key Achievement**: 70x acceleration - 10-week roadmap completed in 1 day
-- **Architecture**: Neon Postgres database with OAuth 2.0 user authentication
-- **Data Strategy**: User-scoped API access with encrypted token storage
+**Auth:** Kinde (user auth) + Mailchimp OAuth 2.0 (API access, tokens encrypted AES-256-GCM)
 
-### Environment Requirements
+**Project Status:** MVP complete, OAuth 2.0 migration done, post-MVP feature development
 
-- **Node.js**: v24.7.0 (Latest LTS)
-- **pnpm**: v10.15.0 (managed via Homebrew)
-  - **Installation**: `brew install pnpm`
-  - **Updates**: `brew upgrade pnpm` (prevents auto-update conflicts)
-  - **Location**: `/usr/local/bin/pnpm`
-  - **Note**: Using Homebrew prevents "Auto-update failed" messages
+**Node/pnpm:** v24.7.0 / v10.15.0 (via Homebrew: `brew install pnpm`)
 
-### Core Framework & Libraries
+### Project Structure
 
-- **Next.js 15** with App Router architecture
-- **TypeScript** with strict configuration and comprehensive path aliases
-- **Tailwind CSS v4** for styling with shadcn/ui components
-- **Vitest** for testing with jsdom environment and React Testing Library
-- **Zod** for runtime schema validation and type inference
-- **ES Modules**: All scripts use ES module syntax (`import`/`export`), `require()` is forbidden
+- `src/app/` - Next.js pages, layouts, API routes
+- `src/components/` - UI components (ui/, dashboard/, layout/, accessibility/, performance/, pwa/, social/)
+- `src/actions/` - Server actions with test coverage
+- `src/types/` - TypeScript type definitions (mailchimp/, components/)
+- `src/schemas/` - Zod validation schemas (mailchimp/)
+- `src/utils/` - Pure utility functions
+- `src/lib/` - Config, encryption, Mailchimp client, error classes
+- `src/services/` - API service classes (singleton pattern)
+- `src/hooks/` - React hooks
+- `src/db/` - Database schema, migrations, repositories
+- `src/test/` - Test setup, utilities, architectural enforcement
+- `src/translations/` - i18n files (en.json, es.json)
 
-### Project Structure & Import Strategy
+### Path Aliases
 
-- **Path aliases configured**: `@/*`, `@/components/*`, `@/actions/*`, `@/types/*`, `@/schemas/*`, `@/utils/*`, `@/lib/*`
-- **Centralized exports**: All folders use index.ts files with path aliases (no relative imports)
-- **Type enforcement**: Shared types must be defined in `/src/types` (no inline definitions)
-- **Schema enforcement**: Zod schemas must be defined in `/src/schemas` (no inline definitions)
-
-### Key Directories
-
-- `src/app/` - Next.js App Router pages, layouts, and API routes
-- `src/components/` - Reusable UI components organized by feature (ui/, dashboard/, layout/, accessibility/, performance/, pwa/, social/)
-- `src/actions/` - Server actions and business logic with comprehensive test coverage
-- `src/types/` - TypeScript type definitions with strict subfolder organization (mailchimp/, components/)
-- `src/schemas/` - Zod validation schemas for API and form validation with nested organization (mailchimp/)
-- `src/utils/` - Pure utility functions with comprehensive test coverage
-- `src/lib/` - Configuration and library utilities (config.ts with environment validation, encryption.ts, mailchimp-fetch-client.ts, mailchimp-client-factory.ts, mailchimp-action-wrapper.ts, utils.ts, web-vitals, errors/)
-- `src/services/` - API service classes with singleton pattern and OAuth flow management
-- `src/hooks/` - Custom React hooks for pagination and real-time data
-- `src/db/` - Database schema, migrations, and repositories (Drizzle ORM with Neon Postgres)
-- `src/test/` - Testing setup, utilities, helpers, and architectural enforcement tests
-- `src/translations/` - Internationalization files (en.json, es.json) for next-intl
-
-### Configuration Files
-
-- **tsconfig.json**: Strict TypeScript with comprehensive path aliases
-- **vitest.config.ts**: Test configuration with jsdom environment and coverage setup
-- **next.config.ts**: Minimal Next.js configuration
-- **drizzle.config.ts**: Database configuration for Drizzle ORM migrations
-- **scripts/check-no-secrets-logged.js**: Security script to prevent secret logging
-
-### Core Features & Integrations
-
-- **Mailchimp Integration**: OAuth 2.0 authentication with modern fetch-based API client
-  - Native fetch API client (Edge Runtime compatible, 97% smaller than old SDK)
-  - Each user connects their own Mailchimp account via OAuth flow
-  - Tokens encrypted at rest using AES-256-GCM encryption
-  - Database-backed token storage with Neon Postgres
-  - CSRF protection with state parameters
-  - Built-in rate limit tracking and timeout handling
-  - Comprehensive error handling with typed error classes
-  - Full API integration with campaigns, audiences, and dashboard data
-  - Connection management at `/settings/integrations`
-- **Database**: Neon Postgres with Drizzle ORM
-  - Serverless PostgreSQL via Vercel integration
-  - Type-safe queries with Drizzle ORM
-  - Encrypted OAuth token storage
-  - Connection pooling and optimization
-- **Authentication**: Kinde for user authentication + Mailchimp OAuth for API access
-- **Accessibility (A11y)**: axe-core integration with development-time checking and test utilities
-- **Performance Monitoring**: Web Vitals tracking with multiple analytics provider support
-- **Progressive Web App**: PWA components and utilities for installation prompts
-- **Internationalization**: next-intl setup with English and Spanish translations
-- **Error Handling**: React Error Boundaries and centralized error management
-
-### Quality Standards
-
-- **Pre-commit hooks**: Automatic formatting, linting, type-checking, testing, and security scanning
-- **Accessibility testing**: Automated WCAG 2.1 AA compliance testing in development and CI
-- **Type safety**: Strict TypeScript configuration with no implicit any
-- **Security**: Automated secret detection and environment variable validation
-- **Performance**: Core Web Vitals monitoring and bundle size optimization
-
-### Environment & Configuration
-
-- **Environment validation**: Zod-based environment variable validation in `src/lib/config.ts`
-- **Mock data support**: Configurable mock data for development and CI environments
-- **Security scanning**: Automated detection of logged secrets or API keys
-- **HTTPS development**: Local development server with HTTPS certificates
-
-### Testing Strategy
-
-- **Unit tests**: Vitest with React Testing Library
-- **Accessibility tests**: axe-core integration for automated a11y testing
-- **Architectural enforcement tests**: Automated tests to enforce coding standards
-  - `alias-enforcement.test.ts` - Enforces path alias usage (no long relative paths)
-  - `types-folder-enforcement.test.ts` - Enforces type definitions in `/src/types` only
-  - `server-component-enforcement.test.ts` - Enforces Server Component architecture for proper 404 handling
-    - Prevents "use client" in layout.tsx, dashboard-shell.tsx, and all not-found.tsx files
-    - Critical for maintaining proper 404 status codes (notFound() only works in Server Components)
-    - Auto-discovers all not-found.tsx files to prevent regression
-  - `deprecated-declarations.test.ts` - Prevents usage of deprecated APIs and patterns
-- **Coverage reporting**: HTML, JSON, and text coverage reports
-- **Test utilities**: Custom render functions and helpers in `src/test/`
-
-## Development Guidelines
-
-### Required Documentation Reading
-
-Before starting any development work, always review:
-
-1. **`docs/PRD.md`** - Product Requirements Document with problem statement, solution overview, and success criteria
-2. **`docs/project-management/development-roadmap.md`** - Development progress and current status
-3. **`docs/project-management/task-tracking.md`** - Current priorities and performance metrics
-
-### Code Organization
-
-- **Path aliases**: Use consistently - avoid relative imports in index.ts files (enforced by automated tests)
-- **Type definitions**: Define shared types in `/src/types` with subfolder organization, never inline (enforced by automated tests)
-- **Schema definitions**: Create Zod schemas in `/src/schemas` for all validation, never inline (enforced by automated tests)
-- **Service pattern**: Use singleton pattern for API services with health check capabilities (`src/services/`)
-- **Component organization**: Group by feature with proper index.ts exports (ui/, dashboard/, layout/, accessibility/, performance/, pwa/, social/)
-- **Internationalization**: Use next-intl with JSON files in `src/translations/`
-
-### Error Handling Utilities
-
-The project includes standardized error handling utilities for API responses in `src/utils/errors/`:
-
-**Core Functions:**
-
-- `is404Error(message: string)` - Detects 404/not found errors in API responses
-- `handleApiError(response: ApiResponse<unknown>)` - Automatically handles 404 detection with `notFound()` call
-- `handleApiErrorWithFallback(response: ApiResponse<unknown>, fallbackMessage: string)` - Same as above with custom fallback
-
-**Usage Pattern:**
-
-```typescript
-import { handleApiError } from "@/utils/errors";
-
-const response = await mailchimpDAL.fetchCampaignReport(id);
-const error = handleApiError(response);
-
-if (error) {
-  // Handle non-404 errors in UI if needed
-  return <ErrorDisplay message={error} />;
-}
-
-// Render success UI with response.data
-```
-
-**Benefits:**
-
-- Eliminates repeated 404 detection logic across pages (~7 lines per page)
-- Consistent error handling following Next.js App Router best practices
-- Automatic `notFound()` triggering for 404 errors (renders not-found.tsx)
-- Returns error messages as values (not thrown) for conditional UI rendering
-- Fully tested with 100% coverage
-
-**Next.js Error Handling Philosophy:**
-
-- **Expected errors** (404s, API failures): Return as values, use `notFound()` for 404s
-- **Unexpected errors** (bugs, exceptions): Let error boundaries catch them
-- Reference: [Next.js Error Handling Docs](https://nextjs.org/docs/app/getting-started/error-handling)
-
-### Breadcrumb Pattern
-
-The project includes a centralized breadcrumb builder utility for consistent navigation across all pages in `src/utils/breadcrumbs/`:
-
-**Core Object:**
-
-- `bc` - Breadcrumb builder with static routes, dynamic functions, and helpers
-
-**Usage Pattern:**
-
-```tsx
-import { bc } from "@/utils/breadcrumbs";
-
-// Simple static breadcrumbs
-<BreadcrumbNavigation items={[bc.home, bc.mailchimp, bc.current("Reports")]} />
-
-// Breadcrumbs with dynamic IDs
-<BreadcrumbNavigation
-  items={[bc.home, bc.mailchimp, bc.reports, bc.report(id), bc.current("Opens")]}
-/>
-```
-
-**Available Routes:**
-
-**Static Routes:**
-
-- `bc.home` - Dashboard home page (`/`)
-- `bc.mailchimp` - Mailchimp section (`/mailchimp`)
-- `bc.reports` - Reports list (`/mailchimp/reports`)
-- `bc.lists` - Lists list (`/mailchimp/lists`)
-- `bc.generalInfo` - General info page (`/mailchimp/general-info`)
-- `bc.settings` - Settings section (`/settings`)
-- `bc.integrations` - Integrations settings (`/settings/integrations`)
-
-**Dynamic Functions:**
-
-- `bc.report(id)` - Individual report page (`/mailchimp/reports/{id}`)
-- `bc.list(id)` - Individual list page (`/mailchimp/lists/{id}`)
-- `bc.reportOpens(id)` - Report opens page (`/mailchimp/reports/{id}/opens`)
-- `bc.reportAbuseReports(id)` - Abuse reports page (`/mailchimp/reports/{id}/abuse-reports`)
-
-**Helper Functions:**
-
-- `bc.current(label)` - Mark breadcrumb as current page (no href, `isCurrent: true`)
-- `bc.custom(label, href)` - Create custom breadcrumb for non-standard routes
-
-**Benefits:**
-
-- Eliminates 5-8 lines of boilerplate per page
-- Centralized route definitions prevent typos in labels and URLs
-- Type-safe using existing `BreadcrumbItem` type
-- Consistent breadcrumb experience across all pages
-- Easy to maintain - update labels/URLs in one place
-
-**When to Add New Routes:**
-
-If you find yourself using `bc.custom()` multiple times for the same route, add it as a static route or dynamic function in the breadcrumb builder instead.
-
-### Standard Card Components
-
-The project includes three standardized Card components for consistent metric display across all pages in `src/components/ui/`:
-
-**Core Components:**
-
-- `StatCard` - Simple metric card (icon + value + label + optional trend)
-- `StatsGridCard` - Multi-stat grid card (header + grid of stats + optional footer)
-- `StatusCard` - Status card with badge (title + badge + metrics + progress + actions)
-
-**Usage Patterns:**
-
-**StatCard - Simple Metric Display:**
-
-```tsx
-import { StatCard } from "@/components/ui/stat-card";
-import { Mail } from "lucide-react";
-
-<StatCard
-  icon={Mail}
-  value={12500}
-  label="Emails Sent"
-  trend="up"
-  change={5.2}
-  description="Compared to last month"
-/>;
-```
-
-**StatsGridCard - Multi-Stat Display:**
-
-```tsx
-import { StatsGridCard } from "@/components/ui/stats-grid-card";
-import { MailOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-<StatsGridCard
-  title="Email Opens"
-  icon={MailOpen}
-  iconColor="text-blue-500"
-  stats={[
-    { value: 1250, label: "Total Opens" },
-    { value: 980, label: "Unique Opens" },
-    { value: "23.4%", label: "Open Rate" },
-  ]}
-  columns={3}
-  footer={<Button>View Details</Button>}
-/>;
-```
-
-**StatusCard - Status with Metrics:**
-
-```tsx
-import { StatusCard } from "@/components/ui/status-card";
-
-<StatusCard
-  title="Delivery Status"
-  status="delivered"
-  statusVariant="default"
-  description="Campaign delivery information"
-  metrics={[
-    { label: "Emails Sent", value: 5000 },
-    { label: "Emails Canceled", value: 0 },
-  ]}
-  progress={100}
-/>;
-```
-
-**Benefits:**
-
-- Eliminates 20-50 lines of boilerplate per card usage
-- Consistent styling and behavior across all cards
-- Built-in loading states (skeleton UI)
-- Full TypeScript type safety
-- Accessibility tested (WCAG 2.1 AA compliant)
-- Responsive grid layouts
-
-**When to Use:**
-
-- **StatCard:** Single metric display (emails sent, click rate, revenue)
-- **StatsGridCard:** Multiple related metrics (opens breakdown, performance stats)
-- **StatusCard:** Status information with badge (delivery status, connection status, campaign state)
-- **Custom Card:** Complex interactive features or non-standard layouts (use base Card primitives)
-
-**Type Imports:**
-
-```tsx
-import type { StatCardProps } from "@/types/components/ui";
-import type { StatsGridCardProps, StatGridItem } from "@/types/components/ui";
-import type { StatusCardProps, StatusMetric } from "@/types/components/ui";
-```
-
-### Migration Examples
-
-The project has successfully migrated several components to use standardized Cards. Here are real examples:
-
-#### Example 1: Simple Vertical Layout (SocialEngagementCard)
-
-**Before (48 lines):**
-
-```tsx
-<Card>
-  <CardHeader>
-    <CardTitle>
-      <Share2 icon /> Social Engagement
-    </CardTitle>
-  </CardHeader>
-  <CardContent>
-    <div> Facebook Likes: {value} </div>
-    <div> Unique Likes: {value} </div>
-    <div> Recipient Likes: {value} </div>
-  </CardContent>
-</Card>
-```
-
-**After (36 lines with StatsGridCard):**
-
-```tsx
-<StatsGridCard
-  title="Social Engagement"
-  icon={Share2}
-  iconColor="text-purple-600"
-  stats={[
-    {
-      value: facebookLikes.facebook_likes.toLocaleString(),
-      label: "Facebook Likes",
-    },
-    {
-      value: facebookLikes.unique_likes.toLocaleString(),
-      label: "Unique Likes",
-    },
-    {
-      value: facebookLikes.recipient_likes.toLocaleString(),
-      label: "Recipient Likes",
-    },
-  ]}
-  columns={1}
-/>
-```
-
-**Lines saved:** ~12 lines | **Use case:** Vertical list of related metrics
-
-#### Example 2: Horizontal Grid with Footer (ForwardsCard)
-
-**Before (50 lines):**
-
-```tsx
-<Card>
-  <CardHeader>
-    <CardTitle>Email Forwards</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <div className="grid grid-cols-2">{/* 2 metrics */}</div>
-    <div>{/* Additional context */}</div>
-  </CardContent>
-</Card>
-```
-
-**After (40 lines with StatsGridCard):**
-
-```tsx
-<StatsGridCard
-  title="Email Forwards"
-  icon={Share}
-  iconColor="text-blue-500"
-  stats={[
-    {
-      value: forwards.forwards_count.toLocaleString(),
-      label: "Total Forwards",
-    },
-    {
-      value: forwards.forwards_opens.toLocaleString(),
-      label: "Opens from Forwards",
-    },
-  ]}
-  columns={2}
-  footer={
-    <p className="text-sm text-muted-foreground">
-      <span className="font-medium">{engagementRate}%</span> of forwarded emails
-      were opened
-    </p>
-  }
-/>
-```
-
-**Lines saved:** ~10 lines | **Use case:** Side-by-side metrics with additional context
-
-#### Example 3: Complex Footer (ClicksCard)
-
-**Before (76 lines):**
-
-```tsx
-<Card>
-  <CardHeader>Email Clicks</CardHeader>
-  <CardContent>
-    <div className="grid grid-cols-3">{/* 3 metrics */}</div>
-    <div className="pt-2 border-t">
-      {/* Complex footer with multiple sections */}
-    </div>
-  </CardContent>
-</Card>
-```
-
-**After (63 lines with StatsGridCard):**
-
-```tsx
-<StatsGridCard
-  title="Email Clicks"
-  icon={MousePointer}
-  iconColor="text-green-500"
-  stats={[
-    { value: clicks.clicks_total.toLocaleString(), label: "Total Clicks" },
-    { value: clicks.unique_clicks.toLocaleString(), label: "Unique Clicks" },
-    { value: `${(clicks.click_rate * 100).toFixed(1)}%`, label: "Click Rate" },
-  ]}
-  columns={3}
-  footer={
-    <div className="pt-2 border-t">
-      <div className="flex flex-col space-y-2">
-        {/* Complex footer preserved */}
-      </div>
-    </div>
-  }
-/>
-```
-
-**Lines saved:** ~13 lines | **Use case:** Multi-column metrics with complex footer
-
-#### Example 4: Consolidating Multiple Cards (ListStats)
-
-**Before (87 lines with 3 separate cards):**
-
-```tsx
-<div className="grid grid-cols-3 gap-4">
-  <Card>{/* Total Lists */}</Card>
-  <Card>{/* Total Members */}</Card>
-  <Card>{/* Visibility */}</Card>
-</div>
-```
-
-**After (40 lines with single StatsGridCard):**
-
-```tsx
-<StatsGridCard
-  title="Lists Overview"
-  icon={Users}
-  iconColor="text-blue-600"
-  stats={[
-    { value: formatNumber(totalLists), label: "Total Lists" },
-    { value: formatNumber(totalMembers), label: "Total Members" },
-    { value: `${pub} / ${prv}`, label: "Public / Private" },
-  ]}
-  columns={3}
-/>
-```
-
-**Lines saved:** ~47 lines | **Use case:** Multiple related cards consolidated into unified component
-
-#### Migration Decision Guide
-
-**Use StatsGridCard when:**
-
-- Displaying 2-4 related metrics
-- Metrics share common context (same feature/domain)
-- Simple value + label format
-- Optional: Need footer for additional context
-- Want responsive column layout
-
-**Use StatCard when:**
-
-- Single important metric to highlight
-- Metric has trend/change indicator
-- Independent metric not part of a group
-- Simple icon + value + label pattern
-
-**Keep custom Card when:**
-
-- Interactive features (toggles, tabs, buttons)
-- Complex layouts (charts, tables, progress bars)
-- Specialized formatting beyond stats grid
-- Multiple unrelated sections in one card
-
-#### Real Results from Migrations
-
-**Components migrated:** 4
-
-- [SocialEngagementCard.tsx](src/components/dashboard/reports/SocialEngagementCard.tsx) (dashboard/reports)
-- [ForwardsCard.tsx](src/components/dashboard/reports/ForwardsCard.tsx) (dashboard/reports)
-- [ClicksCard.tsx](src/components/dashboard/reports/ClicksCard.tsx) (dashboard/reports)
-- [list-stats.tsx](src/components/mailchimp/lists/list-stats.tsx) (mailchimp/lists)
-
-**Total lines saved:** ~210 lines of boilerplate
-**Average reduction:** ~52 lines per component
-**Time to migrate:** ~1.5 hours for all 4 components
-**Breaking changes:** None - all functionality preserved
-
-**Benefits realized:**
-
-- Consistent card styling across dashboard
-- Easier to maintain (centralized component logic)
-- Built-in accessibility (WCAG 2.1 AA)
-- Type-safe props with full TypeScript support
-- Reduced code duplication
-- Faster development for new dashboard cards
-
-### URL Params Processing Pattern
-
-The project provides two utilities for processing URL parameters, each serving a distinct purpose.
-
-**Quick Decision Guide:**
-
-```
-Does your page have pagination? (?page=N&perPage=M)
-├─ YES → Use validatePageParams()
-│         Location: src/utils/mailchimp/page-params.ts
-│         Example: /mailchimp/lists?page=2&perPage=10
-│
-└─ NO → Does your page have route params? ([id], [slug])
-         ├─ YES → Use processRouteParams()
-         │         Location: src/utils/mailchimp/route-params.ts
-         │         Example: /mailchimp/lists/[id]
-         │
-         └─ NO → No utility needed
-                  Example: /mailchimp/general-info
-```
-
-**validatePageParams() - For List/Table Pages:**
-
-Used for pages with pagination (page, perPage in URL):
-
-- Validates URL search parameters
-- Checks for redirects to clean default values from URL
-- Transforms UI params to API format
-- Returns both API params and UI display values
-
-```tsx
-import { validatePageParams } from "@/utils/mailchimp/page-params";
-
-// In your page.tsx
-const result = await validatePageParams({
-  searchParams,
-  uiSchema: listsPageSearchParamsSchema,
-  apiSchema: listsParamsSchema,
-  basePath: "/mailchimp/lists",
-});
-
-const response = await mailchimpDAL.fetchLists(result.apiParams);
-// Use result.currentPage and result.pageSize for UI
-```
-
-**processRouteParams() - For Detail Pages:**
-
-Used for pages with dynamic route segments ([id], [slug]):
-
-- Validates route parameters
-- Triggers 404 for invalid route params
-- Validates search params if present
-- Returns validated data only
-
-```tsx
-import { processRouteParams } from "@/utils/mailchimp/route-params";
-import { emptySearchParamsSchema } from "@/schemas/components";
-
-// In your page.tsx with [id] route
-const { validatedParams, validatedSearchParams } = await processRouteParams({
-  params,
-  searchParams,
-  paramsSchema: reportPageParamsSchema,
-  searchParamsSchema: emptySearchParamsSchema, // Or specific schema if needed
-});
-
-const { id } = validatedParams;
-const response = await mailchimpDAL.fetchCampaignReport(id);
-```
-
-**Schema Naming Conventions:**
-
-- Page search params: `listsPageSearchParamsSchema` (used with validatePageParams)
-- Route params: `reportPageParamsSchema` (used with processRouteParams)
-- API params: `listsParamsSchema` (Mailchimp API format)
-
-**Detailed Documentation:** See [src/utils/params/README.md](src/utils/params/README.md) for comprehensive guide with examples.
-
-### PageLayout Component Pattern
-
-The project uses a centralized `PageLayout` component to reduce boilerplate across all dashboard pages.
-
-**When to Use:**
-
-- All dashboard pages that follow the standard layout (breadcrumbs + header + content)
-- Both static pages and pages with dynamic route params
-
-**Two Usage Patterns:**
-
-**Pattern A - Static Pages** (no dynamic route params):
-
-```tsx
-import { PageLayout } from "@/components/layout";
-import { bc } from "@/utils";
-
-export default function MyPage({ searchParams }) {
-  return (
-    <PageLayout
-      breadcrumbs={[bc.home, bc.mailchimp, bc.current("My Page")]}
-      title="Page Title"
-      description="Page description"
-      skeleton={<MyPageSkeleton />}
-    >
-      <MyPageContent searchParams={searchParams} />
-    </PageLayout>
-  );
-}
-```
-
-**Pattern B - Dynamic Pages** (with `[id]` or other dynamic segments):
-
-```tsx
-import { PageLayout, BreadcrumbNavigation } from "@/components/layout";
-import { bc } from "@/utils";
-import { Suspense } from "react";
-
-export default async function MyDynamicPage({ params, searchParams }) {
-  const rawParams = await params;
-  const { id } = myParamsSchema.parse(rawParams);
-
-  // ... data fetching and validation ...
-
-  return (
-    <PageLayout
-      breadcrumbsSlot={
-        <Suspense fallback={null}>
-          <BreadcrumbContent params={params} />
-        </Suspense>
-      }
-      title="Page Title"
-      description="Page description"
-      skeleton={<MyPageSkeleton />}
-    >
-      <MyPageContent {...props} />
-    </PageLayout>
-  );
-}
-
-// Separate async component for breadcrumbs
-async function BreadcrumbContent({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = myParamsSchema.parse(await params);
-  return (
-    <BreadcrumbNavigation
-      items={[bc.home, bc.mailchimp, bc.myRoute(id), bc.current("Details")]}
-    />
-  );
-}
-```
-
-**Benefits:**
-
-- Eliminates 20-50 lines of boilerplate per page
-- Consistent layout structure across all pages
-- Type-safe props with comprehensive JSDoc
-- Supports both static and dynamic breadcrumb patterns
+**Configured:** `@/*`, `@/components/*`, `@/actions/*`, `@/types/*`, `@/schemas/*`, `@/utils/*`, `@/lib/*`, `@/skeletons/*`
 
 **Rules:**
 
-- Use `breadcrumbs` prop for static pages (Pattern A)
-- Use `breadcrumbsSlot` prop for dynamic pages (Pattern B)
-- Never pass both props - choose one based on page type
-- Always provide title, description, and skeleton props
+- Use path aliases consistently (no relative imports in index.ts) - enforced by tests
+- Define shared types in `/src/types` only (no inline) - enforced by tests
+- Define Zod schemas in `/src/schemas` only (no inline) - enforced by tests
 
-### Schema & API Patterns
+### Testing & Quality
 
-- **Error response strategy**: Compare fields to shared error schema, extend with `.extend({ ... })` if needed, or create custom schema if fundamentally different
-- **API naming consistency**: Always use the same object/property names as the API when defining Zod schemas and TypeScript types
-- **Enum pattern**: Define as constant array (e.g., `export const VISIBILITY = ["pub", "prv"] as const;`) and use in `z.enum(VISIBILITY)`
-- **DateTime validation**:
-  - Use `z.iso.datetime({ offset: true })` for ISO 8601 datetime strings with timezone support (recommended for API dates)
-  - Use `z.iso.datetime()` for strict UTC-only datetime strings (`YYYY-MM-DDTHH:MM:SSZ`)
-  - Use `z.string()` only for basic string validation without datetime format enforcement
-  - **Deprecated**: Never use `z.string().datetime()` (enforced by architectural tests)
+**Pre-commit hooks:** Auto-format, lint, type-check, test, a11y test, secret scan (Husky + lint-staged)
 
-### Component Development
+**Architectural tests enforce:**
 
-- **Server Components**: Use by default, only mark with 'use client' when needed
-  - **CRITICAL**: Layout components (`layout.tsx`, `dashboard-shell.tsx`) MUST remain Server Components
-  - **CRITICAL**: All `not-found.tsx` files MUST be Server Components for proper 404 status codes
-  - **Rule**: Only add "use client" when component uses hooks (useState, useEffect, etc.) or browser APIs
-  - **Pattern**: Keep parent as Server Component, extract client logic to child components
-  - **Enforcement**: Architectural tests prevent "use client" in critical files (enforced by CI)
-  - **Why**: Next.js `notFound()` only works in Server Components; violating this returns 200 instead of 404
-- **Atomic design**: Follow atoms, molecules, organisms pattern
-- **shadcn/ui**: Use as base building blocks
-- **JSDoc**: Document component usage with comments
+- Path alias usage (no long relative paths)
+- Types in `/src/types` only
+- Server Components for layouts/not-found.tsx (404 status codes)
+- No deprecated APIs (`z.string().datetime()`, `React.FC`, etc.)
 
-#### Page Component Headers
+**Run:** `pnpm test src/test/architectural-enforcement/`
 
-All page components should include a standardized JSDoc header at the top of the file:
+### Required Reading Before Development
 
-**Standard Template:**
+1. `docs/PRD.md` - Product requirements
+2. `docs/project-management/development-roadmap.md` - Progress
+3. `docs/project-management/task-tracking.md` - Priorities
+4. `docs/api-coverage.md` - Mailchimp API implementation status
+
+---
+
+## AI-First Development Workflow
+
+This project uses an **AI-assisted, two-phase workflow** for implementing new Mailchimp dashboard pages.
+
+### Overview
+
+**Phase 1: Schema Creation & Review** ✋ (STOP POINT)
+**Phase 2: Page Generation** 🚀 (After Approval)
+
+### Phase 1: Schema Creation & Review
+
+When implementing a new Mailchimp API endpoint:
+
+1. **AI analyzes Mailchimp API documentation** for the target endpoint
+2. **AI creates Zod schemas** in `src/schemas/mailchimp/`:
+   - `{endpoint}-params.schema.ts` - Request parameters (path + query params)
+   - `{endpoint}-success.schema.ts` - Successful response structure
+   - `{endpoint}-error.schema.ts` (optional) - Error response structure
+3. **AI presents schemas for review**
+4. **⏸️ STOP - User reviews schemas**
+   - Check field names match Mailchimp API exactly
+   - Verify types are correct (string, number, boolean, etc.)
+   - Confirm pagination structure if applicable
+   - Request changes if needed
+5. **User approves schemas** - Say "approved" or "looks good" to proceed
+
+### Phase 2: Page Generation (After Approval)
+
+Once schemas are approved:
+
+6. **AI calls programmatic generator API**:
+
+   ```typescript
+   import { generatePage } from "@/scripts/generators/api";
+
+   const result = await generatePage({
+     apiParamsPath: "src/schemas/mailchimp/{endpoint}-params.schema.ts",
+     apiResponsePath: "src/schemas/mailchimp/{endpoint}-success.schema.ts",
+     apiErrorPath: "src/schemas/mailchimp/{endpoint}-error.schema.ts", // optional
+     routePath: "/mailchimp/{resource}/[id]/{endpoint}",
+     pageTitle: "...",
+     pageDescription: "...",
+     apiEndpoint: "/api/endpoint/path",
+   });
+   ```
+
+7. **Generator creates infrastructure** (500-800 lines):
+   - Page files (`page.tsx`, `loading.tsx`, `not-found.tsx`)
+   - UI schemas (converts API schemas to page params)
+   - Placeholder component (with Construction card)
+   - DAL method
+   - Breadcrumb function
+   - Metadata helper
+8. **AI implements component logic** (replaces Construction card)
+9. **AI runs validation**:
+   - `pnpm type-check` - TypeScript validation
+   - `pnpm lint:fix` - Code style fixes
+   - `pnpm test` - All tests pass
+10. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
+
+### What Gets Generated Automatically
+
+The programmatic API generates complete, working infrastructure:
+
+```
+src/app/mailchimp/{resource}/[id]/{endpoint}/
+├── page.tsx              # Main page with data fetching
+├── loading.tsx           # Loading skeleton
+└── not-found.tsx         # 404 page (for detail pages)
+
+src/schemas/components/mailchimp/
+└── {endpoint}-page-params.ts  # UI schema for route/search params
+
+src/components/mailchimp/{resource}/
+└── {endpoint}-content.tsx     # Placeholder component (AI implements)
+
+src/dal/mailchimp.dal.ts        # New method added
+src/utils/breadcrumbs/breadcrumb-builder.ts  # New function added
+src/utils/mailchimp/metadata.ts              # New helper added
+```
+
+### Benefits of This Approach
+
+✅ **Quality Control** - User reviews API contract before building infrastructure
+✅ **Learning** - User sees and understands schema structure
+✅ **Easy Corrections** - Fix schemas before generating 500+ lines of code
+✅ **Clear Checkpoints** - Explicit approval makes workflow predictable
+✅ **Async-Friendly** - User can review schemas later, then approve
+✅ **Consistency** - All pages follow same patterns automatically
+✅ **Speed** - 2-3 hours → 5-10 minutes per page
+
+### Tracking Progress
+
+Check `docs/api-coverage.md` to see:
+
+- ✅ Implemented endpoints
+- ⭐ Priority endpoints (next to implement)
+- 📋 Planned endpoints
+- Implementation progress (X/Y endpoints, Z%)
+
+### Example Session
+
+```
+User: "Create schemas for the Campaign Clicks endpoint"
+
+AI: [Analyzes Mailchimp docs, creates 3 schema files, shows them]
+AI: "I've created the schemas. Please review and approve before proceeding."
+
+User: [Reviews schemas]
+User: "Approved"
+
+AI: [Calls generatePage(), implements component, runs tests]
+AI: "✅ Campaign Clicks page complete. Updated api-coverage.md."
+```
+
+### Programmatic API Reference
+
+**High-Level API** (recommended):
+
+```typescript
+import { generatePage } from '@/scripts/generators/api';
+
+const result = await generatePage({
+  apiParamsPath: string,
+  apiResponsePath: string,
+  apiErrorPath?: string,
+  routePath: string,
+  pageTitle: string,
+  pageDescription: string,
+  apiEndpoint: string,
+  configKey?: string,  // auto-derived if not provided
+  overrides?: {
+    httpMethod?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
+    pageType?: "list" | "detail" | "nested-detail",
+    enablePagination?: boolean,
+    breadcrumbLabel?: string,
+    breadcrumbParent?: string,
+    features?: string[]
+  }
+});
+```
+
+**Low-Level API** (full control):
+
+```typescript
+import { generatePageFromConfig } from "@/scripts/generators/api";
+import type { PageConfig } from "@/generation/page-configs";
+
+const config: PageConfig = {
+  /* complete config */
+};
+const result = await generatePageFromConfig(config, "config-key");
+```
+
+**See Also:**
+
+- `scripts/generators/README.md` - Full generator documentation
+- `scripts/generators/api/index.ts` - API documentation and examples
+- `docs/execution-plans/page-generator-execution-plan.md` - Implementation details
+
+---
+
+## Development Patterns
+
+### Error Handling
+
+**Utilities:** `src/utils/errors/`
+
+- `handleApiError(response)` - Auto-handles 404s with `notFound()`, returns error message for UI
+- `handleApiErrorWithFallback(response, fallback)` - Same with custom fallback
+- `is404Error(message)` - Detects 404/not found errors
+
+**Usage:**
+
+```tsx
+import { handleApiError } from "@/utils/errors";
+const response = await mailchimpDAL.fetchCampaignReport(id);
+const error = handleApiError(response); // Triggers notFound() for 404s
+if (error) return <ErrorDisplay message={error} />;
+// Render success UI
+```
+
+**Philosophy:** Return expected errors as values, use `notFound()` for 404s, let error boundaries catch unexpected errors.
+
+### Breadcrumbs
+
+**Utility:** `bc` from `@/utils/breadcrumbs`
+
+**Usage:** `<BreadcrumbNavigation items={[bc.home, bc.mailchimp, bc.reports, bc.report(id), bc.current("Details")]} />`
+
+**Routes:** `bc.home`, `bc.mailchimp`, `bc.reports`, `bc.lists`, `bc.generalInfo`, `bc.settings`, `bc.integrations`, `bc.report(id)`, `bc.list(id)`, `bc.reportOpens(id)`, `bc.reportAbuseReports(id)`, `bc.current(label)`, `bc.custom(label, href)`
+
+### Standard Card Components
+
+**Components:** `StatCard` (single metric) | `StatsGridCard` (multi-metric grid) | `StatusCard` (status + badge + metrics)
+
+**Decision:**
+
+- StatCard: Single metric with optional trend
+- StatsGridCard: 2-4 related metrics (simple value + label)
+- StatusCard: Status info with badge
+- Custom: Interactive features, charts, tables
+
+**Import types:** `@/types/components/ui` (StatCardProps, StatsGridCardProps, StatusCardProps)
+
+### URL Params Processing
+
+**Decision tree:**
+
+- Pagination (`?page=N&perPage=M`) → `validatePageParams()` from `@/utils/mailchimp/page-params`
+- Route params (`[id]`, `[slug]`) → `processRouteParams()` from `@/utils/mailchimp/route-params`
+- Neither → No utility needed
+
+**Docs:** `src/utils/params/README.md`
+
+### PageLayout Component
+
+**Usage:** All dashboard pages use `PageLayout` from `@/components/layout`
+
+**Patterns:**
+
+- **Static pages:** `breadcrumbs={[bc.home, bc.current("Page")]}`
+- **Dynamic pages:** `breadcrumbsSlot={<Suspense><BreadcrumbContent /></Suspense>}`
+
+**Props:** title, description, skeleton (required) + breadcrumbs XOR breadcrumbsSlot
+
+### Metadata Helpers
+
+**Helpers:** `generateCampaignReportMetadata`, `generateCampaignOpensMetadata`, `generateCampaignAbuseReportsMetadata` from `@/utils/metadata`
+
+**Usage:** `export const generateMetadata = generateCampaignOpensMetadata;` (1 line vs 30+ inline)
+
+**Type helper:** `import type { GenerateMetadata } from "@/types/components/metadata"` for type-safe metadata functions
+
+### Page Component Headers
+
+**Template:**
 
 ```tsx
 /**
  * [Page Title]
- * [Brief 1-2 sentence description]
+ * [1-2 sentence description]
  *
  * @route [/path/to/page]
- * @requires [Authentication requirement]
- * @features [Key features]
+ * @requires [None | Kinde Auth | Mailchimp connection | Both]
+ * @features [Feature 1, Feature 2, Feature 3]
  */
 ```
 
-**VSCode Snippet:** Type `pageheader` and press Tab to insert the template
+**VSCode snippet:** Type `pageheader` + Tab
 
-**Examples:**
+### Schema & API Patterns
 
-```tsx
-// List page
-/**
- * Mailchimp Lists Page
- * Displays paginated list of Mailchimp audiences with filtering and search
- *
- * @route /mailchimp/lists
- * @requires Mailchimp connection
- * @features Pagination, Filtering, Real-time data
- */
+- **API naming:** Always match API property names in Zod schemas and types
+- **Enums:** `export const VISIBILITY = ["pub", "prv"] as const;` + `z.enum(VISIBILITY)`
+- **DateTime:** Use `z.iso.datetime({ offset: true })` for ISO 8601 (recommended), `z.iso.datetime()` for UTC-only
+- **Deprecated:** Never use `z.string().datetime()` (enforced by tests)
 
-// Detail page with dynamic route
-/**
- * Campaign Report Detail Page
- * Displays detailed analytics and metrics for a specific campaign
- *
- * @route /mailchimp/reports/[id]
- * @requires Mailchimp connection
- * @features Dynamic routing, Tab navigation, Real-time metrics
- */
+### Component Development
 
-// Settings page
-/**
- * Settings - Integrations Page
- * Manage OAuth connections and API integrations
- *
- * @route /settings/integrations
- * @requires Kinde Auth
- * @features OAuth management, Connection status
- */
-```
+**Server Components by default:**
 
-**Guidelines:**
+- **CRITICAL:** layouts (`layout.tsx`, `dashboard-shell.tsx`) and `not-found.tsx` MUST be Server Components (404 status codes)
+- Only use `"use client"` for hooks (useState, useEffect) or browser APIs
+- Extract client logic to child components, keep parent as Server Component
+- Enforced by architectural tests
 
-- **@route:** Use exact route path with `[id]` for dynamic segments
-- **@requires:** Options: `None`, `Kinde Auth`, `Mailchimp connection`, `Kinde Auth + Mailchimp connection`
-- **@features:** List 2-4 key features, comma-separated
-
-#### Metadata Type Safety
-
-**Problem:** `generateMetadata` functions in dynamic pages require manual type annotations that are repetitive and error-prone.
-
-**Solution:** Use type-safe helpers from `@/types/components/metadata`:
-
-```tsx
-import type { GenerateMetadata } from "@/types/components/metadata";
-
-// Simple usage with default { id: string } params
-export const generateMetadata: GenerateMetadata = async ({ params }) => {
-  const { id } = await params;
-  return {
-    title: `Report ${id}`,
-    description: "View campaign analytics",
-  };
-};
-
-// Custom params shape (if you have multiple dynamic segments)
-import type { GenerateMetadata } from "@/types/components/metadata";
-
-export const generateMetadata: GenerateMetadata<{
-  id: string;
-  slug: string;
-}> = async ({ params }) => {
-  const { id, slug } = await params;
-  return {
-    title: `${slug} - Report ${id}`,
-  };
-};
-```
-
-**Available Types:**
-
-- `GenerateMetadata<TParams>` - Type for the metadata function with custom params shape
-- `MetadataProps<TParams>` - Props shape for metadata functions (for advanced use cases)
-
-**Benefits:**
-
-- Type inference and autocomplete for params
-- No repetitive manual type annotations
-- Supports custom parameter shapes via generics
-- Consistent typing across all pages
-- Eliminates common type errors
-
-**When to use:**
-
-- All dynamic pages with `generateMetadata` and route params (`[id]`, `[slug]`, etc.)
-- Pages with custom parameter shapes (multiple dynamic segments like `[category]/[id]`)
-- Any page where you want type safety without manual annotations
-
-**Before:**
-
-```tsx
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}): Promise<Metadata> {
-  // 5 lines of type annotations
-}
-```
-
-**After:**
-
-```tsx
-export const generateMetadata: GenerateMetadata = async ({ params }) => {
-  // 1 line with type inference
-};
-```
-
-### Metadata Helper Functions
-
-**Problem:** Metadata generation involves repetitive API calls and data formatting across multiple pages.
-
-**Solution:** Centralized metadata helpers in `src/utils/mailchimp/metadata.ts` and `src/utils/metadata.ts`
-
-**Available Helpers:**
-
-```tsx
-import {
-  generateCampaignMetadata, // Generic campaign metadata with pageType param
-  generateCampaignReportMetadata, // Campaign report detail pages
-  generateCampaignOpensMetadata, // Campaign opens pages
-  generateCampaignAbuseReportsMetadata, // Campaign abuse reports pages
-} from "@/utils/metadata";
-```
-
-**Usage Pattern:**
-
-```tsx
-// In your page.tsx with dynamic [id] route
-import { generateCampaignOpensMetadata } from "@/utils/metadata";
-
-// Simple one-line metadata export
-export const generateMetadata = generateCampaignOpensMetadata;
-```
-
-**Before (30+ lines inline):**
-
-```tsx
-export const generateMetadata: GenerateMetadata = async ({ params }) => {
-  const rawParams = await params;
-  const { id } = reportOpensPageParamsSchema.parse(rawParams);
-
-  const response = await mailchimpDAL.fetchCampaignReport(id);
-
-  if (!response.success || !response.data) {
-    return {
-      title: "Campaign Opens | Fichaz",
-      description: "View members who opened this campaign",
-    };
-  }
-
-  const report = response.data as CampaignReport;
-
-  return {
-    title: `${report.campaign_title} - Opens | Fichaz`,
-    description: `View the ${report.opens.opens_total} members who opened ${report.campaign_title}`,
-  };
-};
-```
-
-**After (1 line):**
-
-```tsx
-import { generateCampaignOpensMetadata } from "@/utils/metadata";
-export const generateMetadata = generateCampaignOpensMetadata;
-```
-
-**Key Features:**
-
-- Eliminates 30+ lines of boilerplate per page
-- Consistent metadata format across all campaign pages
-- Centralized error handling and fallback metadata
-- OpenGraph metadata included automatically
-- Type-safe with proper params validation
-
-**When to Use:**
-
-- Campaign report pages (`/mailchimp/reports/[id]`)
-- Campaign opens pages (`/mailchimp/reports/[id]/opens`)
-- Campaign abuse reports pages (`/mailchimp/reports/[id]/abuse-reports`)
-- Any future campaign-related pages
-
-**Creating New Helpers:**
-
-Follow the pattern in `src/utils/mailchimp/metadata.ts`:
-
-1. Accept `params: Promise<{ id: string }>` parameter
-2. Validate params with appropriate Zod schema
-3. Make async DAL call to fetch data
-4. Return fallback metadata if fetch fails
-5. Build and return metadata object with title, description, openGraph
-6. Export from `src/utils/metadata.ts` for unified imports
-
-**Benefits:**
-
-- 30+ lines saved per page using helpers
-- Consistent metadata structure across pages
-- Single source of truth for campaign metadata
-- Easier to update metadata format globally
-- Improved maintainability and testability
-
-### Quality Assurance Workflow
-
-1. **Automatic pre-commit validation** (enforced by Husky hooks):
-   - **lint-staged**: Automatically formats and lints only staged files
-   - **Full validation**: Secret checking, type-checking, testing, and accessibility testing
-   - All checks must pass before commits are allowed
-   - Formatted changes are automatically included in the commit
-2. **Manual validation options**:
-   - `pnpm pre-commit` - Full validation suite (same as automatic pre-commit)
-   - `pnpm quick-check` - Fast validation (type-check + lint only)
-   - `pnpm format:check` - Check formatting without fixing
-
-### Branch & Commit Strategy
-
-- **Branch naming**: Use `feature/description-of-feature` or `fix/description-of-fix` with lowercase and hyphens
-- **Conventional commits**: Follow `type(scope): description` format
-  - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-  - Example: `feat: add user dashboard component`
-- **Pull requests**: Always use PRs, never push directly to main
-- **Code review**: Reviewers must confirm all index.ts files use path aliases for exports
-
-### Performance Guidelines
-
-- **Core Web Vitals**: Track LCP, FID, CLS using WebVitalsReporter component
-- **Performance monitoring**: Use hooks like `useWebVitals`, `usePageLoadPerformance`
-- **Bundle optimization**: Monitor bundle size and implement performance budgets
-- **Next.js Image**: Use for all images with proper code splitting
-
-### Accessibility Standards
-
-- **WCAG 2.1 AA compliance**: Minimum standard with automated testing
-- **Semantic HTML**: Use proper elements (header, nav, main, section)
-- **Keyboard navigation**: Ensure all interactive elements work via keyboard
-- **Screen readers**: Test with VoiceOver, NVDA, JAWS
-- **Color contrast**: Minimum 4.5:1 ratio for normal text
-- **Development tools**: Use A11yProvider for real-time checking
-
-### Security & Best Practices
-
-- Never log environment variables, API keys, OAuth tokens, or secrets (enforced by automated scanning)
-- Use the centralized environment validation in `src/lib/config.ts`
-- All API endpoints must use Zod schemas for input validation
-- Follow accessibility guidelines with automated testing
-- OAuth tokens are encrypted at rest using AES-256-GCM
-- HTTPS-only in production for OAuth redirects
-- CSRF protection via state parameters in OAuth flow
-
-### Mailchimp OAuth Setup
-
-**Authentication Method:** OAuth 2.0 (user-scoped tokens)
-
-**Initial Setup:**
-
-1. **Create Neon Database via Vercel:**
-   - Go to Vercel Dashboard → Your Project → Storage tab
-   - Click "Create Database" → Select "Neon" (Serverless Postgres)
-   - Vercel automatically adds environment variables (`DATABASE_URL`, `POSTGRES_PRISMA_URL`, `POSTGRES_URL`)
-
-2. **Pull Environment Variables:**
-
-   ```bash
-   vercel env pull .env.local
-   ```
-
-3. **Register OAuth App at Mailchimp:**
-   - Login to Mailchimp → Account → Extras → API Keys → "Register an App"
-   - Fill in app details:
-     - App Name: Fichaz
-     - App Website: Your production Vercel URL
-     - Redirect URI (local): `https://127.0.0.1:3000/api/auth/mailchimp/callback`
-     - Redirect URI (production): `https://your-domain.vercel.app/api/auth/mailchimp/callback`
-   - Copy Client ID and Client Secret
-
-4. **Add OAuth Credentials to Environment:**
-
-   ```bash
-   # Add to .env.local
-   MAILCHIMP_CLIENT_ID=your-client-id
-   MAILCHIMP_CLIENT_SECRET=your-client-secret
-   MAILCHIMP_REDIRECT_URI=https://127.0.0.1:3000/api/auth/mailchimp/callback
-
-   # Generate encryption key
-   openssl rand -base64 32
-   ENCRYPTION_KEY=your-generated-key
-   ```
-
-5. **Push Database Schema:**
-
-   ```bash
-   pnpm db:push
-   ```
-
-6. **Start Development Server:**
-
-   ```bash
-   pnpm dev
-   ```
-
-7. **Connect Mailchimp Account:**
-   - Visit `https://127.0.0.1:3000/mailchimp` or `/settings/integrations`
-   - Click "Connect Mailchimp"
-   - Authorize access in Mailchimp
-   - Redirected back to dashboard with active connection
-
-**Database Structure:**
-
-- **Table:** `mailchimp_connections` links Kinde user IDs to encrypted Mailchimp OAuth tokens
-- **Encryption:** Tokens encrypted at rest using AES-256-GCM
-- **Repository Pattern:** `src/db/repositories/mailchimp-connection.ts` handles all database operations
-
-**OAuth Flow:**
-
-- `POST /api/auth/mailchimp/authorize` - Initiate OAuth flow
-- `GET /api/auth/mailchimp/callback` - OAuth callback handler (processes authorization code)
-- `POST /api/auth/mailchimp/disconnect` - Disconnect Mailchimp account
-- `GET /api/auth/mailchimp/status` - Check connection status
-
-**User Experience:**
-
-- Users without connected Mailchimp see empty state with "Connect Mailchimp" button
-- Settings page at `/settings/integrations` shows connection status and management options
-- Success/error banners provide feedback after OAuth flow
-- Connection validation happens hourly via Mailchimp ping endpoint
-- Invalid tokens automatically deactivate connections
-
-**Security Features:**
-
-- Tokens encrypted at rest in database
-- CSRF protection via state parameter
-- HTTPS-only redirects in production
-- HTTP-only cookies for OAuth state
-- Tokens never logged or exposed to client
-- Hourly token validation with auto-deactivation
-
-### Kinde Authentication Setup
-
-**Local Development Cookie Configuration:**
-
-For local HTTPS development with self-signed certificates on `127.0.0.1`, you MUST set the cookie domain explicitly in `.env.local`:
-
-```bash
-# Cookie configuration for local HTTPS development
-# CRITICAL: Must match the domain you're developing on (without port)
-KINDE_COOKIE_DOMAIN=127.0.0.1
-```
-
-**Why This Is Required:**
-
-The Kinde Next.js SDK needs explicit cookie domain configuration for HTTPS on `127.0.0.1` to ensure OAuth state cookies persist between the authorization request and callback. Without this, you'll encounter "State not found" errors because the browser won't properly scope the cookies.
-
-**Troubleshooting OAuth "State not found" Errors:**
-
-If you encounter "State not found" errors after setting `KINDE_COOKIE_DOMAIN`, follow these steps in order:
-
-1. **Kill all Next.js dev servers** (multiple instances cause state conflicts):
-
-   ```bash
-   pkill -f "next dev"
-   ```
-
-2. **Clear Next.js cache**:
-
-   ```bash
-   pnpm clean
-   ```
-
-3. **Verify environment variables are set**:
-
-   ```bash
-   grep KINDE_COOKIE_DOMAIN .env.local
-   # Should output: KINDE_COOKIE_DOMAIN=127.0.0.1
-   ```
-
-4. **Start fresh dev server**:
-
-   ```bash
-   pnpm dev
-   ```
-
-5. **Clear browser state** using the utility endpoint: `https://127.0.0.1:3000/api/auth/clear-state`
-
-6. **Clear browser cache completely**: Cmd+Shift+Delete (Mac) or Ctrl+Shift+Delete (Windows)
-   - Select "Cookies and other site data"
-   - Choose "All time"
-   - Click "Clear data"
-
-7. **Verify configuration** using the health endpoint: `https://127.0.0.1:3000/api/auth/health`
-
-8. **Test login in incognito/private browsing mode** (eliminates browser cache issues)
-
-**Common Causes:**
-
-- Multiple dev servers running (check with `ps aux | grep "next dev"`)
-- Stale Next.js cache in `.next/` directory
-- Browser cached cookies from previous sessions
-- `KINDE_COOKIE_DOMAIN` not set or server not restarted after setting it
-
-**Production Note:** In production on Vercel, remove `KINDE_COOKIE_DOMAIN` or set it to your custom domain (e.g., `KINDE_COOKIE_DOMAIN=yourdomain.com`). Do not use `127.0.0.1` in production.
+**Patterns:** Atomic design, shadcn/ui base, JSDoc comments
 
 ### Mailchimp Fetch Client Architecture
 
-The project uses a modern, native fetch-based client for Mailchimp API integration, replacing the legacy `@mailchimp/mailchimp_marketing` SDK.
+**Layers:** Server Actions → DAL → Action Wrapper → Fetch Client → Mailchimp API
 
-**Architecture Layers:**
+**Files:**
 
-```
-Server Actions → Data Access Layer (DAL) → Action Wrapper → Fetch Client → Mailchimp API
-```
+- `src/lib/errors/mailchimp-errors.ts` - Error classes
+- `src/lib/mailchimp-fetch-client.ts` - Native fetch client (Edge compatible)
+- `src/lib/mailchimp-client-factory.ts` - `getUserMailchimpClient()`
+- `src/lib/mailchimp-action-wrapper.ts` - `mailchimpApiCall()` returns ApiResponse<T>
+- `src/dal/mailchimp.dal.ts` - Business logic (singleton)
 
-**Key Components:**
+**Usage:** `const result = await mailchimpDAL.fetchCampaignReports({ count: 10 }); if (!result.success) ...`
 
-1. **Error Classes** (`src/lib/errors/mailchimp-errors.ts`):
-   - `MailchimpFetchError` - Base API error
-   - `MailchimpAuthError` - Authentication/authorization errors
-   - `MailchimpRateLimitError` - Rate limit exceeded errors
-   - `MailchimpNetworkError` - Network/connection errors
+**Benefits:** 97% smaller bundle, Edge Runtime compatible, rate limit tracking, timeout handling
 
-2. **Fetch Client** (`src/lib/mailchimp-fetch-client.ts`):
-   - Native `fetch` API (Edge Runtime compatible)
-   - Automatic OAuth token injection
-   - Rate limit tracking from response headers
-   - Timeout support with AbortController
-   - Comprehensive error handling
-   - Supports GET, POST, PATCH, PUT, DELETE methods
+### OAuth Setup (Quick Reference)
 
-3. **Client Factory** (`src/lib/mailchimp-client-factory.ts`):
-   - `getUserMailchimpClient()` - Creates user-scoped client instances
-   - Retrieves decrypted OAuth tokens from database
-   - Validates user authentication and connection status
+**Mailchimp OAuth:**
 
-4. **Action Wrapper** (`src/lib/mailchimp-action-wrapper.ts`):
-   - `mailchimpApiCall()` - Wrapper for server actions
-   - Returns `ApiResponse<T>` for consistent error handling
-   - Follows Next.js App Router best practices (return errors, don't throw)
-   - Includes rate limit info in responses
+1. Create Neon DB via Vercel (Storage tab)
+2. `vercel env pull .env.local`
+3. Register OAuth app at Mailchimp → Add client ID/secret to `.env.local`
+4. Generate encryption key: `openssl rand -base64 32` → Add to `.env.local`
+5. `pnpm db:push` → `pnpm dev`
+6. Visit `/settings/integrations` to connect
 
-5. **Data Access Layer (DAL)** (`src/dal/mailchimp.dal.ts`):
-   - Business logic and API orchestration
-   - Methods for campaigns, audiences, reports
-   - Singleton pattern for app-wide use
+**Kinde Local HTTPS:**
 
-**Benefits:**
+- **Required:** `KINDE_COOKIE_DOMAIN=127.0.0.1` in `.env.local` for OAuth state persistence
+- **Troubleshooting "State not found":** `pkill -f "next dev"` → `pnpm clean` → `pnpm dev` → Clear browser cache → Test in incognito
+- **Production:** Remove or set to custom domain
 
-- ✅ **97% bundle size reduction** (~150KB → ~5KB)
-- ✅ **Edge Runtime compatible** for faster API routes
-- ✅ **Type-safe** with Zod schema validation
-- ✅ **Rate limit tracking** built-in
-- ✅ **Timeout handling** with configurable timeouts
-- ✅ **Comprehensive error handling** with typed error classes
-- ✅ **Zero breaking changes** - backward compatible API
+## Git Strategy
 
-**Usage Example:**
+**Branches:** `feature/description` or `fix/description` (lowercase, hyphens)
 
-```typescript
-import { mailchimpDAL } from "@/dal/mailchimp.dal";
+**Commits:** Conventional commits (`feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`)
 
-// Service layer handles all the complexity
-const result = await mailchimpDAL.fetchCampaignReports({
-  count: 10,
-  offset: 0,
-});
+**Workflow:** Always use PRs, never push to main directly
 
-if (!result.success) {
-  // Handle error
-  console.error(result.error);
-  return;
-}
+## Security
 
-// Use data
-const reports = result.data.reports;
-```
-
-### Architectural Enforcement
-
-The codebase includes automated tests to enforce architectural patterns and prevent common issues:
-
-#### Deprecated Declarations Detection (enforced by `deprecated-declarations.test.ts`):
-
-- **No deprecated Zod methods**: Prevents usage of `z.string().datetime()` (use `z.iso.datetime({ offset: true })` for ISO 8601 datetime validation, or `z.string()` for basic string validation)
-- **No deprecated React patterns**: Warns about `React.FC` usage (prefer regular function components)
-- **No deprecated lifecycle methods**: Prevents usage of deprecated React lifecycle methods
-- **No deprecated Node.js APIs**: Prevents usage of deprecated Node.js APIs
-
-#### How to Run Architectural Tests:
-
-```bash
-# Run deprecated declarations detection
-pnpm test src/test/architectural-enforcement/deprecated-declarations.test.ts
-
-# Run all architectural enforcement tests
-pnpm test src/test/architectural-enforcement/
-```
-
-These tests run automatically as part of the full test suite (`pnpm test`) and will fail CI if violations are found.
+- Never log env vars, API keys, OAuth tokens, secrets (auto-scanned)
+- Environment validation: `src/lib/config.ts`
+- All API endpoints use Zod validation
+- OAuth tokens encrypted at rest (AES-256-GCM)
+- HTTPS-only in production, CSRF protection via state params
