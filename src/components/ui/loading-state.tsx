@@ -31,6 +31,7 @@ export function LoadingState({
       return () => clearInterval(interval);
     } else {
       // Reset dots when not loading to prevent stale state
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional state reset when type changes from loading to error/empty
       setDots("");
     }
     // Return undefined for non-loading cases (no cleanup needed)

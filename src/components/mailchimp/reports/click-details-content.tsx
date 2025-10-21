@@ -162,6 +162,7 @@ export function ClickDetailsContent({
   );
 
   // Initialize the table
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns functions that cannot be memoized, which is expected
   const table = useReactTable({
     data: urls_clicked || [],
     columns,
