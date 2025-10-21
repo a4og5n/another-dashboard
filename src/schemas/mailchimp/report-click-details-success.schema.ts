@@ -16,14 +16,14 @@ import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
  * because the click details endpoint returns click-specific metrics rather than
  * general campaign metrics.
  */
-export const reportAbSplitDataSchemaA = z.object({
+export const clickReportAbSplitDataSchemaA = z.object({
   total_clicks_a: z.number().min(0),
   click_percentage_a: z.number().min(0).max(100),
   unique_clicks_a: z.number().min(0),
   unique_click_percentage_a: z.number().min(0).max(100),
 });
 
-export const reportAbSplitDataSchemaB = z.object({
+export const clickReportAbSplitDataSchemaB = z.object({
   total_clicks_b: z.number().min(0),
   click_percentage_b: z.number().min(0).max(100),
   unique_clicks_b: z.number().min(0),
@@ -34,9 +34,9 @@ export const reportAbSplitDataSchemaB = z.object({
  * Schema for A/B split test results in click reports
  * Only present for campaigns that use A/B testing
  */
-export const reportAbSplitSchema = z.object({
-  a: reportAbSplitDataSchemaA,
-  b: reportAbSplitDataSchemaB,
+export const clickReportAbSplitSchema = z.object({
+  a: clickReportAbSplitDataSchemaA,
+  b: clickReportAbSplitDataSchemaB,
 });
 
 export const urlClickedSchema = z.object({
@@ -47,7 +47,7 @@ export const urlClickedSchema = z.object({
   unique_clicks: z.number().min(0),
   unique_click_percentage: z.number().min(0).max(100),
   last_click: z.iso.datetime({ offset: true }),
-  ab_split: reportAbSplitSchema.optional(),
+  ab_split: clickReportAbSplitSchema.optional(),
   campaign_id: z.string().min(1),
   list_id: z.string().min(1),
   _links: z.array(linkSchema).optional(),

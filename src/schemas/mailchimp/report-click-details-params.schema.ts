@@ -33,7 +33,7 @@ export const clickListPathParamsSchema = z
 /**
  * Schema for query parameters (pagination and field filtering)
  */
-export const openListQueryParamsSchema = z
+export const clickListQueryParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),
