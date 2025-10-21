@@ -3,8 +3,10 @@
  *
  * Generates complete working page files:
  * - page.tsx (main page component with all imports and logic)
- * - not-found.tsx (404 page)
- * - loading.tsx (loading skeleton)
+ * - not-found.tsx (404 page for detail/nested-detail pages)
+ *
+ * Note: We don't generate loading.tsx as it interferes with notFound() calls.
+ * Skeletons are passed to PageLayout instead.
  */
 
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
@@ -387,20 +389,6 @@ export default function NotFound() {
 }
 
 /**
- * Generate loading.tsx content
- */
-function generateLoadingContent(config: PageConfig): string {
-  const skeletonName = `${config.page.title.replace(/\s+/g, "")}Skeleton`;
-
-  return `import { ${skeletonName} } from "@/skeletons/mailchimp";
-
-export default function Loading() {
-  return <${skeletonName} />;
-}
-`;
-}
-
-/**
  * Write page files to disk
  */
 export function writePageFiles(
@@ -436,11 +424,9 @@ export function writePageFiles(
     files.push(notFoundPath);
   }
 
-  // Write loading.tsx
-  const loadingPath = join(pageDir, "loading.tsx");
-  const loadingContent = generateLoadingContent(config);
-  writeFileSync(loadingPath, loadingContent, "utf-8");
-  files.push(loadingPath);
+  // NOTE: We do NOT create loading.tsx because it interferes with notFound() calls
+  // The skeleton is passed to PageLayout which handles loading states properly
+  // See: https://nextjs.org/docs/app/api-reference/file-conventions/loading
 
   warnings.push(
     "Generated files contain TODO comments - complete implementation required",

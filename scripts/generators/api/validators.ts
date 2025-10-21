@@ -114,7 +114,7 @@ export function checkFilesWillBeGenerated(
 
   // Page files
   const pageDir = resolve(process.cwd(), `src/app${config.route.path}`);
-  const pageFiles = [`${pageDir}/page.tsx`, `${pageDir}/loading.tsx`];
+  const pageFiles = [`${pageDir}/page.tsx`];
 
   if (config.page.type === "detail" || config.page.type === "nested-detail") {
     pageFiles.push(`${pageDir}/not-found.tsx`);
