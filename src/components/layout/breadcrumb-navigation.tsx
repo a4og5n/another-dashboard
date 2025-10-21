@@ -22,7 +22,7 @@ export function BreadcrumbNavigation({
   className = "",
 }: BreadcrumbNavigationProps) {
   return (
-    <div className={`container mx-auto pt-20 pb-4 ${className}`}>
+    <div className={className}>
       <Breadcrumb>
         <BreadcrumbList>
           {items.map((item, index) => (

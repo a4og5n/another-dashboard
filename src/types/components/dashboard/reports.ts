@@ -193,6 +193,8 @@ export interface EcommerceSectionProps {
 export interface ClicksCardProps {
   /** Click statistics for the campaign */
   clicks: ReportClicks;
+  /** Campaign ID for navigation to detailed clicks page */
+  campaignId: string;
   /** Optional CSS class name */
   className?: string;
 }

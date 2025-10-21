@@ -45,6 +45,82 @@ Before running the generator, you must:
    - Include pagination params if needed
    - Document with JSDoc comments
 
+## Schema Best Practices
+
+### Test Your Schemas Before Generation
+
+Before running the generator, validate your schemas against actual API responses to avoid runtime errors:
+
+1. **Fetch sample data** from the Mailchimp API (use Postman or similar)
+2. **Log the raw response** to see exact field structure and types
+3. **Test schema parsing** with real data:
+   ```typescript
+   const testData = await fetchFromAPI();
+   const result = yourSchema.parse(testData); // Should not throw
+   ```
+
+### Common Schema Issues
+
+Based on real-world implementation experience:
+
+**Empty strings for optional dates:**
+
+```typescript
+// ❌ Will fail when API returns empty string
+last_click: z.iso.datetime({ offset: true });
+
+// ✅ Handles both valid dates and empty strings
+last_click: z.union([z.iso.datetime({ offset: true }), z.literal("")]);
+```
+
+**Field presence assumptions:**
+
+```typescript
+// ❌ Assumes field always exists
+list_id: z.string().min(1);
+
+// ✅ Mark as optional if not always in response
+list_id: z.string().min(1).optional();
+```
+
+**Nested objects:**
+
+```typescript
+// Mailchimp often returns complex nested structures
+// Always check API docs for actual response shape
+ab_split: z.object({
+  a: z.object({
+    /* variant A fields */
+  }),
+  b: z.object({
+    /* variant B fields */
+  }),
+}).optional(); // Often optional for non-A/B campaigns
+```
+
+### Debug Schema Validation
+
+Add temporary debug logging in your page component during development:
+
+```typescript
+// In your page.tsx, after fetching data:
+console.log("API Response:", {
+  success: response.success,
+  data: response.data,
+});
+
+try {
+  const validatedData = yourSchema.parse(response.data);
+  console.log("✅ Data validation successful");
+} catch (validationError) {
+  console.error("❌ Zod validation error:", validationError);
+  console.error("Failed data:", JSON.stringify(response.data, null, 2));
+  throw validationError;
+}
+```
+
+**Remember to remove debug logs before committing!**
+
 ## Example Usage
 
 ### Example: Campaign Clicks Page
@@ -324,6 +400,104 @@ The generator automatically detects:
 - **HTTP method** (GET/POST based on schema structure)
 
 This provides smart defaults during the interactive prompts.
+
+## Component Implementation Guidance
+
+After the generator creates the placeholder component, you'll need to implement the actual UI. Here's guidance on common patterns:
+
+### When to Use Tables vs. Cards
+
+**Use TanStack Table when:**
+
+- Displaying lists of similar items (members, URLs, campaigns)
+- Users need to compare metrics across rows
+- Data has 4+ properties to display per item
+- Sorting/filtering would be beneficial
+- Examples: Campaign opens, click details, member lists
+
+**Use Cards when:**
+
+- Displaying single summary metrics
+- Interactive features needed (toggles, dropdowns, switches)
+- Data is hierarchical or has complex nested structure
+- Examples: Campaign overview metrics, settings panels
+
+**Reference Implementation:**
+For table-based components, see `src/components/dashboard/reports/CampaignOpensTable.tsx`:
+
+- Full TanStack Table pattern with type-safe columns
+- Column definitions with proper accessors
+- Pagination, empty states, proper headers
+- Responsive design with mobile considerations
+
+### Handle Empty/Null States
+
+Common patterns for displaying empty or missing data:
+
+```typescript
+// Dates - show "N/A" when not applicable
+{lastClick ? formatDateTime(lastClick) : "N/A"}
+
+// Numbers - show 0 for zero counts (don't hide zeros)
+{count?.toLocaleString() || 0}
+
+// Arrays - check length before mapping
+{items && items.length > 0 ? items.map(...) : <EmptyState />}
+
+// Strings - use em dash for missing optional data
+{value || "—"}
+```
+
+**Be semantic with empty states:**
+
+- Use "N/A" for data that is not applicable
+- Use "—" (em dash) for missing optional data
+- Use "0" for zero counts (zeros are meaningful!)
+- Never hide zero values - they tell a story
+
+### Pagination Controls Pattern
+
+Always show the PerPageSelector, but only show Pagination when there are multiple pages:
+
+```typescript
+{/* Pagination Controls */}
+{total_items && total_items > 0 && (
+  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+    <PerPageSelector
+      value={pageSize}
+      options={[...PER_PAGE_OPTIONS]}
+      createPerPageUrl={createPerPageUrl}
+    />
+    {totalPages > 1 && (
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        createPageUrl={createPageUrl}
+      />
+    )}
+  </div>
+)}
+```
+
+**Why this pattern?**
+
+- Users should always be able to change page size, even with just 1 page
+- Pagination arrows only make sense when there are 2+ pages
+- This prevents UI elements from jumping around as data changes
+
+### Import Patterns
+
+**Metadata helpers must be imported directly:**
+
+```typescript
+// ✅ Correct - direct import
+import { generateYourPageMetadata } from "@/utils/metadata";
+
+// ❌ Wrong - barrel export pulls in database code
+import { generateYourPageMetadata } from "@/utils";
+```
+
+**Why?** Metadata helpers import the DAL, which imports database repositories. Barrel exports can cause database code to run on the client side.
 
 ## Troubleshooting
 

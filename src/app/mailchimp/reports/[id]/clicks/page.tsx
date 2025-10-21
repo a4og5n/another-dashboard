@@ -58,9 +58,12 @@ export default async function CampaignClicksPage({
   // Handle API errors (BEFORE Suspense boundary)
   handleApiError(response);
 
-  const clicksData = response.success
-    ? (response.data as ClickListSuccess)
-    : null;
+  let clicksData: ClickListSuccess | null = null;
+
+  if (response.success && response.data) {
+    // Validate the response data against the schema
+    clicksData = reportClickListSuccessSchema.parse(response.data);
+  }
 
   return (
     <PageLayout

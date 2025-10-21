@@ -23,7 +23,8 @@ import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import type { ReportOpenListSuccess } from "@/types/mailchimp";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import { handleApiError, bc, generateCampaignOpensMetadata } from "@/utils";
+import { handleApiError, bc } from "@/utils";
+import { generateCampaignOpensMetadata } from "@/utils/metadata";
 
 async function CampaignOpensPageContent({
   opensData,

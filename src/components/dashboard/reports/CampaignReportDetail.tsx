@@ -70,7 +70,7 @@ export function CampaignReportDetail({
           {/* Main Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <OpensCard opens={report.opens} campaignId={report.id} />
-            <ClicksCard clicks={report.clicks} />
+            <ClicksCard clicks={report.clicks} campaignId={report.id} />
           </div>
         </div>
 
