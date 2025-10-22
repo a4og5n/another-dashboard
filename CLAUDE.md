@@ -147,9 +147,11 @@ Once schemas are approved, the AI follows these steps:
 
 11. **AI implements table/display component**:
     - **IMPORTANT:** Use existing shared components whenever possible:
-      - For simple tables: Use `Card` + basic table markup
+      - **For ALL tables:** Use shadcn/ui `Table` component (from `@/components/ui/table`)
+        - Simple lists: `Card` + `Table` (see `campaign-unsubscribes-table.tsx`, `reports-overview.tsx`)
+        - Complex tables with sorting: `Card` + TanStack Table + shadcn `Table` (see `click-details-content.tsx`)
+        - **NEVER use raw HTML `<table>` markup** - always use shadcn/ui components
       - For data display: Use `StatCard`, `StatsGridCard`, or `StatusCard`
-      - For complex tables: Use TanStack Table (see `click-details-content.tsx`)
     - **If no suitable component exists:** Create placeholder Card with TODO:
       ```tsx
       <Card>
