@@ -1,20 +1,12 @@
 /**
  * Campaign Opens Table Component
- * Displays a table of members who opened a specific campaign using TanStack Table
+ * Displays a table of members who opened a specific campaign
  *
- * Issue #135: Campaign opens table implementation with TanStack Table
- * Following modern table patterns with sorting, filtering, and pagination
+ * Server component with URL-based pagination for better performance
+ * Refactored from TanStack Table to simple shadcn/ui Table (Issue #214)
  */
 
-"use client";
-
-import React, { useMemo } from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -32,7 +24,6 @@ import { Mail, Eye, User, Clock } from "lucide-react";
 import type { ReportOpenListMember } from "@/types/mailchimp";
 import type { ReportOpensTableProps } from "@/types/components/mailchimp";
 import { CampaignOpensEmpty } from "@/components/dashboard/reports/CampaignOpensEmpty";
-import { useTablePagination } from "@/hooks/use-table-pagination";
 import {
   getVipBadge,
   getMemberStatusBadge,
@@ -52,98 +43,22 @@ export function CampaignOpensTable({
   // Calculate pagination
   const totalPages = Math.ceil((total_items || 0) / pageSize);
 
-  // Use shared pagination hook for URL generation
-  const { createPageUrl, createPerPageUrl } = useTablePagination({
-    baseUrl,
-    pageSize,
-  });
+  // URL generation functions for pagination
+  const createPageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    params.set("perPage", pageSize.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
 
-  // Column definitions for TanStack Table
-  const columns = useMemo<ColumnDef<ReportOpenListMember>[]>(
-    () => [
-      {
-        accessorKey: "email_address",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">
-            Email Address
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="font-medium max-w-xs">
-            <div className="truncate" title={row.getValue("email_address")}>
-              {row.getValue("email_address")}
-            </div>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "contact_status",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">Status</div>
-        ),
-        cell: ({ row }) => getMemberStatusBadge(row.getValue("contact_status")),
-      },
-      {
-        accessorKey: "opens_count",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-            Opens Count
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="text-right">
-            <span className="font-mono">{row.getValue("opens_count")}</span>
-          </div>
-        ),
-      },
-      {
-        id: "last_opened",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">Last Opened</div>
-        ),
-        accessorFn: (row) => {
-          const lastOpen =
-            row.opens && row.opens.length > 0
-              ? row.opens[row.opens.length - 1]
-              : null;
-          return lastOpen ? lastOpen.timestamp : "";
-        },
-        cell: ({ row }) => {
-          const member = row.original;
-          const lastOpen =
-            member.opens && member.opens.length > 0
-              ? member.opens[member.opens.length - 1]
-              : null;
-          return (
-            <div className="text-muted-foreground">
-              {lastOpen ? formatDateTime(lastOpen.timestamp) : "—"}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "vip",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">VIP</div>
-        ),
-        cell: ({ row }) => getVipBadge(row.getValue("vip")),
-      },
-    ],
-    [],
-  );
+  const createPerPageUrl = (newPerPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("perPage", newPerPage.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
 
-  // Initialize the table
-  const table = useReactTable({
-    data: members || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    // Disable built-in pagination and sorting since we handle both server-side
-    manualPagination: true,
-    manualSorting: true,
-    pageCount: totalPages,
-  });
-
-  // Defensive checks for data structure (after all hooks)
+  // Defensive checks for data structure
   if (!opensData) {
     return <CampaignOpensEmpty campaignId={campaignId} />;
   }
@@ -215,44 +130,80 @@ export function CampaignOpensTable({
           <div className="rounded-md border">
             <Table>
               <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id} className="px-2">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
+                <TableRow>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      Email Address
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      Status
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                      Opens Count
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      Last Opened
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      VIP
+                    </div>
+                  </TableHead>
+                </TableRow>
               </TableHeader>
               <TableBody>
-                {table.getRowModel()?.rows?.length ? (
-                  table.getRowModel()?.rows?.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="px-2">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
+                {members.length > 0 ? (
+                  members.map((member: ReportOpenListMember) => {
+                    const lastOpen =
+                      member.opens && member.opens.length > 0
+                        ? member.opens[member.opens.length - 1]
+                        : null;
+
+                    return (
+                      <TableRow key={member.email_id}>
+                        <TableCell className="px-2">
+                          <div className="font-medium max-w-xs">
+                            <div
+                              className="truncate"
+                              title={member.email_address}
+                            >
+                              {member.email_address}
+                            </div>
+                          </div>
                         </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
+                        <TableCell className="px-2">
+                          {getMemberStatusBadge(member.contact_status)}
+                        </TableCell>
+                        <TableCell className="px-2">
+                          <div className="text-right">
+                            <span className="font-mono">
+                              {member.opens_count}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-2">
+                          <div className="text-muted-foreground">
+                            {lastOpen
+                              ? formatDateTime(lastOpen.timestamp)
+                              : "—"}
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-2">
+                          {getVipBadge(member.vip)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
+                    <TableCell colSpan={5} className="h-24 text-center">
                       <div
                         className="flex flex-col items-center justify-center py-8 text-muted-foreground"
                         role="status"
