@@ -1,21 +1,13 @@
 /**
  * Campaign Abuse Reports Table Component
- * Displays a table of abuse/spam complaints for a specific campaign using TanStack Table
+ * Displays a table of abuse/spam complaints for a specific campaign
  *
- * Following the pattern from CampaignOpensTable with modern table patterns
- * including pagination and responsive design
+ * Server component with URL-based pagination for better performance
+ * Refactored from TanStack Table to simple shadcn/ui Table (Issue #214)
  */
 
-"use client";
-
-import React, { useMemo } from "react";
+import React from "react";
 import Link from "next/link";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -33,7 +25,6 @@ import { Mail, Clock, ShieldAlert } from "lucide-react";
 import type { AbuseReport } from "@/types/mailchimp";
 import type { AbuseReportsTableProps } from "@/types/components/mailchimp/reports";
 import { CampaignAbuseReportsEmpty } from "@/components/dashboard/reports/CampaignAbuseReportsEmpty";
-import { useTablePagination } from "@/hooks/use-table-pagination";
 import {
   getVipBadge,
   getActiveStatusBadge,
@@ -52,11 +43,20 @@ export function CampaignAbuseReportsTable({
   // Calculate pagination
   const totalPages = Math.ceil((total_items || 0) / pageSize);
 
-  // Use shared pagination hook for URL generation
-  const { createPageUrl, createPerPageUrl } = useTablePagination({
-    baseUrl,
-    pageSize,
-  });
+  // URL generation functions for pagination
+  const createPageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    params.set("perPage", pageSize.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  const createPerPageUrl = (newPerPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("perPage", newPerPage.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
 
   const formatMergeFields = (
     mergeFields?: Record<string, string | number | unknown>,
@@ -94,98 +94,7 @@ export function CampaignAbuseReportsTable({
     );
   };
 
-  // Column definitions for TanStack Table
-  const columns = useMemo<ColumnDef<AbuseReport>[]>(
-    () => [
-      {
-        accessorKey: "email_address",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">
-            <Mail className="h-4 w-4 mr-2" />
-            Email Address
-          </div>
-        ),
-        cell: ({ row }) => {
-          const emailAddress = row.getValue("email_address") as string;
-          const emailId = row.original.email_id;
-          const emailActivityUrl = `/mailchimp/reports/${campaignId}/email-activity/${emailId}`;
-
-          return (
-            <div className="font-medium max-w-xs">
-              <Link
-                href={emailActivityUrl}
-                className="truncate hover:underline text-primary"
-                title={emailAddress}
-              >
-                {emailAddress}
-              </Link>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "date",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">
-            <Clock className="h-4 w-4 mr-2" />
-            Date Reported
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="text-muted-foreground">
-            {formatDateTime(row.getValue("date"))}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "list_is_active",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">List Status</div>
-        ),
-        cell: ({ row }) => {
-          const listId = row.original.list_id;
-          const isActive = row.getValue("list_is_active") as boolean;
-          const badge = getActiveStatusBadge(isActive);
-
-          return (
-            <Link
-              href={`/mailchimp/lists/${listId}`}
-              className="inline-block hover:opacity-80 transition-opacity"
-            >
-              {badge}
-            </Link>
-          );
-        },
-      },
-      {
-        accessorKey: "vip",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">VIP</div>
-        ),
-        cell: ({ row }) => getVipBadge(row.getValue("vip"), "with-icon"),
-      },
-      {
-        accessorKey: "merge_fields",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">Merge Fields</div>
-        ),
-        cell: ({ row }) => formatMergeFields(row.getValue("merge_fields")),
-      },
-    ],
-    [campaignId],
-  );
-
-  // Initialize the table
-  const table = useReactTable({
-    data: abuse_reports || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    // Disable built-in pagination since we handle it server-side
-    manualPagination: true,
-    pageCount: totalPages,
-  });
-
-  // Defensive checks for data structure (after all hooks)
+  // Defensive checks for data structure
   if (!abuseReportsData) {
     return <CampaignAbuseReportsEmpty campaignId={campaignId} />;
   }
@@ -231,44 +140,79 @@ export function CampaignAbuseReportsTable({
           <div className="rounded-md border">
             <Table>
               <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id} className="px-2">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
+                <TableRow>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Email Address
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      <Clock className="h-4 w-4 mr-2" />
+                      Date Reported
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      List Status
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      VIP
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      Merge Fields
+                    </div>
+                  </TableHead>
+                </TableRow>
               </TableHeader>
               <TableBody>
-                {table.getRowModel()?.rows?.length ? (
-                  table.getRowModel()?.rows?.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="px-2">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
+                {abuse_reports.length > 0 ? (
+                  abuse_reports.map((report: AbuseReport) => {
+                    const emailActivityUrl = `/mailchimp/reports/${campaignId}/email-activity/${report.email_id}`;
+
+                    return (
+                      <TableRow key={report.id}>
+                        <TableCell className="px-2">
+                          <div className="font-medium max-w-xs">
+                            <Link
+                              href={emailActivityUrl}
+                              className="truncate hover:underline text-primary"
+                              title={report.email_address}
+                            >
+                              {report.email_address}
+                            </Link>
+                          </div>
                         </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
+                        <TableCell className="px-2">
+                          <div className="text-muted-foreground">
+                            {formatDateTime(report.date)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-2">
+                          <Link
+                            href={`/mailchimp/lists/${report.list_id}`}
+                            className="inline-block hover:opacity-80 transition-opacity"
+                          >
+                            {getActiveStatusBadge(report.list_is_active)}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="px-2">
+                          {getVipBadge(report.vip, "with-icon")}
+                        </TableCell>
+                        <TableCell className="px-2">
+                          {formatMergeFields(report.merge_fields)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
+                    <TableCell colSpan={5} className="h-24 text-center">
                       <div
                         className="flex flex-col items-center justify-center py-8 text-muted-foreground"
                         role="status"

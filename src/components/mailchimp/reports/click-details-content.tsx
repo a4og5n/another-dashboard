@@ -1,19 +1,14 @@
 /**
  * Campaign Click Details Content Component
- * Displays URLs clicked in a campaign with pagination using TanStack Table
+ * Displays URLs clicked in a campaign with pagination
+ *
+ * Server component with URL-based pagination for better performance
+ * Refactored from TanStack Table to simple shadcn/ui Table (Issue #214)
  *
  * @route /mailchimp/reports/[id]/clicks
  */
 
-"use client";
-
-import React, { useMemo } from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -28,7 +23,6 @@ import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
-import { useTablePagination } from "@/hooks/use-table-pagination";
 import { formatDateTime } from "@/utils/format-date";
 import { MousePointerClick } from "lucide-react";
 import type { z } from "zod";
@@ -61,117 +55,20 @@ export function ClickDetailsContent({
   const totalPages = Math.ceil((total_items || 0) / pageSize);
   const baseUrl = `/mailchimp/reports/${campaignId}/clicks`;
 
-  // Use shared pagination hook for URL generation
-  const { createPageUrl, createPerPageUrl } = useTablePagination({
-    baseUrl,
-    pageSize,
-  });
+  // URL generation functions for pagination
+  const createPageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    params.set("perPage", pageSize.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
 
-  // Column definitions for TanStack Table
-  const columns = useMemo<ColumnDef<UrlClicked>[]>(
-    () => [
-      {
-        accessorKey: "url",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">URL</div>
-        ),
-        cell: ({ row }) => (
-          <div className="max-w-md">
-            <div className="text-sm truncate" title={row.getValue("url")}>
-              {row.getValue("url")}
-            </div>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "total_clicks",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-            Total Clicks
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="text-right">
-            <span className="font-mono">
-              {row.getValue<number>("total_clicks").toLocaleString()}
-            </span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "unique_clicks",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-            Unique Clicks
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="text-right">
-            <span className="font-mono">
-              {row.getValue<number>("unique_clicks").toLocaleString()}
-            </span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "click_percentage",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-            Click %
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="text-right">
-            <span className="font-mono">
-              {row.getValue<number>("click_percentage").toFixed(2)}%
-            </span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "unique_click_percentage",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-            Unique %
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="text-right">
-            <span className="font-mono">
-              {row.getValue<number>("unique_click_percentage").toFixed(2)}%
-            </span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "last_click",
-        header: () => (
-          <div className="h-8 px-2 lg:px-3 flex items-center">Last Click</div>
-        ),
-        cell: ({ row }) => {
-          const lastClick = row.getValue<string>("last_click");
-          return (
-            <div className="text-muted-foreground text-sm">
-              {lastClick ? formatDateTime(lastClick) : "N/A"}
-            </div>
-          );
-        },
-      },
-    ],
-    [],
-  );
-
-  // Initialize the table
-  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns functions that cannot be memoized, which is expected
-  const table = useReactTable({
-    data: urls_clicked || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    // Disable built-in pagination and sorting since we handle both server-side
-    manualPagination: true,
-    manualSorting: true,
-    pageCount: totalPages,
-  });
+  const createPerPageUrl = (newPerPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("perPage", newPerPage.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
 
   return (
     <MailchimpConnectionGuard errorCode={errorCode}>
@@ -194,44 +91,95 @@ export function ClickDetailsContent({
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                          <TableHead key={header.id} className="px-2">
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    ))}
+                    <TableRow>
+                      <TableHead className="px-2">
+                        <div className="h-8 px-2 lg:px-3 flex items-center">
+                          URL
+                        </div>
+                      </TableHead>
+                      <TableHead className="px-2">
+                        <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                          Total Clicks
+                        </div>
+                      </TableHead>
+                      <TableHead className="px-2">
+                        <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                          Unique Clicks
+                        </div>
+                      </TableHead>
+                      <TableHead className="px-2">
+                        <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                          Click %
+                        </div>
+                      </TableHead>
+                      <TableHead className="px-2">
+                        <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                          Unique %
+                        </div>
+                      </TableHead>
+                      <TableHead className="px-2">
+                        <div className="h-8 px-2 lg:px-3 flex items-center">
+                          Last Click
+                        </div>
+                      </TableHead>
+                    </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {table.getRowModel()?.rows?.length ? (
-                      table.getRowModel()?.rows?.map((row) => (
-                        <TableRow
-                          key={row.id}
-                          data-state={row.getIsSelected() && "selected"}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id} className="px-2">
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )}
+                    {urls_clicked && urls_clicked.length > 0 ? (
+                      urls_clicked.map(
+                        (urlClick: UrlClicked, index: number) => (
+                          <TableRow key={urlClick.id || index}>
+                            <TableCell className="px-2">
+                              <div className="max-w-md">
+                                <div
+                                  className="text-sm truncate"
+                                  title={urlClick.url}
+                                >
+                                  {urlClick.url}
+                                </div>
+                              </div>
                             </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
+                            <TableCell className="px-2">
+                              <div className="text-right">
+                                <span className="font-mono">
+                                  {urlClick.total_clicks.toLocaleString()}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="px-2">
+                              <div className="text-right">
+                                <span className="font-mono">
+                                  {urlClick.unique_clicks.toLocaleString()}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="px-2">
+                              <div className="text-right">
+                                <span className="font-mono">
+                                  {urlClick.click_percentage.toFixed(2)}%
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="px-2">
+                              <div className="text-right">
+                                <span className="font-mono">
+                                  {urlClick.unique_click_percentage.toFixed(2)}%
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="px-2">
+                              <div className="text-muted-foreground text-sm">
+                                {urlClick.last_click
+                                  ? formatDateTime(urlClick.last_click)
+                                  : "N/A"}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ),
+                      )
                     ) : (
                       <TableRow>
-                        <TableCell
-                          colSpan={columns.length}
-                          className="h-24 text-center"
-                        >
+                        <TableCell colSpan={6} className="h-24 text-center">
                           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                             <MousePointerClick className="h-12 w-12 mb-3 opacity-50" />
                             <p>No click data available for this campaign</p>
