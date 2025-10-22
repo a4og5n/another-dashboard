@@ -63,9 +63,7 @@ export function CampaignEmailActivityTable({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>
-            Email Activity ({total_items.toLocaleString()})
-          </CardTitle>
+          <CardTitle>Email Activity ({total_items.toLocaleString()})</CardTitle>
         </CardHeader>
         <CardContent>
           {emails.length === 0 ? (
