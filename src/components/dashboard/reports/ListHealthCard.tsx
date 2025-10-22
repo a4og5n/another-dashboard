@@ -34,7 +34,18 @@ export function ListHealthCard({
       iconColor="var(--blue-600, #2563eb)"
       className={className}
     >
-      <MetricRow label="Unsubscribes" value={unsubscribed} />
+      {/* Unsubscribes with link */}
+      {campaignId ? (
+        <Link
+          href={`/mailchimp/reports/${campaignId}/unsubscribes`}
+          className="flex items-center justify-between hover:underline"
+        >
+          <span className="text-sm text-muted-foreground">Unsubscribes</span>
+          <span className="font-medium">{unsubscribed.toLocaleString()}</span>
+        </Link>
+      ) : (
+        <MetricRow label="Unsubscribes" value={unsubscribed} />
+      )}
 
       {/* Abuse Reports with link */}
       {campaignId ? (
