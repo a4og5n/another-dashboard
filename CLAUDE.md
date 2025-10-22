@@ -328,10 +328,71 @@ if (error) return <ErrorDisplay message={error} />;
 
 ### Schema & API Patterns
 
+**Before creating new schemas, always check existing patterns:**
+
+```bash
+# Check parameter schema patterns
+grep -r "ParamsSchema" src/schemas/mailchimp/*-params.schema.ts
+
+# Check for reusable common schemas
+grep -r "schemaName" src/schemas/mailchimp/common/
+
+# Find similar endpoint schemas (for pattern reference)
+ls src/schemas/mailchimp/*-success.schema.ts
+```
+
+**Schema Creation Rules:**
+
+1. **Parameter Schemas** (`*-params.schema.ts`):
+   - Export path and query schemas separately (do NOT use `.merge()`)
+   - Path params: `{endpoint}PathParamsSchema`
+   - Query params: `{endpoint}QueryParamsSchema`
+   - Always add `.strict()` with comment: `// Reject unknown properties for input validation`
+   - ID fields MUST use `.min(1)` to prevent empty strings
+
+2. **Zod 4 Best Practices**:
+   - Optional with default: `.default(value)` alone (NOT `.default().optional()`)
+   - Optional without default: `.optional()` alone
+   - NEVER use `.default().optional()` (redundant, `.default()` makes field optional automatically)
+
+3. **Success Schemas** (`*-success.schema.ts`):
+   - All ID fields (`campaign_id`, `list_id`, `email_id`, etc.) MUST use `.min(1)`
+   - Compare with similar endpoints to match flat vs nested patterns
+   - Check `common/` directory for reusable schemas before inlining
+   - If duplicating schemas, create GitHub issue for future refactoring
+
+4. **Error Schemas** (`*-error.schema.ts`):
+   - Usually just extends `errorSchema` from `@/schemas/mailchimp/common/error.schema`
+
+**Standard Patterns:**
+
 - **API naming:** Always match API property names in Zod schemas and types
 - **Enums:** `export const VISIBILITY = ["pub", "prv"] as const;` + `z.enum(VISIBILITY)`
 - **DateTime:** Use `z.iso.datetime({ offset: true })` for ISO 8601 (recommended), `z.iso.datetime()` for UTC-only
 - **Deprecated:** Never use `z.string().datetime()` (enforced by tests)
+
+**Example Pattern** (from `report-click-details-params.schema.ts`):
+
+```typescript
+// Path params
+export const clickListPathParamsSchema = z
+  .object({
+    campaign_id: z.string().min(1),
+  })
+  .strict();
+
+// Query params
+export const clickListQueryParamsSchema = z
+  .object({
+    fields: z.string().optional(),
+    exclude_fields: z.string().optional(),
+    count: z.coerce.number().min(1).max(1000).default(10), // Note: .default() alone
+    offset: z.coerce.number().min(0).default(0),
+  })
+  .strict(); // Reject unknown properties for input validation
+
+// Do NOT export a merged schema
+```
 
 ### Component Development
 
