@@ -121,6 +121,7 @@ export function usePWA(): UsePWAReturn {
     if (typeof window === "undefined") return;
 
     // Initial PWA info update
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- updatePWAInfo is a stable callback that synchronizes PWA state from browser APIs
     updatePWAInfo();
 
     // Handle beforeinstallprompt event

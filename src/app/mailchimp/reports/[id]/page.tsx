@@ -13,12 +13,8 @@ import { CampaignReportDetail } from "@/components/dashboard";
 import { BreadcrumbNavigation, PageLayout } from "@/components/layout";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { CampaignReportSkeleton } from "@/skeletons/mailchimp";
-import {
-  generateCampaignReportMetadata,
-  processRouteParams,
-  handleApiError,
-  bc,
-} from "@/utils";
+import { generateCampaignReportMetadata } from "@/utils/metadata";
+import { processRouteParams, handleApiError, bc } from "@/utils";
 import type { CampaignReport } from "@/types/mailchimp";
 import type { ReportPageProps } from "@/types/components/mailchimp";
 import {

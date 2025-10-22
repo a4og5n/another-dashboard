@@ -17,11 +17,8 @@ import { CampaignAbuseReportsTable } from "@/components/dashboard/reports";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import type { AbuseReportListSuccess } from "@/types/mailchimp";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import {
-  handleApiError,
-  bc,
-  generateCampaignAbuseReportsMetadata,
-} from "@/utils";
+import { handleApiError, bc } from "@/utils";
+import { generateCampaignAbuseReportsMetadata } from "@/utils/metadata";
 
 async function CampaignAbuseReportsPageContent({
   abuseReportsData,

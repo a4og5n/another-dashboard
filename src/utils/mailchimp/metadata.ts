@@ -207,14 +207,14 @@ export async function generateClickDetailsMetadata({
     };
   }
 
-  const data = response.data as any; // TODO: Add proper type
+  const data = response.data;
 
   return {
-    title: `${data.campaign_title || "Resource"} - Click Details`,
-    description: "Members who clicked links in this campaign",
+    title: `${data.campaign_title} - Click Details`,
+    description: "URLs clicked in this campaign",
     openGraph: {
-      title: `${data.campaign_title || "Resource"} - Click Details`,
-      description: "Members who clicked links in this campaign",
+      title: `${data.campaign_title} - Click Details`,
+      description: "URLs clicked in this campaign",
       type: "website",
     },
   };

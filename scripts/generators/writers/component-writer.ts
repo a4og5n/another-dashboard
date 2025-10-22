@@ -60,9 +60,18 @@ function generateComponentContent(config: PageConfig): string {
  * ${config.page.description}
  *
  * @route ${config.route.path}
+ *
  * TODO: Implement full component logic
  * TODO: Replace placeholder with actual data display
- * TODO: Add error handling and loading states
+ * TODO: Consider using TanStack Table for list data (see CampaignOpensTable.tsx)
+ * TODO: Handle empty/null states properly (use "N/A", "—", or 0 as appropriate)
+ * TODO: Remove debug console.log statements before committing
+ *
+ * Implementation Tips:
+ * - For lists: Use TanStack Table with proper column definitions
+ * - For metrics: Use StatsGridCard or StatCard components
+ * - Empty dates: {value ? formatDateTime(value) : "N/A"}
+ * - Import metadata directly: import { ... } from "@/utils/metadata"
  */
 
 "use client";
@@ -165,10 +174,18 @@ ${dataStructure.map((line) => `                <li>${line}</li>`).join("\n")}
               </ul>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-yellow-200 dark:border-yellow-900">
+            <div className="mt-4 pt-4 border-t border-yellow-200 dark:border-yellow-900 space-y-2">
               <p className="text-xs text-muted-foreground">
-                <strong>TODO:</strong> Replace this placeholder with actual component implementation
+                <strong>Implementation Checklist:</strong>
               </p>
+              <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                <li>Validate API schema with real data first</li>
+                <li>Choose Table (lists) or Cards (metrics) based on data</li>
+                <li>Handle empty states: "N/A" for dates, "—" for optional, 0 for counts</li>
+                <li>Add pagination controls if paginated</li>
+                <li>Import metadata helpers directly from @/utils/metadata</li>
+                <li>Remove debug console.log before committing</li>
+              </ul>
             </div>
           </div>
 

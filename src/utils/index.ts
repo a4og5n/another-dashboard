@@ -1,6 +1,10 @@
 /**
  * Utility Functions
  * Centralized exports for utility functions
+ *
+ * NOTE: Metadata helpers are NOT exported here because they import the DAL
+ * which requires database connections. Import them directly when needed:
+ * import { generateCampaignReportMetadata } from "@/utils/metadata"
  */
 
 export * from "@/utils/breadcrumbs";
@@ -12,4 +16,3 @@ export * from "@/utils/mailchimp";
 export * from "@/utils/mailchimp-urls";
 export * from "@/utils/pagination";
 export * from "@/utils/pagination-url-builders";
-export * from "@/utils/metadata";

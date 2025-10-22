@@ -46,10 +46,12 @@ export const urlClickedSchema = z.object({
   click_percentage: z.number().min(0).max(100),
   unique_clicks: z.number().min(0),
   unique_click_percentage: z.number().min(0).max(100),
-  last_click: z.iso.datetime({ offset: true }),
+  last_click: z.union([
+    z.iso.datetime({ offset: true }), // ISO 8601 with timezone offset
+    z.literal(""), // Empty string when URL has never been clicked
+  ]),
   ab_split: clickReportAbSplitSchema.optional(),
   campaign_id: z.string().min(1),
-  list_id: z.string().min(1),
   _links: z.array(linkSchema).optional(),
 });
 
