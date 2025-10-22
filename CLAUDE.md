@@ -72,6 +72,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2. `docs/project-management/development-roadmap.md` - Progress
 3. `docs/project-management/task-tracking.md` - Priorities
 4. `docs/api-coverage.md` - Mailchimp API implementation status
+5. `docs/ai-workflow-learnings.md` - Learnings from recent implementations (table patterns, navigation, formatting)
 
 ---
 
@@ -331,6 +332,47 @@ if (error) return <ErrorDisplay message={error} />;
 
 **Docs:** `src/utils/params/README.md`
 
+### Data Formatting
+
+**Number Formatting:**
+
+```tsx
+// Format large numbers with thousand separators
+<CardTitle>Email Activity ({totalItems.toLocaleString()})</CardTitle>;
+// Output: "Email Activity (7,816)"
+
+// Format percentages
+const percentage = ((clicks / total) * 100).toFixed(2);
+// Output: "12.34"
+
+// Format currency
+const amount = revenue.toLocaleString("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+// Output: "$1,234.56"
+```
+
+**Date Formatting:**
+
+Use `formatDateTimeSafe()` from `@/utils/mailchimp/date`:
+
+```tsx
+import { formatDateTimeSafe } from "@/utils/mailchimp/date";
+
+// ISO 8601 → "Jan 15, 2025 at 2:30 PM"
+<TableCell>{formatDateTimeSafe(email.timestamp)}</TableCell>;
+```
+
+**Display Priority Guidelines:**
+
+1. **Card Titles:** Always format numbers (`.toLocaleString()`)
+2. **Table Headers:** Format if displaying counts
+3. **Table Cells:** Format dates, large numbers, percentages
+4. **Badges:** Raw values are okay (e.g., status badges)
+
+**See:** `docs/ai-workflow-learnings.md` for complete formatting guide
+
 ### PageLayout Component
 
 **Usage:** All dashboard pages use `PageLayout` from `@/components/layout`
@@ -435,6 +477,64 @@ export const clickListQueryParamsSchema = z
 // Do NOT export a merged schema
 ```
 
+### Table Implementation Patterns
+
+**Decision Tree:**
+
+1. **Simple List Display** (recommended default):
+   - Use shadcn/ui `Table` component in a Server Component
+   - URL-based pagination with `URLSearchParams`
+   - Examples: `reports-table.tsx`, `campaign-unsubscribes-table.tsx`, `campaign-email-activity-table.tsx`
+   - **When:** Read-only tables, simple sorting, no complex filtering
+
+2. **Interactive Tables** (only when necessary):
+   - Use TanStack Table + shadcn/ui `Table` in a Client Component
+   - Examples: `campaign-opens-table.tsx`, `campaign-abuse-reports-table.tsx`, `click-details-content.tsx`
+   - **When:** Multi-column sorting, column visibility toggles, complex filtering
+
+**Server Component Pagination Pattern:**
+
+```tsx
+export function MyTable({ data, currentPage, pageSize, totalItems }: Props) {
+  const baseUrl = `/path/to/page`;
+
+  // URL generation functions
+  const createPageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    params.set("perPage", pageSize.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  const createPerPageUrl = (newPerPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("perPage", newPerPage.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  return (
+    <Card>
+      {/* Table content */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(totalItems / pageSize)}
+        createPageUrl={createPageUrl}
+      />
+      <PerPageSelector
+        value={pageSize}
+        createPerPageUrl={createPerPageUrl}
+        itemName="items per page"
+      />
+    </Card>
+  );
+}
+```
+
+**⚠️ NEVER use raw HTML `<table>` markup** - always use shadcn/ui `Table` components
+
+**See:** `docs/ai-workflow-learnings.md` for complete decision tree and examples
+
 ### Component Development
 
 **Server Components by default:**
@@ -442,6 +542,7 @@ export const clickListQueryParamsSchema = z
 - **CRITICAL:** layouts (`layout.tsx`, `dashboard-shell.tsx`) and `not-found.tsx` MUST be Server Components (404 status codes)
 - Only use `"use client"` for hooks (useState, useEffect) or browser APIs
 - Extract client logic to child components, keep parent as Server Component
+- **Tables:** Default to Server Components with URL-based pagination (see Table Implementation Patterns above)
 - Enforced by architectural tests
 
 **Patterns:** Atomic design, shadcn/ui base, JSDoc comments
@@ -486,6 +587,48 @@ export const clickListQueryParamsSchema = z
 **Commits:** Conventional commits (`feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`)
 
 **Workflow:** Always use PRs, never push to main directly
+
+### Pre-commit Hooks Setup
+
+**First-time setup:**
+
+```bash
+# Configure Git to use Husky hooks
+git config core.hooksPath .husky
+
+# Verify hooks are enabled
+git config core.hooksPath
+# Should output: .husky
+```
+
+**Hooks run automatically on every commit:**
+
+1. Format staged files (`pnpm lint-staged`)
+2. Verify formatting (`pnpm format:check`)
+3. Type-check (`pnpm type-check`)
+4. Run tests (`pnpm test`)
+5. Accessibility tests (`pnpm test:a11y`)
+6. Secret scan (`pnpm check:no-secrets-logged`)
+
+**Troubleshooting:**
+
+If CI/CD fails with formatting errors but local commits succeed:
+
+```bash
+# Verify hooks are configured
+git config core.hooksPath
+
+# If empty, reconfigure
+git config core.hooksPath .husky
+
+# Verify hooks exist
+ls -la .husky/pre-commit
+
+# Test hooks with dummy commit
+git add . && git commit -m "test: verify hooks" --allow-empty
+```
+
+**See:** `.husky/pre-commit` for complete hook configuration
 
 ## Security
 
