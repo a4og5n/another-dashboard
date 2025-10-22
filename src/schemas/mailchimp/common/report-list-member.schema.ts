@@ -8,8 +8,9 @@ const oneOpen = z.object({
 
 /**
  * Schema for Mailchimp merge field address type
+ * Exported for reuse in other schemas (abuse reports, unsubscribes, etc.)
  */
-const mergeFieldAddressSchema = z.object({
+export const mergeFieldAddressSchema = z.object({
   addr1: z.string(),
   addr2: z.string().optional(),
   city: z.string(),
@@ -22,8 +23,10 @@ const mergeFieldAddressSchema = z.object({
  * Schema for Mailchimp merge fields
  * Supports various field types as documented at:
  * https://mailchimp.com/developer/marketing/docs/merge-fields/#structure
+ *
+ * Exported for reuse in other schemas (abuse reports, unsubscribes, etc.)
  */
-const mergeField = z.record(
+export const mergeFieldSchema = z.record(
   z.string(),
   z.union([
     z.string(), // text, radio, dropdown, date, birthday, zip, phone, url, imageurl
@@ -39,7 +42,7 @@ export const reportListMemberSchema = z.object({
   contact_status: z.string(),
   email_id: z.string(),
   email_address: z.email(),
-  merge_fields: mergeField,
+  merge_fields: mergeFieldSchema,
   vip: z.boolean(),
   opens_count: z.number(),
   proxy_excluded_opens_count: z.number(),
