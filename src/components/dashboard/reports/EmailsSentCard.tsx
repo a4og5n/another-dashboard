@@ -12,7 +12,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, Activity } from "lucide-react";
+import { Mail, Activity, Users } from "lucide-react";
 import type { EmailsSentCardProps } from "@/types/components/dashboard/reports";
 
 export function EmailsSentCard({
@@ -29,9 +29,15 @@ export function EmailsSentCard({
       <CardContent>
         <div className="text-2xl font-bold">{emailsSent.toLocaleString()}</div>
 
-        {/* Email Activity Link */}
+        {/* Action Links */}
         {campaignId && (
-          <div className="pt-4 mt-2 border-t">
+          <div className="pt-4 mt-2 border-t space-y-2">
+            <Link href={`/mailchimp/reports/${campaignId}/sent-to`}>
+              <Button variant="outline" className="w-full" size="sm">
+                <Users className="h-3 w-3 mr-2" />
+                View Recipients
+              </Button>
+            </Link>
             <Link href={`/mailchimp/reports/${campaignId}/email-activity`}>
               <Button variant="outline" className="w-full" size="sm">
                 <Activity className="h-3 w-3 mr-2" />
