@@ -15,6 +15,7 @@ import {
 } from "@/schemas/components";
 import { clickDetailsPageParamsSchema } from "@/schemas/components/mailchimp/reports-click-page-params";
 import { campaignUnsubscribesPageParamsSchema } from "@/schemas/components/mailchimp/report-unsubscribes-page-params";
+import { emailActivityPageParamsSchema } from "@/schemas/components/mailchimp/email-activity-page-params";
 import type { CampaignReport } from "@/types/mailchimp";
 
 /**
@@ -253,6 +254,42 @@ export async function generateCampaignUnsubscribesMetadata({
     openGraph: {
       title: `${data.campaign_title || "Resource"} - Campaign Unsubscribes`,
       description: "Members who unsubscribed from this campaign",
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for campaign email activity pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the campaign email activity page
+ */
+export async function generateCampaignEmailActivityMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = emailActivityPageParamsSchema.parse(rawParams);
+
+  // Fetch campaign report for metadata
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Email Activity - Campaign Not Found",
+      description: "The requested campaign could not be found.",
+    };
+  }
+
+  const report = response.data as CampaignReport;
+
+  return {
+    title: `${report.campaign_title} - Email Activity`,
+    description: `Email activity tracking for ${report.campaign_title}. Opens, clicks, and bounces for ${report.emails_sent.toLocaleString()} recipients.`,
+    openGraph: {
+      title: `${report.campaign_title} - Email Activity`,
+      description: `Track email activity for campaign sent to ${report.emails_sent.toLocaleString()} recipients`,
       type: "website",
     },
   };

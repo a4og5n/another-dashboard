@@ -127,6 +127,8 @@ export type DeliveryIssuesCardProps = {
 export interface EmailsSentCardProps {
   /** Total number of emails sent in the campaign */
   emailsSent: number;
+  /** Campaign ID for linking to email activity page */
+  campaignId?: string;
   /** Optional CSS class name for styling */
   className?: string;
 }
