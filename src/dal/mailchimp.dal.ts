@@ -26,6 +26,8 @@ import { reportClickListSuccessSchema } from "@/schemas/mailchimp/report-click-d
 import { unsubscribesSuccessSchema } from "@/schemas/mailchimp/unsubscribes-success.schema";
 import { emailActivityQueryParamsSchema } from "@/schemas/mailchimp/email-activity-params.schema";
 import { emailActivitySuccessSchema } from "@/schemas/mailchimp/email-activity-success.schema";
+import { sentToQueryParamsSchema } from "@/schemas/mailchimp/sent-to-params.schema";
+import { sentToSuccessSchema } from "@/schemas/mailchimp/sent-to-success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -155,6 +157,22 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof emailActivitySuccessSchema>>(
         `/reports/${campaignId}/email-activity`,
+        params,
+      ),
+    );
+  }
+
+  /**
+   * Campaign Recipients (Sent To)
+   * GET /reports/{campaign_id}/sent-to
+   */
+  async fetchCampaignSentTo(
+    id: string,
+    params?: z.infer<typeof sentToQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof sentToSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof sentToSuccessSchema>>(
+        `/reports/${id}/sent-to`,
         params,
       ),
     );

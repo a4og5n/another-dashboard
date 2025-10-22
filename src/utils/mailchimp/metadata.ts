@@ -16,6 +16,7 @@ import {
 import { clickDetailsPageParamsSchema } from "@/schemas/components/mailchimp/reports-click-page-params";
 import { campaignUnsubscribesPageParamsSchema } from "@/schemas/components/mailchimp/report-unsubscribes-page-params";
 import { emailActivityPageParamsSchema } from "@/schemas/components/mailchimp/email-activity-page-params";
+import { campaignRecipientsPageParamsSchema } from "@/schemas/components/mailchimp/report-sent-to-page-params";
 import type { CampaignReport } from "@/types/mailchimp";
 
 /**
@@ -290,6 +291,43 @@ export async function generateCampaignEmailActivityMetadata({
     openGraph: {
       title: `${report.campaign_title} - Email Activity`,
       description: `Track email activity for campaign sent to ${report.emails_sent.toLocaleString()} recipients`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for campaign recipients pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the campaign recipients page
+ */
+export async function generateCampaignRecipientsMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = campaignRecipientsPageParamsSchema.parse(rawParams);
+
+  // Fetch data for metadata
+  // TODO: Implement proper data fetching using DAL method
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Recipients - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data as CampaignReport;
+
+  return {
+    title: `${data.campaign_title || "Resource"} - Campaign Recipients`,
+    description: "Members who received this campaign",
+    openGraph: {
+      title: `${data.campaign_title || "Resource"} - Campaign Recipients`,
+      description: "Members who received this campaign",
       type: "website",
     },
   };

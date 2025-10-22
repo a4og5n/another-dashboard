@@ -291,6 +291,45 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Campaign Sent To Page
+   */
+  "report-sent-to": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/sent-to-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/sent-to-success.schema.ts",
+      apiError: "src/schemas/mailchimp/sent-to-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/reports/[id]/sent-to",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/reports/{campaign_id}/sent-to",
+      method: "GET",
+      dalMethod: "fetchCampaignSentTo",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Campaign Recipients",
+      description: "Members who received this campaign",
+      features: [
+        "Pagination",
+        "Dynamic routing",
+        "Member details",
+        "Delivery status",
+        "A/B split tracking",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        parent: "report-detail",
+        label: "Recipients",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
