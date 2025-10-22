@@ -1,12 +1,20 @@
 /**
  * Campaign Unsubscribes Table Component
- * Displays unsubscribed members in a simple table format
+ * Displays unsubscribed members in a table format
  *
- * TODO: Replace with full TanStack Table implementation (see click-details-content.tsx)
- * For now, using simple Card + table markup as placeholder
+ * Uses shadcn/ui Table component for consistency with reports list page
+ * TODO: Add TanStack Table for sorting/filtering (see click-details-content.tsx)
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import type { UnsubscribesSuccess } from "@/types/mailchimp/unsubscribes";
 import { formatDateTimeSafe } from "@/utils/format-date";
 
@@ -36,43 +44,38 @@ export function CampaignUnsubscribesTable({
               No unsubscribes found for this campaign.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-4 font-medium">Email</th>
-                    <th className="text-left p-4 font-medium">Date</th>
-                    <th className="text-left p-4 font-medium">Reason</th>
-                    <th className="text-left p-4 font-medium">VIP</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {unsubscribes.map((member) => (
-                    <tr
-                      key={member.email_id}
-                      className="border-b hover:bg-muted/50"
-                    >
-                      <td className="p-4">{member.email_address}</td>
-                      <td className="p-4 text-muted-foreground">
-                        {formatDateTimeSafe(member.timestamp)}
-                      </td>
-                      <td className="p-4 text-muted-foreground">
-                        {member.reason || "N/A"}
-                      </td>
-                      <td className="p-4">
-                        {member.vip ? (
-                          <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
-                            VIP
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Reason</TableHead>
+                  <TableHead>VIP</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {unsubscribes.map((member) => (
+                  <TableRow key={member.email_id}>
+                    <TableCell>{member.email_address}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDateTimeSafe(member.timestamp)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {member.reason || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {member.vip ? (
+                        <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                          VIP
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
