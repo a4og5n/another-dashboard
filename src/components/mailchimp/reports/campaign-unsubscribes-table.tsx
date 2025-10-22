@@ -6,6 +6,7 @@
  * TODO: Add TanStack Table for sorting/filtering (see click-details-content.tsx)
  */
 
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -17,7 +18,10 @@ import {
 } from "@/components/ui/table";
 import type { UnsubscribesSuccess } from "@/types/mailchimp/unsubscribes";
 import { formatDateTimeSafe } from "@/utils/format-date";
-import { getVipBadge } from "@/components/ui/helpers/badge-utils";
+import {
+  getVipBadge,
+  getActiveStatusBadge,
+} from "@/components/ui/helpers/badge-utils";
 
 interface CampaignUnsubscribesTableProps {
   unsubscribesData: UnsubscribesSuccess;
@@ -91,6 +95,7 @@ export function CampaignUnsubscribesTable({
                   <TableHead>Email</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Reason</TableHead>
+                  <TableHead>List Status</TableHead>
                   <TableHead>VIP</TableHead>
                   <TableHead>Merge Fields</TableHead>
                 </TableRow>
@@ -106,6 +111,14 @@ export function CampaignUnsubscribesTable({
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {member.reason || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      <Link
+                        href={`/mailchimp/lists/${member.list_id}`}
+                        className="inline-block hover:opacity-80 transition-opacity"
+                      >
+                        {getActiveStatusBadge(member.list_is_active)}
+                      </Link>
                     </TableCell>
                     <TableCell>
                       {getVipBadge(member.vip, "with-icon")}
