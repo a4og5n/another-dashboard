@@ -28,7 +28,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "generate:page": "tsx scripts/generate-page.ts"
+    "generate:page": "tsx scripts/generate-page.ts",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
