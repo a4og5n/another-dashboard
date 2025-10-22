@@ -204,6 +204,25 @@ export const bc = {
     };
   },
 
+  /**
+   * Report email activity page breadcrumb
+   *
+   * @param id - Campaign ID
+   * @returns Breadcrumb item for email activity page
+   *
+   * @example
+   * ```tsx
+   * bc.emailActivity("abc123")
+   * // Returns: { label: "Email Activity", href: "/mailchimp/reports/abc123/email-activity" }
+   * ```
+   */
+  emailActivity(id: string): BreadcrumbItem {
+    return {
+      label: "Email Activity",
+      href: `/mailchimp/reports/${id}/email-activity`,
+    };
+  },
+
   // ============================================================================
   // Helper Functions
   // ============================================================================
