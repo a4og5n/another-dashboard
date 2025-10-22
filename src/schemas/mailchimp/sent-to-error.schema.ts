@@ -6,7 +6,6 @@
  * Documentation: https://mailchimp.com/developer/marketing/api/sent-to-reports/list-campaign-recipients/
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
-
 import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
 
 /**

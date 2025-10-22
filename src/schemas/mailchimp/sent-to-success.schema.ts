@@ -18,15 +18,10 @@ import { mergeFieldSchema } from "@/schemas/mailchimp/common/report-list-member.
 export const SENT_TO_STATUS = ["sent", "hard", "soft"] as const;
 
 /**
- * Contact status values
- * Indicates the member's subscription status on the list
+ * A/B split test group values
+ * Indicates which variant the recipient received in an A/B split campaign
  */
-export const CONTACT_STATUS = [
-  "subscribed",
-  "unsubscribed",
-  "cleaned",
-  "pending",
-] as const;
+export const ABSPLIT_GROUP = ["a", "b", "winner"] as const;
 
 /**
  * Schema for a campaign recipient (sent-to member)
@@ -37,15 +32,14 @@ export const sentToMemberSchema = z.object({
   email_address: z.email(),
   merge_fields: mergeFieldSchema,
   vip: z.boolean(),
-  status: z.enum(SENT_TO_STATUS), // Delivery status
+  status: z.enum(SENT_TO_STATUS),
   open_count: z.number().min(0),
   last_open: z.iso.datetime({ offset: true }).optional(),
-  click_count: z.number().min(0),
-  last_click: z.iso.datetime({ offset: true }).optional(),
+  absplit_group: z.enum(ABSPLIT_GROUP).optional(),
+  gmt_offset: z.number().optional(),
   campaign_id: z.string().min(1),
   list_id: z.string().min(1),
   list_is_active: z.boolean(),
-  contact_status: z.enum(CONTACT_STATUS),
   _links: z.array(linkSchema).optional(),
 });
 
