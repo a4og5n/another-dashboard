@@ -5,6 +5,8 @@
  * Uses shadcn/ui Table component for consistency with reports list page
  */
 
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -15,10 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import type { EmailActivitySuccess } from "@/types/mailchimp/email-activity";
-import { formatDateTimeSafe } from "@/utils/format-date";
 import { MousePointerClick, Mail, AlertCircle } from "lucide-react";
+import { getActiveStatusBadge } from "@/components/ui/helpers/badge-utils";
+import { Pagination } from "@/components/ui/pagination";
+import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
+import { useTablePagination } from "@/hooks/use-table-pagination";
 
 interface CampaignEmailActivityTableProps {
   emailActivityData: EmailActivitySuccess;
@@ -29,91 +33,32 @@ interface CampaignEmailActivityTableProps {
   campaignId: string;
 }
 
-/**
- * Get icon and color for activity action type
- */
-function getActionIcon(action: string) {
-  switch (action) {
-    case "open":
-      return <Mail className="h-3 w-3" />;
-    case "click":
-      return <MousePointerClick className="h-3 w-3" />;
-    case "bounce":
-      return <AlertCircle className="h-3 w-3" />;
-    default:
-      return null;
-  }
-}
-
-/**
- * Get badge variant for activity action
- */
-function getActionBadgeVariant(action: string) {
-  switch (action) {
-    case "open":
-      return "default";
-    case "click":
-      return "secondary";
-    case "bounce":
-      return "destructive";
-    default:
-      return "outline";
-  }
-}
-
-/**
- * Format activity events for display
- */
-function formatActivityEvents(
-  activity: Array<{
-    action: string;
-    type?: string;
-    timestamp: string;
-    url?: string;
-    ip?: string;
-  }>,
-) {
-  if (!activity || activity.length === 0) {
-    return <span className="text-muted-foreground text-sm">No activity</span>;
-  }
-
-  return (
-    <div className="space-y-1">
-      {activity.slice(0, 3).map((event, index) => (
-        <div key={index} className="flex items-center gap-2">
-          <Badge
-            variant={getActionBadgeVariant(event.action)}
-            className="flex items-center gap-1 text-xs"
-          >
-            {getActionIcon(event.action)}
-            {event.action}
-            {event.type && ` (${event.type})`}
-          </Badge>
-          <span className="text-xs text-muted-foreground">
-            {formatDateTimeSafe(event.timestamp)}
-          </span>
-        </div>
-      ))}
-      {activity.length > 3 && (
-        <span className="text-xs text-muted-foreground">
-          +{activity.length - 3} more
-        </span>
-      )}
-    </div>
-  );
-}
-
 export function CampaignEmailActivityTable({
   emailActivityData,
-  campaignId: _campaignId,
+  campaignId,
+  currentPage,
+  pageSize,
+  perPageOptions,
+  baseUrl,
 }: CampaignEmailActivityTableProps) {
   const { emails, total_items } = emailActivityData;
+
+  // Calculate pagination
+  const totalPages = Math.ceil((total_items || 0) / pageSize);
+
+  // Use shared pagination hook for URL generation
+  const { createPageUrl, createPerPageUrl } = useTablePagination({
+    baseUrl,
+    pageSize,
+  });
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Email Activity ({total_items})</CardTitle>
+          <CardTitle>
+            Email Activity ({total_items.toLocaleString()})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {emails.length === 0 ? (
@@ -125,9 +70,8 @@ export function CampaignEmailActivityTable({
               <TableHeader>
                 <TableRow>
                   <TableHead>Email Address</TableHead>
-                  <TableHead>Activity</TableHead>
                   <TableHead>Total Events</TableHead>
-                  <TableHead>List</TableHead>
+                  <TableHead>List Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -143,13 +87,19 @@ export function CampaignEmailActivityTable({
                     (a) => a.action === "bounce",
                   ).length;
 
+                  const emailActivityUrl = `/mailchimp/reports/${campaignId}/email-activity/${email.email_id}`;
+
                   return (
                     <TableRow key={email.email_id}>
                       <TableCell className="font-medium max-w-xs">
                         <div className="space-y-1">
-                          <div className="truncate" title={email.email_address}>
+                          <Link
+                            href={emailActivityUrl}
+                            className="truncate hover:underline text-primary block"
+                            title={email.email_address}
+                          >
                             {email.email_address}
-                          </div>
+                          </Link>
                           <div className="flex gap-2 text-xs text-muted-foreground">
                             {opens > 0 && (
                               <span className="flex items-center gap-1">
@@ -170,18 +120,15 @@ export function CampaignEmailActivityTable({
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="max-w-md">
-                        {formatActivityEvents(email.activity)}
-                      </TableCell>
                       <TableCell className="text-muted-foreground">
                         {email.activity.length}
                       </TableCell>
                       <TableCell>
                         <Link
                           href={`/mailchimp/lists/${email.list_id}`}
-                          className="text-primary hover:underline text-sm"
+                          className="inline-block hover:opacity-80 transition-opacity"
                         >
-                          View List
+                          {getActiveStatusBadge(email.list_is_active)}
                         </Link>
                       </TableCell>
                     </TableRow>
@@ -193,15 +140,21 @@ export function CampaignEmailActivityTable({
         </CardContent>
       </Card>
 
-      {/* TODO: Add pagination component when needed */}
+      {/* Pagination Controls */}
       {total_items > 10 && (
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-sm text-muted-foreground text-center">
-              TODO: Add pagination component (total: {total_items} emails)
-            </p>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-between">
+          <PerPageSelector
+            value={pageSize}
+            options={perPageOptions}
+            createPerPageUrl={createPerPageUrl}
+            itemName="emails per page"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={createPageUrl}
+          />
+        </div>
       )}
     </div>
   );
