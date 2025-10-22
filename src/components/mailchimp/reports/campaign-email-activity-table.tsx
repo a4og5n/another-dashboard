@@ -3,9 +3,8 @@
  * Displays email activity (opens, clicks, bounces) in a table format
  *
  * Uses shadcn/ui Table component for consistency with reports list page
+ * Server component with URL-based pagination
  */
-
-"use client";
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +21,6 @@ import { MousePointerClick, Mail, AlertCircle } from "lucide-react";
 import { getActiveStatusBadge } from "@/components/ui/helpers/badge-utils";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
-import { useTablePagination } from "@/hooks/use-table-pagination";
 
 interface CampaignEmailActivityTableProps {
   emailActivityData: EmailActivitySuccess;
@@ -46,11 +44,20 @@ export function CampaignEmailActivityTable({
   // Calculate pagination
   const totalPages = Math.ceil((total_items || 0) / pageSize);
 
-  // Use shared pagination hook for URL generation
-  const { createPageUrl, createPerPageUrl } = useTablePagination({
-    baseUrl,
-    pageSize,
-  });
+  // Helper functions for URL generation (server-side)
+  const createPageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    params.set("perPage", pageSize.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  const createPerPageUrl = (newPerPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", "1"); // Reset to page 1 when changing perPage
+    params.set("perPage", newPerPage.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
 
   return (
     <div className="space-y-6">
@@ -152,7 +159,7 @@ export function CampaignEmailActivityTable({
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={createPageUrl}
+            createPageUrl={createPageUrl}
           />
         </div>
       )}
