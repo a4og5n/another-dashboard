@@ -9,33 +9,7 @@
 
 import { z } from "zod";
 import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
-
-/**
- * Schema for Mailchimp merge field address type
- * Reused from report-list-member pattern
- */
-const mergeFieldAddressSchema = z.object({
-  addr1: z.string(),
-  addr2: z.string().optional(),
-  city: z.string(),
-  state: z.string(),
-  zip: z.string(),
-  country: z.string().optional(),
-});
-
-/**
- * Schema for Mailchimp merge fields
- * Supports various field types as documented at:
- * https://mailchimp.com/developer/marketing/docs/merge-fields/#structure
- */
-const mergeFieldSchema = z.record(
-  z.string(),
-  z.union([
-    z.string(), // text, radio, dropdown, date, birthday, zip, phone, url, imageurl
-    z.number(), // number
-    mergeFieldAddressSchema, // address
-  ]),
-);
+import { mergeFieldSchema } from "@/schemas/mailchimp/common/report-list-member.schema";
 
 /**
  * Schema for an unsubscribed member
