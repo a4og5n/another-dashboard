@@ -91,6 +91,25 @@ export const bc = {
   // ============================================================================
 
   /**
+   * Campaign Recipients breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for campaign recipients
+   *
+   * @example
+   * ```tsx
+   * bc.campaignRecipients("abc123")
+   * // Returns: { label: "Recipients", href: "/mailchimp/reports/${id}/sent-to" }
+   * ```
+   */
+  campaignRecipients(id: string): BreadcrumbItem {
+    return {
+      label: "Recipients",
+      href: `/mailchimp/reports/${id}/sent-to`,
+    };
+  },
+
+  /**
    * Campaign Unsubscribes breadcrumb
    *
    * @param id - ID
