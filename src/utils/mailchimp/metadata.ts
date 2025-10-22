@@ -14,6 +14,7 @@ import {
   abuseReportsPageParamsSchema,
 } from "@/schemas/components";
 import { clickDetailsPageParamsSchema } from "@/schemas/components/mailchimp/reports-click-page-params";
+import { campaignUnsubscribesPageParamsSchema } from "@/schemas/components/mailchimp/report-unsubscribes-page-params";
 import type { CampaignReport } from "@/types/mailchimp";
 
 /**
@@ -215,6 +216,43 @@ export async function generateClickDetailsMetadata({
     openGraph: {
       title: `${data.campaign_title} - Click Details`,
       description: "URLs clicked in this campaign",
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for campaign unsubscribes pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the campaign unsubscribes page
+ */
+export async function generateCampaignUnsubscribesMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = campaignUnsubscribesPageParamsSchema.parse(rawParams);
+
+  // Fetch data for metadata
+  // TODO: Implement proper data fetching using DAL method
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Unsubscribes - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data as CampaignReport;
+
+  return {
+    title: `${data.campaign_title || "Resource"} - Campaign Unsubscribes`,
+    description: "Members who unsubscribed from this campaign",
+    openGraph: {
+      title: `${data.campaign_title || "Resource"} - Campaign Unsubscribes`,
+      description: "Members who unsubscribed from this campaign",
       type: "website",
     },
   };

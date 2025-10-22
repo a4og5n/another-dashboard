@@ -253,6 +253,44 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Campaign Unsubscribes Page
+   */
+  "report-unsubscribes": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/unsubscribes-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/unsubscribes-success.schema.ts",
+      apiError: "src/schemas/mailchimp/unsubscribes-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/reports/[id]/unsubscribes",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/reports/{campaign_id}/unsubscribed",
+      method: "GET",
+      dalMethod: "fetchCampaignUnsubscribes",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Campaign Unsubscribes",
+      description: "Members who unsubscribed from this campaign",
+      features: [
+        "Pagination",
+        "Dynamic routing",
+        "Member details",
+        "Unsubscribe reasons",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        parent: "report-detail",
+        label: "Unsubscribes",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

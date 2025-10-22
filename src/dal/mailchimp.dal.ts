@@ -23,6 +23,7 @@ import type {
 import { z } from "zod";
 import { clickListQueryParamsSchema } from "@/schemas/mailchimp/report-click-details-params.schema";
 import { reportClickListSuccessSchema } from "@/schemas/mailchimp/report-click-details-success.schema";
+import { unsubscribesSuccessSchema } from "@/schemas/mailchimp/unsubscribes-success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -120,6 +121,22 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof reportClickListSuccessSchema>>(
         `/reports/${id}/click-details`,
+        params,
+      ),
+    );
+  }
+
+  /**
+   * Campaign Unsubscribes
+   * GET /reports/{campaign_id}/unsubscribed
+   */
+  async fetchCampaignUnsubscribes(
+    campaignId: string,
+    params?: Record<string, unknown>,
+  ): Promise<ApiResponse<z.infer<typeof unsubscribesSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof unsubscribesSuccessSchema>>(
+        `/reports/${campaignId}/unsubscribed`,
         params,
       ),
     );

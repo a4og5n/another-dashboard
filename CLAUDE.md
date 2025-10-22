@@ -103,37 +103,78 @@ When implementing a new Mailchimp API endpoint:
 
 ### Phase 2: Page Generation (After Approval)
 
-Once schemas are approved:
+Once schemas are approved, the AI follows these steps:
 
-6. **AI calls programmatic generator API**:
+#### Step 1: Add Config to Registry
 
+6. **AI adds PageConfig** to `src/generation/page-configs.ts`:
    ```typescript
-   import { generatePage } from "@/scripts/generators/api";
-
-   const result = await generatePage({
-     apiParamsPath: "src/schemas/mailchimp/{endpoint}-params.schema.ts",
-     apiResponsePath: "src/schemas/mailchimp/{endpoint}-success.schema.ts",
-     apiErrorPath: "src/schemas/mailchimp/{endpoint}-error.schema.ts", // optional
-     routePath: "/mailchimp/{resource}/[id]/{endpoint}",
-     pageTitle: "...",
-     pageDescription: "...",
-     apiEndpoint: "/api/endpoint/path",
-   });
+   "report-endpoint": {
+     schemas: { apiParams: "...", apiResponse: "...", apiError: "..." },
+     route: { path: "/mailchimp/reports/[id]/endpoint", params: ["id"] },
+     api: { endpoint: "/reports/{campaign_id}/endpoint", method: "GET" },
+     page: { type: "nested-detail", title: "...", description: "...", features: [...] },
+     ui: { hasPagination: true, breadcrumbs: { parent: "report-detail", label: "..." } },
+   } satisfies PageConfig,
    ```
 
-7. **Generator creates infrastructure** (500-800 lines):
-   - Page files (`page.tsx`, `loading.tsx`, `not-found.tsx`)
-   - UI schemas (converts API schemas to page params)
-   - Placeholder component (with Construction card)
-   - DAL method
-   - Breadcrumb function
-   - Metadata helper
-8. **AI implements component logic** (replaces Construction card)
-9. **AI runs validation**:
-   - `pnpm type-check` - TypeScript validation
-   - `pnpm lint:fix` - Code style fixes
-   - `pnpm test` - All tests pass
-10. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
+#### Step 2: Run Page Generator
+
+7. **AI runs generator programmatically** (creates infrastructure files):
+   ```typescript
+   // Creates page skeleton with TODOs/placeholders
+   const config = getPageConfig("report-endpoint");
+   const result = await generatePageFromConfig(config, "report-endpoint");
+   ```
+
+**Generator Output:** Creates infrastructure files with TODOs and type errors (this is expected!)
+
+#### Step 3: Manual Implementation (AI completes these)
+
+8. **AI creates proper TypeScript types** in `src/types/mailchimp/{endpoint}.ts`:
+   - Export types inferred from Zod schemas
+   - Follow existing pattern from `abuse-reports.ts`, `opens.ts`, etc.
+
+9. **AI creates skeleton component** in `src/skeletons/mailchimp/`:
+   - Copy pattern from similar pages (e.g., `CampaignAbuseReportsSkeleton.tsx`)
+   - Export from `src/skeletons/mailchimp/index.ts`
+
+10. **AI replaces generated page.tsx** with proper implementation:
+    - Follow exact pattern from `abuse-reports/page.tsx` or `opens/page.tsx`
+    - Use proper types (not `any`)
+    - Include proper error handling with `handleApiError()`
+    - Add metadata generation
+
+11. **AI implements table/display component**:
+    - **IMPORTANT:** Use existing shared components whenever possible:
+      - **For ALL tables:** Use shadcn/ui `Table` component (from `@/components/ui/table`)
+        - Simple lists: `Card` + `Table` (see `campaign-unsubscribes-table.tsx`, `reports-overview.tsx`)
+        - Complex tables with sorting: `Card` + TanStack Table + shadcn `Table` (see `click-details-content.tsx`)
+        - **NEVER use raw HTML `<table>` markup** - always use shadcn/ui components
+      - For data display: Use `StatCard`, `StatsGridCard`, or `StatusCard`
+    - **If no suitable component exists:** Create placeholder Card with TODO:
+      ```tsx
+      <Card>
+        <CardHeader>
+          <CardTitle>TODO: Implement {ComponentName}</CardTitle>
+        </CardHeader>
+        <CardContent>Data structure ready, UI pending</CardContent>
+      </Card>
+      ```
+
+12. **AI creates not-found.tsx** (copy from similar page, update text)
+
+13. **AI updates DAL method** in `src/dal/mailchimp.dal.ts`:
+    - Replace `unknown` types with proper schemas
+    - Follow existing method patterns
+
+14. **AI runs validation**:
+    - `pnpm type-check` - Must pass with zero errors
+    - `pnpm lint:fix` - Auto-fix linting issues
+    - `pnpm format` - Format all files
+    - `pnpm test` - All tests pass
+
+15. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
 
 ### What Gets Generated Automatically
 
@@ -328,10 +369,71 @@ if (error) return <ErrorDisplay message={error} />;
 
 ### Schema & API Patterns
 
+**Before creating new schemas, always check existing patterns:**
+
+```bash
+# Check parameter schema patterns
+grep -r "ParamsSchema" src/schemas/mailchimp/*-params.schema.ts
+
+# Check for reusable common schemas
+grep -r "schemaName" src/schemas/mailchimp/common/
+
+# Find similar endpoint schemas (for pattern reference)
+ls src/schemas/mailchimp/*-success.schema.ts
+```
+
+**Schema Creation Rules:**
+
+1. **Parameter Schemas** (`*-params.schema.ts`):
+   - Export path and query schemas separately (do NOT use `.merge()`)
+   - Path params: `{endpoint}PathParamsSchema`
+   - Query params: `{endpoint}QueryParamsSchema`
+   - Always add `.strict()` with comment: `// Reject unknown properties for input validation`
+   - ID fields MUST use `.min(1)` to prevent empty strings
+
+2. **Zod 4 Best Practices**:
+   - Optional with default: `.default(value)` alone (NOT `.default().optional()`)
+   - Optional without default: `.optional()` alone
+   - NEVER use `.default().optional()` (redundant, `.default()` makes field optional automatically)
+
+3. **Success Schemas** (`*-success.schema.ts`):
+   - All ID fields (`campaign_id`, `list_id`, `email_id`, etc.) MUST use `.min(1)`
+   - Compare with similar endpoints to match flat vs nested patterns
+   - Check `common/` directory for reusable schemas before inlining
+   - If duplicating schemas, create GitHub issue for future refactoring
+
+4. **Error Schemas** (`*-error.schema.ts`):
+   - Usually just extends `errorSchema` from `@/schemas/mailchimp/common/error.schema`
+
+**Standard Patterns:**
+
 - **API naming:** Always match API property names in Zod schemas and types
 - **Enums:** `export const VISIBILITY = ["pub", "prv"] as const;` + `z.enum(VISIBILITY)`
 - **DateTime:** Use `z.iso.datetime({ offset: true })` for ISO 8601 (recommended), `z.iso.datetime()` for UTC-only
 - **Deprecated:** Never use `z.string().datetime()` (enforced by tests)
+
+**Example Pattern** (from `report-click-details-params.schema.ts`):
+
+```typescript
+// Path params
+export const clickListPathParamsSchema = z
+  .object({
+    campaign_id: z.string().min(1),
+  })
+  .strict();
+
+// Query params
+export const clickListQueryParamsSchema = z
+  .object({
+    fields: z.string().optional(),
+    exclude_fields: z.string().optional(),
+    count: z.coerce.number().min(1).max(1000).default(10), // Note: .default() alone
+    offset: z.coerce.number().min(0).default(0),
+  })
+  .strict(); // Reject unknown properties for input validation
+
+// Do NOT export a merged schema
+```
 
 ### Component Development
 
