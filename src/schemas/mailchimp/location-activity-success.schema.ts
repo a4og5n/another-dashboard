@@ -17,7 +17,7 @@ export const locationSchema = z.object({
   country_code: z.string().regex(/^[A-Z]{2}$/), // ISO 3166-1 alpha-2 country code (exactly 2 uppercase letters)
   region: z.string().optional(), // State/province/region name
   region_name: z.string().default("Rest of Country"), // State/province code
-  opens: z.number().min(0), // Number of opens from this location
+  opens: z.number().min(0), // Total number of opens from this location
   proxy_excluded_opens: z.number().min(0), // Number of unique opens from this location
 });
 

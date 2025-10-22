@@ -1,6 +1,7 @@
 export * from "@/types/mailchimp/common";
 export * from "@/types/mailchimp/email-activity";
 export * from "@/types/mailchimp/lists";
+export * from "@/types/mailchimp/location-activity";
 export * from "@/types/mailchimp/oauth";
 export * from "@/types/mailchimp/reports";
 export * from "@/types/mailchimp/root";

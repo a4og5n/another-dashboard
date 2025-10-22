@@ -17,6 +17,7 @@ import { clickDetailsPageParamsSchema } from "@/schemas/components/mailchimp/rep
 import { campaignUnsubscribesPageParamsSchema } from "@/schemas/components/mailchimp/report-unsubscribes-page-params";
 import { emailActivityPageParamsSchema } from "@/schemas/components/mailchimp/email-activity-page-params";
 import { campaignRecipientsPageParamsSchema } from "@/schemas/components/mailchimp/report-sent-to-page-params";
+import { reportLocationActivityPageParamsSchema } from "@/schemas/components/mailchimp/report-location-activity-page-params";
 import type { CampaignReport } from "@/types/mailchimp";
 
 /**
@@ -328,6 +329,43 @@ export async function generateCampaignRecipientsMetadata({
     openGraph: {
       title: `${data.campaign_title || "Resource"} - Campaign Recipients`,
       description: "Members who received this campaign",
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for campaign locations pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the campaign locations page
+ */
+export async function generateCampaignLocationsMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = reportLocationActivityPageParamsSchema.parse(rawParams);
+
+  // Fetch data for metadata
+  // TODO: Implement proper data fetching using DAL method
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Locations - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data as CampaignReport;
+
+  return {
+    title: `${data.campaign_title || "Resource"} - Campaign Locations`,
+    description: "Geographic engagement by location",
+    openGraph: {
+      title: `${data.campaign_title || "Resource"} - Campaign Locations`,
+      description: "Geographic engagement by location",
       type: "website",
     },
   };
