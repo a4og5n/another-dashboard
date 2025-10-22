@@ -15,9 +15,7 @@ import { describe, it, expect } from "vitest";
 import { execSync } from "node:child_process";
 
 describe("ESLint Enforcement", () => {
-  it(
-    "should have no ESLint errors or warnings in src directory",
-    () => {
+  it("should have no ESLint errors or warnings in src directory", () => {
     try {
       // Run ESLint on src directory
       const output = execSync("pnpm eslint src --max-warnings=0", {
@@ -39,13 +37,9 @@ describe("ESLint Enforcement", () => {
         `ESLint found errors or warnings:\n\n${errorOutput}\n\nRun 'pnpm lint' to see details.`,
       );
     }
-    },
-    30000,
-  ); // 30 second timeout for ESLint on src directory
+  }, 30000); // 30 second timeout for ESLint on src directory
 
-  it(
-    "should have no ESLint errors or warnings in scripts directory",
-    () => {
+  it("should have no ESLint errors or warnings in scripts directory", () => {
     try {
       // Run ESLint on scripts directory
       const output = execSync("pnpm eslint scripts --max-warnings=0", {
@@ -67,7 +61,5 @@ describe("ESLint Enforcement", () => {
         `ESLint found errors or warnings in scripts:\n\n${errorOutput}\n\nRun 'pnpm lint' to see details.`,
       );
     }
-    },
-    15000,
-  ); // 15 second timeout for ESLint on scripts directory
+  }, 15000); // 15 second timeout for ESLint on scripts directory
 });
