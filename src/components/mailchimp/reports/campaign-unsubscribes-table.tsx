@@ -74,6 +74,7 @@ function formatMergeFields(
 
 export function CampaignUnsubscribesTable({
   unsubscribesData,
+  campaignId,
 }: CampaignUnsubscribesTableProps) {
   const { unsubscribes, total_items } = unsubscribesData;
 
@@ -101,33 +102,43 @@ export function CampaignUnsubscribesTable({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {unsubscribes.map((member) => (
-                  <TableRow key={member.email_id}>
-                    <TableCell className="font-medium">
-                      {member.email_address}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDateTimeSafe(member.timestamp)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {member.reason || "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/mailchimp/lists/${member.list_id}`}
-                        className="inline-block hover:opacity-80 transition-opacity"
-                      >
-                        {getActiveStatusBadge(member.list_is_active)}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      {getVipBadge(member.vip, "with-icon")}
-                    </TableCell>
-                    <TableCell>
-                      {formatMergeFields(member.merge_fields)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {unsubscribes.map((member) => {
+                  const emailActivityUrl = `/mailchimp/reports/${campaignId}/email-activity/${member.email_id}`;
+
+                  return (
+                    <TableRow key={member.email_id}>
+                      <TableCell className="font-medium max-w-xs">
+                        <Link
+                          href={emailActivityUrl}
+                          className="truncate hover:underline text-primary"
+                          title={member.email_address}
+                        >
+                          {member.email_address}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {formatDateTimeSafe(member.timestamp)}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {member.reason || "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/mailchimp/lists/${member.list_id}`}
+                          className="inline-block hover:opacity-80 transition-opacity"
+                        >
+                          {getActiveStatusBadge(member.list_is_active)}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        {getVipBadge(member.vip, "with-icon")}
+                      </TableCell>
+                      <TableCell>
+                        {formatMergeFields(member.merge_fields)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
