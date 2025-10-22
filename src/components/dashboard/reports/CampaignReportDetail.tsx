@@ -54,7 +54,10 @@ export function CampaignReportDetail({
         <div data-tab="overview" className="mt-6">
           {/* Key Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <EmailsSentCard emailsSent={report.emails_sent} />
+            <EmailsSentCard
+              emailsSent={report.emails_sent}
+              campaignId={report.id}
+            />
             <DeliveryIssuesCard
               bounces={report.bounces}
               totalEmails={report.emails_sent}
