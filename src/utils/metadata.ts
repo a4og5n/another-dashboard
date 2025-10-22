@@ -56,4 +56,4 @@ export {
 
 export { generateClickDetailsMetadata } from "@/utils/mailchimp/metadata";
 
-export { generateCampaignUnsubscribesMetadata } from "./mailchimp/metadata";
+export { generateCampaignUnsubscribesMetadata } from "@/utils/mailchimp/metadata";
