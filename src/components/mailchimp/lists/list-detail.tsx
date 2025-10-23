@@ -6,12 +6,20 @@
  * Only displays data available in the list schema - no member data
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { ListTabNavigation } from "@/components/mailchimp/lists/list-tab-navigation";
 import type { ListDetailProps } from "@/types/components";
 import { formatDateLongSafe, buildMailchimpListUrl } from "@/utils";
-import { Star, ExternalLink } from "lucide-react";
+import { Star, ExternalLink, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export function ListDetail({
   list,
@@ -294,6 +302,19 @@ export function ListDetail({
                     </div>
                   </div>
                 </CardContent>
+                <CardFooter className="border-t pt-4">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <Link href={`/mailchimp/lists/${list.id}/activity`}>
+                      View Activity Timeline
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardFooter>
               </Card>
 
               {/* Engagement Metrics */}
