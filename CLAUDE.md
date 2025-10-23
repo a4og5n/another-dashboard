@@ -78,7 +78,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## AI-First Development Workflow
 
-This project uses an **AI-assisted, automated workflow** for implementing new Mailchimp dashboard pages with **automatic git operations**.
+This project uses an **AI-assisted, automated workflow** for implementing new Mailchimp dashboard pages with **mandatory user checkpoints**.
 
 ### Overview
 
@@ -86,8 +86,9 @@ This project uses an **AI-assisted, automated workflow** for implementing new Ma
 **Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
 **Phase 1.5: Commit Phase 1** ✅ (Automatic - After user approval)
 **Phase 2: Page Generation** 🚀 (Automatic - After commit)
-**Phase 2.5: Commit Phase 2** ✅ (Automatic - After validation)
-**Phase 3: PR Creation** 📤 (Automatic - Push & create PR)
+**Phase 2.5: Commit Phase 2** ✅ (Automatic LOCAL commit only - After validation)
+**Phase 2.75: User Review & Testing** ⏸️ (STOP POINT - User testing required)
+**Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
 
 ### Phase 0: Git Setup (Automatic)
 
@@ -111,40 +112,67 @@ This project uses an **AI-assisted, automated workflow** for implementing new Ma
 
 When implementing a new Mailchimp API endpoint:
 
-1. **AI fetches and verifies Mailchimp API documentation** for the target endpoint:
-   - Use WebSearch or WebFetch to get latest API docs
-   - Extract exact response example from documentation
-   - Document the source URL for reference
-2. **AI creates Zod schemas** in `src/schemas/mailchimp/` matching API exactly:
+1. **AI attempts to fetch Mailchimp API documentation:**
+
+   **Attempt 1:** Use WebFetch on official API docs URL
+
+   **Attempt 2:** If WebFetch fails, use WebSearch for response examples
+
+   **If both fail:**
+
+   **⏸️ STOP and ask user:**
+
+   > "I cannot access the Mailchimp API documentation for [endpoint].
+   >
+   > Options:
+   >
+   > - **A)** You visit [URL] and paste the response example
+   > - **B)** You test the endpoint and share actual API response
+   > - **C)** I create schemas based on Mailchimp API patterns (marked as ⚠️ ASSUMED - requires verification)
+   >
+   > Which would you prefer?"
+
+   **DO NOT proceed with assumptions (Option C) without user explicitly choosing it.**
+
+2. **AI creates Zod schemas** in `src/schemas/mailchimp/`:
    - `{endpoint}-params.schema.ts` - Request parameters (path + query params)
    - `{endpoint}-success.schema.ts` - Successful response structure
    - `{endpoint}-error.schema.ts` (optional) - Error response structure
    - Every field name must match API documentation exactly
    - Include source URL in schema file comments
+   - If using assumptions: Mark with `⚠️ ASSUMED FIELDS` and document reasoning
+
 3. **AI presents schemas for review** with:
    - Schema files created
-   - Source documentation link
-   - API response example (for verification)
+   - Source documentation link (or note about assumptions)
+   - API response example (if available)
+
 4. **⏸️ STOP - User reviews schemas**
    - Check field names match Mailchimp API exactly
    - Verify types are correct (string, number, boolean, etc.)
    - Confirm pagination structure if applicable
    - Request changes if needed
+
 5. **User approves schemas** - Say "approved" or "looks good" to proceed
 
 ### Phase 1 Verification Checklist
 
-Before presenting schemas for review, AI must verify:
+Before presenting schemas for review:
+
+**If API docs accessible:**
 
 - [ ] ✅ Fetched official Mailchimp API documentation
 - [ ] ✅ Located exact response example in docs
 - [ ] ✅ Extracted all field names from response
-- [ ] ✅ Verified field types (string, number, boolean, etc.)
-- [ ] ✅ Checked for optional vs required fields
+- [ ] ✅ Verified field types
 - [ ] ✅ Added source documentation URL to schema comments
-- [ ] ✅ Ready to present response example to user
 
-**⚠️ CRITICAL**: Never create schemas from assumptions. Always verify with source API documentation first.
+**If using assumptions (user approved Option C):**
+
+- [ ] ✅ Marked schemas with `⚠️ ASSUMED FIELDS`
+- [ ] ✅ Documented what was assumed and why
+- [ ] ✅ Told user: "These schemas need verification with real API response during testing"
+- [ ] ✅ User aware they must test with real data to verify schema
 
 ### Phase 1.5: Commit Phase 1 (Automatic)
 
@@ -244,60 +272,130 @@ Once schemas are approved, the AI follows these steps:
 
 15. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
 
-### Phase 2.5: Commit Phase 2 (Automatic)
+### Phase 2.5: Commit Phase 2 Implementation (LOCAL ONLY)
+
+**⚠️ CRITICAL: Commit to LOCAL branch only - DO NOT push to origin**
 
 **IMMEDIATELY after all validation passes, AI automatically:**
 
 1. Stages all Phase 2 files: `git add .`
-2. Commits with detailed conventional commit message:
+2. Commits to **LOCAL branch** with detailed message:
 
    ```
    feat: implement {Endpoint Name} (Phase 2)
 
-   Completes the {Endpoint Name} implementation following
-   the AI-First Development Workflow.
+   Complete implementation with all components, types, and integration.
 
-   ## What Changed
-
-   **Infrastructure (Generated + Configured)**:
-   - Added PageConfig to page-configs.ts registry
-   - Generated page structure with proper Next.js 15 patterns
+   Infrastructure:
+   - Added PageConfig to page-configs.ts
    - Created route: /mailchimp/{route-path}
 
-   **Types & Components**:
-   - Created {Type}Success type from Zod schemas
-   - Implemented {Component}Table/Display component
-   - Created {Component}Skeleton for loading state
-   - Updated not-found.tsx with proper messaging
+   Components & Types:
+   - Created types from Zod schemas
+   - Implemented display component
+   - Created loading skeleton
+   - Added not-found page
 
-   **Integration**:
-   - Updated DAL method with proper Zod types
-   - Added breadcrumb navigation helper
-   - Created metadata generation function
-   - Exported skeleton from index
+   Integration:
+   - Updated DAL with proper types
+   - Added breadcrumb helper
+   - Created metadata function
+   - Updated api-coverage.md
 
-   ## Validation
+   Validation:
    - ✅ Type-check: Passes
    - ✅ Lint: Passes
    - ✅ Tests: XXX/XXX passing
-
-   ## Related
-   - Phase 1: #{PR number} (schemas)
-   - Follows patterns from {similar endpoints}
 
    🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
    Co-Authored-By: Claude <noreply@anthropic.com>
    ```
 
-3. Notifies user: "✅ Phase 2 committed (commit hash)"
-4. Proceeds to Phase 3 (PR creation)
+3. **⏸️ STOPS and presents to user:**
 
-**DO NOT** wait for user to request commit. **DO NOT** proceed to Phase 3 without committing.
+   > "✅ Phase 2 implementation complete and committed locally (commit: abc123)
+   >
+   > **Ready for your review and testing**
+   >
+   > Files created/modified:
+   >
+   > - [list of files]
+   >
+   > ⚠️ PR has NOT been created yet - please review and test first
+   >
+   > Next: Phase 2.75 (your review & testing)"
 
-### Phase 3: PR Creation (Automatic)
+**DO NOT push to origin. DO NOT create PR. DO NOT proceed to Phase 3.**
 
-**IMMEDIATELY after Phase 2 commit succeeds, AI automatically:**
+### Phase 2.75: User Review & Testing Loop ⏸️ (REQUIRED CHECKPOINT)
+
+**⚠️ CRITICAL: This happens entirely on LOCAL branch before any push to origin**
+
+**User reviews implementation:**
+
+1. Review code locally
+2. **Test page in browser with REAL Mailchimp data**
+3. Verify schemas match actual API responses
+4. Check navigation and UX
+5. Test edge cases (empty data, errors, etc.)
+
+**If user identifies improvements:**
+
+- User describes needed changes
+- AI implements improvements
+- AI commits improvements to LOCAL branch
+- Return to user testing
+
+**Repeat until user is satisfied**
+
+**Benefits of local-only workflow:**
+
+- ✅ Single, clean commit history (or 2-3 logical commits)
+- ✅ No wasted CI runs on every small change
+- ✅ PR is complete and tested when created
+- ✅ Faster iteration (no push/pull cycles)
+
+**Why manual testing is CRITICAL:**
+
+**AI CANNOT:**
+
+- ❌ Test pages in browser
+- ❌ Access real Mailchimp API
+- ❌ Verify actual data structures
+- ❌ Test user experience
+- ❌ See rendered HTML/CSS
+- ❌ Click links and verify navigation
+
+**USER MUST:**
+
+- ✅ Test with real Mailchimp data
+- ✅ Verify schema matches API response (especially if schemas were assumed)
+- ✅ Check all links work
+- ✅ Verify HTML renders correctly
+- ✅ Test error states and edge cases
+
+**When user is satisfied, they explicitly say:**
+
+- "ready to push"
+- "create PR"
+- "push to origin"
+- "ready for PR"
+
+**Only then proceed to Phase 3.**
+
+### Phase 3: Push & Create PR (ONLY after explicit approval)
+
+**⚠️ CRITICAL: AI must NOT proceed to Phase 3 without user explicitly saying:**
+
+- "ready to push"
+- "create PR"
+- "push to origin"
+- "ready for PR"
+
+**DO NOT accept vague approval like "looks good" - user must explicitly request PR creation.**
+
+**After explicit approval, AI automatically:**
 
 1. Pushes branch to origin: `git push -u origin {branch-name}`
 2. Creates PR using GitHub CLI:
@@ -305,28 +403,34 @@ Once schemas are approved, the AI follows these steps:
    ```bash
    gh pr create --title "feat: implement {Endpoint Name}" --body "$(cat <<'EOF'
    ## Summary
-   Implements the {Endpoint Name} endpoint following the AI-First Development Workflow.
+   Implements {Endpoint Name} endpoint following AI-First Development Workflow.
 
-   ## What Changed
-   [Detailed description of changes]
+   ## Implementation
+   - Complete page with all components
+   - Type-safe with Zod schemas
+   - Proper error handling
+   - Loading states and skeletons
+   - Navigation integration
 
    ## Validation
    - ✅ Type-check: Passes
    - ✅ Lint: Passes
    - ✅ Tests: XXX/XXX passing
+   - ✅ Manual testing: Complete
 
    ## Test Plan
-   [Steps to test the feature]
+   - [x] Tested with real Mailchimp data
+   - [x] Verified schema matches API response
+   - [x] Checked navigation works
+   - [x] Tested error states
 
    🤖 Generated with [Claude Code](https://claude.com/claude-code)
    EOF
    )"
    ```
 
-3. Presents PR URL to user: "✅ PR created: {URL}"
-4. Notifies user: "⏸️ Please review and merge the PR. Say 'PR merged' when done."
-
-**DO NOT** wait for user to request PR creation.
+3. Presents PR URL: "✅ PR created: {URL}"
+4. Waits for user to merge and confirm
 
 ### Post-Merge Cleanup (Automatic)
 
