@@ -15,6 +15,13 @@ import path from "path";
 
 const SCHEMAS_FOLDER = "src/schemas";
 
+// Allowed exceptions: Schema factory functions in common/
+// These functions CREATE schemas and must live in schema files
+const ALLOWED_FUNCTIONS = [
+  "createPaginatedResponse", // Factory for paginated response schemas
+  "createIdPathParams", // Factory for custom ID path parameters
+];
+
 // Regex patterns to detect function definitions
 const FUNCTION_PATTERNS = [
   /export\s+function\s+\w+/, // export function name
@@ -79,10 +86,17 @@ describe("Schema Purity Enforcement", () => {
         const content = fs.readFileSync(file, "utf8");
         const functionViolations = detectFunctions(content);
 
-        if (functionViolations.length > 0) {
+        // Filter out allowed functions
+        const disallowedViolations = functionViolations.filter((v) => {
+          return !ALLOWED_FUNCTIONS.some((allowedFn) =>
+            v.match.includes(allowedFn),
+          );
+        });
+
+        if (disallowedViolations.length > 0) {
           violations.push({
             file: path.relative(process.cwd(), file),
-            violations: functionViolations,
+            violations: disallowedViolations,
           });
         }
       });
