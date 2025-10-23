@@ -197,6 +197,25 @@ export const bc = {
    * // Returns: { label: "Report", href: "/mailchimp/reports/abc123" }
    * ```
    */
+
+  /**
+   * Domain Performance breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for domain performance
+   *
+   * @example
+   * ```tsx
+   * bc.domainPerformance("abc123")
+   * // Returns: { label: "Domain Performance", href: "/mailchimp/reports/${id}/domain-performance" }
+   * ```
+   */
+  domainPerformance(id: string): BreadcrumbItem {
+    return {
+      label: "Domain Performance",
+      href: `/mailchimp/reports/${id}/domain-performance`,
+    };
+  },
   report(id: string): BreadcrumbItem {
     return {
       label: "Report",

@@ -19,6 +19,7 @@ import { emailActivityPageParamsSchema } from "@/schemas/components/mailchimp/em
 import { campaignRecipientsPageParamsSchema } from "@/schemas/components/mailchimp/report-sent-to-page-params";
 import { reportLocationActivityPageParamsSchema } from "@/schemas/components/mailchimp/report-location-activity-page-params";
 import { campaignAdvicePageParamsSchema } from "@/schemas/components/mailchimp/report-advice-page-params";
+import { domainPerformancePageParamsSchema } from "@/schemas/components/mailchimp/report-domain-performance-page-params";
 import type { CampaignReport } from "@/types/mailchimp";
 
 /**
@@ -405,6 +406,45 @@ export async function generateCampaignAdviceMetadata({
       title: `${data.campaign_title || "Resource"} - Campaign Advice`,
       description:
         "Feedback and recommendations to improve campaign performance",
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for domain performance pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the domain performance page
+ */
+export async function generateDomainPerformanceMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = domainPerformancePageParamsSchema.parse(rawParams);
+
+  // Fetch data for metadata
+  // TODO: Implement proper data fetching using DAL method
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Domain Performance - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data as CampaignReport;
+
+  return {
+    title: `${data.campaign_title} - Domain Performance`,
+    description:
+      "Email provider performance breakdown (Gmail, Outlook, Yahoo, etc.)",
+    openGraph: {
+      title: `${data.campaign_title || "Resource"} - Domain Performance`,
+      description:
+        "Email provider performance breakdown (Gmail, Outlook, Yahoo, etc.)",
       type: "website",
     },
   };

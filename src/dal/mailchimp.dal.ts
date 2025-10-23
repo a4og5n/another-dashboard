@@ -32,6 +32,7 @@ import { locationActivityQueryParamsSchema } from "@/schemas/mailchimp/location-
 import { locationActivitySuccessSchema } from "@/schemas/mailchimp/location-activity-success.schema";
 import { campaignAdviceQueryParamsSchema } from "@/schemas/mailchimp/campaign-advice-params.schema";
 import { campaignAdviceSuccessSchema } from "@/schemas/mailchimp/campaign-advice-success.schema";
+import { domainPerformanceSuccessSchema } from "@/schemas/mailchimp/domain-performance-success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -212,6 +213,35 @@ export class MailchimpDAL {
         params,
       ),
     );
+  }
+
+  /**
+   * Domain Performance
+   * GET /reports/{campaign_id}/domain-performance
+   */
+  async fetchDomainPerformance(
+    campaignId: string,
+  ): Promise<ApiResponse<z.infer<typeof domainPerformanceSuccessSchema>>> {
+    const result = await mailchimpApiCall((client) =>
+      client.get<z.infer<typeof domainPerformanceSuccessSchema>>(
+        `/reports/${campaignId}/domain-performance`,
+      ),
+    );
+
+    // Validate response with schema
+    if (result.success && result.data) {
+      const parsed = domainPerformanceSuccessSchema.safeParse(result.data);
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: "Invalid domain performance data format",
+          errorCode: "VALIDATION_ERROR",
+        };
+      }
+      return { ...result, data: parsed.data };
+    }
+
+    return result;
   }
 }
 

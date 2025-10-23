@@ -406,6 +406,44 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Domain Performance Page
+   */
+  "report-domain-performance": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/domain-performance-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/domain-performance-success.schema.ts",
+      apiError: "src/schemas/mailchimp/domain-performance-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/reports/[id]/domain-performance",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/reports/{campaign_id}/domain-performance",
+      method: "GET",
+      dalMethod: "fetchDomainPerformance",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Domain Performance",
+      description:
+        "Email provider performance breakdown (Gmail, Outlook, Yahoo, etc.)",
+      features: [
+        "Dynamic routing",
+        "Domain analytics",
+        "Deliverability insights",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        parent: "report-detail",
+        label: "Domain Performance",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
