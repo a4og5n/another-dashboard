@@ -22,7 +22,7 @@ import type { EmailActivitySuccess } from "@/types/mailchimp/email-activity";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { handleApiError, bc } from "@/utils";
 import { generateCampaignEmailActivityMetadata } from "@/utils/metadata";
-import { emailActivityQueryParamsSchema } from "@/schemas/mailchimp/email-activity-params.schema";
+import { emailActivityQueryParamsSchema } from "@/schemas/mailchimp/reports/email-activity/params.schema";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
 
 async function CampaignEmailActivityPageContent({

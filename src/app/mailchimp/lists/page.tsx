@@ -11,7 +11,7 @@ import { ListOverview } from "@/components/mailchimp/lists/list-overview";
 import { ListOverviewSkeleton } from "@/skeletons/mailchimp";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import type { ListsPageProps } from "@/types/components/mailchimp";
-import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import { listsParamsSchema } from "@/schemas/mailchimp/lists/params.schema";
 import { listsPageSearchParamsSchema } from "@/schemas/components";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { validatePageParams } from "@/utils/mailchimp/page-params";

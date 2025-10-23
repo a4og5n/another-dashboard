@@ -6,9 +6,9 @@
  */
 
 import { z } from "zod";
-import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import { listsParamsSchema } from "@/schemas/mailchimp/lists/params.schema";
 import { reportsPageParamsSchema } from "@/schemas/components/reports-page-params.schema";
-import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports-params.schema";
+import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports/params.schema";
 import type { ReportsPageSearchParams } from "@/types/components/mailchimp";
 /**
  * Transforms page-based pagination parameters to Mailchimp API offset-based format

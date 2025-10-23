@@ -18,7 +18,7 @@ import {
 import type { ReportOpensPageProps } from "@/types/components/mailchimp";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { CampaignOpensTable } from "@/components/dashboard/reports";
-import { openListQueryParamsSchema } from "@/schemas/mailchimp/report-open-details-params.schema";
+import { openListQueryParamsSchema } from "@/schemas/mailchimp/reports/open-details/params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui/per-page-selector";
 import type { ReportOpenListSuccess } from "@/types/mailchimp";
 import { validatePageParams } from "@/utils/mailchimp/page-params";

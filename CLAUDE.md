@@ -216,28 +216,50 @@ Before presenting schemas for review:
 - [ ] ✅ Told user: "These schemas need verification with real API response during testing"
 - [ ] ✅ User aware they must test with real data to verify schema
 
-### Phase 1.5: Commit Phase 1 (Automatic)
+### Phase 1.5: Commit Schemas (MANDATORY - Automatic)
 
-**IMMEDIATELY after user approves schemas, AI automatically:**
+**⚠️ CRITICAL: This step is MANDATORY and must happen automatically**
 
-1. Stages schema files: `git add src/schemas/mailchimp/*{endpoint}*`
-2. Commits with conventional commit message:
+**Trigger**: User says "approved", "looks good", "Review finished. Begin the next phase", or any approval signal
 
+**AI MUST do this BEFORE proceeding to Phase 2:**
+
+1. **Stage schema files only** (no other files):
+
+   ```bash
+   git add src/schemas/mailchimp/*{endpoint}*
    ```
-   feat: add {Endpoint Name} schemas (Phase 1)
+
+2. **Commit with standard message**:
+
+   ```bash
+   git commit -m "feat: add {Endpoint Name} schemas (Phase 1)
 
    Created Zod schemas for {endpoint description}:
    - {endpoint}-params.schema.ts
    - {endpoint}-success.schema.ts
    - {endpoint}-error.schema.ts
 
-   Source: {API documentation URL}
+   Source: {API documentation URL or "User-provided actual API structure"}"
    ```
 
-3. Notifies user: "✅ Phase 1 committed (commit hash)"
-4. Proceeds to Phase 2
+3. **Verify commit succeeded**:
 
-**DO NOT** wait for user to request commit. **DO NOT** proceed to Phase 2 without committing.
+   ```bash
+   git log -1 --oneline
+   ```
+
+4. **Notify user and proceed**:
+   > "✅ Schemas committed ({commit hash}). Proceeding to Phase 2..."
+
+**DO NOT skip this step. DO NOT proceed to Phase 2 without committing. DO NOT wait for user to request commit.**
+
+**Why this matters:**
+
+- Separates schema validation from implementation in git history
+- Allows easy rollback of just schemas if needed
+- Makes code review easier with smaller, focused commits
+- Follows documented workflow exactly
 
 ### Phase 2: Page Generation (After Approval)
 
@@ -314,59 +336,115 @@ Once schemas are approved, the AI follows these steps:
 
 15. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
 
-### Phase 2.5: Commit Phase 2 Implementation (LOCAL ONLY)
+### Phase 2.5: Commit Phase 2 Implementation (LOCAL ONLY - Granular Strategy)
 
 **⚠️ CRITICAL: Commit to LOCAL branch only - DO NOT push to origin**
 
-**IMMEDIATELY after all validation passes, AI automatically:**
+**After each major step in Phase 2, create focused commits for better code review:**
 
-1. Stages all Phase 2 files: `git add .`
-2. Commits to **LOCAL branch** with detailed message:
+#### Commit Strategy: Break Into 5-7 Small Commits
 
-   ```
-   feat: implement {Endpoint Name} (Phase 2)
+**1. After generating infrastructure files:**
 
-   Complete implementation with all components, types, and integration.
+```bash
+git add src/app/mailchimp/{path}/ src/generation/page-configs.ts
+git commit -m "chore: generate {Endpoint} page infrastructure
 
-   Infrastructure:
-   - Added PageConfig to page-configs.ts
-   - Created route: /mailchimp/{route-path}
+- Added PageConfig to page-configs.ts
+- Generated page.tsx, loading.tsx, not-found.tsx
+- Created UI params schema"
+```
 
-   Components & Types:
-   - Created types from Zod schemas
-   - Implemented display component
-   - Created loading skeleton
-   - Added not-found page
+**2. After creating types:**
 
-   Integration:
-   - Updated DAL with proper types
-   - Added breadcrumb helper
-   - Created metadata function
-   - Updated api-coverage.md
+```bash
+git add src/types/mailchimp/{endpoint}.ts src/types/mailchimp/index.ts
+git commit -m "feat: add {Endpoint} TypeScript types
 
-   Validation:
-   - ✅ Type-check: Passes
-   - ✅ Lint: Passes
-   - ✅ Tests: XXX/XXX passing
+- Inferred types from Zod schemas
+- Exported from types/mailchimp/index.ts"
+```
 
-   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+**3. After implementing display components:**
 
-   Co-Authored-By: Claude <noreply@anthropic.com>
-   ```
+```bash
+git add src/components/mailchimp/**/*{endpoint}* src/skeletons/mailchimp/*
+git commit -m "feat: implement {Endpoint} display components
 
-3. **⏸️ STOPS and presents to user:**
+- Created {ComponentName} with proper table/display pattern
+- Added {SkeletonName} for loading states
+- Exported from component index"
+```
 
-   > "✅ Phase 2 implementation complete and committed locally (commit: abc123)
-   >
-   > **Ready for your review and testing**
-   >
-   > Files created/modified:
-   >
-   > - [list of files]
-   >
-   > ⚠️ PR has NOT been created yet - please review and test first
-   >
-   > Next: Phase 2.75 (your review & testing)"
+**4. After updating DAL:**
+
+```bash
+git add src/dal/mailchimp.dal.ts
+git commit -m "feat: add fetch{Endpoint} to DAL
+
+- Proper schema validation
+- Type-safe API response handling"
+```
+
+**5. After adding utilities (metadata, breadcrumbs):**
+
+```bash
+git add src/utils/mailchimp/metadata.ts src/utils/metadata.ts src/utils/breadcrumbs/
+git commit -m "feat: add {Endpoint} metadata and navigation
+
+- Added generate{Endpoint}Metadata helper
+- Created breadcrumb builder function
+- Re-exported from utils/metadata.ts"
+```
+
+**6. After fixing validation errors:**
+
+```bash
+git add .
+git commit -m "chore: fix validation errors and finalize
+
+- Fixed type errors
+- Corrected path aliases
+- All validation passing"
+```
+
+**7. Final commit (if needed for additional polish):**
+
+```bash
+git add docs/api-coverage.md
+git commit -m "docs: mark {Endpoint} as complete in api-coverage.md"
+```
+
+#### After All Commits Complete
+
+**⏸️ STOP and present to user:**
+
+> "✅ Phase 2 implementation complete - 6 commits on local branch
+>
+> **Commits created:**
+>
+> 1. {hash} - chore: generate infrastructure
+> 2. {hash} - feat: add types
+> 3. {hash} - feat: implement components
+> 4. {hash} - feat: add DAL method
+> 5. {hash} - feat: add utilities
+> 6. {hash} - chore: fix validation
+>
+> **Ready for your review and testing**
+>
+> Files: {count} created, {count} modified
+>
+> ⚠️ PR has NOT been created yet - please review and test first
+>
+> Next: Phase 2.75 (your review & testing)"
+
+**Why granular commits:**
+
+- Each commit is reviewable in 5-10 minutes
+- Easy to see what changed in each step
+- Better for code review and debugging
+- Can cherry-pick specific features if needed
+- Clear progression through implementation
 
 **DO NOT push to origin. DO NOT create PR. DO NOT proceed to Phase 3.**
 
@@ -722,6 +800,141 @@ import { formatDateTimeSafe } from "@/utils/mailchimp/date";
 
 **See:** `docs/ai-workflow-learnings.md` for complete formatting guide
 
+### Table Implementation Patterns
+
+#### Pagination Placement (CRITICAL)
+
+**✅ CORRECT** - Pagination OUTSIDE Card:
+
+```tsx
+<div className="space-y-6">
+  <Card>
+    <CardHeader>
+      <CardTitle>Title ({total.toLocaleString()})</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <Table>{/* Table rows */}</Table>
+    </CardContent>
+  </Card>
+
+  {/* Pagination Controls - OUTSIDE Card */}
+  {total_items > 0 && (
+    <div className="flex items-center justify-between">
+      <PerPageSelector
+        value={pageSize}
+        createPerPageUrl={createPerPageUrl}
+        itemName="items"
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        createPageUrl={createPageUrl}
+      />
+    </div>
+  )}
+</div>
+```
+
+**❌ INCORRECT** - Pagination inside CardContent:
+
+```tsx
+<Card>
+  <CardContent>
+    <Table>{/* Table rows */}</Table>
+
+    {/* DON'T PUT PAGINATION HERE - breaks visual hierarchy */}
+    <div className="flex items-center justify-between pt-4">
+      <PerPageSelector ... />
+      <Pagination ... />
+    </div>
+  </CardContent>
+</Card>
+```
+
+**Why**: Pagination controls should be siblings of the Card, not children of CardContent, to maintain proper visual separation and spacing consistency.
+
+**Reference Files**:
+
+- `src/components/mailchimp/reports/campaign-email-activity-table.tsx:148-163`
+- `src/components/mailchimp/reports/click-details-content.tsx:196-212`
+- `src/components/mailchimp/lists/list-activity-content.tsx:127-141`
+
+#### Server Component Tables (Default Pattern)
+
+**Use for:** Simple lists, paginated data, read-only displays
+
+```typescript
+// Server Component (no "use client")
+export function CampaignUnsubscribesTable({
+  data,
+  currentPage,
+  pageSize,
+  campaignId,
+}: Props) {
+  const baseUrl = `/mailchimp/reports/${campaignId}/unsubscribes`;
+
+  // URL generation functions
+  const createPageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    params.set("perPage", pageSize.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  const createPerPageUrl = (newPerPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("perPage", newPerPage.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Unsubscribes ({data.total_items.toLocaleString()})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Email</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.members.map((member) => (
+                <TableRow key={member.email_id}>
+                  <TableCell>{member.email_address}</TableCell>
+                  <TableCell>{formatDateShort(member.timestamp)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Pagination OUTSIDE Card */}
+      {data.total_items > 0 && (
+        <div className="flex items-center justify-between">
+          <PerPageSelector value={pageSize} createPerPageUrl={createPerPageUrl} itemName="members" />
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(data.total_items / pageSize)} createPageUrl={createPageUrl} />
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+**Benefits**:
+
+- Server Component (smaller bundle, better performance)
+- URL-based pagination (SEO-friendly, shareable links)
+- No hooks needed (simpler code)
+- Always use shadcn/ui `Table` component (never raw HTML `<table>`)
+
+**See:** `docs/ai-workflow-learnings.md` for complete table patterns and decision tree
+
 ### PageLayout Component
 
 **Usage:** All dashboard pages use `PageLayout` from `@/components/layout`
@@ -760,6 +973,115 @@ import { formatDateTimeSafe } from "@/utils/mailchimp/date";
 
 ### Schema & API Patterns
 
+**IMPORTANT: Schema refactoring in progress** (Issues #222, #223)
+
+- Folder reorganization: Moving to hierarchical structure
+- DRY refactoring: Extracting common patterns
+- Comment standardization: Enforcing consistent style
+- Branch: `refactor/schema-organization`
+
+**Until refactoring is complete, follow these standards for new schemas:**
+
+#### Comment Standards (User-Approved Pattern)
+
+**File Header - Always Include:**
+
+```typescript
+/**
+ * [Resource Name] [Params|Success|Error] Schema
+ * Schema for [description]
+ *
+ * Endpoint: [METHOD] /[full/path]
+ * Documentation: [Mailchimp API URL]
+ * Follows PRD guideline: "Always use the same object/property names as the API"
+ */
+```
+
+**Property Comments - Inline Only (NOT JSDoc @property):**
+
+```typescript
+export const schema = z.object({
+  field_name: z.string(), // Brief description without period
+  count: z.number().int().min(0), // Integer count of items
+  rate: z.number().min(0).max(1), // Decimal rate (0-1)
+  timestamp: z.iso.datetime({ offset: true }), // ISO 8601 with timezone
+  _links: z.array(linkSchema), // HATEOAS navigation links
+});
+```
+
+**Strict Mode - Always Comment:**
+
+```typescript
+export const schema = z
+  .object({
+    // properties...
+  })
+  .strict(); // Reject unknown properties for input validation
+```
+
+**Common Field Comments (Standardized):**
+
+- `fields` → `// Comma-separated fields to include`
+- `exclude_fields` → `// Comma-separated fields to exclude`
+- `count` → `// Number of records (1-1000)`
+- `offset` → `// Records to skip for pagination`
+- `total_items` → `// Total count`
+- `_links` → `// HATEOAS navigation links`
+- IDs → `// [Resource] ID`
+- Rates → `// Decimal rate (0-1)`
+- Dates → `// ISO 8601 with timezone`
+
+#### Common Schemas (Use When Applicable)
+
+**Path Parameters:**
+
+```typescript
+// For campaign endpoints
+import { campaignIdPathParamsSchema } from "@/schemas/mailchimp/common/path-params.schema";
+export const pathParamsSchema = campaignIdPathParamsSchema;
+
+// For list endpoints
+import { listIdPathParamsSchema } from "@/schemas/mailchimp/common/path-params.schema";
+export const pathParamsSchema = listIdPathParamsSchema;
+```
+
+**Query Parameters:**
+
+```typescript
+// Standard pagination + field filtering (most common)
+import { standardQueryParamsSchema } from "@/schemas/mailchimp/common/pagination-params.schema";
+export const queryParamsSchema = standardQueryParamsSchema;
+
+// With additional parameters
+export const queryParamsSchema = standardQueryParamsSchema.extend({
+  since: z.iso.datetime({ offset: true }).optional(), // ISO 8601 filter
+});
+```
+
+**Paginated Response:**
+
+```typescript
+// ⚠️ DO NOT use factory function - it breaks TypeScript type inference
+// TypeScript cannot infer specific property names from computed object keys
+// See "Schema Refactoring Learnings" section below for details
+
+// Instead, define the schema explicitly:
+export const responseSchema = z.object({
+  resource_name: z.array(itemSchema), // Array of items
+  campaign_id: z.string().min(1), // Parent resource ID (optional)
+  total_items: z.number().min(0), // Total count
+  _links: z.array(linkSchema), // HATEOAS navigation links
+});
+```
+
+**Error Schemas:**
+
+```typescript
+// Always use common error schema
+import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
+export const endpointErrorSchema = errorSchema;
+```
+
 **Before creating new schemas, always check existing patterns:**
 
 ```bash
@@ -773,23 +1095,70 @@ grep -r "schemaName" src/schemas/mailchimp/common/
 ls src/schemas/mailchimp/*-success.schema.ts
 ```
 
-**Schema File Header Template:**
+#### Schema File Structure Standards
 
-Every schema file MUST include a header documenting the API source:
+**File Header Format (JSDoc)**:
 
 ```typescript
 /**
- * Mailchimp API {Endpoint Name} Response Schema
+ * {Endpoint Name} {Params|Success|Error} Schema
+ * {1-line description of what this validates}
  *
- * Endpoint: {HTTP_METHOD} {API_PATH}
- * Documentation: {MAILCHIMP_API_DOC_URL}
- *
- * ✅ VERIFIED FIELDS (from API response example):
- * - field_name: type (description/constraints)
- * - another_field: type (description)
- *
- * Last verified: {YYYY-MM-DD}
+ * Endpoint: {METHOD} {/api/path}
+ * Source: {URL to Mailchimp API docs or "User-provided actual structure"}
  */
+```
+
+**Property Comments (inline, NOT JSDoc blocks)**:
+
+```typescript
+export const listActivityItemSchema = z.object({
+  day: z.iso.datetime({ offset: true }), // ISO 8601 date
+  emails_sent: z.number().int().min(0), // Integer count of emails sent
+  unique_opens: z.number().int().min(0), // Integer count of unique opens
+});
+```
+
+**Schema Files Should Contain**:
+
+- ✅ Import statements
+- ✅ Constant arrays (enums): `export const STATUS = ["active", "inactive"] as const;`
+- ✅ Schema definitions with inline comments
+- ✅ Schema exports
+- ❌ NO type exports (use `z.infer` in `/src/types` instead)
+- ❌ NO helper functions (put in `/src/utils`)
+- ❌ NO JSDoc blocks on individual properties (use inline comments)
+
+**Error Schema Pattern (Minimal)**:
+
+```typescript
+/**
+ * {Endpoint Name} Error Response Schema
+ * Validates error responses from {endpoint description}
+ *
+ * Endpoint: {METHOD} {/path}
+ */
+
+import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
+
+export const {endpoint}ErrorSchema = errorSchema;
+```
+
+**Reference**: `src/schemas/mailchimp/domain-performance-error.schema.ts`
+
+#### Schema Creation Rules
+
+**Before creating new schemas, always check existing patterns:**
+
+```bash
+# Check parameter schema patterns
+grep -r "ParamsSchema" src/schemas/mailchimp/*-params.schema.ts
+
+# Check for reusable common schemas
+grep -r "schemaName" src/schemas/mailchimp/common/
+
+# Find similar endpoint schemas (for pattern reference)
+ls src/schemas/mailchimp/*-success.schema.ts
 ```
 
 **Example:**
@@ -968,6 +1337,152 @@ export function MyTable({ data, currentPage, pageSize, totalItems }: Props) {
 - **Required:** `KINDE_COOKIE_DOMAIN=127.0.0.1` in `.env.local` for OAuth state persistence
 - **Troubleshooting "State not found":** `pkill -f "next dev"` → `pnpm clean` → `pnpm dev` → Clear browser cache → Test in incognito
 - **Production:** Remove or set to custom domain
+
+## Schema Refactoring Learnings
+
+**Context:** During Issues #222 and #223 refactoring work (October 2025), we attempted to eliminate code duplication across schema files using factory functions and common patterns.
+
+### ✅ What Works: Parameter Schema Patterns
+
+**Path Parameters** - Successfully refactored using re-exports:
+
+```typescript
+// ✅ WORKS: Direct re-export preserves types
+import { campaignIdPathParamsSchema } from "@/schemas/mailchimp/common/path-params.schema";
+export const myEndpointPathParamsSchema = campaignIdPathParamsSchema;
+
+// Type inference: { campaign_id: string }
+```
+
+**Query Parameters** - Successfully refactored using composition:
+
+```typescript
+// ✅ WORKS: Extends standard schema
+import { standardQueryParamsSchema } from "@/schemas/mailchimp/common/pagination-params.schema";
+export const myQueryParamsSchema = standardQueryParamsSchema.extend({
+  since: z.iso.datetime({ offset: true }).optional(),
+});
+
+// Type inference: { fields?: string, exclude_fields?: string, count: number, offset: number, since?: string }
+```
+
+**Results:**
+
+- 8 parameter schema files successfully refactored
+- 110 lines of code eliminated (39% reduction)
+- Full type safety maintained
+- All 801 tests passing
+
+### ❌ What Doesn't Work: Success Schema Factories
+
+**Paginated Response Factory** - Attempted but breaks type inference:
+
+```typescript
+// ❌ BREAKS TYPE INFERENCE: Computed property names lose specificity
+export function createPaginatedResponse<T extends ZodType>(
+  itemSchema: T,
+  resourceKey: string, // ← Dynamic key
+  idKey?: string, // ← Dynamic key
+) {
+  const baseShape = {
+    [resourceKey]: z.array(itemSchema), // ← TypeScript can't track this
+    total_items: z.number().min(0),
+    _links: z.array(linkSchema),
+  };
+
+  if (idKey) {
+    return z.object({
+      ...baseShape,
+      [idKey]: z.string().min(1), // ← TypeScript can't track this
+    });
+  }
+
+  return z.object(baseShape);
+}
+
+// Usage:
+export const responseSchema = createPaginatedResponse(
+  abuseReportSchema,
+  "abuse_reports",
+  "campaign_id",
+);
+
+// ❌ Type inference becomes: Record<string, unknown>
+// ✅ Expected type: { abuse_reports: AbuseReport[], campaign_id: string, total_items: number, _links: Link[] }
+```
+
+**The Problem:**
+
+1. TypeScript cannot infer specific property names from computed object keys `[resourceKey]` or `[idKey]`
+2. The inferred type becomes `Record<string, ...>` instead of having named properties
+3. This breaks type safety for all consuming code:
+   - Page components can't access `data.abuse_reports` (property doesn't exist on `Record<string, ...>`)
+   - Table components lose autocomplete
+   - DAL methods have incorrect return types
+4. Results in 27+ TypeScript errors across pages, components, and DAL
+
+**Why This Is a TypeScript Limitation:**
+
+TypeScript's structural type system cannot track dynamic object keys at compile time. When you write:
+
+```typescript
+const key = "abuse_reports";
+const obj = { [key]: value };
+```
+
+TypeScript only knows `obj` has _some_ property, but not which specific property. This is fundamental to how TypeScript works and cannot be worked around without losing type information.
+
+**Attempted Solutions (All Failed):**
+
+1. ❌ Generic type parameters: `createPaginatedResponse<T, K extends string>(itemSchema: T, resourceKey: K)` - Still loses specificity
+2. ❌ Const assertions: `as const` doesn't help with computed properties
+3. ❌ Template literal types: Can't be used to construct object types dynamically
+4. ❌ Type predicates: Would require manual type assertions everywhere
+
+### 📊 Final Decision
+
+**Code duplication is acceptable when:**
+
+- The duplicated code is simple (4-5 lines)
+- It's stable and unlikely to change
+- Eliminating it breaks type safety
+- The pattern is self-documenting
+
+**For success schemas, we keep the explicit pattern:**
+
+```typescript
+// ✅ PREFERRED: Explicit schema with full type inference
+export const abuseReportListSuccessSchema = z.object({
+  abuse_reports: z.array(abuseReportSchema),
+  campaign_id: z.string().min(1),
+  total_items: z.number().min(0),
+  _links: z.array(linkSchema),
+});
+
+// Type inference:
+// {
+//   abuse_reports: AbuseReport[],
+//   campaign_id: string,
+//   total_items: number,
+//   _links: Link[]
+// }
+```
+
+**Trade-offs:**
+
+- ❌ ~95 lines of duplication across 8 success schema files (~12 lines per file)
+- ✅ Full type safety with autocomplete
+- ✅ Clear, readable schemas
+- ✅ No TypeScript errors
+- ✅ Self-documenting structure
+
+### 🎓 Key Takeaway
+
+**Type safety > code deduplication**
+
+When refactoring creates type inference issues that ripple through the codebase, the duplication is worth keeping. TypeScript's primary value is catching errors at compile time - sacrificing that for DRY principles defeats the purpose.
+
+**Related Issues:** #222 (folder reorganization), #223 (DRY refactoring)
 
 ## Git Strategy
 

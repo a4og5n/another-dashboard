@@ -16,11 +16,11 @@ import {
 } from "@/schemas/components/mailchimp/reports-click-page-params";
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { ClickDetailsContent } from "@/components/mailchimp/reports/click-details-content";
-import { clickListQueryParamsSchema } from "@/schemas/mailchimp/report-click-details-params.schema";
+import { clickListQueryParamsSchema } from "@/schemas/mailchimp/reports/click-details/params.schema";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { handleApiError, bc } from "@/utils";
 import type { z } from "zod";
-import { reportClickListSuccessSchema } from "@/schemas/mailchimp/report-click-details-success.schema";
+import { reportClickListSuccessSchema } from "@/schemas/mailchimp/reports/click-details/success.schema";
 
 type ClickListSuccess = z.infer<typeof reportClickListSuccessSchema>;
 

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports-params.schema";
+import { REPORT_QUERY_TYPES } from "@/schemas/mailchimp/reports/params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui";
 
 /**

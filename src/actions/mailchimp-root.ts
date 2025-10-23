@@ -9,9 +9,9 @@
 "use server";
 
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
-import { rootParamsSchema } from "@/schemas/mailchimp/root-params.schema";
-import { rootSuccessSchema } from "@/schemas/mailchimp/root-success.schema";
-import { rootErrorSchema } from "@/schemas/mailchimp/root-error.schema";
+import { rootParamsSchema } from "@/schemas/mailchimp/root/params.schema";
+import { rootSuccessSchema } from "@/schemas/mailchimp/root/success.schema";
+import { rootErrorSchema } from "@/schemas/mailchimp/root/error.schema";
 import { convertFieldsToCommaString } from "@/utils/mailchimp";
 import type { RootSuccess, RootError } from "@/types/mailchimp";
 

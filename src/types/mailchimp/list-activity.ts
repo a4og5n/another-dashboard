@@ -9,12 +9,12 @@ import { z } from "zod";
 import {
   listActivityPathParamsSchema,
   listActivityQueryParamsSchema,
-} from "@/schemas/mailchimp/list-activity-params.schema";
+} from "@/schemas/mailchimp/lists/activity/params.schema";
 import {
   listActivityItemSchema,
   listActivitySuccessSchema,
-} from "@/schemas/mailchimp/list-activity-success.schema";
-import { listActivityErrorSchema } from "@/schemas/mailchimp/list-activity-error.schema";
+} from "@/schemas/mailchimp/lists/activity/success.schema";
+import { listActivityErrorSchema } from "@/schemas/mailchimp/lists/activity/error.schema";
 
 /**
  * Path parameters

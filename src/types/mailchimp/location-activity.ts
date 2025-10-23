@@ -7,12 +7,12 @@ import type { z } from "zod";
 import type {
   locationSchema,
   locationActivitySuccessSchema,
-} from "@/schemas/mailchimp/location-activity-success.schema";
-import type { locationActivityErrorSchema } from "@/schemas/mailchimp/location-activity-error.schema";
+} from "@/schemas/mailchimp/reports/location-activity/success.schema";
+import type { locationActivityErrorSchema } from "@/schemas/mailchimp/reports/location-activity/error.schema";
 import type {
   locationActivityPathParamsSchema,
   locationActivityQueryParamsSchema,
-} from "@/schemas/mailchimp/location-activity-params.schema";
+} from "@/schemas/mailchimp/reports/location-activity/params.schema";
 
 /**
  * Single location with engagement metrics

@@ -36,26 +36,26 @@ import {
 import {
   reportPathParamsSchema,
   reportQueryParamsSchema,
-} from "@/schemas/mailchimp/report-params.schema";
-import { reportSuccessSchema } from "@/schemas/mailchimp/report-success.schema";
-import { reportErrorSchema } from "@/schemas/mailchimp/report-error.schema";
+} from "@/schemas/mailchimp/reports/detail/params.schema";
+import { reportSuccessSchema } from "@/schemas/mailchimp/reports/detail/success.schema";
+import { reportErrorSchema } from "@/schemas/mailchimp/reports/detail/error.schema";
 import {
   openListPathParamsSchema,
   openListQueryParamsSchema,
   OPEN_DETAILS_SORT_DIRECTIONS,
-} from "@/schemas/mailchimp/report-open-details-params.schema";
-import { reportOpenListSuccessSchema } from "@/schemas/mailchimp/report-open-details-success.schema";
-import { openListErrorSchema } from "@/schemas/mailchimp/report-open-details-error.schema";
+} from "@/schemas/mailchimp/reports/open-details/params.schema";
+import { reportOpenListSuccessSchema } from "@/schemas/mailchimp/reports/open-details/success.schema";
+import { openListErrorSchema } from "@/schemas/mailchimp/reports/open-details/error.schema";
 import { reportListMemberSchema } from "@/schemas/mailchimp/common/report-list-member.schema";
 import {
   abuseReportsPathParamsSchema,
   abuseReportsQueryParamsSchema,
-} from "@/schemas/mailchimp/abuse-reports-params.schema";
+} from "@/schemas/mailchimp/reports/abuse-reports/params.schema";
 import {
   abuseReportSchema,
   abuseReportListSuccessSchema,
-} from "@/schemas/mailchimp/abuse-reports-success.schema";
-import { abuseReportListErrorSchema } from "@/schemas/mailchimp/abuse-reports-error.schema";
+} from "@/schemas/mailchimp/reports/abuse-reports/success.schema";
+import { abuseReportListErrorSchema } from "@/schemas/mailchimp/reports/abuse-reports/error.schema";
 
 // ============================================================================
 // Reports List Types (GET /reports)

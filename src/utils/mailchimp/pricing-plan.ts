@@ -1,4 +1,4 @@
-import { PRICING_PLAN_TYPES } from "@/schemas/mailchimp/root-success.schema";
+import { PRICING_PLAN_TYPES } from "@/schemas/mailchimp/root/success.schema";
 
 /**
  * Utility functions for Mailchimp pricing plan formatting and handling

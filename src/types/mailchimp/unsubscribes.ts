@@ -7,12 +7,12 @@ import type { z } from "zod";
 import type {
   unsubscribedMemberSchema,
   unsubscribesSuccessSchema,
-} from "@/schemas/mailchimp/unsubscribes-success.schema";
-import type { unsubscribesErrorSchema } from "@/schemas/mailchimp/unsubscribes-error.schema";
+} from "@/schemas/mailchimp/reports/unsubscribes/success.schema";
+import type { unsubscribesErrorSchema } from "@/schemas/mailchimp/reports/unsubscribes/error.schema";
 import type {
   unsubscribesPathParamsSchema,
   unsubscribesQueryParamsSchema,
-} from "@/schemas/mailchimp/unsubscribes-params.schema";
+} from "@/schemas/mailchimp/reports/unsubscribes/params.schema";
 
 /**
  * Single unsubscribed member

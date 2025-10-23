@@ -3,7 +3,7 @@
  * Simplified to use SDK directly for MVP approach
  */
 
-import { reportListParamsSchema } from "@/schemas/mailchimp/reports-params.schema";
+import { reportListParamsSchema } from "@/schemas/mailchimp/reports/params.schema";
 import { ReportsQuery } from "@/types/mailchimp-reports";
 
 /**

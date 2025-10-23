@@ -715,3 +715,337 @@ Based on these learnings, update CLAUDE.md with:
 - [ ] Add pre-commit verification to onboarding docs
 - [ ] Refactor existing tables (Issue #214)
 - [ ] Consider adding automated checks for server/client component usage
+
+---
+
+## Session: List Activity Implementation (2025-10-23)
+
+### What Worked Extremely Well ✅
+
+1. **Phase 0 - Git Setup**: Perfect execution, created `feature/list-activity` branch immediately
+2. **Phase 1 - Schema Review**:
+   - WebFetch failed (returned CSS instead of API docs)
+   - Properly presented 3 options (A, B, C) to user
+   - User chose option C (assumed schemas)
+   - User manually corrected schema with actual API field structure
+   - Clear feedback loop: "Keep them. Do not overwrite them."
+3. **Phase 2 - Page Generation**: Programmatic API generated 8 files flawlessly
+4. **Error Recovery**: Caught and fixed 4 type errors + 1 path alias error before commit
+5. **Pattern Following**: Successfully matched pagination placement pattern after refactoring
+
+### Workflow Gaps Discovered 🔧
+
+#### 1. **CRITICAL: Phase 1.5 Missing - Schemas Not Committed Separately**
+
+**Problem**: After user approved schemas, we did NOT commit them separately. All changes committed together in one large commit (621 lines).
+
+**CLAUDE.md says**:
+
+> Phase 1.5: Commit Phase 1 (Automatic)
+> IMMEDIATELY after user approves schemas, AI automatically commits
+
+**What we did**: Skipped Phase 1.5, committed everything in Phase 2.5
+
+**Impact**:
+
+- Less granular git history
+- Can't easily rollback just schemas vs implementation
+- Harder to track when schema changes were made
+- Violates documented workflow
+
+**Recommended Fix for CLAUDE.md**:
+
+````markdown
+### Phase 1.5: Commit Schemas (MANDATORY - Automatic)
+
+**Trigger**: User says "approved", "looks good", or "Review finished. Begin the next phase"
+
+**AI MUST do this BEFORE proceeding to Phase 2:**
+
+1. Stage schema files only:
+   ```bash
+   git add src/schemas/mailchimp/*{endpoint}*
+   ```
+````
+
+2. Commit with message:
+
+   ```bash
+   git commit -m "feat: add {Endpoint} schemas (Phase 1)
+
+   - {endpoint}-params.schema.ts
+   - {endpoint}-success.schema.ts
+   - {endpoint}-error.schema.ts
+
+   {Note about source or user corrections}"
+   ```
+
+3. Output: "✅ Schemas committed ({hash}). Proceeding to Phase 2..."
+
+**DO NOT skip. DO NOT proceed to Phase 2 without committing.**
+
+````
+
+#### 2. **Git History Too Coarse - Single Large Commit**
+
+**Problem**: All Phase 2 work committed in one 621-line commit.
+
+**Better approach** - Break into logical commits:
+```bash
+# After generator creates files
+git commit -m "chore: generate List Activity infrastructure"
+
+# After creating types
+git commit -m "feat: add List Activity TypeScript types"
+
+# After implementing component
+git commit -m "feat: implement List Activity table component"
+
+# After updating DAL
+git commit -m "feat: add fetchListActivity to DAL"
+
+# After metadata/breadcrumbs
+git commit -m "feat: add List Activity metadata and navigation"
+
+# After fixing errors
+git commit -m "chore: fix type errors and validate"
+````
+
+**Recommended CLAUDE.md Addition**:
+
+```markdown
+### Phase 2 Commit Strategy
+
+Break implementation into 5-7 small commits for easier review:
+
+1. **Infrastructure**: Generated page files
+2. **Types**: TypeScript type definitions
+3. **Components**: Display components + skeletons
+4. **DAL**: Data access methods
+5. **Utilities**: Metadata, breadcrumbs, helpers
+6. **Fixes**: Validation error fixes
+
+Each commit should be reviewable in 5-10 minutes.
+```
+
+#### 3. **Pagination Placement Pattern Not Documented**
+
+**Discovery**: Pagination should be OUTSIDE Card, not inside CardContent.
+
+**Pattern found in**:
+
+- `campaign-email-activity-table.tsx:148-163`
+- `click-details-content.tsx:196-212`
+
+**Missing from CLAUDE.md**: No explicit pagination placement guidance.
+
+**Recommended Addition**:
+
+````markdown
+### Table Pagination Placement (CRITICAL)
+
+✅ **CORRECT** - Pagination OUTSIDE Card:
+
+```tsx
+<div className="space-y-6">
+  <Card>
+    <CardHeader>
+      <CardTitle>Title ({total.toLocaleString()})</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <Table>{/* ... */}</Table>
+    </CardContent>
+  </Card>
+
+  {/* Pagination Controls - OUTSIDE Card */}
+  {total_items > 0 && (
+    <div className="flex items-center justify-between">
+      <PerPageSelector ... />
+      <Pagination ... />
+    </div>
+  )}
+</div>
+```
+````
+
+❌ **INCORRECT** - Pagination inside CardContent:
+
+```tsx
+<Card>
+  <CardContent>
+    <Table>...</Table>
+
+    {/* DON'T PUT PAGINATION HERE */}
+    <div className="flex items-center justify-between pt-4">
+      <PerPageSelector ... />
+      <Pagination ... />
+    </div>
+  </CardContent>
+</Card>
+```
+
+**Why**: Maintains proper visual separation and spacing consistency.
+
+````
+
+#### 4. **Schema File Structure - User Feedback Not Codified**
+
+**User feedback received**:
+- "Schema files should contain only schema"
+- "Apply jsdoc formatting to comments"
+- "Follow the same pattern used in other error files"
+
+**These patterns exist but aren't documented.**
+
+**Recommended Addition**:
+```markdown
+### Schema File Structure Standards
+
+**File Header (JSDoc)**:
+```typescript
+/**
+ * {Endpoint Name} {Params|Success|Error} Schema
+ * {1-line description}
+ *
+ * Endpoint: {METHOD} {/api/path}
+ * Source: {URL to API docs}
+ */
+````
+
+**Property Comments (inline, NOT JSDoc blocks)**:
+
+```typescript
+export const schema = z.object({
+  day: z.iso.datetime({ offset: true }), // ISO 8601 date
+  emails_sent: z.number().int().min(0), // Integer count of emails sent
+});
+```
+
+**Schema Files Should Contain**:
+
+- ✅ Imports
+- ✅ Constant arrays (enums)
+- ✅ Schema definitions with inline comments
+- ✅ Schema exports
+- ❌ NO type exports (put in `/src/types`)
+- ❌ NO helper functions (put in `/src/utils`)
+- ❌ NO JSDoc blocks on properties (use inline)
+
+**Error Schema Pattern**:
+
+```typescript
+/**
+ * {Endpoint} Error Response Schema
+ * Validates error responses from {endpoint}
+ *
+ * Endpoint: {METHOD} {/path}
+ */
+
+import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
+
+export const {endpoint}ErrorSchema = errorSchema;
+```
+
+```
+
+#### 5. **Post-Merge Cleanup Not Automated**
+
+**User manually requested**:
+```
+
+PR merged and remote branch deleted. Checkout main, pull origin and delete local branch
+
+````
+
+**Recommended Addition**:
+```markdown
+### Phase 4: Post-Merge Cleanup (After PR merged)
+
+**Trigger**: User says "PR merged", "merged and deleted remote"
+
+**AI automatically**:
+
+1. Checkout main: `git checkout main`
+2. Pull latest: `git pull origin main`
+3. Delete local branch: `git branch -d feature/{branch-name}`
+4. Confirm: "✅ Cleanup complete. On main, synced with origin."
+
+**Note**: Only run if user explicitly confirms merge.
+````
+
+### New Pattern Discoveries 📚
+
+#### Date Extraction for URLs (Server Components)
+
+**Pattern**: Extract date from ISO 8601 string without client-side JS:
+
+```typescript
+// item.day = "2024-01-15T00:00:00+00:00"
+const dateOnly = item.day.split('T')[0]; // "2024-01-15"
+
+<Link href={`/reports?from=${dateOnly}&to=${dateOnly}`}>
+  {formatDateShort(item.day)}
+</Link>
+```
+
+**Why**:
+
+- No client-side JavaScript needed
+- Works in Server Components
+- Simple and reliable
+
+#### Link Buttons in Cards (CardFooter Pattern)
+
+**Pattern**: Use CardFooter with Button + Link + Icon:
+
+```typescript
+import { Button } from "@/components/ui/button";
+import { CardFooter } from "@/components/ui/card";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
+<CardFooter className="border-t pt-4">
+  <Button asChild variant="outline" size="sm" className="w-full">
+    <Link href={`/path/${id}`}>
+      View Activity Timeline
+      <ArrowRight className="ml-2 h-4 w-4" />
+    </Link>
+  </Button>
+</CardFooter>
+```
+
+**Why**:
+
+- `asChild` makes Link the rendered element
+- Full-width (`w-full`) for better mobile UX
+- Icon on right (`ml-2`) for forward actions
+- Border-top visually separates from content
+
+### Session Statistics 📊
+
+- **Duration**: ~2 hours (with context switch)
+- **Branch**: `feature/list-activity`
+- **Files Created**: 10
+- **Files Modified**: 9
+- **Total Changes**: 646 lines added, 3 lines deleted
+- **Commits**: 3 (should have been 7-8 for better granularity)
+- **Type Errors Fixed**: 4
+- **Lint Issues Fixed**: 1 (path alias)
+- **Validation**: ✅ All passed (type-check, lint, format, tests, a11y)
+- **PR**: #221 (merged)
+- **Related Issue**: #220 (future enhancement: link dates to filtered reports)
+
+### Action Items for CLAUDE.md
+
+1. ✅ Add Phase 1.5 as mandatory automatic step with explicit instructions
+2. ✅ Add Phase 2 commit strategy for granular git history
+3. ✅ Document pagination placement pattern with correct/incorrect examples
+4. ✅ Add schema file structure standards with user feedback patterns
+5. ✅ Add Phase 4 post-merge cleanup automation
+6. ✅ Add date extraction and link button patterns to relevant sections
+
+---
+
+## Historical Sessions
+
+Previous learnings captured in earlier sections of this document.
