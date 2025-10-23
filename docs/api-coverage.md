@@ -25,28 +25,34 @@ Campaign reporting and analytics endpoints.
   - Route: `/mailchimp/reports/[id]/opens`
   - Features: Pagination, member details, open tracking
 
-- ✅ **Campaign Abuse Reports** - `GET /reports/{id}/abuse-complaints`
+- ✅ **Campaign Abuse Reports** - `GET /reports/{id}/abuse-reports`
   - Route: `/mailchimp/reports/[id]/abuse-reports`
   - Features: Pagination, abuse complaint tracking
 
-- 🚧 **Campaign Clicks** - `GET /reports/{id}/click-details` ⚠️ **BLOCKED**
+- ✅ **Campaign Clicks** - `GET /reports/{id}/click-details`
   - Route: `/mailchimp/reports/[id]/clicks`
-  - **Issue:** Endpoint returns 404 - may not exist or require link_id parameter
-  - **Status:** Schemas created, page implemented, but API endpoint not found
-  - **Next Step:** Verify correct endpoint path with Mailchimp API docs
+  - Features: Pagination, URL tracking, click metrics per link
 
-- ⭐ **Campaign Unsubscribes** - `GET /reports/{id}/unsubscribed`
+- ✅ **Campaign Unsubscribes** - `GET /reports/{id}/unsubscribed`
   - Route: `/mailchimp/reports/[id]/unsubscribes`
-  - Features: Pagination, unsubscribe tracking
-  - **NEXT:** Ready for implementation
+  - Features: Pagination, unsubscribe tracking, campaign/list reasons
 
-- 📋 **Campaign Bounces** - `GET /reports/{id}/bounces`
-  - Route: `/mailchimp/reports/[id]/bounces`
-  - Features: Pagination, bounce tracking
-
-- 📋 **Campaign Email Activity** - `GET /reports/{id}/email-activity`
+- ✅ **Campaign Email Activity** - `GET /reports/{id}/email-activity`
   - Route: `/mailchimp/reports/[id]/email-activity`
-  - Features: Pagination, detailed email activity per subscriber
+  - Features: Pagination, detailed email activity per subscriber, action timeline
+
+- ✅ **Campaign Recipients (Sent To)** - `GET /reports/{id}/sent-to`
+  - Route: `/mailchimp/reports/[id]/sent-to`
+  - Features: Pagination, recipient details, delivery status
+
+- ✅ **Campaign Locations** - `GET /reports/{id}/locations`
+  - Route: `/mailchimp/reports/[id]/locations`
+  - Features: Pagination, geographic engagement data, flag emojis
+
+- ⭐ **Campaign Bounces** - `GET /reports/{id}/sent-to/{subscriber_hash}/sub-reports`
+  - Route: `/mailchimp/reports/[id]/bounces`
+  - Features: Pagination, bounce type (hard/soft), bounce reason
+  - **NEXT:** Ready for implementation
 
 ---
 
@@ -131,16 +137,23 @@ Email template management endpoints.
 
 **Current Coverage:**
 
-- ✅ Implemented: 6 endpoints
-- 🚧 In Progress: 1 endpoint (Campaign Clicks - blocked on API endpoint verification)
-- ⭐ Next Priority: 1 endpoint (Campaign Unsubscribes)
-- 📋 Planned: 12 endpoints
+- ✅ Implemented: 10 endpoints
+- ⭐ Next Priority: 1 endpoint (Campaign Bounces)
+- 📋 Planned: 9 endpoints
 
-**Total Progress:** 6/20 endpoints (30%)
+**Total Progress:** 10/20 endpoints (50%)
+
+**Recent Implementations:**
+
+- Campaign Clicks (click tracking per link)
+- Campaign Unsubscribes (unsubscribe tracking)
+- Campaign Email Activity (subscriber activity timeline)
+- Campaign Recipients/Sent To (recipient delivery status)
+- Campaign Locations (geographic engagement data)
 
 **Focus Areas:**
 
-1. **Current Sprint:** Complete Reports API (clicks, unsubscribes, bounces)
+1. **Current Sprint:** Complete Reports API (bounces) - 1 endpoint remaining
 2. **Next Sprint:** Lists API (members, growth history)
 3. **Future:** Campaign management, automations, templates
 
@@ -201,5 +214,5 @@ pnpm format
 
 ---
 
-**Last Updated:** 2025-10-21
+**Last Updated:** 2025-10-22
 **Maintained By:** Development team + AI assistants
