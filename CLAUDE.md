@@ -2,6 +2,48 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ CRITICAL: Git Branching Strategy
+
+**NEVER WORK DIRECTLY ON MAIN BRANCH**
+
+This project uses a **feature branch workflow**. All development MUST happen on feature branches, never directly on `main`.
+
+### Correct Workflow:
+
+```bash
+# 1. Create feature branch
+git checkout -b feature/endpoint-name
+
+# 2. Make commits on feature branch
+git add -A
+git commit -m "feat: ..."
+
+# 3. Push feature branch
+git push origin feature/endpoint-name
+
+# 4. Create PR
+gh pr create --base main --head feature/endpoint-name
+
+# 5. Merge PR after approval and CI passes
+```
+
+### Why This Matters:
+
+- ❌ **Direct main commits bypass code review** - No PR discussion, no approval process
+- ❌ **No opportunity to catch issues** - Changes go live without review
+- ❌ **Breaks team collaboration** - Others can't review or suggest improvements
+- ✅ **Feature branches enable proper review** - PRs allow discussion before merge
+- ✅ **CI runs on PRs** - Checks pass before merge, not after
+- ✅ **Safe experimentation** - Branch can be deleted if approach doesn't work
+
+### Historical Context:
+
+**2025-10-23**: Domain Performance endpoint was mistakenly pushed directly to main (commits c87c5f6 through cf324b4). While CI passed retroactively, this bypassed the PR review process. This mistake is documented here to ensure it never happens again.
+
+### AI Implementation:
+
+See "Phase 0: Git Setup" in the AI-First Development Workflow section below for how AI should automatically enforce this.
+
 ## Commands
 
 **Development:** `pnpm dev` (HTTPS + Turbopack) | `pnpm build` | `pnpm start` | `pnpm clean`
