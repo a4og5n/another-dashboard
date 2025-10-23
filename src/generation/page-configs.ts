@@ -444,6 +444,44 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * List Activity Page
+   */
+  "list-activity": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/list-activity-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/list-activity-success.schema.ts",
+      apiError: "src/schemas/mailchimp/list-activity-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/lists/[id]/activity",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/lists/{list_id}/activity",
+      method: "GET",
+      dalMethod: "fetchListActivity",
+    },
+    page: {
+      type: "nested-detail",
+      title: "List Activity",
+      description: "Recent list activity timeline",
+      features: [
+        "Dynamic routing",
+        "Activity timeline",
+        "Subscription tracking",
+        "Pagination",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        parent: "list-detail",
+        label: "Activity",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

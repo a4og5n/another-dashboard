@@ -300,6 +300,25 @@ export const bc = {
   },
 
   // ============================================================================
+
+  /**
+   * List Activity breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for list activity
+   *
+   * @example
+   * ```tsx
+   * bc.listActivity("abc123")
+   * // Returns: { label: "Activity", href: "/mailchimp/lists/${id}/activity" }
+   * ```
+   */
+  listActivity(id: string): BreadcrumbItem {
+    return {
+      label: "Activity",
+      href: `/mailchimp/lists/${id}/activity`,
+    };
+  },
   // Helper Functions
   // ============================================================================
 

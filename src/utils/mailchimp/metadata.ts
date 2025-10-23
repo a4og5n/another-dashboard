@@ -20,7 +20,8 @@ import { campaignRecipientsPageParamsSchema } from "@/schemas/components/mailchi
 import { reportLocationActivityPageParamsSchema } from "@/schemas/components/mailchimp/report-location-activity-page-params";
 import { campaignAdvicePageParamsSchema } from "@/schemas/components/mailchimp/report-advice-page-params";
 import { domainPerformancePageParamsSchema } from "@/schemas/components/mailchimp/report-domain-performance-page-params";
-import type { CampaignReport } from "@/types/mailchimp";
+import { listActivityPageParamsSchema } from "@/schemas/components/mailchimp/list-activity-page-params";
+import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
  * Generates metadata for campaign-related pages based on campaign ID
@@ -445,6 +446,43 @@ export async function generateDomainPerformanceMetadata({
       title: `${data.campaign_title || "Resource"} - Domain Performance`,
       description:
         "Email provider performance breakdown (Gmail, Outlook, Yahoo, etc.)",
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for list activity pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the list activity page
+ */
+export async function generateListActivityMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = listActivityPageParamsSchema.parse(rawParams);
+
+  // Fetch list data for metadata
+  const response = await mailchimpDAL.fetchList(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "List Activity - Not Found",
+      description: "The requested list could not be found.",
+    };
+  }
+
+  const list = response.data as List;
+
+  return {
+    title: `${list.name} - List Activity`,
+    description:
+      "Recent list activity timeline with subscriber engagement metrics",
+    openGraph: {
+      title: `${list.name} - List Activity`,
+      description: `Activity timeline for ${list.stats.member_count.toLocaleString()} members`,
       type: "website",
     },
   };

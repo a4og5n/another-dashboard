@@ -33,6 +33,8 @@ import { locationActivitySuccessSchema } from "@/schemas/mailchimp/location-acti
 import { campaignAdviceQueryParamsSchema } from "@/schemas/mailchimp/campaign-advice-params.schema";
 import { campaignAdviceSuccessSchema } from "@/schemas/mailchimp/campaign-advice-success.schema";
 import { domainPerformanceSuccessSchema } from "@/schemas/mailchimp/domain-performance-success.schema";
+import { listActivityQueryParamsSchema } from "@/schemas/mailchimp/list-activity-params.schema";
+import { listActivitySuccessSchema } from "@/schemas/mailchimp/list-activity-success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -242,6 +244,22 @@ export class MailchimpDAL {
     }
 
     return result;
+  }
+
+  /**
+   * List Activity
+   * GET /lists/{list_id}/activity
+   */
+  async fetchListActivity(
+    listId: string,
+    params?: z.infer<typeof listActivityQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof listActivitySuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof listActivitySuccessSchema>>(
+        `/lists/${listId}/activity`,
+        params,
+      ),
+    );
   }
 }
 
