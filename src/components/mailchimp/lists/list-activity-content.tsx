@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
+import { TableEmptyState } from "@/components/ui/table-empty-state";
 import type { ListActivityResponse } from "@/types/mailchimp";
 import { formatDateShort } from "@/utils/format-date";
 import { createPaginationUrls } from "@/utils/pagination/url-generators";
@@ -56,9 +57,7 @@ export function ListActivityContent({
         </CardHeader>
         <CardContent>
           {activity.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              No activity data available for this list.
-            </p>
+            <TableEmptyState message="No activity data available for this list." />
           ) : (
             <Table>
               <TableHeader>

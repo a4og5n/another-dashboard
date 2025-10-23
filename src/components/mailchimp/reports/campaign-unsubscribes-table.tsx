@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TableEmptyState } from "@/components/ui/table-empty-state";
 import type { UnsubscribesSuccess } from "@/types/mailchimp/unsubscribes";
 import { formatDateTimeSafe } from "@/utils/format-date";
 import {
@@ -47,9 +48,7 @@ export function CampaignUnsubscribesTable({
         </CardHeader>
         <CardContent>
           {unsubscribes.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              No unsubscribes found for this campaign.
-            </p>
+            <TableEmptyState message="No unsubscribes found for this campaign." />
           ) : (
             <Table>
               <TableHeader>
