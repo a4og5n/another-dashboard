@@ -14,6 +14,7 @@ import { ForwardsCard } from "@/components/dashboard/reports/ForwardsCard";
 import { OpensCard } from "@/components/dashboard/reports/OpensCard";
 import { ClicksCard } from "@/components/dashboard/reports/ClicksCard";
 import { AdviceCard } from "@/components/dashboard/reports/AdviceCard";
+import { DomainPerformanceCard } from "@/components/dashboard/reports/DomainPerformanceCard";
 import { IndustryStatsCard } from "@/components/dashboard/reports/IndustryStatsCard";
 import { EmailsSentCard } from "@/components/dashboard/reports/EmailsSentCard";
 import { DeliveryIssuesCard } from "@/components/dashboard/reports/DeliveryIssuesCard";
@@ -77,6 +78,7 @@ export function CampaignReportDetail({
             <OpensCard opens={report.opens} campaignId={report.id} />
             <ClicksCard clicks={report.clicks} campaignId={report.id} />
             <AdviceCard campaignId={report.id} />
+            <DomainPerformanceCard campaignId={report.id} />
           </div>
         </div>
 
