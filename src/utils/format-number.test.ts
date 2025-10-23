@@ -5,6 +5,7 @@ import {
   formatPercentage,
   formatPercentageValue,
   formatValue,
+  formatCompactNumber,
 } from "@/utils";
 
 describe("formatNumber", () => {
@@ -159,5 +160,44 @@ describe("formatValue", () => {
   it("handles small numbers", () => {
     expect(formatValue(42)).toBe("42");
     expect(formatValue(999)).toBe("999");
+  });
+});
+
+describe("formatCompactNumber", () => {
+  it("formats numbers less than 1000 as-is", () => {
+    expect(formatCompactNumber(0)).toBe("0");
+    expect(formatCompactNumber(42)).toBe("42");
+    expect(formatCompactNumber(123)).toBe("123");
+    expect(formatCompactNumber(999)).toBe("999");
+  });
+
+  it("formats thousands with K suffix", () => {
+    expect(formatCompactNumber(1_000)).toBe("1.0K");
+    expect(formatCompactNumber(1_234)).toBe("1.2K");
+    expect(formatCompactNumber(12_345)).toBe("12.3K");
+    expect(formatCompactNumber(999_999)).toBe("1000.0K");
+  });
+
+  it("formats millions with M suffix", () => {
+    expect(formatCompactNumber(1_000_000)).toBe("1.0M");
+    expect(formatCompactNumber(1_234_567)).toBe("1.2M");
+    expect(formatCompactNumber(12_345_678)).toBe("12.3M");
+    expect(formatCompactNumber(999_999_999)).toBe("1000.0M");
+  });
+
+  it("handles edge cases", () => {
+    expect(formatCompactNumber(1_500_000)).toBe("1.5M");
+    expect(formatCompactNumber(12_300)).toBe("12.3K");
+    expect(formatCompactNumber(1_001)).toBe("1.0K");
+  });
+
+  it("preserves one decimal place for K values", () => {
+    expect(formatCompactNumber(5_678)).toBe("5.7K");
+    expect(formatCompactNumber(10_500)).toBe("10.5K");
+  });
+
+  it("preserves one decimal place for M values", () => {
+    expect(formatCompactNumber(5_678_000)).toBe("5.7M");
+    expect(formatCompactNumber(10_500_000)).toBe("10.5M");
   });
 });

@@ -5,6 +5,7 @@ import { Users, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { List } from "@/types/mailchimp";
 import { getVisibilityBadge } from "@/components/ui/helpers/badge-utils";
+import { formatCompactNumber } from "@/utils/format-number";
 
 interface ListCardProps {
   list: List;
@@ -12,12 +13,6 @@ interface ListCardProps {
 }
 
 export function ListCard({ list, className }: ListCardProps) {
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
-  };
-
   const getGrowthIndicator = () => {
     const openRate = list.stats?.open_rate;
     if (openRate === undefined) return null;
@@ -70,7 +65,7 @@ export function ListCard({ list, className }: ListCardProps) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-bold">
-                  {formatNumber(list.stats?.member_count || 0)}
+                  {formatCompactNumber(list.stats?.member_count || 0)}
                 </span>
                 {getGrowthIndicator()}
               </div>
