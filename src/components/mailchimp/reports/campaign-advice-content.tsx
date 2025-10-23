@@ -56,7 +56,10 @@ export function CampaignAdviceContent({ data }: CampaignAdviceContentProps) {
                       {item.type}
                     </Badge>
                   </div>
-                  <p className="text-sm">{item.message}</p>
+                  <div
+                    className="prose prose-sm max-w-none text-sm dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: item.message }}
+                  />
                 </div>
               ))}
             </div>
