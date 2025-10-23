@@ -973,6 +973,112 @@ export function CampaignUnsubscribesTable({
 
 ### Schema & API Patterns
 
+**IMPORTANT: Schema refactoring in progress** (Issues #222, #223)
+
+- Folder reorganization: Moving to hierarchical structure
+- DRY refactoring: Extracting common patterns
+- Comment standardization: Enforcing consistent style
+- Branch: `refactor/schema-organization`
+
+**Until refactoring is complete, follow these standards for new schemas:**
+
+#### Comment Standards (User-Approved Pattern)
+
+**File Header - Always Include:**
+
+```typescript
+/**
+ * [Resource Name] [Params|Success|Error] Schema
+ * Schema for [description]
+ *
+ * Endpoint: [METHOD] /[full/path]
+ * Documentation: [Mailchimp API URL]
+ * Follows PRD guideline: "Always use the same object/property names as the API"
+ */
+```
+
+**Property Comments - Inline Only (NOT JSDoc @property):**
+
+```typescript
+export const schema = z.object({
+  field_name: z.string(), // Brief description without period
+  count: z.number().int().min(0), // Integer count of items
+  rate: z.number().min(0).max(1), // Decimal rate (0-1)
+  timestamp: z.iso.datetime({ offset: true }), // ISO 8601 with timezone
+  _links: z.array(linkSchema), // HATEOAS navigation links
+});
+```
+
+**Strict Mode - Always Comment:**
+
+```typescript
+export const schema = z
+  .object({
+    // properties...
+  })
+  .strict(); // Reject unknown properties for input validation
+```
+
+**Common Field Comments (Standardized):**
+
+- `fields` → `// Comma-separated fields to include`
+- `exclude_fields` → `// Comma-separated fields to exclude`
+- `count` → `// Number of records (1-1000)`
+- `offset` → `// Records to skip for pagination`
+- `total_items` → `// Total count`
+- `_links` → `// HATEOAS navigation links`
+- IDs → `// [Resource] ID`
+- Rates → `// Decimal rate (0-1)`
+- Dates → `// ISO 8601 with timezone`
+
+#### Common Schemas (Use When Applicable)
+
+**Path Parameters:**
+
+```typescript
+// For campaign endpoints
+import { campaignIdPathParamsSchema } from "@/schemas/mailchimp/common/path-params.schema";
+export const pathParamsSchema = campaignIdPathParamsSchema;
+
+// For list endpoints
+import { listIdPathParamsSchema } from "@/schemas/mailchimp/common/path-params.schema";
+export const pathParamsSchema = listIdPathParamsSchema;
+```
+
+**Query Parameters:**
+
+```typescript
+// Standard pagination + field filtering (most common)
+import { standardQueryParamsSchema } from "@/schemas/mailchimp/common/pagination-params.schema";
+export const queryParamsSchema = standardQueryParamsSchema;
+
+// With additional parameters
+export const queryParamsSchema = standardQueryParamsSchema.extend({
+  since: z.iso.datetime({ offset: true }).optional(), // ISO 8601 filter
+});
+```
+
+**Paginated Response:**
+
+```typescript
+// Use factory function for list endpoints
+import { createPaginatedResponse } from "@/schemas/mailchimp/common/paginated-response.schema";
+
+export const responseSchema = createPaginatedResponse(
+  itemSchema,
+  "resource_name", // e.g., "abuse_reports", "emails"
+  "campaign_id", // optional parent ID
+);
+```
+
+**Error Schemas:**
+
+```typescript
+// Always use common error schema
+import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
+export const endpointErrorSchema = errorSchema;
+```
+
 **Before creating new schemas, always check existing patterns:**
 
 ```bash
