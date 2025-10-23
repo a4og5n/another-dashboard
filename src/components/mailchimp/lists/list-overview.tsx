@@ -17,7 +17,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
-import { Star, Users } from "lucide-react";
+import { Users } from "lucide-react";
+import { StarRating } from "@/components/ui/star-rating";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import Link from "next/link";
@@ -135,17 +136,8 @@ export function ListOverview({
                         {getVisibilityBadge(list.visibility, "with-icon")}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-0.5">
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <Star
-                              key={index}
-                              className={`h-4 w-4 ${
-                                index < list.list_rating
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-muted-foreground"
-                              }`}
-                            />
-                          ))}
+                        <div className="flex items-center justify-end">
+                          <StarRating rating={list.list_rating} size="sm" />
                         </div>
                       </TableCell>
                       <TableCell className="text-right">

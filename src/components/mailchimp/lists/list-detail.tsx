@@ -17,8 +17,9 @@ import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-in
 import { ListTabNavigation } from "@/components/mailchimp/lists/list-tab-navigation";
 import type { ListDetailProps } from "@/types/components";
 import { formatDateLongSafe, buildMailchimpListUrl } from "@/utils";
-import { Star, ExternalLink, ArrowRight } from "lucide-react";
+import { ExternalLink, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StarRating } from "@/components/ui/star-rating";
 import Link from "next/link";
 
 export function ListDetail({
@@ -54,18 +55,7 @@ export function ListDetail({
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Rating:</span>
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Star
-                    key={index}
-                    className={`h-5 w-5 ${
-                      index < list.list_rating
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "text-muted-foreground"
-                    }`}
-                  />
-                ))}
-              </div>
+              <StarRating rating={list.list_rating} size="md" />
             </div>
           </div>
         </CardHeader>
