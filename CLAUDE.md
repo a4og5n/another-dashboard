@@ -78,29 +78,96 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## AI-First Development Workflow
 
-This project uses an **AI-assisted, two-phase workflow** for implementing new Mailchimp dashboard pages.
+This project uses an **AI-assisted, automated workflow** for implementing new Mailchimp dashboard pages with **automatic git operations**.
 
 ### Overview
 
-**Phase 1: Schema Creation & Review** ✋ (STOP POINT)
-**Phase 2: Page Generation** 🚀 (After Approval)
+**Phase 0: Git Setup** 🔧 (Automatic - Create branch)
+**Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
+**Phase 1.5: Commit Phase 1** ✅ (Automatic - After user approval)
+**Phase 2: Page Generation** 🚀 (Automatic - After commit)
+**Phase 2.5: Commit Phase 2** ✅ (Automatic - After validation)
+**Phase 3: PR Creation** 📤 (Automatic - Push & create PR)
+
+### Phase 0: Git Setup (Automatic)
+
+**BEFORE starting any feature work, AI automatically:**
+
+1. Checks current branch: `git branch --show-current`
+2. If on `main` or `master`:
+   - Creates feature branch: `git checkout -b feature/{endpoint-name}`
+   - Example: `git checkout -b feature/location-activity-endpoint`
+   - Notifies user: "✅ Created branch: feature/{endpoint-name}"
+3. If already on a feature branch: Continues work
+
+**Branch Naming Convention:**
+
+- Features: `feature/{descriptive-name}` (lowercase with hyphens)
+- Fixes: `fix/{descriptive-name}`
+
+**DO NOT** wait for user to request branch creation.
 
 ### Phase 1: Schema Creation & Review
 
 When implementing a new Mailchimp API endpoint:
 
-1. **AI analyzes Mailchimp API documentation** for the target endpoint
-2. **AI creates Zod schemas** in `src/schemas/mailchimp/`:
+1. **AI fetches and verifies Mailchimp API documentation** for the target endpoint:
+   - Use WebSearch or WebFetch to get latest API docs
+   - Extract exact response example from documentation
+   - Document the source URL for reference
+2. **AI creates Zod schemas** in `src/schemas/mailchimp/` matching API exactly:
    - `{endpoint}-params.schema.ts` - Request parameters (path + query params)
    - `{endpoint}-success.schema.ts` - Successful response structure
    - `{endpoint}-error.schema.ts` (optional) - Error response structure
-3. **AI presents schemas for review**
+   - Every field name must match API documentation exactly
+   - Include source URL in schema file comments
+3. **AI presents schemas for review** with:
+   - Schema files created
+   - Source documentation link
+   - API response example (for verification)
 4. **⏸️ STOP - User reviews schemas**
    - Check field names match Mailchimp API exactly
    - Verify types are correct (string, number, boolean, etc.)
    - Confirm pagination structure if applicable
    - Request changes if needed
 5. **User approves schemas** - Say "approved" or "looks good" to proceed
+
+### Phase 1 Verification Checklist
+
+Before presenting schemas for review, AI must verify:
+
+- [ ] ✅ Fetched official Mailchimp API documentation
+- [ ] ✅ Located exact response example in docs
+- [ ] ✅ Extracted all field names from response
+- [ ] ✅ Verified field types (string, number, boolean, etc.)
+- [ ] ✅ Checked for optional vs required fields
+- [ ] ✅ Added source documentation URL to schema comments
+- [ ] ✅ Ready to present response example to user
+
+**⚠️ CRITICAL**: Never create schemas from assumptions. Always verify with source API documentation first.
+
+### Phase 1.5: Commit Phase 1 (Automatic)
+
+**IMMEDIATELY after user approves schemas, AI automatically:**
+
+1. Stages schema files: `git add src/schemas/mailchimp/*{endpoint}*`
+2. Commits with conventional commit message:
+
+   ```
+   feat: add {Endpoint Name} schemas (Phase 1)
+
+   Created Zod schemas for {endpoint description}:
+   - {endpoint}-params.schema.ts
+   - {endpoint}-success.schema.ts
+   - {endpoint}-error.schema.ts
+
+   Source: {API documentation URL}
+   ```
+
+3. Notifies user: "✅ Phase 1 committed (commit hash)"
+4. Proceeds to Phase 2
+
+**DO NOT** wait for user to request commit. **DO NOT** proceed to Phase 2 without committing.
 
 ### Phase 2: Page Generation (After Approval)
 
@@ -177,6 +244,101 @@ Once schemas are approved, the AI follows these steps:
 
 15. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
 
+### Phase 2.5: Commit Phase 2 (Automatic)
+
+**IMMEDIATELY after all validation passes, AI automatically:**
+
+1. Stages all Phase 2 files: `git add .`
+2. Commits with detailed conventional commit message:
+
+   ```
+   feat: implement {Endpoint Name} (Phase 2)
+
+   Completes the {Endpoint Name} implementation following
+   the AI-First Development Workflow.
+
+   ## What Changed
+
+   **Infrastructure (Generated + Configured)**:
+   - Added PageConfig to page-configs.ts registry
+   - Generated page structure with proper Next.js 15 patterns
+   - Created route: /mailchimp/{route-path}
+
+   **Types & Components**:
+   - Created {Type}Success type from Zod schemas
+   - Implemented {Component}Table/Display component
+   - Created {Component}Skeleton for loading state
+   - Updated not-found.tsx with proper messaging
+
+   **Integration**:
+   - Updated DAL method with proper Zod types
+   - Added breadcrumb navigation helper
+   - Created metadata generation function
+   - Exported skeleton from index
+
+   ## Validation
+   - ✅ Type-check: Passes
+   - ✅ Lint: Passes
+   - ✅ Tests: XXX/XXX passing
+
+   ## Related
+   - Phase 1: #{PR number} (schemas)
+   - Follows patterns from {similar endpoints}
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   ```
+
+3. Notifies user: "✅ Phase 2 committed (commit hash)"
+4. Proceeds to Phase 3 (PR creation)
+
+**DO NOT** wait for user to request commit. **DO NOT** proceed to Phase 3 without committing.
+
+### Phase 3: PR Creation (Automatic)
+
+**IMMEDIATELY after Phase 2 commit succeeds, AI automatically:**
+
+1. Pushes branch to origin: `git push -u origin {branch-name}`
+2. Creates PR using GitHub CLI:
+
+   ```bash
+   gh pr create --title "feat: implement {Endpoint Name}" --body "$(cat <<'EOF'
+   ## Summary
+   Implements the {Endpoint Name} endpoint following the AI-First Development Workflow.
+
+   ## What Changed
+   [Detailed description of changes]
+
+   ## Validation
+   - ✅ Type-check: Passes
+   - ✅ Lint: Passes
+   - ✅ Tests: XXX/XXX passing
+
+   ## Test Plan
+   [Steps to test the feature]
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+   EOF
+   )"
+   ```
+
+3. Presents PR URL to user: "✅ PR created: {URL}"
+4. Notifies user: "⏸️ Please review and merge the PR. Say 'PR merged' when done."
+
+**DO NOT** wait for user to request PR creation.
+
+### Post-Merge Cleanup (Automatic)
+
+**AFTER user confirms "PR merged" (or similar), AI automatically:**
+
+1. Checks out main: `git checkout main`
+2. Pulls latest changes: `git pull origin main`
+3. Deletes feature branch: `git branch -d {branch-name}`
+4. Notifies user: "✅ Cleanup complete. On main branch, ready for next feature!"
+
+**DO NOT** wait for user to request cleanup.
+
 ### What Gets Generated Automatically
 
 The programmatic API generates complete, working infrastructure:
@@ -217,20 +379,61 @@ Check `docs/api-coverage.md` to see:
 - 📋 Planned endpoints
 - Implementation progress (X/Y endpoints, Z%)
 
-### Example Session
+### Workflow Summary
+
+**User Involvement Required:**
+
+- ✅ Approve Phase 1 schemas (after review)
+- ✅ Confirm PR has been merged
+
+**Fully Automatic (No User Action Needed):**
+
+- ✅ Branch creation
+- ✅ Phase 1 commit (after approval)
+- ✅ Phase 2 implementation
+- ✅ Phase 2 commit (after validation)
+- ✅ PR creation and push
+- ✅ Post-merge cleanup (after confirmation)
+
+### Example Session Flow
 
 ```
-User: "Create schemas for the Campaign Clicks endpoint"
+User: "Implement the Location Activity endpoint"
 
-AI: [Analyzes Mailchimp docs, creates 3 schema files, shows them]
-AI: "I've created the schemas. Please review and approve before proceeding."
+AI: [Automatically creates feature/location-activity-endpoint branch]
+AI: "✅ Created branch: feature/location-activity-endpoint"
+AI: [Fetches Mailchimp API docs]
+AI: [Creates schemas matching API exactly]
+AI: [Presents schemas with source docs and response example]
+AI: "I've created schemas based on Mailchimp API docs. Please review."
 
-User: [Reviews schemas]
 User: "Approved"
 
-AI: [Calls generatePage(), implements component, runs tests]
-AI: "✅ Campaign Clicks page complete. Updated api-coverage.md."
+AI: [Automatically commits Phase 1]
+AI: "✅ Phase 1 committed (4240049)"
+AI: [Runs page generator]
+AI: [Implements components, types, skeleton]
+AI: [Updates DAL with proper types]
+AI: [Runs validation: type-check, lint, format, test]
+AI: [Automatically commits Phase 2]
+AI: "✅ Phase 2 committed (fb17638)"
+AI: [Automatically pushes branch]
+AI: [Automatically creates PR]
+AI: "✅ PR created: https://github.com/.../pull/218"
+AI: "⏸️ Please review and merge the PR. Say 'PR merged' when done."
+
+User: "PR merged"
+
+AI: [Automatically checks out main, pulls, deletes branch]
+AI: "✅ Cleanup complete. On main branch, ready for next feature!"
 ```
+
+**Key Points:**
+
+- User only interacts at 2 checkpoints (approve schemas, confirm merge)
+- All git operations happen automatically
+- Clean, atomic commits for each phase
+- No need to manually request branches, commits, or PRs
 
 ### Programmatic API Reference
 
@@ -424,6 +627,45 @@ grep -r "schemaName" src/schemas/mailchimp/common/
 ls src/schemas/mailchimp/*-success.schema.ts
 ```
 
+**Schema File Header Template:**
+
+Every schema file MUST include a header documenting the API source:
+
+```typescript
+/**
+ * Mailchimp API {Endpoint Name} Response Schema
+ *
+ * Endpoint: {HTTP_METHOD} {API_PATH}
+ * Documentation: {MAILCHIMP_API_DOC_URL}
+ *
+ * ✅ VERIFIED FIELDS (from API response example):
+ * - field_name: type (description/constraints)
+ * - another_field: type (description)
+ *
+ * Last verified: {YYYY-MM-DD}
+ */
+```
+
+**Example:**
+
+```typescript
+/**
+ * Mailchimp API Campaign Location Activity Success Response Schema
+ *
+ * Endpoint: GET /reports/{campaign_id}/locations
+ * Documentation: https://mailchimp.com/developer/marketing/api/location-reports/list-top-open-activities/
+ *
+ * ✅ VERIFIED FIELDS (from API response example):
+ * - country_code: string (ISO 3166-1 alpha-2)
+ * - region: string (optional)
+ * - region_name: string (default: "Rest of Country")
+ * - opens: number
+ * - proxy_excluded_opens: number
+ *
+ * Last verified: 2025-01-22
+ */
+```
+
 **Schema Creation Rules:**
 
 1. **Parameter Schemas** (`*-params.schema.ts`):
@@ -432,6 +674,7 @@ ls src/schemas/mailchimp/*-success.schema.ts
    - Query params: `{endpoint}QueryParamsSchema`
    - Always add `.strict()` with comment: `// Reject unknown properties for input validation`
    - ID fields MUST use `.min(1)` to prevent empty strings
+   - Include schema file header with API documentation URL
 
 2. **Zod 4 Best Practices**:
    - Optional with default: `.default(value)` alone (NOT `.default().optional()`)
