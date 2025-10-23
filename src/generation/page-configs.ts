@@ -368,6 +368,44 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Campaign Advice Page
+   */
+  "report-advice": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/campaign-advice-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/campaign-advice-success.schema.ts",
+      apiError: "src/schemas/mailchimp/campaign-advice-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/reports/[id]/advice",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/reports/{campaign_id}/advice",
+      method: "GET",
+      dalMethod: "fetchCampaignAdvice",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Campaign Advice",
+      description:
+        "Feedback and recommendations to improve campaign performance",
+      features: [
+        "Dynamic routing",
+        "Campaign feedback",
+        "Performance recommendations",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        parent: "report-detail",
+        label: "Advice",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

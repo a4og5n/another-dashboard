@@ -49,10 +49,9 @@ Campaign reporting and analytics endpoints.
   - Route: `/mailchimp/reports/[id]/locations`
   - Features: Pagination, geographic engagement data, flag emojis
 
-- ⭐ **Campaign Bounces** - `GET /reports/{id}/sent-to/{subscriber_hash}/sub-reports`
-  - Route: `/mailchimp/reports/[id]/bounces`
-  - Features: Pagination, bounce type (hard/soft), bounce reason
-  - **NEXT:** Ready for implementation
+- ✅ **Campaign Advice** - `GET /reports/{id}/advice`
+  - Route: `/mailchimp/reports/[id]/advice`
+  - Features: Campaign feedback, Performance recommendations, Sentiment badges
 
 ---
 
@@ -137,11 +136,10 @@ Email template management endpoints.
 
 **Current Coverage:**
 
-- ✅ Implemented: 10 endpoints
-- ⭐ Next Priority: 1 endpoint (Campaign Bounces)
+- ✅ Implemented: 11 endpoints
 - 📋 Planned: 9 endpoints
 
-**Total Progress:** 10/20 endpoints (50%)
+**Total Progress:** 11/20 endpoints (55%)
 
 **Recent Implementations:**
 
@@ -150,10 +148,11 @@ Email template management endpoints.
 - Campaign Email Activity (subscriber activity timeline)
 - Campaign Recipients/Sent To (recipient delivery status)
 - Campaign Locations (geographic engagement data)
+- Campaign Advice (performance recommendations with sentiment badges)
 
 **Focus Areas:**
 
-1. **Current Sprint:** Complete Reports API (bounces) - 1 endpoint remaining
+1. **Current Sprint:** Reports API improvements
 2. **Next Sprint:** Lists API (members, growth history)
 3. **Future:** Campaign management, automations, templates
 

@@ -18,6 +18,7 @@ import { campaignUnsubscribesPageParamsSchema } from "@/schemas/components/mailc
 import { emailActivityPageParamsSchema } from "@/schemas/components/mailchimp/email-activity-page-params";
 import { campaignRecipientsPageParamsSchema } from "@/schemas/components/mailchimp/report-sent-to-page-params";
 import { reportLocationActivityPageParamsSchema } from "@/schemas/components/mailchimp/report-location-activity-page-params";
+import { campaignAdvicePageParamsSchema } from "@/schemas/components/mailchimp/report-advice-page-params";
 import type { CampaignReport } from "@/types/mailchimp";
 
 /**
@@ -366,6 +367,44 @@ export async function generateCampaignLocationsMetadata({
     openGraph: {
       title: `${data.campaign_title || "Resource"} - Campaign Locations`,
       description: "Geographic engagement by location",
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for campaign advice pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the campaign advice page
+ */
+export async function generateCampaignAdviceMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = campaignAdvicePageParamsSchema.parse(rawParams);
+
+  // Fetch data for metadata
+  // TODO: Implement proper data fetching using DAL method
+  const response = await mailchimpDAL.fetchCampaignReport(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Advice - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data;
+
+  return {
+    title: `${data.campaign_title || "Resource"} - Campaign Advice`,
+    description: "Feedback and recommendations to improve campaign performance",
+    openGraph: {
+      title: `${data.campaign_title || "Resource"} - Campaign Advice`,
+      description:
+        "Feedback and recommendations to improve campaign performance",
       type: "website",
     },
   };

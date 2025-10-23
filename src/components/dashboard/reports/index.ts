@@ -27,6 +27,7 @@ export { AbSplitCard } from "@/components/dashboard/reports/AbSplitCard";
 export { ForwardsCard } from "@/components/dashboard/reports/ForwardsCard";
 export { OpensCard } from "@/components/dashboard/reports/OpensCard";
 export { ClicksCard } from "@/components/dashboard/reports/ClicksCard";
+export { AdviceCard } from "@/components/dashboard/reports/AdviceCard";
 export { IndustryStatsCard } from "@/components/dashboard/reports/IndustryStatsCard";
 export { EmailsSentCard } from "@/components/dashboard/reports/EmailsSentCard";
 export { DeliveryIssuesCard } from "@/components/dashboard/reports/DeliveryIssuesCard";
