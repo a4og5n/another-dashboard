@@ -25,6 +25,7 @@ import { SocialEngagementCard } from "@/components/dashboard/reports/SocialEngag
 import { ListPerformanceCard } from "@/components/dashboard/reports/ListPerformanceCard";
 import { ShareReport } from "@/components/dashboard/reports/ShareReport";
 import { LinkClickInfo } from "@/components/dashboard/reports/LinkClickInfo";
+import { LocationsCard } from "@/components/dashboard/reports/LocationsCard";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { TabNavigation } from "@/components/dashboard/reports/TabNavigation";
 
@@ -102,9 +103,12 @@ export function CampaignReportDetail({
 
           {/* Charts */}
           <ReportCharts report={report} />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Link Click Information */}
             <LinkClickInfo report={report} />
+
+            {/* Geographic Locations */}
+            <LocationsCard campaignId={report.id} />
 
             {/* Engagement Details */}
             <SocialEngagementCard facebookLikes={report.facebook_likes} />

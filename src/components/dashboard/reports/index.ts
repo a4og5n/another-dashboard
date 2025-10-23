@@ -33,6 +33,7 @@ export { DeliveryIssuesCard } from "@/components/dashboard/reports/DeliveryIssue
 export { ListHealthCard } from "@/components/dashboard/reports/ListHealthCard";
 export { SocialEngagementCard } from "@/components/dashboard/reports/SocialEngagementCard";
 export { ListPerformanceCard } from "@/components/dashboard/reports/ListPerformanceCard";
+export { LocationsCard } from "@/components/dashboard/reports/LocationsCard";
 
 // Main container components
 export { CampaignReportDetail } from "@/components/dashboard/reports/CampaignReportDetail";
