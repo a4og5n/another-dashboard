@@ -1061,14 +1061,17 @@ export const queryParamsSchema = standardQueryParamsSchema.extend({
 **Paginated Response:**
 
 ```typescript
-// Use factory function for list endpoints
-import { createPaginatedResponse } from "@/schemas/mailchimp/common/paginated-response.schema";
+// ⚠️ DO NOT use factory function - it breaks TypeScript type inference
+// TypeScript cannot infer specific property names from computed object keys
+// See "Schema Refactoring Learnings" section below for details
 
-export const responseSchema = createPaginatedResponse(
-  itemSchema,
-  "resource_name", // e.g., "abuse_reports", "emails"
-  "campaign_id", // optional parent ID
-);
+// Instead, define the schema explicitly:
+export const responseSchema = z.object({
+  resource_name: z.array(itemSchema), // Array of items
+  campaign_id: z.string().min(1), // Parent resource ID (optional)
+  total_items: z.number().min(0), // Total count
+  _links: z.array(linkSchema), // HATEOAS navigation links
+});
 ```
 
 **Error Schemas:**
@@ -1334,6 +1337,152 @@ export function MyTable({ data, currentPage, pageSize, totalItems }: Props) {
 - **Required:** `KINDE_COOKIE_DOMAIN=127.0.0.1` in `.env.local` for OAuth state persistence
 - **Troubleshooting "State not found":** `pkill -f "next dev"` → `pnpm clean` → `pnpm dev` → Clear browser cache → Test in incognito
 - **Production:** Remove or set to custom domain
+
+## Schema Refactoring Learnings
+
+**Context:** During Issues #222 and #223 refactoring work (October 2025), we attempted to eliminate code duplication across schema files using factory functions and common patterns.
+
+### ✅ What Works: Parameter Schema Patterns
+
+**Path Parameters** - Successfully refactored using re-exports:
+
+```typescript
+// ✅ WORKS: Direct re-export preserves types
+import { campaignIdPathParamsSchema } from "@/schemas/mailchimp/common/path-params.schema";
+export const myEndpointPathParamsSchema = campaignIdPathParamsSchema;
+
+// Type inference: { campaign_id: string }
+```
+
+**Query Parameters** - Successfully refactored using composition:
+
+```typescript
+// ✅ WORKS: Extends standard schema
+import { standardQueryParamsSchema } from "@/schemas/mailchimp/common/pagination-params.schema";
+export const myQueryParamsSchema = standardQueryParamsSchema.extend({
+  since: z.iso.datetime({ offset: true }).optional(),
+});
+
+// Type inference: { fields?: string, exclude_fields?: string, count: number, offset: number, since?: string }
+```
+
+**Results:**
+
+- 8 parameter schema files successfully refactored
+- 110 lines of code eliminated (39% reduction)
+- Full type safety maintained
+- All 801 tests passing
+
+### ❌ What Doesn't Work: Success Schema Factories
+
+**Paginated Response Factory** - Attempted but breaks type inference:
+
+```typescript
+// ❌ BREAKS TYPE INFERENCE: Computed property names lose specificity
+export function createPaginatedResponse<T extends ZodType>(
+  itemSchema: T,
+  resourceKey: string, // ← Dynamic key
+  idKey?: string, // ← Dynamic key
+) {
+  const baseShape = {
+    [resourceKey]: z.array(itemSchema), // ← TypeScript can't track this
+    total_items: z.number().min(0),
+    _links: z.array(linkSchema),
+  };
+
+  if (idKey) {
+    return z.object({
+      ...baseShape,
+      [idKey]: z.string().min(1), // ← TypeScript can't track this
+    });
+  }
+
+  return z.object(baseShape);
+}
+
+// Usage:
+export const responseSchema = createPaginatedResponse(
+  abuseReportSchema,
+  "abuse_reports",
+  "campaign_id",
+);
+
+// ❌ Type inference becomes: Record<string, unknown>
+// ✅ Expected type: { abuse_reports: AbuseReport[], campaign_id: string, total_items: number, _links: Link[] }
+```
+
+**The Problem:**
+
+1. TypeScript cannot infer specific property names from computed object keys `[resourceKey]` or `[idKey]`
+2. The inferred type becomes `Record<string, ...>` instead of having named properties
+3. This breaks type safety for all consuming code:
+   - Page components can't access `data.abuse_reports` (property doesn't exist on `Record<string, ...>`)
+   - Table components lose autocomplete
+   - DAL methods have incorrect return types
+4. Results in 27+ TypeScript errors across pages, components, and DAL
+
+**Why This Is a TypeScript Limitation:**
+
+TypeScript's structural type system cannot track dynamic object keys at compile time. When you write:
+
+```typescript
+const key = "abuse_reports";
+const obj = { [key]: value };
+```
+
+TypeScript only knows `obj` has _some_ property, but not which specific property. This is fundamental to how TypeScript works and cannot be worked around without losing type information.
+
+**Attempted Solutions (All Failed):**
+
+1. ❌ Generic type parameters: `createPaginatedResponse<T, K extends string>(itemSchema: T, resourceKey: K)` - Still loses specificity
+2. ❌ Const assertions: `as const` doesn't help with computed properties
+3. ❌ Template literal types: Can't be used to construct object types dynamically
+4. ❌ Type predicates: Would require manual type assertions everywhere
+
+### 📊 Final Decision
+
+**Code duplication is acceptable when:**
+
+- The duplicated code is simple (4-5 lines)
+- It's stable and unlikely to change
+- Eliminating it breaks type safety
+- The pattern is self-documenting
+
+**For success schemas, we keep the explicit pattern:**
+
+```typescript
+// ✅ PREFERRED: Explicit schema with full type inference
+export const abuseReportListSuccessSchema = z.object({
+  abuse_reports: z.array(abuseReportSchema),
+  campaign_id: z.string().min(1),
+  total_items: z.number().min(0),
+  _links: z.array(linkSchema),
+});
+
+// Type inference:
+// {
+//   abuse_reports: AbuseReport[],
+//   campaign_id: string,
+//   total_items: number,
+//   _links: Link[]
+// }
+```
+
+**Trade-offs:**
+
+- ❌ ~95 lines of duplication across 8 success schema files (~12 lines per file)
+- ✅ Full type safety with autocomplete
+- ✅ Clear, readable schemas
+- ✅ No TypeScript errors
+- ✅ Self-documenting structure
+
+### 🎓 Key Takeaway
+
+**Type safety > code deduplication**
+
+When refactoring creates type inference issues that ripple through the codebase, the duplication is worth keeping. TypeScript's primary value is catching errors at compile time - sacrificing that for DRY principles defeats the purpose.
+
+**Related Issues:** #222 (folder reorganization), #223 (DRY refactoring)
 
 ## Git Strategy
 
