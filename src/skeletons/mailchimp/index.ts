@@ -14,4 +14,5 @@ export * from "@/skeletons/mailchimp/CampaignUnsubscribesSkeleton";
 export * from "@/skeletons/mailchimp/CampaignEmailActivitySkeleton";
 export * from "@/skeletons/mailchimp/CampaignRecipientsSkeleton";
 export * from "@/skeletons/mailchimp/CampaignLocationsSkeleton";
+export * from "@/skeletons/mailchimp/CampaignAdviceSkeleton";
 export * from "@/skeletons/mailchimp/ReportsOverviewSkeleton";

@@ -21,13 +21,18 @@ import { z } from "zod";
 import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
+ * Advice type enum - sentiment of the advice item
+ */
+export const ADVICE_TYPE = ["negative", "positive", "neutral"] as const;
+
+/**
  * Individual advice item schema
  * Represents a single piece of feedback/advice for the campaign
  */
 export const adviceItemSchema = z.object({
-  type: z.string(), // Advice category (e.g., "subject_line", "content", "timing")
+  type: z.enum(ADVICE_TYPE), // "negative", "positive", or "neutral"
   message: z.string(), // The advice message text
-  region_id: z.string().optional(), // Optional region/block identifier this advice applies to
+  _links: z.array(linkSchema), // HATEOAS links for navigation
 });
 
 /**

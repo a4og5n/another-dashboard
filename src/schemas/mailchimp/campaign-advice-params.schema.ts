@@ -32,14 +32,7 @@ export const campaignAdvicePathParamsSchema = z
  */
 export const campaignAdviceQueryParamsSchema = z
   .object({
-    /**
-     * Comma-separated list of fields to include in response
-     */
-    fields: z.string().optional(),
-
-    /**
-     * Comma-separated list of fields to exclude from response
-     */
-    exclude_fields: z.string().optional(),
+    fields: z.string().optional(), // Comma-separated list of fields to include in response
+    exclude_fields: z.string().optional(), // Comma-separated list of fields to exclude from response
   })
   .strict(); // Reject unknown properties for input validation

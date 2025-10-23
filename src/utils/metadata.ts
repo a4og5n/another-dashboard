@@ -63,3 +63,5 @@ export { generateCampaignEmailActivityMetadata } from "@/utils/mailchimp/metadat
 export { generateCampaignRecipientsMetadata } from "@/utils/mailchimp/metadata";
 
 export { generateCampaignLocationsMetadata } from "@/utils/mailchimp/metadata";
+
+export { generateCampaignAdviceMetadata } from "@/utils/mailchimp/metadata";
