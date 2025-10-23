@@ -8,12 +8,12 @@ import type {
   emailActivitySchema,
   emailWithActivitySchema,
   emailActivitySuccessSchema,
-} from "@/schemas/mailchimp/email-activity-success.schema";
-import type { emailActivityErrorSchema } from "@/schemas/mailchimp/email-activity-error.schema";
+} from "@/schemas/mailchimp/reports/email-activity/success.schema";
+import type { emailActivityErrorSchema } from "@/schemas/mailchimp/reports/email-activity/error.schema";
 import type {
   emailActivityPathParamsSchema,
   emailActivityQueryParamsSchema,
-} from "@/schemas/mailchimp/email-activity-params.schema";
+} from "@/schemas/mailchimp/reports/email-activity/params.schema";
 
 /**
  * Single email activity event

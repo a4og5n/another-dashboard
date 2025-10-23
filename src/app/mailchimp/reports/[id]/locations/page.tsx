@@ -23,7 +23,7 @@ import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-in
 import { handleApiError, bc } from "@/utils";
 import { generateCampaignLocationsMetadata } from "@/utils/metadata";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
-import { locationActivityQueryParamsSchema } from "@/schemas/mailchimp/location-activity-params.schema";
+import { locationActivityQueryParamsSchema } from "@/schemas/mailchimp/reports/location-activity/params.schema";
 
 async function CampaignLocationsPageContent({
   locationsData,

@@ -12,11 +12,11 @@ import type { z } from "zod";
 import type {
   domainPerformancePathParamsSchema,
   domainPerformanceQueryParamsSchema,
-} from "@/schemas/mailchimp/domain-performance-params.schema";
+} from "@/schemas/mailchimp/reports/domain-performance/params.schema";
 import type {
   domainPerformanceItemSchema,
   domainPerformanceSuccessSchema,
-} from "@/schemas/mailchimp/domain-performance-success.schema";
+} from "@/schemas/mailchimp/reports/domain-performance/success.schema";
 
 /**
  * Individual domain performance data

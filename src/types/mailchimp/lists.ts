@@ -10,8 +10,8 @@ import type {
   listCampaignDefaultsSchema,
   listStatsSchema,
   LIST_VISIBILITY,
-} from "@/schemas/mailchimp/lists-success.schema";
-import type { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+} from "@/schemas/mailchimp/lists/success.schema";
+import type { listsParamsSchema } from "@/schemas/mailchimp/lists/params.schema";
 
 // Nested object types
 export type ListContact = z.infer<typeof listContactSchema>;
@@ -36,7 +36,7 @@ export {
   listsParamsSchema,
   SORT_FIELD,
   LISTS_SORT_DIRECTIONS,
-} from "@/schemas/mailchimp/lists-params.schema";
+} from "@/schemas/mailchimp/lists/params.schema";
 
 /**
  * Aggregate dashboard statistics for lists overview

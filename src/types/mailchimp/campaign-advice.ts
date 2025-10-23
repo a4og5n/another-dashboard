@@ -12,12 +12,12 @@ import type { z } from "zod";
 import type {
   campaignAdvicePathParamsSchema,
   campaignAdviceQueryParamsSchema,
-} from "@/schemas/mailchimp/campaign-advice-params.schema";
+} from "@/schemas/mailchimp/reports/advice/params.schema";
 import type {
   adviceItemSchema,
   campaignAdviceSuccessSchema,
   ADVICE_TYPE,
-} from "@/schemas/mailchimp/campaign-advice-success.schema";
+} from "@/schemas/mailchimp/reports/advice/success.schema";
 
 /**
  * Advice type - sentiment of advice item

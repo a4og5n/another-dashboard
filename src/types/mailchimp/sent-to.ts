@@ -7,12 +7,12 @@ import type { z } from "zod";
 import type {
   sentToMemberSchema,
   sentToSuccessSchema,
-} from "@/schemas/mailchimp/sent-to-success.schema";
-import type { sentToErrorSchema } from "@/schemas/mailchimp/sent-to-error.schema";
+} from "@/schemas/mailchimp/reports/sent-to/success.schema";
+import type { sentToErrorSchema } from "@/schemas/mailchimp/reports/sent-to/error.schema";
 import type {
   sentToPathParamsSchema,
   sentToQueryParamsSchema,
-} from "@/schemas/mailchimp/sent-to-params.schema";
+} from "@/schemas/mailchimp/reports/sent-to/params.schema";
 
 /**
  * Single sent-to member (campaign recipient)

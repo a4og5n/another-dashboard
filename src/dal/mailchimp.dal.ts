@@ -21,20 +21,20 @@ import type {
   OpenListQueryParams,
 } from "@/types/mailchimp";
 import { z } from "zod";
-import { clickListQueryParamsSchema } from "@/schemas/mailchimp/report-click-details-params.schema";
-import { reportClickListSuccessSchema } from "@/schemas/mailchimp/report-click-details-success.schema";
-import { unsubscribesSuccessSchema } from "@/schemas/mailchimp/unsubscribes-success.schema";
-import { emailActivityQueryParamsSchema } from "@/schemas/mailchimp/email-activity-params.schema";
-import { emailActivitySuccessSchema } from "@/schemas/mailchimp/email-activity-success.schema";
-import { sentToQueryParamsSchema } from "@/schemas/mailchimp/sent-to-params.schema";
-import { sentToSuccessSchema } from "@/schemas/mailchimp/sent-to-success.schema";
-import { locationActivityQueryParamsSchema } from "@/schemas/mailchimp/location-activity-params.schema";
-import { locationActivitySuccessSchema } from "@/schemas/mailchimp/location-activity-success.schema";
-import { campaignAdviceQueryParamsSchema } from "@/schemas/mailchimp/campaign-advice-params.schema";
-import { campaignAdviceSuccessSchema } from "@/schemas/mailchimp/campaign-advice-success.schema";
-import { domainPerformanceSuccessSchema } from "@/schemas/mailchimp/domain-performance-success.schema";
-import { listActivityQueryParamsSchema } from "@/schemas/mailchimp/list-activity-params.schema";
-import { listActivitySuccessSchema } from "@/schemas/mailchimp/list-activity-success.schema";
+import { clickListQueryParamsSchema } from "@/schemas/mailchimp/reports/click-details/params.schema";
+import { reportClickListSuccessSchema } from "@/schemas/mailchimp/reports/click-details/success.schema";
+import { unsubscribesSuccessSchema } from "@/schemas/mailchimp/reports/unsubscribes/success.schema";
+import { emailActivityQueryParamsSchema } from "@/schemas/mailchimp/reports/email-activity/params.schema";
+import { emailActivitySuccessSchema } from "@/schemas/mailchimp/reports/email-activity/success.schema";
+import { sentToQueryParamsSchema } from "@/schemas/mailchimp/reports/sent-to/params.schema";
+import { sentToSuccessSchema } from "@/schemas/mailchimp/reports/sent-to/success.schema";
+import { locationActivityQueryParamsSchema } from "@/schemas/mailchimp/reports/location-activity/params.schema";
+import { locationActivitySuccessSchema } from "@/schemas/mailchimp/reports/location-activity/success.schema";
+import { campaignAdviceQueryParamsSchema } from "@/schemas/mailchimp/reports/advice/params.schema";
+import { campaignAdviceSuccessSchema } from "@/schemas/mailchimp/reports/advice/success.schema";
+import { domainPerformanceSuccessSchema } from "@/schemas/mailchimp/reports/domain-performance/success.schema";
+import { listActivityQueryParamsSchema } from "@/schemas/mailchimp/lists/activity/params.schema";
+import { listActivitySuccessSchema } from "@/schemas/mailchimp/lists/activity/success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };

@@ -20,7 +20,7 @@ import {
   listActivityPageParamsSchema,
   pageSearchParamsSchema,
 } from "@/schemas/components/mailchimp/list-activity-page-params";
-import { listActivityQueryParamsSchema } from "@/schemas/mailchimp/list-activity-params.schema";
+import { listActivityQueryParamsSchema } from "@/schemas/mailchimp/lists/activity/params.schema";
 import { generateListActivityMetadata } from "@/utils/metadata";
 import type { ListActivityResponse } from "@/types/mailchimp";
 

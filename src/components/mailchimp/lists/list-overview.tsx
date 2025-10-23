@@ -29,7 +29,7 @@ import {
   formatPercent,
 } from "@/utils";
 import type { ListOverviewProps } from "@/types/components/mailchimp";
-import { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import { listsParamsSchema } from "@/schemas/mailchimp/lists/params.schema";
 import { PER_PAGE_OPTIONS } from "@/types/components/ui";
 import { getVisibilityBadge } from "@/components/ui/helpers/badge-utils";
 

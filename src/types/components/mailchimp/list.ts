@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { List, DashboardListStats } from "@/types/mailchimp/lists";
-import type { listsParamsSchema } from "@/schemas/mailchimp/lists-params.schema";
+import type { listsParamsSchema } from "@/schemas/mailchimp/lists/params.schema";
 import type {
   ListPageParams,
   ListPageSearchParams,

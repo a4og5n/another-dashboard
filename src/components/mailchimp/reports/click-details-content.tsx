@@ -29,7 +29,7 @@ import type { z } from "zod";
 import type {
   reportClickListSuccessSchema,
   urlClickedSchema,
-} from "@/schemas/mailchimp/report-click-details-success.schema";
+} from "@/schemas/mailchimp/reports/click-details/success.schema";
 
 type ClickListSuccess = z.infer<typeof reportClickListSuccessSchema>;
 type UrlClicked = z.infer<typeof urlClickedSchema>;
