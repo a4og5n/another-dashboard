@@ -28,6 +28,8 @@ import { emailActivityQueryParamsSchema } from "@/schemas/mailchimp/email-activi
 import { emailActivitySuccessSchema } from "@/schemas/mailchimp/email-activity-success.schema";
 import { sentToQueryParamsSchema } from "@/schemas/mailchimp/sent-to-params.schema";
 import { sentToSuccessSchema } from "@/schemas/mailchimp/sent-to-success.schema";
+import { locationActivityQueryParamsSchema } from "@/schemas/mailchimp/location-activity-params.schema";
+import { locationActivitySuccessSchema } from "@/schemas/mailchimp/location-activity-success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -173,6 +175,22 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof sentToSuccessSchema>>(
         `/reports/${id}/sent-to`,
+        params,
+      ),
+    );
+  }
+
+  /**
+   * Campaign Locations
+   * GET /reports/{campaign_id}/locations
+   */
+  async fetchCampaignLocationActivity(
+    id: string,
+    params?: z.infer<typeof locationActivityQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof locationActivitySuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof locationActivitySuccessSchema>>(
+        `/reports/${id}/locations`,
         params,
       ),
     );

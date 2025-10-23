@@ -91,6 +91,25 @@ export const bc = {
   // ============================================================================
 
   /**
+   * Campaign Locations breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for campaign locations
+   *
+   * @example
+   * ```tsx
+   * bc.campaignLocations("abc123")
+   * // Returns: { label: "Locations", href: "/mailchimp/reports/${id}/locations" }
+   * ```
+   */
+  campaignLocations(id: string): BreadcrumbItem {
+    return {
+      label: "Locations",
+      href: `/mailchimp/reports/${id}/locations`,
+    };
+  },
+
+  /**
    * Campaign Recipients breadcrumb
    *
    * @param id - ID

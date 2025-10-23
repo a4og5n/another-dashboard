@@ -330,6 +330,44 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Campaign Location Activity Page
+   */
+  "report-location-activity": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/location-activity-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/location-activity-success.schema.ts",
+      apiError: "src/schemas/mailchimp/location-activity-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/reports/[id]/locations",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/reports/{campaign_id}/locations",
+      method: "GET",
+      dalMethod: "fetchCampaignLocationActivity",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Campaign Locations",
+      description: "Geographic engagement by location",
+      features: [
+        "Pagination",
+        "Dynamic routing",
+        "Geographic data",
+        "Engagement metrics by location",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        parent: "report-detail",
+        label: "Locations",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
