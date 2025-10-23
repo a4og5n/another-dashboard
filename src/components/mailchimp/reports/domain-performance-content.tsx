@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { DomainPerformanceResponse } from "@/types/mailchimp";
+import { formatPercentage } from "@/utils/format-number";
 
 interface DomainPerformanceContentProps {
   data: DomainPerformanceResponse;
@@ -62,7 +63,7 @@ export function DomainPerformanceContent({
                     <TableCell className="font-medium">
                       {domain.domain}
                       <div className="text-xs text-muted-foreground">
-                        {(domain.emails_pct * 100).toFixed(1)}% of campaign
+                        {formatPercentage(domain.emails_pct)} of campaign
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -74,25 +75,25 @@ export function DomainPerformanceContent({
                     <TableCell className="text-right">
                       <div>{domain.bounces.toLocaleString()}</div>
                       <div className="text-xs text-muted-foreground">
-                        {(domain.bounces_pct * 100).toFixed(1)}% rate
+                        {formatPercentage(domain.bounces_pct)}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div>{domain.opens.toLocaleString()}</div>
                       <div className="text-xs text-muted-foreground">
-                        {(domain.opens_pct * 100).toFixed(1)}% rate
+                        {formatPercentage(domain.opens_pct)}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div>{domain.clicks.toLocaleString()}</div>
                       <div className="text-xs text-muted-foreground">
-                        {(domain.clicks_pct * 100).toFixed(1)}% rate
+                        {formatPercentage(domain.clicks_pct)}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div>{domain.unsubs.toLocaleString()}</div>
                       <div className="text-xs text-muted-foreground">
-                        {(domain.unsubs_pct * 100).toFixed(1)}% rate
+                        {formatPercentage(domain.unsubs_pct)}
                       </div>
                     </TableCell>
                   </TableRow>
