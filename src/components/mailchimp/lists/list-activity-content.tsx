@@ -51,6 +51,8 @@ export function ListActivityContent({
     return `${baseUrl}?${params.toString()}`;
   };
 
+  const totalPages = Math.ceil(total_items / pageSize);
+
   return (
     <div className="space-y-6">
       <Card>
@@ -66,77 +68,77 @@ export function ListActivityContent({
               No activity data available for this list.
             </p>
           ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Emails Sent</TableHead>
-                    <TableHead className="text-right">Opens</TableHead>
-                    <TableHead className="text-right">Clicks</TableHead>
-                    <TableHead className="text-right">Hard Bounces</TableHead>
-                    <TableHead className="text-right">Soft Bounces</TableHead>
-                    <TableHead className="text-right">Subs</TableHead>
-                    <TableHead className="text-right">Unsubs</TableHead>
-                    <TableHead className="text-right">Other Adds</TableHead>
-                    <TableHead className="text-right">Other Removes</TableHead>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Emails Sent</TableHead>
+                  <TableHead className="text-right">Opens</TableHead>
+                  <TableHead className="text-right">Clicks</TableHead>
+                  <TableHead className="text-right">Hard Bounces</TableHead>
+                  <TableHead className="text-right">Soft Bounces</TableHead>
+                  <TableHead className="text-right">Subs</TableHead>
+                  <TableHead className="text-right">Unsubs</TableHead>
+                  <TableHead className="text-right">Other Adds</TableHead>
+                  <TableHead className="text-right">Other Removes</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {activity.map((item, index) => (
+                  <TableRow key={`${item.day}-${index}`}>
+                    <TableCell className="font-medium">
+                      {formatDateShort(item.day)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.emails_sent.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.unique_opens.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.recipient_clicks.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.hard_bounce.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.soft_bounce.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.subs.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.unsubs.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.other_adds.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.other_removes.toLocaleString()}
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {activity.map((item, index) => (
-                    <TableRow key={`${item.day}-${index}`}>
-                      <TableCell className="font-medium">
-                        {formatDateShort(item.day)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.emails_sent.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.unique_opens.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.recipient_clicks.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.hard_bounce.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.soft_bounce.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.subs.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.unsubs.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.other_adds.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {item.other_removes.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              {/* Pagination Controls */}
-              <div className="flex items-center justify-between pt-4">
-                <PerPageSelector
-                  value={pageSize}
-                  createPerPageUrl={createPerPageUrl}
-                  itemName="days"
-                />
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={Math.ceil(total_items / pageSize)}
-                  createPageUrl={createPageUrl}
-                />
-              </div>
-            </>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
+
+      {/* Pagination Controls */}
+      {total_items > 0 && (
+        <div className="flex items-center justify-between">
+          <PerPageSelector
+            value={pageSize}
+            createPerPageUrl={createPerPageUrl}
+            itemName="days"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            createPageUrl={createPageUrl}
+          />
+        </div>
+      )}
     </div>
   );
 }
