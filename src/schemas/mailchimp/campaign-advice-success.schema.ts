@@ -21,17 +21,17 @@ import { z } from "zod";
 import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
- * Advice type enum - sentiment of the advice item
+ * Advice type enum - types from Mailchimp API
  */
-export const ADVICE_TYPE = ["negative", "positive", "neutral"] as const;
+export const ADVICE_TYPE = ["advice-goodstat", "advice-badstat"] as const;
 
 /**
  * Individual advice item schema
  * Represents a single piece of feedback/advice for the campaign
  */
 export const adviceItemSchema = z.object({
-  type: z.enum(ADVICE_TYPE), // "negative", "positive", or "neutral"
-  message: z.string(), // The advice message text
+  type: z.enum(ADVICE_TYPE), // "advice-goodstat" (positive) or "advice-badstat" (negative)
+  message: z.string(), // The advice message text (contains HTML)
   _links: z.array(linkSchema), // HATEOAS links for navigation
 });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 import type { CampaignAdviceResponse } from "@/types/mailchimp/campaign-advice";
 
 interface CampaignAdviceContentProps {
@@ -16,18 +16,21 @@ interface CampaignAdviceContentProps {
 export function CampaignAdviceContent({ data }: CampaignAdviceContentProps) {
   const { advice, total_items } = data;
 
-  // Determine badge variant based on advice type
-  const getBadgeVariant = (type: string) => {
-    switch (type) {
-      case "positive":
-        return "default";
-      case "negative":
-        return "destructive";
-      case "neutral":
-        return "secondary";
-      default:
-        return "outline";
+  // Get icon and color based on advice type
+  const getAdviceIcon = (type: string) => {
+    if (type === "advice-goodstat") {
+      return {
+        icon: ThumbsUp,
+        className: "text-green-600 dark:text-green-400",
+        label: "Good performance",
+      };
     }
+    // advice-badstat
+    return {
+      icon: ThumbsDown,
+      className: "text-red-600 dark:text-red-400",
+      label: "Needs improvement",
+    };
   };
 
   return (
@@ -46,22 +49,30 @@ export function CampaignAdviceContent({ data }: CampaignAdviceContentProps) {
             </p>
           ) : (
             <div className="space-y-4">
-              {advice.map((item, index) => (
-                <div
-                  key={index}
-                  className="space-y-2 border-b pb-4 last:border-b-0 last:pb-0"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <Badge variant={getBadgeVariant(item.type)}>
-                      {item.type}
-                    </Badge>
-                  </div>
+              {advice.map((item, index) => {
+                const {
+                  icon: Icon,
+                  className,
+                  label,
+                } = getAdviceIcon(item.type);
+                return (
                   <div
-                    className="prose prose-sm max-w-none text-sm dark:prose-invert"
-                    dangerouslySetInnerHTML={{ __html: item.message }}
-                  />
-                </div>
-              ))}
+                    key={index}
+                    className="space-y-2 border-b pb-4 last:border-b-0 last:pb-0"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Icon
+                        className={`h-5 w-5 flex-shrink-0 ${className}`}
+                        aria-label={label}
+                      />
+                      <div
+                        className="prose prose-sm max-w-none flex-1 text-sm dark:prose-invert"
+                        dangerouslySetInnerHTML={{ __html: item.message }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </CardContent>
