@@ -23,6 +23,7 @@ import {
   getVipBadge,
   getActiveStatusBadge,
 } from "@/components/ui/helpers/badge-utils";
+import { formatMergeFields } from "@/utils/mailchimp/merge-fields";
 
 interface CampaignRecipientsTableProps {
   recipientsData: SentToSuccess;
@@ -82,46 +83,6 @@ function getAbSplitBadge(group?: string) {
     <Badge variant="default" className={color}>
       {group.toUpperCase()}
     </Badge>
-  );
-}
-
-/**
- * Format merge fields for display in table cell
- * Follows the same pattern as CampaignUnsubscribesTable
- */
-function formatMergeFields(
-  mergeFields?: Record<string, string | number | unknown>,
-) {
-  if (!mergeFields || Object.keys(mergeFields).length === 0) {
-    return <span className="text-muted-foreground text-sm">—</span>;
-  }
-
-  return (
-    <div className="space-y-1 max-w-xs">
-      {Object.entries(mergeFields).map(([key, value]) => {
-        // Handle address objects
-        if (typeof value === "object" && value !== null) {
-          const addr = value as Record<string, string>;
-          const addressStr = [addr.addr1, addr.city, addr.state, addr.zip]
-            .filter(Boolean)
-            .join(", ");
-          return (
-            <div key={key} className="text-xs">
-              <span className="font-medium">{key}:</span>{" "}
-              <span className="text-muted-foreground">{addressStr}</span>
-            </div>
-          );
-        }
-
-        // Handle string/number values
-        return (
-          <div key={key} className="text-xs">
-            <span className="font-medium">{key}:</span>{" "}
-            <span className="text-muted-foreground">{String(value)}</span>
-          </div>
-        );
-      })}
-    </div>
   );
 }
 
