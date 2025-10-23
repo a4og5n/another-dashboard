@@ -28,22 +28,6 @@ interface CampaignLocationsTableProps {
   campaignId: string;
 }
 
-/**
- * Format region display (combines region name and code if available)
- */
-function formatRegion(region?: string, regionCode?: string): string {
-  if (region && regionCode) {
-    return `${region} (${regionCode})`;
-  }
-  if (region) {
-    return region;
-  }
-  if (regionCode) {
-    return regionCode;
-  }
-  return "—";
-}
-
 export function CampaignLocationsTable({
   locationsData,
   currentPage,
@@ -88,6 +72,7 @@ export function CampaignLocationsTable({
                 <TableRow>
                   <TableHead>Country Code</TableHead>
                   <TableHead>Region</TableHead>
+                  <TableHead>Region Name</TableHead>
                   <TableHead className="text-right">Opens</TableHead>
                   <TableHead className="text-right">
                     Proxy Excluded Opens
@@ -111,7 +96,10 @@ export function CampaignLocationsTable({
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {formatRegion(location.region, location.region_name)}
+                      {location.region || "—"}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {location.region_name}
                     </TableCell>
                     <TableCell className="text-right">
                       {location.opens.toLocaleString()}
