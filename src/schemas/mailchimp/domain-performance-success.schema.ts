@@ -21,11 +21,11 @@ export const domainPerformanceItemSchema = z.object({
   clicks: z.number().min(0), // Total clicks from this domain
   unsubs: z.number().min(0), // Unsubscribes from this domain
   delivered: z.number().min(0), // Successfully delivered emails to this domain
-  emails_pct: z.number().min(0).max(100), // Percentage of total campaign emails to this domain
-  bounces_pct: z.number().min(0).max(100), // Bounce rate for this domain
-  opens_pct: z.number().min(0).max(100), // Open rate for this domain
-  clicks_pct: z.number().min(0).max(100), // Click rate for this domain
-  unsubs_pct: z.number().min(0).max(100), // Unsubscribe rate for this domain
+  emails_pct: z.number().min(0).max(1), // Decimal rate (0-1) of total campaign emails to this domain
+  bounces_pct: z.number().min(0).max(1), // Decimal bounce rate (0-1) for this domain
+  opens_pct: z.number().min(0).max(1), // Decimal open rate (0-1) for this domain
+  clicks_pct: z.number().min(0).max(1), // Decimal click rate (0-1) for this domain
+  unsubs_pct: z.number().min(0).max(1), // Decimal unsubscribe rate (0-1) for this domain
 });
 
 /**

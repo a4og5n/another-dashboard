@@ -62,7 +62,7 @@ export function DomainPerformanceContent({
                     <TableCell className="font-medium">
                       {domain.domain}
                       <div className="text-xs text-muted-foreground">
-                        {domain.emails_pct.toFixed(1)}% of campaign
+                        {(domain.emails_pct * 100).toFixed(1)}% of campaign
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -74,25 +74,25 @@ export function DomainPerformanceContent({
                     <TableCell className="text-right">
                       <div>{domain.bounces.toLocaleString()}</div>
                       <div className="text-xs text-muted-foreground">
-                        {domain.bounces_pct.toFixed(1)}% rate
+                        {(domain.bounces_pct * 100).toFixed(1)}% rate
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div>{domain.opens.toLocaleString()}</div>
                       <div className="text-xs text-muted-foreground">
-                        {domain.opens_pct.toFixed(1)}% rate
+                        {(domain.opens_pct * 100).toFixed(1)}% rate
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div>{domain.clicks.toLocaleString()}</div>
                       <div className="text-xs text-muted-foreground">
-                        {domain.clicks_pct.toFixed(1)}% rate
+                        {(domain.clicks_pct * 100).toFixed(1)}% rate
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div>{domain.unsubs.toLocaleString()}</div>
                       <div className="text-xs text-muted-foreground">
-                        {domain.unsubs_pct.toFixed(1)}% rate
+                        {(domain.unsubs_pct * 100).toFixed(1)}% rate
                       </div>
                     </TableCell>
                   </TableRow>
