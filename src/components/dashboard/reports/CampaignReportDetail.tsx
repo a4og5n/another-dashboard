@@ -13,6 +13,7 @@ import { TimeseriesCard } from "@/components/dashboard/reports/TimeseriesCard";
 import { ForwardsCard } from "@/components/dashboard/reports/ForwardsCard";
 import { OpensCard } from "@/components/dashboard/reports/OpensCard";
 import { ClicksCard } from "@/components/dashboard/reports/ClicksCard";
+import { AdviceCard } from "@/components/dashboard/reports/AdviceCard";
 import { IndustryStatsCard } from "@/components/dashboard/reports/IndustryStatsCard";
 import { EmailsSentCard } from "@/components/dashboard/reports/EmailsSentCard";
 import { DeliveryIssuesCard } from "@/components/dashboard/reports/DeliveryIssuesCard";
@@ -75,6 +76,7 @@ export function CampaignReportDetail({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <OpensCard opens={report.opens} campaignId={report.id} />
             <ClicksCard clicks={report.clicks} campaignId={report.id} />
+            <AdviceCard campaignId={report.id} />
           </div>
         </div>
 
