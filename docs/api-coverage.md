@@ -79,10 +79,9 @@ Campaign reporting and analytics endpoints.
 
 ### Domain Performance
 
-- ⭐ **List Domain Performance Stats** - `GET /reports/{campaign_id}/domain-performance`
+- ✅ **List Domain Performance Stats** - `GET /reports/{campaign_id}/domain-performance`
   - Route: `/mailchimp/reports/[id]/domain-performance`
   - Features: Email provider performance breakdown (Gmail, Outlook, etc.)
-  - **Priority 1:** High value analytics
 
 ### Ecommerce Product Activity
 
@@ -156,13 +155,13 @@ Audience list management endpoints.
   - Route: `/mailchimp/lists`
   - Features: Pagination, all audience lists
 
-- ✅ **Get List Info** - `GET /lists/{list_id}`
-  - Route: `/mailchimp/lists/[id]`
-  - Features: Detailed list information, stats
-
 - 🔒 **Add List** - `POST /lists`
   - Features: Create new audience list
   - **Priority 5:** Write operation (future)
+
+- ✅ **Get List Info** - `GET /lists/{list_id}`
+  - Route: `/mailchimp/lists/[id]`
+  - Features: Detailed list information, stats
 
 - 🔒 **Update Lists** - `PATCH /lists/{list_id}`
   - Features: Modify list settings
@@ -190,10 +189,9 @@ Audience list management endpoints.
 
 ### Activity
 
-- ⭐ **List Recent Activity** - `GET /lists/{list_id}/activity`
+- ✅ **List Recent Activity** - `GET /lists/{list_id}/activity`
   - Route: `/mailchimp/lists/[id]/activity`
-  - Features: Recent list activity timeline
-  - **Priority 1:** High value overview
+  - Features: Recent list activity timeline, pagination, daily metrics
 
 ### Clients
 
@@ -215,10 +213,9 @@ Audience list management endpoints.
 
 ### Growth History
 
-- ⭐ **List Growth History Data** - `GET /lists/{list_id}/growth-history`
+- ✅ **List Growth History Data** - `GET /lists/{list_id}/growth-history`
   - Route: `/mailchimp/lists/[id]/growth-history`
-  - Features: Historical growth data, charts
-  - **Priority 1:** Analytics visualization
+  - Features: Historical growth data, monthly metrics, pagination
 
 - 📋 **Get Growth History by Month** - `GET /lists/{list_id}/growth-history/{month}`
   - Route: `/mailchimp/lists/[id]/growth-history/[month]`
@@ -451,65 +448,205 @@ Health check endpoint.
 
 ---
 
+## Reporting API
+
+Facebook Ads, Landing Pages, and Survey reporting.
+
+### Facebook Ads
+
+- 📋 **List Facebook Ads Reports** - `GET /reporting/facebook-ads`
+  - Features: Facebook Ads campaign reporting
+  - **Priority 4:** Social media integration
+
+- 📋 **Get Facebook Ad Report** - `GET /reporting/facebook-ads/{outreach_id}`
+  - Features: Individual Facebook Ad report
+  - **Priority 4:** Low priority
+
+### Landing Pages
+
+- 📋 **List Landing Pages Reports** - `GET /reporting/landing-pages`
+  - Features: Landing page performance
+  - **Priority 3:** Conversion tracking
+
+- 📋 **Get Landing Page Report** - `GET /reporting/landing-pages/{outreach_id}`
+  - Features: Individual landing page report
+  - **Priority 3:** Drill-down details
+
+### Survey Question Answers
+
+- 📋 **Get Answers for Question** - `GET /reporting/surveys/{survey_id}/questions/{question_id}/answers`
+  - Features: Survey question responses
+  - **Priority 4:** Survey analytics
+
+### Survey Responses
+
+- 📋 **Get Survey Respondent List** - `GET /reporting/surveys/{survey_id}/responses`
+  - Features: Survey response data
+  - **Priority 4:** Survey analytics
+
+### Surveys
+
+- 📋 **Get Survey Report Summary** - `GET /reporting/surveys/{survey_id}`
+  - Features: Survey summary statistics
+  - **Priority 4:** Survey analytics
+
+---
+
+## Search API
+
+Search endpoints for campaigns and members.
+
+### Search Campaigns
+
+- 📋 **Search Campaigns** - `GET /search-campaigns`
+  - Features: Search across all campaigns
+  - **Priority 3:** Campaign discovery
+
+### Search Members
+
+- 📋 **Search Members** - `GET /search-members`
+  - Features: Search across all list members
+  - **Priority 2:** Member discovery
+
+---
+
+## Template Folders API
+
+Template organization endpoints.
+
+- 📋 **List Template Folders** - `GET /template-folders`
+  - Features: Template folder list
+  - **Priority 4:** Template management
+
+- 🔒 **Create Template Folder** - `POST /template-folders`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Template Folder** - `GET /template-folders/{folder_id}`
+  - Features: Template folder details
+  - **Priority 4:** Low priority
+
+- 🔒 **Update Template Folder** - `PATCH /template-folders/{folder_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Template Folder** - `DELETE /template-folders/{folder_id}`
+  - **Priority 5:** Write operation (future)
+
+---
+
+## Templates API
+
+Email template management endpoints.
+
+- 📋 **List Templates** - `GET /templates`
+  - Features: Template library
+  - **Priority 3:** Template management
+
+- 🔒 **Create Template** - `POST /templates`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Template Info** - `GET /templates/{template_id}`
+  - Features: Template details
+  - **Priority 4:** Low priority
+
+- 🔒 **Update Template** - `PATCH /templates/{template_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Template** - `DELETE /templates/{template_id}`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **View Default Content** - `GET /templates/{template_id}/default-content`
+  - Features: Template default content
+  - **Priority 4:** Low priority
+
+---
+
+## Verified Domains API
+
+Domain verification and management.
+
+- 📋 **List Verified Domains** - `GET /verified-domains`
+  - Features: Verified sending domains
+  - **Priority 3:** Deliverability tracking
+
+- 🔒 **Add Domain to Account** - `POST /verified-domains`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Domain Info** - `GET /verified-domains/{domain_name}`
+  - Features: Domain verification status
+  - **Priority 4:** Low priority
+
+- 🔒 **Delete Domain** - `DELETE /verified-domains/{domain_name}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Verify Domain** - `POST /verified-domains/{domain_name}/actions/verify`
+  - **Priority 5:** Write operation (future)
+
+---
+
 ## Implementation Stats
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 11 endpoints
-- ⭐ Priority 1 (Next): 3 endpoints (Domain Performance, List Activity, Growth History, List Members)
-- 📋 Priority 2-4: 40+ endpoints
-- 🔒 Write Operations: 30+ endpoints (future consideration)
+- ✅ Implemented: 14 endpoints
+- ⭐ Priority 1 (Next): 2 endpoints (List Members, Search Members)
+- ⭐ Priority 2: 1 endpoint (List Segments)
+- 📋 Priority 3-4: 60+ endpoints
+- 🔒 Write Operations: 40+ endpoints (future consideration)
 
-**Total Progress (Read-Only):** 11/54+ read endpoints (~20%)
+**Total Progress (Read-Only):** 14/77+ read endpoints (~18%)
 
 **Recent Implementations:**
 
+- List Growth History (monthly subscriber growth trends and metrics)
+- List Activity (daily activity timeline with engagement metrics)
+- Domain Performance (email provider performance breakdown)
 - Campaign Advice (performance recommendations with sentiment icons)
 - Campaign Locations (geographic engagement data)
 - Campaign Recipients/Sent To (recipient delivery status)
 - Campaign Email Activity (subscriber activity timeline)
 - Campaign Unsubscribes (unsubscribe tracking)
-- Campaign Clicks (click tracking per link)
 
 **Focus Areas:**
 
-1. **Current Sprint:** Complete high-value Reports endpoints (Domain Performance)
-2. **Next Sprint:** Lists API analytics (Activity, Growth History, Members)
-3. **Future:** Drill-down details, write operations, advanced features
+1. **Current Sprint:** Core list management (Members, Segments)
+2. **Next Sprint:** Search functionality, Member details
+3. **Future Sprint:** Templates, Reporting APIs, Advanced analytics
+4. **Long-term:** Drill-down details, write operations, advanced features
+
+**API Coverage by Section:**
+
+- Reports API: 12/28 endpoints (43%)
+- Lists API: 4/45 endpoints (9%)
+- Reporting API: 0/7 endpoints (0%)
+- Search API: 0/2 endpoints (0%)
+- Template Folders: 0/5 endpoints (0%)
+- Templates: 0/6 endpoints (0%)
+- Verified Domains: 0/5 endpoints (0%)
+- Ping API: 0/1 endpoint (0%)
 
 ---
 
 ## Recommended Next Implementation
 
-### 🎯 Top 3 Priority Endpoints:
+### 🎯 Top Priority Endpoints:
 
-**1. Domain Performance** (`GET /reports/{campaign_id}/domain-performance`) ⭐⭐⭐
+**1. List Members** (`GET /lists/{list_id}/members`) ⭐⭐⭐
 
-- **Value:** Shows which email providers perform best (Gmail vs Outlook vs Yahoo)
-- **Complexity:** Low (similar to locations endpoint)
-- **User Benefit:** Critical insight for email deliverability optimization
-- **Route:** `/mailchimp/reports/[id]/domain-performance`
-
-**2. List Activity** (`GET /lists/{list_id}/activity`) ⭐⭐⭐
-
-- **Value:** Recent activity timeline for list (subscribes, unsubscribes, profile updates)
-- **Complexity:** Medium (timeline display)
-- **User Benefit:** Quick overview of list health and engagement
-- **Route:** `/mailchimp/lists/[id]/activity`
-
-**3. List Growth History** (`GET /lists/{list_id}/growth-history`) ⭐⭐⭐
-
-- **Value:** Historical growth data with charts
-- **Complexity:** Medium (data visualization with charts)
-- **User Benefit:** Track audience growth trends over time
-- **Route:** `/mailchimp/lists/[id]/growth-history`
-
-**4. List Members** (`GET /lists/{list_id}/members`) ⭐⭐
-
-- **Value:** Core member management and search
-- **Complexity:** High (filtering, search, pagination)
-- **User Benefit:** Essential for audience management
+- **Value:** Core member management - browse, search, filter list members
+- **Complexity:** High (filtering, search, pagination, status management)
+- **User Benefit:** Essential for audience management and member lookup
 - **Route:** `/mailchimp/lists/[id]/members`
+- **Status:** Not yet implemented
+- **Why Important:** Foundation for member detail pages and segmentation
+
+**2. Search Members** (`GET /search-members`) ⭐⭐
+
+- **Value:** Global search across all list members
+- **Complexity:** Medium (search interface, result display)
+- **User Benefit:** Quick member lookup across all audiences
+- **Route:** `/mailchimp/search/members`
+- **Status:** Not yet implemented
+- **Why Useful:** Complements List Members for cross-list member discovery
 
 ---
 
@@ -572,5 +709,5 @@ pnpm pre-commit
 
 ---
 
-**Last Updated:** 2025-10-23
+**Last Updated:** 2025-10-23 (Comprehensive endpoint list added)
 **Maintained By:** Development team + AI assistants

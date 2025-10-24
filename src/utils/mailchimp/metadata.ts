@@ -21,6 +21,7 @@ import { reportLocationActivityPageParamsSchema } from "@/schemas/components/mai
 import { campaignAdvicePageParamsSchema } from "@/schemas/components/mailchimp/report-advice-page-params";
 import { domainPerformancePageParamsSchema } from "@/schemas/components/mailchimp/report-domain-performance-page-params";
 import { listActivityPageParamsSchema } from "@/schemas/components/mailchimp/list-activity-page-params";
+import { listGrowthHistoryPageParamsSchema } from "@/schemas/components/mailchimp/list-growth-history-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -483,6 +484,42 @@ export async function generateListActivityMetadata({
     openGraph: {
       title: `${list.name} - List Activity`,
       description: `Activity timeline for ${list.stats.member_count.toLocaleString()} members`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for list growth history pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the list growth history page
+ */
+export async function generateListGrowthHistoryMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = listGrowthHistoryPageParamsSchema.parse(rawParams);
+
+  // Fetch list data for metadata
+  const response = await mailchimpDAL.fetchList(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "List Growth History - Not Found",
+      description: "The requested list could not be found.",
+    };
+  }
+
+  const data = response.data as List;
+
+  return {
+    title: `${data.name} - Growth History`,
+    description: `Historical growth data for ${data.name} showing subscriber trends over time`,
+    openGraph: {
+      title: `${data.name} - Growth History`,
+      description: `Historical growth data for ${data.name} showing subscriber trends over time`,
       type: "website",
     },
   };

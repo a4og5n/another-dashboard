@@ -35,6 +35,8 @@ import { campaignAdviceSuccessSchema } from "@/schemas/mailchimp/reports/advice/
 import { domainPerformanceSuccessSchema } from "@/schemas/mailchimp/reports/domain-performance/success.schema";
 import { listActivityQueryParamsSchema } from "@/schemas/mailchimp/lists/activity/params.schema";
 import { listActivitySuccessSchema } from "@/schemas/mailchimp/lists/activity/success.schema";
+import { growthHistoryQueryParamsSchema } from "@/schemas/mailchimp/lists/growth-history/params.schema";
+import { growthHistorySuccessSchema } from "@/schemas/mailchimp/lists/growth-history/success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -258,6 +260,22 @@ export class MailchimpDAL {
       client.get<z.infer<typeof listActivitySuccessSchema>>(
         `/lists/${listId}/activity`,
         params,
+      ),
+    );
+  }
+
+  /**
+   * List Growth History
+   * GET /lists/{list_id}/growth-history
+   */
+  async fetchListGrowthHistory(
+    id: string,
+    params?: z.infer<typeof growthHistoryQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof growthHistorySuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof growthHistorySuccessSchema>>(
+        `/lists/${id}/growth-history`,
+        params as Record<string, unknown>,
       ),
     );
   }

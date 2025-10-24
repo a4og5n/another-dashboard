@@ -482,6 +482,45 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * List Growth History Page
+   */
+  "list-growth-history": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/lists/growth-history/params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/lists/growth-history/success.schema.ts",
+      apiError: "src/schemas/mailchimp/lists/growth-history/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/lists/[id]/growth-history",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/lists/{list_id}/growth-history",
+      method: "GET",
+      dalMethod: "fetchListGrowthHistory",
+    },
+    page: {
+      type: "nested-detail",
+      title: "List Growth History",
+      description: "Historical growth data showing list size over time",
+      features: [
+        "Dynamic routing",
+        "Monthly growth tracking",
+        "Subscriber trends",
+        "Pagination",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        parent: "list-detail",
+        label: "Growth History",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

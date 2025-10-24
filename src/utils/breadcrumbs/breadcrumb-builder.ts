@@ -319,6 +319,25 @@ export const bc = {
       href: `/mailchimp/lists/${id}/activity`,
     };
   },
+
+  /**
+   * List Growth History breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for list growth history
+   *
+   * @example
+   * ```tsx
+   * bc.listGrowthHistory("abc123")
+   * // Returns: { label: "Growth History", href: "/mailchimp/lists/${id}/growth-history" }
+   * ```
+   */
+  listGrowthHistory(id: string): BreadcrumbItem {
+    return {
+      label: "Growth History",
+      href: `/mailchimp/lists/${id}/growth-history`,
+    };
+  },
   // Helper Functions
   // ============================================================================
 
