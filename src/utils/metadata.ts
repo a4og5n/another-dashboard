@@ -53,6 +53,7 @@ export {
   generateCampaignOpensMetadata,
   generateCampaignAbuseReportsMetadata,
   generateListMembersMetadata,
+  generateMemberProfileMetadata,
 } from "@/utils/mailchimp/metadata";
 
 export { generateClickDetailsMetadata } from "@/utils/mailchimp/metadata";

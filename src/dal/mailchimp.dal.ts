@@ -308,6 +308,32 @@ export class MailchimpDAL {
       >(`/lists/${id}/members`, params),
     );
   }
+
+  /**
+   * Member Profile
+   * GET /lists/{list_id}/members/{subscriber_hash}
+   */
+  async fetchMemberInfo(
+    listId: string,
+    subscriberHash: string,
+    params?: z.infer<
+      typeof import("@/schemas/mailchimp/lists/member-info/params.schema").memberInfoQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/lists/member-info/success.schema").memberInfoSuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/lists/member-info/success.schema").memberInfoSuccessSchema
+        >
+      >(`/lists/${listId}/members/${subscriberHash}`, params),
+    );
+  }
 }
 
 /**

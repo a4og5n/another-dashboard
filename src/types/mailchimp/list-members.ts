@@ -5,6 +5,7 @@
  * @see src/schemas/mailchimp/lists/members/params.schema.ts
  * @see src/schemas/mailchimp/lists/members/success.schema.ts
  * @see src/schemas/mailchimp/lists/members/error.schema.ts
+ * @see src/schemas/mailchimp/common/list-member.schema.ts
  */
 
 import type { z } from "zod";
@@ -12,8 +13,8 @@ import type {
   listMembersPathParamsSchema,
   listMembersQueryParamsSchema,
 } from "@/schemas/mailchimp/lists/members/params.schema";
+import type { listMembersSuccessSchema } from "@/schemas/mailchimp/lists/members/success.schema";
 import type {
-  listMembersSuccessSchema,
   listMemberSchema,
   memberStatsSchema,
   memberLocationSchema,
@@ -21,7 +22,7 @@ import type {
   memberTagSchema,
   memberNoteSchema,
   lastNoteSchema,
-} from "@/schemas/mailchimp/lists/members/success.schema";
+} from "@/schemas/mailchimp/common/list-member.schema";
 import type { listMembersErrorSchema } from "@/schemas/mailchimp/lists/members/error.schema";
 
 /**
