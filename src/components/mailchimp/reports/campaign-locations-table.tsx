@@ -18,6 +18,7 @@ import {
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import type { LocationActivitySuccess } from "@/types/mailchimp/location-activity";
+import { createPaginationUrls } from "@/utils/pagination/url-generators";
 
 interface CampaignLocationsTableProps {
   locationsData: LocationActivitySuccess;
@@ -38,20 +39,11 @@ export function CampaignLocationsTable({
   const { locations, total_items } = locationsData;
   const totalPages = Math.ceil(total_items / pageSize);
 
-  // URL generation functions for pagination
-  const createPageUrl = (page: number) => {
-    const params = new URLSearchParams();
-    params.set("page", page.toString());
-    params.set("perPage", pageSize.toString());
-    return `${baseUrl}?${params.toString()}`;
-  };
-
-  const createPerPageUrl = (newPerPage: number) => {
-    const params = new URLSearchParams();
-    params.set("page", "1");
-    params.set("perPage", newPerPage.toString());
-    return `${baseUrl}?${params.toString()}`;
-  };
+  // URL generators for server-side pagination
+  const { createPageUrl, createPerPageUrl } = createPaginationUrls(
+    baseUrl,
+    pageSize,
+  );
 
   return (
     <div className="space-y-6">

@@ -17,8 +17,10 @@ import {
 } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
+import { TableEmptyState } from "@/components/ui/table-empty-state";
 import type { ListActivityResponse } from "@/types/mailchimp";
 import { formatDateShort } from "@/utils/format-date";
+import { createPaginationUrls } from "@/utils/pagination/url-generators";
 
 interface ListActivityContentProps {
   data: ListActivityResponse;
@@ -36,20 +38,11 @@ export function ListActivityContent({
   const { activity, total_items } = data;
   const baseUrl = `/mailchimp/lists/${listId}/activity`;
 
-  // URL generation functions
-  const createPageUrl = (page: number) => {
-    const params = new URLSearchParams();
-    params.set("page", page.toString());
-    params.set("perPage", pageSize.toString());
-    return `${baseUrl}?${params.toString()}`;
-  };
-
-  const createPerPageUrl = (newPerPage: number) => {
-    const params = new URLSearchParams();
-    params.set("page", "1");
-    params.set("perPage", newPerPage.toString());
-    return `${baseUrl}?${params.toString()}`;
-  };
+  // URL generators for server-side pagination
+  const { createPageUrl, createPerPageUrl } = createPaginationUrls(
+    baseUrl,
+    pageSize,
+  );
 
   const totalPages = Math.ceil(total_items / pageSize);
 
@@ -64,9 +57,7 @@ export function ListActivityContent({
         </CardHeader>
         <CardContent>
           {activity.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              No activity data available for this list.
-            </p>
+            <TableEmptyState message="No activity data available for this list." />
           ) : (
             <Table>
               <TableHeader>

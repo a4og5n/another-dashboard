@@ -3,7 +3,7 @@
  * Displays unsubscribed members in a table format
  *
  * Uses shadcn/ui Table component for consistency with reports list page
- * TODO: Add TanStack Table for sorting/filtering (see click-details-content.tsx)
+ * Server component with URL-based pagination
  */
 
 import Link from "next/link";
@@ -16,12 +16,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TableEmptyState } from "@/components/ui/table-empty-state";
 import type { UnsubscribesSuccess } from "@/types/mailchimp/unsubscribes";
 import { formatDateTimeSafe } from "@/utils/format-date";
 import {
   getVipBadge,
   getActiveStatusBadge,
 } from "@/components/ui/helpers/badge-utils";
+import { formatMergeFields } from "@/utils/mailchimp/merge-fields";
+import { Pagination } from "@/components/ui/pagination";
+import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
+import { createPaginationUrls } from "@/utils/pagination/url-generators";
 
 interface CampaignUnsubscribesTableProps {
   unsubscribesData: UnsubscribesSuccess;
@@ -32,51 +37,24 @@ interface CampaignUnsubscribesTableProps {
   campaignId: string;
 }
 
-/**
- * Format merge fields for display in table cell
- * Follows the same pattern as CampaignAbuseReportsTable
- */
-function formatMergeFields(
-  mergeFields?: Record<string, string | number | unknown>,
-) {
-  if (!mergeFields || Object.keys(mergeFields).length === 0) {
-    return <span className="text-muted-foreground text-sm">—</span>;
-  }
-
-  return (
-    <div className="space-y-1 max-w-xs">
-      {Object.entries(mergeFields).map(([key, value]) => {
-        // Handle address objects
-        if (typeof value === "object" && value !== null) {
-          const addr = value as Record<string, string>;
-          const addressStr = [addr.addr1, addr.city, addr.state, addr.zip]
-            .filter(Boolean)
-            .join(", ");
-          return (
-            <div key={key} className="text-xs">
-              <span className="font-medium">{key}:</span>{" "}
-              <span className="text-muted-foreground">{addressStr}</span>
-            </div>
-          );
-        }
-
-        // Handle string/number values
-        return (
-          <div key={key} className="text-xs">
-            <span className="font-medium">{key}:</span>{" "}
-            <span className="text-muted-foreground">{String(value)}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 export function CampaignUnsubscribesTable({
   unsubscribesData,
   campaignId,
+  currentPage,
+  pageSize,
+  perPageOptions,
+  baseUrl,
 }: CampaignUnsubscribesTableProps) {
   const { unsubscribes, total_items } = unsubscribesData;
+
+  // Calculate pagination
+  const totalPages = Math.ceil((total_items || 0) / pageSize);
+
+  // URL generators for server-side pagination
+  const { createPageUrl, createPerPageUrl } = createPaginationUrls(
+    baseUrl,
+    pageSize,
+  );
 
   return (
     <div className="space-y-6">
@@ -86,9 +64,7 @@ export function CampaignUnsubscribesTable({
         </CardHeader>
         <CardContent>
           {unsubscribes.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              No unsubscribes found for this campaign.
-            </p>
+            <TableEmptyState message="No unsubscribes found for this campaign." />
           ) : (
             <Table>
               <TableHeader>
@@ -145,15 +121,21 @@ export function CampaignUnsubscribesTable({
         </CardContent>
       </Card>
 
-      {/* TODO: Add pagination component when needed */}
+      {/* Pagination Controls */}
       {total_items > 10 && (
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-sm text-muted-foreground text-center">
-              TODO: Add pagination component (total: {total_items} members)
-            </p>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-between">
+          <PerPageSelector
+            value={pageSize}
+            options={perPageOptions}
+            createPerPageUrl={createPerPageUrl}
+            itemName="members per page"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            createPageUrl={createPageUrl}
+          />
+        </div>
       )}
     </div>
   );

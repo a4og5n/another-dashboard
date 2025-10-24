@@ -64,3 +64,22 @@ export function formatPercentageValue(
 export function formatValue(val: string | number): string {
   return typeof val === "number" ? val.toLocaleString() : val;
 }
+
+/**
+ * Format large numbers in compact form (K for thousands, M for millions)
+ * Used for displaying large counts in cards and UI elements where space is limited
+ *
+ * @param num The number to format
+ * @returns Compact formatted string (e.g., "1.5M", "12.3K", "42")
+ *
+ * @example
+ * formatCompactNumber(1500000) // "1.5M"
+ * formatCompactNumber(12300) // "12.3K"
+ * formatCompactNumber(999) // "999"
+ * formatCompactNumber(42) // "42"
+ */
+export function formatCompactNumber(num: number): string {
+  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
+  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
+  return num.toString();
+}

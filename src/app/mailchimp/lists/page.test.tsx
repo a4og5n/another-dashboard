@@ -37,7 +37,7 @@ vi.mock("@/components/dashboard/shared/dashboard-error", () => ({
 
 // Import the components we want to test
 import { ListStats } from "@/components/mailchimp/lists/list-stats";
-import { ClientListList } from "@/components/mailchimp/lists/client-list-list";
+import { ListOverview } from "@/components/mailchimp/lists/list-overview";
 import type { List } from "@/types/mailchimp/lists";
 import type { DashboardListStats as ListStatsType } from "@/types/mailchimp/lists";
 
@@ -196,9 +196,8 @@ const MockAudiencePage = () => (
       <ListStats stats={mockStats} />
 
       {/* Main Content */}
-      <ClientListList
-        lists={mockLists}
-        totalCount={2}
+      <ListOverview
+        data={{ lists: mockLists, total_items: 2 }}
         currentPage={1}
         pageSize={20}
       />
@@ -272,23 +271,23 @@ describe("Lists Page Integration", () => {
   });
 
   describe("Audience List Display", () => {
-    it("renders all audiences in grid layout", () => {
+    it("renders all audiences in table layout", () => {
       render(<MockAudiencePage />);
 
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
       expect(screen.getByText("Product Updates")).toBeInTheDocument();
 
-      // Check grid layout is applied
-      const gridContainer = document.querySelector(".grid-cols-1");
-      expect(gridContainer).toBeInTheDocument();
+      // Check table is rendered
+      const table = document.querySelector("table");
+      expect(table).toBeInTheDocument();
     });
 
-    it("displays audience cards with simplified information", () => {
+    it("displays audience table with list information", () => {
       render(<MockAudiencePage />);
 
-      // Should show essential info only
+      // Should show essential info in table format
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
-      expect(screen.getByText("1.3K")).toBeInTheDocument(); // Formatted member count
+      expect(screen.getByText("1,250")).toBeInTheDocument(); // Formatted member count with comma
       expect(screen.getByText("Public")).toBeInTheDocument(); // Visibility badge
 
       expect(screen.getByText("Product Updates")).toBeInTheDocument();
@@ -318,7 +317,7 @@ describe("Lists Page Integration", () => {
 
       // Check that audience data is properly displayed
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
-      expect(screen.getByText("1.3K")).toBeInTheDocument(); // member_count: 1250 -> 1.3K
+      expect(screen.getByText("1,250")).toBeInTheDocument(); // member_count: 1250 -> 1,250 (with comma)
       expect(screen.getByText("Public")).toBeInTheDocument(); // visibility: "pub" -> "Public"
     });
 
@@ -341,8 +340,8 @@ describe("Lists Page Integration", () => {
 
       // Should only show data available from basic audience list
       expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
-      expect(screen.getByText("1.3K")).toBeInTheDocument(); // Direct from API
-      expect(screen.getByText("2.1K")).toBeInTheDocument(); // Simple calculation
+      expect(screen.getByText("1,250")).toBeInTheDocument(); // Direct from API (formatted with comma)
+      expect(screen.getByText("2.1K")).toBeInTheDocument(); // Simple calculation (in stats)
 
       // Should not show data requiring additional API calls
       expect(screen.queryByText("Engagement Rate")).not.toBeInTheDocument();
@@ -387,9 +386,13 @@ describe("Lists Page Integration", () => {
     it("has proper page structure for screen readers", () => {
       render(<MockAudiencePage />);
 
-      expect(screen.getByRole("navigation")).toBeInTheDocument(); // Breadcrumb
-      expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument(); // Main heading
-      expect(screen.getAllByRole("article")).toHaveLength(2); // Audience cards
+      // Note: This test uses a mock page structure that differs from the actual implementation
+      // The actual page uses PageLayout + ListOverview (both tested separately)
+      expect(
+        screen.getByRole("heading", { name: /Lists/i }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Newsletter Subscribers")).toBeInTheDocument();
+      expect(screen.getByText("Product Updates")).toBeInTheDocument();
     });
   });
 
@@ -460,9 +463,8 @@ describe("Page Component Props Validation", () => {
     const statsComponent = <ListStats stats={mockStats} />;
 
     const audienceListComponent = (
-      <ClientListList
-        lists={mockLists}
-        totalCount={2}
+      <ListOverview
+        data={{ lists: mockLists, total_items: 2 }}
         currentPage={1}
         pageSize={20}
       />
