@@ -1,3 +1,8 @@
+/**
+ * Member Profile Error Boundary
+ * Handles errors on the member profile page with retry functionality
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -19,35 +24,36 @@ export default function Error({
     console.error("Member Profile Error:", error);
   }, [error]);
 
-  const handleRetry = () => {
+  const handleRetry = async () => {
     setIsRetrying(true);
-    // Reset error boundary
+    // Reset error boundary (this triggers re-render)
     reset();
-    // Reset state after a brief delay to show loading
-    setTimeout(() => setIsRetrying(false), 1000);
+    // Note: reset() will unmount this component on success,
+    // so we don't need to reset isRetrying state
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <Card className="border-red-200 bg-red-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-red-800">
-            <AlertCircle className="h-5 w-5" />
-            Something went wrong!
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <Card className="max-w-md mx-auto border-red-200 bg-red-50">
+        <CardHeader className="text-center">
+          <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-2" />
+          <CardTitle className="text-red-800">
+            Failed to Load Member Profile
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-red-700">
+          <p className="text-sm text-red-700 text-center">
             An unexpected error occurred while loading the member profile.
             Please try again.
           </p>
-          {error.message && (
+          {process.env.NODE_ENV === "development" && error.message && (
             <details className="text-xs text-red-600">
-              <summary className="cursor-pointer font-medium">
-                Error details
+              <summary className="cursor-pointer font-medium hover:text-red-800">
+                Error details (development only)
               </summary>
-              <pre className="mt-2 rounded bg-red-100 p-2 overflow-auto">
+              <pre className="mt-2 rounded bg-red-100 p-2 overflow-auto text-xs">
                 {error.message}
+                {error.digest && `\n\nDigest: ${error.digest}`}
               </pre>
             </details>
           )}
@@ -55,7 +61,7 @@ export default function Error({
             onClick={handleRetry}
             disabled={isRetrying}
             variant="default"
-            className="gap-2"
+            className="w-full gap-2"
           >
             <RefreshCw
               className={`h-4 w-4 ${isRetrying ? "animate-spin" : ""}`}
