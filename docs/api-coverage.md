@@ -366,10 +366,10 @@ Audience list management endpoints.
 - 🔒 **Add Member to List** - `POST /lists/{list_id}/members`
   - **Priority 5:** Write operation (future)
 
-- 📋 **Get Member Info** - `GET /lists/{list_id}/members/{subscriber_hash}`
+- ✅ **Get Member Info** - `GET /lists/{list_id}/members/{subscriber_hash}`
   - Route: `/mailchimp/lists/[id]/members/[subscriber_hash]`
-  - Features: Individual member details
-  - **Priority 2:** Member profile page
+  - Features: Complete member profile, subscription status, engagement statistics, tags, marketing permissions, location data
+  - Member rating display, VIP indicators, timeline view
 
 - 🔒 **Add or Update List Member** - `PUT /lists/{list_id}/members/{subscriber_hash}`
   - **Priority 5:** Write operation (future)
@@ -654,17 +654,18 @@ Domain verification and management.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 15 endpoints
-- ⭐ Priority 1 (Next): 2 endpoints (Get Member Info, List Segments)
+- ✅ Implemented: 16 endpoints
+- ⭐ Priority 1 (Next): 1 endpoint (List Segments)
 - ⭐ Priority 2: ~5 endpoints (Search members, member tags, notes, goals)
 - ⭐ Priority 3: ~23 endpoints (Member details, analytics, landing pages)
 - 📋 Priority 4: ~45 endpoints (surveys, templates, webhooks, drill-downs)
 - 🔒 Write Operations: ~50 endpoints (future consideration)
 
-**Total Progress (Read-Only):** 15/100+ read endpoints (~15%)
+**Total Progress (Read-Only):** 16/100+ read endpoints (~16%)
 
 **Recent Implementations:**
 
+- Get Member Info (complete member profile with engagement stats and timeline)
 - List Members (view and manage list members with filtering and engagement stats)
 - List Growth History (monthly subscriber growth trends and metrics)
 - List Activity (daily activity timeline with engagement metrics)
@@ -685,7 +686,7 @@ Domain verification and management.
 **API Coverage by Section:**
 
 - Reports API: 12/28 endpoints (43%)
-- Lists API: 5/45 endpoints (11%)
+- Lists API: 6/45 endpoints (13%)
 - Reporting API: 0/15 endpoints (0%)
 - Search API: 0/2 endpoints (0%)
 - Landing Pages: 0/8 endpoints (0%)

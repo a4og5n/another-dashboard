@@ -357,6 +357,25 @@ export const bc = {
       href: `/mailchimp/lists/${id}/members`,
     };
   },
+
+  /**
+   * Member Profile breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for member profile
+   *
+   * @example
+   * ```tsx
+   * bc.memberProfile("abc123")
+   * // Returns: { label: "Member Profile", href: "/mailchimp/lists/${id}/members/[subscriber_hash]" }
+   * ```
+   */
+  memberProfile(id: string): BreadcrumbItem {
+    return {
+      label: "Member Profile",
+      href: `/mailchimp/lists/${id}/members/[subscriber_hash]`,
+    };
+  },
   // Helper Functions
   // ============================================================================
 

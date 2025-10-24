@@ -561,6 +561,48 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Member Info Page
+   */
+  "member-info": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/lists/member-info/params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/lists/member-info/success.schema.ts",
+      apiError: "src/schemas/mailchimp/lists/member-info/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/lists/[id]/members/[subscriber_hash]",
+      params: ["id", "subscriber_hash"],
+    },
+    api: {
+      endpoint: "/lists/{list_id}/members/{subscriber_hash}",
+      method: "GET",
+      dalMethod: "fetchMemberInfo",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Member Profile",
+      description:
+        "Complete member profile with subscription details and engagement metrics",
+      features: [
+        "Dynamic routing",
+        "Member profile",
+        "Subscription status",
+        "Engagement statistics",
+        "Tags and interests",
+        "Marketing permissions",
+        "Location data",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        parent: "list-members",
+        label: "Member Profile",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

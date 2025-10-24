@@ -23,6 +23,7 @@ import { domainPerformancePageParamsSchema } from "@/schemas/components/mailchim
 import { listActivityPageParamsSchema } from "@/schemas/components/mailchimp/list-activity-page-params";
 import { listGrowthHistoryPageParamsSchema } from "@/schemas/components/mailchimp/list-growth-history-page-params";
 import { listPageParamsSchema } from "@/schemas/components/mailchimp/list-page-params";
+import { memberProfilePageParamsSchema } from "@/schemas/components/mailchimp/member-info-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -557,6 +558,43 @@ export async function generateListMembersMetadata({
     openGraph: {
       title: `${list.name} - Members`,
       description: "View and manage members in this list",
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for member profile pages
+ * @param params - Object containing the id and subscriber_hash
+ * @returns Next.js Metadata object for the member profile page
+ */
+export async function generateMemberProfileMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; subscriber_hash: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id, subscriber_hash } =
+    memberProfilePageParamsSchema.parse(rawParams);
+
+  // Fetch data for metadata
+  const response = await mailchimpDAL.fetchMemberInfo(id, subscriber_hash);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Member Profile - Not Found",
+      description: "The requested member profile could not be found.",
+    };
+  }
+
+  const member = response.data;
+
+  return {
+    title: `${member.email_address} - Member Profile`,
+    description: `View profile for ${member.email_address} - ${member.status} member`,
+    openGraph: {
+      title: `${member.email_address} - Member Profile`,
+      description: `View profile for ${member.email_address} - ${member.status} member`,
       type: "website",
     },
   };
