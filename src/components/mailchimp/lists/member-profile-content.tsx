@@ -7,7 +7,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { StatCard } from "@/components/ui/stat-card";
 import { StatsGridCard } from "@/components/ui/stats-grid-card";
 import { StarRating } from "@/components/ui/star-rating";
 import {
@@ -78,44 +77,6 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
           </div>
         </CardHeader>
       </Card>
-
-      {/* Key Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <p className="text-sm font-medium">Member Rating</p>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-2">
-              <StarRating rating={data.member_rating} size="md" />
-              <p className="text-xs text-muted-foreground">
-                {data.member_rating} out of 5 stars
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        <StatCard
-          label="Avg Open Rate"
-          value={formatPercentage(data.stats.avg_open_rate)}
-          icon={TrendingUp}
-          description="engagement"
-        />
-        <StatCard
-          label="Avg Click Rate"
-          value={formatPercentage(data.stats.avg_click_rate)}
-          icon={TrendingUp}
-          description="engagement"
-        />
-        {data.stats.ecommerce_data && (
-          <StatCard
-            label="Total Revenue"
-            value={`${data.stats.ecommerce_data.currency_code} ${data.stats.ecommerce_data.total_revenue.toLocaleString()}`}
-            icon={TrendingUp}
-            description={`${data.stats.ecommerce_data.number_of_orders} orders`}
-          />
-        )}
-      </div>
 
       {/* Member Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
