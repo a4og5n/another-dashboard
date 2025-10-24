@@ -17,6 +17,7 @@ import {
   Star,
   TrendingUp,
   Calendar,
+  Smartphone,
 } from "lucide-react";
 import type { MemberInfoResponse } from "@/types/mailchimp/member-info";
 import { formatDateTimeSafe } from "@/utils";
@@ -164,6 +165,44 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* SMS Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Smartphone className="h-5 w-5" />
+            SMS Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">
+                Phone Number
+              </span>
+              <p className="font-medium">{data.sms_phone_number || "N/A"}</p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">
+                Subscription Status
+              </span>
+              <p className="font-medium">
+                {data.sms_subscription_status || "N/A"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">
+                Last Updated
+              </span>
+              <p className="font-medium">
+                {data.sms_subscription_last_updated
+                  ? formatDateTimeSafe(data.sms_subscription_last_updated)
+                  : "N/A"}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tags */}
       {data.tags && data.tags.length > 0 && (
