@@ -68,7 +68,7 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 {data.status === "unsubscribed" && data.unsubscribe_reason && (
                   <div className="flex items-center gap-2 text-sm text-red-600 mt-2">
                     <span className="font-medium">
-                      Unsubscribed: {data.unsubscribe_reason}
+                      Reason: {data.unsubscribe_reason}
                     </span>
                   </div>
                 )}
@@ -105,15 +105,11 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Status</span>
-                <span className="font-medium">{data.status}</span>
-              </div>
-              <div className="flex justify-between">
                 <span className="text-muted-foreground">Email Type</span>
                 <span className="font-medium">{data.email_type || "N/A"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Member Since</span>
+                <span className="text-muted-foreground">Opt-in Date</span>
                 <span className="font-medium">
                   {data.timestamp_signup
                     ? formatDateTimeSafe(data.timestamp_signup)
