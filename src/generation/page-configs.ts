@@ -521,6 +521,46 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * List Members Page
+   */
+  "list-members": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/lists/members/params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/lists/members/success.schema.ts",
+      apiError: "src/schemas/mailchimp/lists/members/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/lists/[id]/members",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/lists/{list_id}/members",
+      method: "GET",
+      dalMethod: "fetchListMembers",
+    },
+    page: {
+      type: "nested-detail",
+      title: "List Members",
+      description: "View and manage members in this list",
+      features: [
+        "Dynamic routing",
+        "Pagination",
+        "Member filtering",
+        "Status tracking",
+        "VIP management",
+        "Engagement metrics",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        parent: "list-detail",
+        label: "Members",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

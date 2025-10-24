@@ -3,6 +3,7 @@ export * from "@/types/mailchimp/domain-performance";
 export * from "@/types/mailchimp/email-activity";
 export * from "@/types/mailchimp/growth-history";
 export * from "@/types/mailchimp/list-activity";
+export * from "@/types/mailchimp/list-members";
 export * from "@/types/mailchimp/lists";
 export * from "@/types/mailchimp/location-activity";
 export * from "@/types/mailchimp/oauth";

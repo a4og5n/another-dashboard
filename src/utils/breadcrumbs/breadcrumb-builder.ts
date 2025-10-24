@@ -338,6 +338,25 @@ export const bc = {
       href: `/mailchimp/lists/${id}/growth-history`,
     };
   },
+
+  /**
+   * List Members breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for list members
+   *
+   * @example
+   * ```tsx
+   * bc.listMembers("abc123")
+   * // Returns: { label: "Members", href: "/mailchimp/lists/${id}/members" }
+   * ```
+   */
+  listMembers(id: string): BreadcrumbItem {
+    return {
+      label: "Members",
+      href: `/mailchimp/lists/${id}/members`,
+    };
+  },
   // Helper Functions
   // ============================================================================
 
