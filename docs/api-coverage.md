@@ -12,6 +12,51 @@ This file tracks which Mailchimp API endpoints have been implemented in the Fich
 
 ---
 
+## File Manager API
+
+File storage and asset management endpoints.
+
+- 📋 **List Stored Files** - `GET /file-manager/files`
+  - Features: File library, asset management
+  - **Priority 4:** Asset management feature
+
+---
+
+## Landing Pages API
+
+Landing page creation and management endpoints.
+
+- 📋 **List Landing Pages** - `GET /landing-pages`
+  - Features: Landing page list
+  - **Priority 3:** Landing page management
+
+- 🔒 **Add Landing Page** - `POST /landing-pages`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Landing Page Info** - `GET /landing-pages/{page_id}`
+  - Features: Landing page details
+  - **Priority 3:** Landing page analytics
+
+- 🔒 **Update Landing Page** - `PATCH /landing-pages/{page_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Landing Page** - `DELETE /landing-pages/{page_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Publish Landing Page** - `POST /landing-pages/{page_id}/actions/publish`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Unpublish Landing Page** - `POST /landing-pages/{page_id}/actions/unpublish`
+  - **Priority 5:** Write operation (future)
+
+### Landing Page Content
+
+- 📋 **Get Landing Page Content** - `GET /landing-pages/{page_id}/content`
+  - Features: Landing page HTML content
+  - **Priority 4:** Content preview
+
+---
+
 ## Reports API
 
 Campaign reporting and analytics endpoints.
@@ -462,6 +507,10 @@ Facebook Ads, Landing Pages, and Survey reporting.
   - Features: Individual Facebook Ad report
   - **Priority 4:** Low priority
 
+- 📋 **List Facebook Ecommerce Report** - `GET /reporting/facebook-ads/{outreach_id}/ecommerce-product-activity`
+  - Features: Facebook Ads ecommerce product performance
+  - **Priority 4:** E-commerce integration
+
 ### Landing Pages
 
 - 📋 **List Landing Pages Reports** - `GET /reporting/landing-pages`
@@ -474,19 +523,37 @@ Facebook Ads, Landing Pages, and Survey reporting.
 
 ### Survey Question Answers
 
-- 📋 **Get Answers for Question** - `GET /reporting/surveys/{survey_id}/questions/{question_id}/answers`
+- 📋 **List Answers for Question** - `GET /reporting/surveys/{survey_id}/questions/{question_id}/answers`
   - Features: Survey question responses
+  - **Priority 4:** Survey analytics
+
+### Survey Questions
+
+- 📋 **List Survey Question Reports** - `GET /reporting/surveys/{survey_id}/questions`
+  - Features: Survey questions list
+  - **Priority 4:** Survey analytics
+
+- 📋 **Get Survey Question Report** - `GET /reporting/surveys/{survey_id}/questions/{question_id}`
+  - Features: Individual question report
   - **Priority 4:** Survey analytics
 
 ### Survey Responses
 
-- 📋 **Get Survey Respondent List** - `GET /reporting/surveys/{survey_id}/responses`
+- 📋 **List Survey Responses** - `GET /reporting/surveys/{survey_id}/responses`
   - Features: Survey response data
+  - **Priority 4:** Survey analytics
+
+- 📋 **Get Survey Response** - `GET /reporting/surveys/{survey_id}/responses/{response_id}`
+  - Features: Individual survey response
   - **Priority 4:** Survey analytics
 
 ### Surveys
 
-- 📋 **Get Survey Report Summary** - `GET /reporting/surveys/{survey_id}`
+- 📋 **List Survey Reports** - `GET /reporting/surveys`
+  - Features: All survey reports
+  - **Priority 4:** Survey analytics
+
+- 📋 **Get Survey Report** - `GET /reporting/surveys/{survey_id}`
   - Features: Survey summary statistics
   - **Priority 4:** Survey analytics
 
@@ -588,12 +655,13 @@ Domain verification and management.
 **Current Coverage (Read-Only Endpoints):**
 
 - ✅ Implemented: 14 endpoints
-- ⭐ Priority 1 (Next): 2 endpoints (List Members, Search Members)
-- ⭐ Priority 2: 1 endpoint (List Segments)
-- 📋 Priority 3-4: 60+ endpoints
-- 🔒 Write Operations: 40+ endpoints (future consideration)
+- ⭐ Priority 1 (Next): 1 endpoint (List Members)
+- ⭐ Priority 2: 2 endpoints (Get Member Info, List Segments)
+- ⭐ Priority 3: ~25 endpoints (Member details, analytics, segments, landing pages)
+- 📋 Priority 4: ~45 endpoints (surveys, templates, webhooks, drill-downs)
+- 🔒 Write Operations: ~50 endpoints (future consideration)
 
-**Total Progress (Read-Only):** 14/77+ read endpoints (~18%)
+**Total Progress (Read-Only):** 14/100+ read endpoints (~14%)
 
 **Recent Implementations:**
 
@@ -608,20 +676,22 @@ Domain verification and management.
 
 **Focus Areas:**
 
-1. **Current Sprint:** Core list management (Members, Segments)
-2. **Next Sprint:** Search functionality, Member details
-3. **Future Sprint:** Templates, Reporting APIs, Advanced analytics
+1. **Current Sprint:** Core list management (Members, Member Details, Segments)
+2. **Next Sprint:** Search functionality, Landing pages, List analytics
+3. **Future Sprint:** Templates, Survey reporting, Advanced member features
 4. **Long-term:** Drill-down details, write operations, advanced features
 
 **API Coverage by Section:**
 
 - Reports API: 12/28 endpoints (43%)
 - Lists API: 4/45 endpoints (9%)
-- Reporting API: 0/7 endpoints (0%)
+- Reporting API: 0/15 endpoints (0%)
 - Search API: 0/2 endpoints (0%)
+- Landing Pages: 0/8 endpoints (0%)
 - Template Folders: 0/5 endpoints (0%)
 - Templates: 0/6 endpoints (0%)
 - Verified Domains: 0/5 endpoints (0%)
+- File Manager: 0/1 endpoint (0%)
 - Ping API: 0/1 endpoint (0%)
 
 ---
@@ -637,16 +707,44 @@ Domain verification and management.
 - **User Benefit:** Essential for audience management and member lookup
 - **Route:** `/mailchimp/lists/[id]/members`
 - **Status:** Not yet implemented
-- **Why Important:** Foundation for member detail pages and segmentation
+- **Why Important:** Foundation for 10+ member-related endpoints (details, activity, tags, notes, goals)
+- **Unlocks:** Member detail pages, member activity tracking, tag management, segmentation
 
-**2. Search Members** (`GET /search-members`) ⭐⭐
+**After List Members - Logical Progression:**
 
-- **Value:** Global search across all list members
-- **Complexity:** Medium (search interface, result display)
-- **User Benefit:** Quick member lookup across all audiences
-- **Route:** `/mailchimp/search/members`
-- **Status:** Not yet implemented
-- **Why Useful:** Complements List Members for cross-list member discovery
+**2. Get Member Info** (`GET /lists/{list_id}/members/{subscriber_hash}`) ⭐⭐
+
+- **Value:** Member detail page with full profile
+- **Complexity:** Medium (profile display, merge fields, status history)
+- **Depends On:** List Members (drill-down from members table)
+- **Route:** `/mailchimp/lists/[id]/members/[subscriber_hash]`
+
+**3. List Segments** (`GET /lists/{list_id}/segments`) ⭐⭐
+
+- **Value:** Audience segmentation for targeted campaigns
+- **Complexity:** Medium (segment list, member counts, conditions)
+- **Route:** `/mailchimp/lists/[id]/segments`
+- **Why Important:** Core feature for audience targeting
+
+**Alternative Considerations:**
+
+**Landing Pages** (`GET /landing-pages`) - NEW from endpoint review
+
+- Interesting feature for conversion tracking
+- Lower priority than member management
+- Can be implemented after Lists section is complete
+
+**Search Members** (`GET /search-members`)
+
+- Global search across all lists
+- Complements List Members but not essential first
+- Better after member detail pages exist
+
+**List Locations** (`GET /lists/{list_id}/locations`)
+
+- Geographic distribution analytics
+- Similar pattern to campaign locations (already implemented)
+- Could be quick win for analytics
 
 ---
 
@@ -709,5 +807,25 @@ pnpm pre-commit
 
 ---
 
-**Last Updated:** 2025-10-23 (Comprehensive endpoint list added)
+**Last Updated:** 2025-01-23 (Added File Manager, Landing Pages, expanded Reporting API sections)
 **Maintained By:** Development team + AI assistants
+
+---
+
+## Summary of New Endpoints Added
+
+This update adds comprehensive coverage of previously undocumented Mailchimp API endpoints:
+
+**New Sections:**
+
+- **File Manager API** - 1 endpoint for asset management
+- **Landing Pages API** - 8 endpoints for landing page creation and management
+
+**Expanded Sections:**
+
+- **Reporting API** - Added 8 survey-related endpoints (questions, responses, answers)
+- **Facebook Ads** - Added ecommerce product activity endpoint
+
+**Total New Endpoints Documented:** +18 endpoints
+
+These additions bring the total tracked API surface to **115+ endpoints** (65 read-only, 50+ write operations).
