@@ -5,8 +5,6 @@
  * @route /mailchimp/lists/[id]/members/[subscriber_hash]
  */
 
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StatCard } from "@/components/ui/stat-card";
@@ -21,7 +19,7 @@ import {
   Calendar,
 } from "lucide-react";
 import type { MemberInfoResponse } from "@/types/mailchimp/member-info";
-import { formatDateTimeSafe } from "@/utils/format-date";
+import { formatDateTimeSafe } from "@/utils";
 
 interface MemberProfileContentProps {
   data: MemberInfoResponse;
