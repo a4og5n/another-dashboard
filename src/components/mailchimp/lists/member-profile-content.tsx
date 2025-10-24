@@ -21,7 +21,7 @@ import {
   Calendar,
 } from "lucide-react";
 import type { MemberInfoResponse } from "@/types/mailchimp/member-info";
-import { formatDateTimeSafe } from "@/utils";
+import { formatDateTimeSafe } from "@/utils/format-date";
 
 interface MemberProfileContentProps {
   data: MemberInfoResponse;
