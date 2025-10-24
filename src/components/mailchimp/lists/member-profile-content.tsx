@@ -65,6 +65,13 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <span>ID: {data.unique_email_id}</span>
                 </div>
+                {data.status === "unsubscribed" && data.unsubscribe_reason && (
+                  <div className="flex items-center gap-2 text-sm text-red-600 mt-2">
+                    <span className="font-medium">
+                      Unsubscribed: {data.unsubscribe_reason}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -101,16 +108,6 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 <span className="text-muted-foreground">Status</span>
                 <span className="font-medium">{data.status}</span>
               </div>
-              {data.status === "unsubscribed" && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Unsubscribe Reason
-                  </span>
-                  <span className="font-medium">
-                    {data.unsubscribe_reason || "N/A"}
-                  </span>
-                </div>
-              )}
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Email Type</span>
                 <span className="font-medium">{data.email_type || "N/A"}</span>
