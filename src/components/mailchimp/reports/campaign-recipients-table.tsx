@@ -24,6 +24,9 @@ import {
   getActiveStatusBadge,
 } from "@/components/ui/helpers/badge-utils";
 import { formatMergeFields } from "@/utils/mailchimp/merge-fields";
+import { Pagination } from "@/components/ui/pagination";
+import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
+import { createPaginationUrls } from "@/utils/pagination/url-generators";
 
 interface CampaignRecipientsTableProps {
   recipientsData: SentToSuccess;
@@ -89,8 +92,21 @@ function getAbSplitBadge(group?: string) {
 export function CampaignRecipientsTable({
   recipientsData,
   campaignId,
+  currentPage,
+  pageSize,
+  perPageOptions,
+  baseUrl,
 }: CampaignRecipientsTableProps) {
   const { sent_to, total_items } = recipientsData;
+
+  // Calculate pagination
+  const totalPages = Math.ceil((total_items || 0) / pageSize);
+
+  // URL generators for server-side pagination
+  const { createPageUrl, createPerPageUrl } = createPaginationUrls(
+    baseUrl,
+    pageSize,
+  );
 
   return (
     <div className="space-y-6">
@@ -171,16 +187,21 @@ export function CampaignRecipientsTable({
         </CardContent>
       </Card>
 
-      {/* TODO: Add pagination component when needed */}
+      {/* Pagination Controls */}
       {total_items > 10 && (
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-sm text-muted-foreground text-center">
-              TODO: Add pagination component (total:{" "}
-              {total_items.toLocaleString()} recipients)
-            </p>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-between">
+          <PerPageSelector
+            value={pageSize}
+            options={perPageOptions}
+            createPerPageUrl={createPerPageUrl}
+            itemName="recipients per page"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            createPageUrl={createPageUrl}
+          />
+        </div>
       )}
     </div>
   );

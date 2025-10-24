@@ -3,7 +3,7 @@
  * Displays unsubscribed members in a table format
  *
  * Uses shadcn/ui Table component for consistency with reports list page
- * TODO: Add TanStack Table for sorting/filtering (see click-details-content.tsx)
+ * Server component with URL-based pagination
  */
 
 import Link from "next/link";
@@ -24,6 +24,9 @@ import {
   getActiveStatusBadge,
 } from "@/components/ui/helpers/badge-utils";
 import { formatMergeFields } from "@/utils/mailchimp/merge-fields";
+import { Pagination } from "@/components/ui/pagination";
+import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
+import { createPaginationUrls } from "@/utils/pagination/url-generators";
 
 interface CampaignUnsubscribesTableProps {
   unsubscribesData: UnsubscribesSuccess;
@@ -37,8 +40,21 @@ interface CampaignUnsubscribesTableProps {
 export function CampaignUnsubscribesTable({
   unsubscribesData,
   campaignId,
+  currentPage,
+  pageSize,
+  perPageOptions,
+  baseUrl,
 }: CampaignUnsubscribesTableProps) {
   const { unsubscribes, total_items } = unsubscribesData;
+
+  // Calculate pagination
+  const totalPages = Math.ceil((total_items || 0) / pageSize);
+
+  // URL generators for server-side pagination
+  const { createPageUrl, createPerPageUrl } = createPaginationUrls(
+    baseUrl,
+    pageSize,
+  );
 
   return (
     <div className="space-y-6">
@@ -105,15 +121,21 @@ export function CampaignUnsubscribesTable({
         </CardContent>
       </Card>
 
-      {/* TODO: Add pagination component when needed */}
+      {/* Pagination Controls */}
       {total_items > 10 && (
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-sm text-muted-foreground text-center">
-              TODO: Add pagination component (total: {total_items} members)
-            </p>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-between">
+          <PerPageSelector
+            value={pageSize}
+            options={perPageOptions}
+            createPerPageUrl={createPerPageUrl}
+            itemName="members per page"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            createPageUrl={createPageUrl}
+          />
+        </div>
       )}
     </div>
   );
