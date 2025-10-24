@@ -222,15 +222,15 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
       </Card>
 
       {/* Tags */}
-      {data.tags && data.tags.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Tag className="h-5 w-5" />
-              Tags ({data.tags.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Tag className="h-5 w-5" />
+            Tags ({data.tags?.length || 0})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.tags && data.tags.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {data.tags.map((tag) => (
                 <Badge key={tag.id} variant="secondary">
@@ -238,9 +238,11 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 </Badge>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <p className="text-sm text-muted-foreground">No tags assigned</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Location & Additional Info */}
       {data.location && (
