@@ -130,7 +130,8 @@ function updateMetadataExports(functionName: string): void {
   }
 
   // Add to export list
-  const exportPattern = /export \{([^}]+)\} from "\.\/mailchimp\/metadata";/;
+  const exportPattern =
+    /export \{([^}]+)\} from ["'][@./]+utils\/mailchimp\/metadata["'];/;
   const match = content.match(exportPattern);
 
   if (match) {
@@ -139,12 +140,12 @@ function updateMetadataExports(functionName: string): void {
     const newExports = `${currentExports},\n  ${functionName}`;
     const updatedContent = content.replace(
       exportPattern,
-      `export {\n  ${newExports}\n} from "./mailchimp/metadata";`,
+      `export {\n  ${newExports}\n} from "@/utils/mailchimp/metadata";`,
     );
     writeFileSync(exportPath, updatedContent, "utf-8");
   } else {
     // Create new export
-    const newExport = `\nexport {\n  ${functionName}\n} from "./mailchimp/metadata";\n`;
+    const newExport = `\nexport {\n  ${functionName}\n} from "@/utils/mailchimp/metadata";\n`;
     writeFileSync(exportPath, content + newExport, "utf-8");
   }
 }
@@ -197,7 +198,7 @@ export function writeMetadataHelper(
   } catch (_error) {
     warnings.push("Failed to update utils/metadata.ts exports");
     warnings.push(
-      `Manually add: export { ${functionName} } from "./mailchimp/metadata";`,
+      `Manually add: export { ${functionName} } from "@/utils/mailchimp/metadata";`,
     );
   }
 

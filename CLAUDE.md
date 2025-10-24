@@ -122,6 +122,16 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 
 This project uses an **AI-assisted, automated workflow** for implementing new Mailchimp dashboard pages with **mandatory user checkpoints**.
 
+### ⚠️ CRITICAL: Always Start on a Feature Branch
+
+**BEFORE starting ANY feature work:**
+
+1. Check current branch: `git branch --show-current`
+2. If on `main` or `master`, **STOP** and create a feature branch first
+3. Never commit directly to `main`
+
+This is enforced in Phase 0 below.
+
 ### Overview
 
 **Phase 0: Git Setup** 🔧 (Automatic - Create branch)
@@ -1174,6 +1184,70 @@ import { formatDateTimeSafe } from "@/utils/mailchimp/date";
 
 **See:** `docs/ai-workflow-learnings.md` for complete formatting guide
 
+### Adding Navigation Links to Detail Pages
+
+When implementing a new detail page (like Growth History), add navigation links from parent pages following this standard pattern:
+
+**Pattern** (used in campaign/list detail pages):
+
+1. **Location**: Add to the relevant tab (Stats, Details, Overview, etc.)
+2. **Component**: Use `CardFooter` with border styling
+3. **Button**: `Button` with `asChild`, `variant="outline"`, `size="sm"`
+4. **Link**: Next.js `Link` component
+5. **Icon**: Include `ArrowRight` icon for consistency
+
+**Example Implementation:**
+
+```tsx
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
+<Card>
+  <CardHeader>
+    <CardTitle>Engagement Metrics</CardTitle>
+  </CardHeader>
+  <CardContent>
+    {/* Metrics content */}
+    <div className="space-y-3">
+      <div className="flex justify-between">
+        <span className="text-muted-foreground">Open Rate:</span>
+        <span className="font-semibold">{openRate.toFixed(1)}%</span>
+      </div>
+      {/* More metrics... */}
+    </div>
+  </CardContent>
+  <CardFooter className="border-t pt-4">
+    <Button asChild variant="outline" size="sm" className="w-full">
+      <Link href={`/mailchimp/lists/${list.id}/growth-history`}>
+        View Growth History
+        <ArrowRight className="ml-2 h-4 w-4" />
+      </Link>
+    </Button>
+  </CardFooter>
+</Card>;
+```
+
+**Key Points:**
+
+- `CardFooter` always has `className="border-t pt-4"` for visual separation
+- Button uses `variant="outline"` for secondary action appearance
+- Button uses `size="sm"` and `className="w-full"` for consistent sizing
+- Arrow icon uses `className="ml-2 h-4 w-4"` for spacing and size
+- Text should be action-oriented: "View X", "Explore Y", "See Z"
+
+**Reference Implementation:**
+
+- Campaign Reports: `src/components/dashboard/reports/CampaignReportDetail.tsx`
+- List Details: `src/components/mailchimp/lists/list-detail.tsx:369-381`
+
 ### Table Implementation Patterns
 
 #### Pagination Placement (CRITICAL)
@@ -1468,6 +1542,85 @@ grep -r "schemaName" src/schemas/mailchimp/common/
 # Find similar endpoint schemas (for pattern reference)
 ls src/schemas/mailchimp/*-success.schema.ts
 ```
+
+#### Schema Creation Checklist (Critical Rules)
+
+**Parameter Schemas (`*-params.schema.ts`):**
+
+1. ✅ **Export path and query schemas separately** (do NOT use `.merge()`)
+
+   ```typescript
+   // ✅ Good
+   export const pathParamsSchema = z.object({ id: z.string().min(1) }).strict();
+   export const queryParamsSchema = z
+     .object({ count: z.coerce.number() })
+     .strict();
+
+   // ❌ Bad - DO NOT merge
+   export const paramsSchema = pathParamsSchema.merge(queryParamsSchema);
+   ```
+
+2. ✅ **Always add `.strict()` with comment**
+
+   ```typescript
+   .strict(); // Reject unknown properties for input validation
+   ```
+
+3. ✅ **ID fields MUST use `.min(1)` to prevent empty strings**
+
+   ```typescript
+   campaign_id: z.string().min(1), // Campaign ID
+   list_id: z.string().min(1), // List ID
+   ```
+
+4. ✅ **Use const arrays for enums**
+
+   ```typescript
+   export const SORT_FIELD = "month" as const;
+   export const SORT_DIRECTIONS = ["ASC", "DESC"] as const;
+
+   sort_field: z.literal(SORT_FIELD).optional(),
+   sort_dir: z.enum(SORT_DIRECTIONS).optional(),
+   ```
+
+**Zod 4 Best Practices:**
+
+- ✅ **Optional with default:** Use `.default(value)` alone
+  ```typescript
+  count: z.coerce.number().min(1).max(1000).default(10), // NOT .default(10).optional()
+  ```
+- ✅ **Optional without default:** Use `.optional()` alone
+  ```typescript
+  fields: z.string().optional(),
+  ```
+- ❌ **NEVER use `.default().optional()`** (redundant - `.default()` makes it optional automatically)
+
+**Success Schemas (`*-success.schema.ts`):**
+
+1. ✅ **All ID fields MUST use `.min(1)`**
+
+   ```typescript
+   list_id: z.string().min(1), // List ID
+   campaign_id: z.string().min(1), // Campaign ID
+   email_id: z.string().min(1), // Email ID
+   ```
+
+2. ✅ **Compare with similar endpoints** to match flat vs nested patterns
+   - Check if other endpoints for same resource use nested objects or flat structure
+
+3. ✅ **Check `common/` directory** for reusable schemas before inlining
+   - `linkSchema`, `errorSchema`, `campaignIdPathParamsSchema`, etc.
+
+4. ✅ **If duplicating schemas**, create GitHub issue for future refactoring
+   - Add TODO comment with issue number
+
+**Deprecated Fields:**
+
+- Use inline comments (not TypeScript `@deprecated` JSDoc):
+  ```typescript
+  existing: z.number().int().min(0), // @deprecated - Always returns 0, do not use
+  imports: z.number().int().min(0), // @deprecated - Always returns 0, do not use
+  ```
 
 #### Schema File Structure Standards
 
