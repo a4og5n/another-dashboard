@@ -123,6 +123,16 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 <span className="text-muted-foreground">Language</span>
                 <span className="font-medium">{data.language || "N/A"}</span>
               </div>
+              {data.status === "unsubscribed" && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">
+                    Unsubscribe Reason
+                  </span>
+                  <span className="font-medium">
+                    {data.unsubscribe_reason || "N/A"}
+                  </span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -175,7 +185,7 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-1">
               <span className="text-sm text-muted-foreground">
                 Phone Number
@@ -197,6 +207,18 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
               <p className="font-medium">
                 {data.sms_subscription_last_updated
                   ? formatDateTimeSafe(data.sms_subscription_last_updated)
+                  : "N/A"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">
+                One-to-One Messaging
+              </span>
+              <p className="font-medium">
+                {data.consents_to_one_to_one_messaging !== undefined
+                  ? data.consents_to_one_to_one_messaging
+                    ? "Yes"
+                    : "No"
                   : "N/A"}
               </p>
             </div>
