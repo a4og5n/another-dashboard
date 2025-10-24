@@ -7,7 +7,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { StatsGridCard } from "@/components/ui/stats-grid-card";
 import { StarRating } from "@/components/ui/star-rating";
 import {
   Mail,
@@ -328,49 +327,65 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <StatsGridCard
-              title="Geographic Information"
-              stats={[
-                {
-                  label: "Country Code",
-                  value: data.location.country_code || "N/A",
-                },
-                {
-                  label: "Region",
-                  value: data.location.region || "N/A",
-                },
-                { label: "Timezone", value: data.location.timezone || "N/A" },
-                {
-                  label: "Latitude",
-                  value: data.location.latitude?.toString() || "N/A",
-                },
-                {
-                  label: "Longitude",
-                  value: data.location.longitude?.toString() || "N/A",
-                },
-                {
-                  label: "GMT Offset",
-                  value: data.location.gmtoff?.toString() || "N/A",
-                },
-                {
-                  label: "DST Offset",
-                  value: data.location.dstoff?.toString() || "N/A",
-                },
-                {
-                  label: "IP Signup",
-                  value: data.ip_signup || "N/A",
-                },
-                {
-                  label: "IP Opt",
-                  value: data.ip_opt || "N/A",
-                },
-              ]}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">
+                  Country Code
+                </span>
+                <p className="font-medium">
+                  {data.location.country_code || "N/A"}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">Region</span>
+                <p className="font-medium">{data.location.region || "N/A"}</p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">Timezone</span>
+                <p className="font-medium">{data.location.timezone || "N/A"}</p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">Latitude</span>
+                <p className="font-medium">
+                  {data.location.latitude?.toString() || "N/A"}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">Longitude</span>
+                <p className="font-medium">
+                  {data.location.longitude?.toString() || "N/A"}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">
+                  GMT Offset
+                </span>
+                <p className="font-medium">
+                  {data.location.gmtoff?.toString() || "N/A"}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">
+                  DST Offset
+                </span>
+                <p className="font-medium">
+                  {data.location.dstoff?.toString() || "N/A"}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">IP Signup</span>
+                <p className="font-medium">{data.ip_signup || "N/A"}</p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">IP Opt</span>
+                <p className="font-medium">{data.ip_opt || "N/A"}</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Timestamps */}
+      {/* Timeline */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -379,29 +394,34 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <StatsGridCard
-            title="Important Dates"
-            stats={[
-              {
-                label: "Signup Date",
-                value: data.timestamp_signup
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Signup Date</span>
+              <p className="font-medium">
+                {data.timestamp_signup
                   ? formatDateTimeSafe(data.timestamp_signup)
-                  : "N/A",
-              },
-              {
-                label: "Opt-in Date",
-                value: data.timestamp_opt
+                  : "N/A"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">Opt-in Date</span>
+              <p className="font-medium">
+                {data.timestamp_opt
                   ? formatDateTimeSafe(data.timestamp_opt)
-                  : "N/A",
-              },
-              {
-                label: "Last Changed",
-                value: data.last_changed
+                  : "N/A"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm text-muted-foreground">
+                Last Changed
+              </span>
+              <p className="font-medium">
+                {data.last_changed
                   ? formatDateTimeSafe(data.last_changed)
-                  : "N/A",
-              },
-            ]}
-          />
+                  : "N/A"}
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
