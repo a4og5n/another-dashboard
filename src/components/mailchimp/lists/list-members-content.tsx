@@ -6,6 +6,7 @@
  * Shows member details: email, status, rating, VIP status, engagement stats
  */
 
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -120,9 +121,12 @@ export function ListMembersContent({
                   <TableRow key={`${member.id}-${index}`}>
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="font-medium">
+                        <Link
+                          href={`/mailchimp/lists/${listId}/members/${member.id}`}
+                          className="font-medium text-primary hover:underline"
+                        >
                           {member.email_address}
-                        </div>
+                        </Link>
                         {member.full_name && (
                           <div className="text-sm text-muted-foreground">
                             {member.full_name}
