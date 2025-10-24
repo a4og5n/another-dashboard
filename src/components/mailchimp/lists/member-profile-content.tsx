@@ -244,22 +244,71 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
         </CardContent>
       </Card>
 
-      {/* Location & Additional Info */}
+      {/* Source */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Source
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="font-medium">{data.source || "N/A"}</p>
+        </CardContent>
+      </Card>
+
+      {/* Marketing Permissions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Tag className="h-5 w-5" />
+            Marketing Permissions ({data.marketing_permissions?.length || 0})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.marketing_permissions &&
+          data.marketing_permissions.length > 0 ? (
+            <div className="space-y-3">
+              {data.marketing_permissions.map((permission) => (
+                <div
+                  key={permission.marketing_permission_id}
+                  className="flex items-center justify-between border-b pb-2 last:border-b-0"
+                >
+                  <span className="text-sm">{permission.text}</span>
+                  <Badge variant={permission.enabled ? "default" : "secondary"}>
+                    {permission.enabled ? "Enabled" : "Disabled"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No marketing permissions
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Location */}
       {data.location && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="h-5 w-5" />
-              Location & Additional Info
+              Location
             </CardTitle>
           </CardHeader>
           <CardContent>
             <StatsGridCard
-              title="Location & IP Information"
+              title="Geographic Information"
               stats={[
                 {
-                  label: "Country",
+                  label: "Country Code",
                   value: data.location.country_code || "N/A",
+                },
+                {
+                  label: "Region",
+                  value: data.location.region || "N/A",
                 },
                 { label: "Timezone", value: data.location.timezone || "N/A" },
                 {
@@ -269,6 +318,14 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 {
                   label: "Longitude",
                   value: data.location.longitude?.toString() || "N/A",
+                },
+                {
+                  label: "GMT Offset",
+                  value: data.location.gmtoff?.toString() || "N/A",
+                },
+                {
+                  label: "DST Offset",
+                  value: data.location.dstoff?.toString() || "N/A",
                 },
                 {
                   label: "IP Signup",
