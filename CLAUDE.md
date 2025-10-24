@@ -136,11 +136,11 @@ This is enforced in Phase 0 below.
 
 **Phase 0: Git Setup** 🔧 (Automatic - Create branch)
 **Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
-**Phase 1.5: Commit Phase 1** ✅ (Automatic - After user approval)
-**Phase 2: Page Generation** 🚀 (Automatic - After commit)
-**Phase 2.5: Commit Phase 2** ✅ (Automatic LOCAL commit only - After validation)
+**Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval)
+**Phase 2.5: Single Atomic Commit** ✅ (Automatic LOCAL commit - After validation)
 **Phase 2.75: User Review & Testing** ⏸️ (STOP POINT - User testing required)
 **Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
+**Phase 4: Post-Merge Cleanup** 🧹 (Automatic - After PR merged)
 
 ### Phase 0: Git Setup (Automatic)
 
@@ -226,50 +226,111 @@ Before presenting schemas for review:
 - [ ] ✅ Told user: "These schemas need verification with real API response during testing"
 - [ ] ✅ User aware they must test with real data to verify schema
 
-### Phase 1.5: Commit Schemas (MANDATORY - Automatic)
+### Commit Strategy: Option A vs Option B
 
-**⚠️ CRITICAL: This step is MANDATORY and must happen automatically**
+After user approves schemas, choose ONE of these commit strategies:
 
-**Trigger**: User says "approved", "looks good", "Review finished. Begin the next phase", or any approval signal
+#### ✅ Option A - Single Atomic Commit (RECOMMENDED - Default)
 
-**AI MUST do this BEFORE proceeding to Phase 2:**
+**Pattern**: Complete Phase 2 fully, then commit everything together.
 
-1. **Stage schema files only** (no other files):
+**When user approves schemas**, AI responds:
 
-   ```bash
-   git add src/schemas/mailchimp/*{endpoint}*
-   ```
+> "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
 
-2. **Commit with standard message**:
+**After Phase 2 complete and validation passes**, make ONE commit:
 
-   ```bash
-   git commit -m "feat: add {Endpoint Name} schemas (Phase 1)
+```bash
+git add .
+git commit -m "feat: implement {Endpoint Name} (Phase 1 & 2 complete)
 
-   Created Zod schemas for {endpoint description}:
-   - {endpoint}-params.schema.ts
-   - {endpoint}-success.schema.ts
-   - {endpoint}-error.schema.ts
+Implements comprehensive {feature description} following AI-first workflow.
 
-   Source: {API documentation URL or "User-provided actual API structure"}"
-   ```
+**Phase 1: Schema Creation & Review**
+- Created Zod schemas for {Endpoint} API endpoint
+- Params schema: {key validation patterns}
+- Success schema: {key data structures}
+- {Special validations: IP addresses, currency codes, etc.}
 
-3. **Verify commit succeeded**:
+**Phase 2: Page Generation & Implementation**
+- Added PageConfig to registry (src/generation/page-configs.ts:XXX-YYY)
+- Generated infrastructure using page generator
+- Created TypeScript types (src/types/mailchimp/{endpoint}.ts)
+- Implemented {ComponentName} component
+- Built complete page.tsx with proper error handling
 
-   ```bash
-   git log -1 --oneline
-   ```
+**Infrastructure Updates:**
+- Updated DAL method with proper schemas
+- Added breadcrumb builder function
+- Created metadata helper
+- Updated API coverage documentation
 
-4. **Notify user and proceed**:
-   > "✅ Schemas committed ({commit hash}). Proceeding to Phase 2..."
+**Validation:**
+- ✅ Type-check: passed
+- ✅ Lint: passed
+- ✅ Format: passed
+- ✅ Tests: {count} passed"
+```
 
-**DO NOT skip this step. DO NOT proceed to Phase 2 without committing. DO NOT wait for user to request commit.**
+**Pros**:
 
-**Why this matters:**
+- ✅ Atomic feature delivery (all or nothing)
+- ✅ Easier PR review (complete context in one place)
+- ✅ No broken intermediate states
+- ✅ Pre-commit hooks validate everything together
+- ✅ Clean revert (entire feature removed)
 
-- Separates schema validation from implementation in git history
-- Allows easy rollback of just schemas if needed
-- Makes code review easier with smaller, focused commits
-- Follows documented workflow exactly
+**Cons**:
+
+- ⚠️ Larger commits (~1000 lines, but still reviewable)
+- ⚠️ Can't cherry-pick just schemas (rare need)
+
+**When to use**: Default for all feature implementations
+
+#### Option B - Separate Schema Commit (Alternative)
+
+**Pattern**: Commit schemas immediately after approval, then commit implementation separately.
+
+**When user approves schemas**, AI immediately commits:
+
+```bash
+git add src/schemas/mailchimp/*{endpoint}*
+git commit -m "feat: add {Endpoint Name} schemas (Phase 1)
+
+Created Zod schemas for {endpoint description}:
+- {endpoint}-params.schema.ts
+- {endpoint}-success.schema.ts
+- {endpoint}-error.schema.ts
+
+Source: {API documentation URL}"
+```
+
+Then notifies user: "✅ Schemas committed. Proceeding to Phase 2..."
+
+**After Phase 2 complete**, commit implementation:
+
+```bash
+git add .
+git commit -m "feat: implement {Endpoint Name} page (Phase 2)"
+```
+
+**Pros**:
+
+- ✅ Granular history (clear phase separation)
+- ✅ Can cherry-pick schemas to other branches
+
+**Cons**:
+
+- ⚠️ Phase 1 commit isn't independently useful
+- ⚠️ Extra workflow step
+- ⚠️ More commits to manage
+- ⚠️ Potential for broken state between commits
+
+**When to use**: Only if team/user specifically requires phase separation
+
+---
+
+**DEFAULT: Use Option A unless user requests Option B**
 
 ### Phase 2: Page Generation (After Approval)
 
@@ -346,117 +407,88 @@ Once schemas are approved, the AI follows these steps:
 
 15. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
 
-### Phase 2.5: Commit Phase 2 Implementation (LOCAL ONLY - Granular Strategy)
+### Phase 2.5: Single Atomic Commit (LOCAL ONLY)
 
 **⚠️ CRITICAL: Commit to LOCAL branch only - DO NOT push to origin**
 
-**After each major step in Phase 2, create focused commits for better code review:**
-
-#### Commit Strategy: Break Into 5-7 Small Commits
-
-**1. After generating infrastructure files:**
-
-```bash
-git add src/app/mailchimp/{path}/ src/generation/page-configs.ts
-git commit -m "chore: generate {Endpoint} page infrastructure
-
-- Added PageConfig to page-configs.ts
-- Generated page.tsx, loading.tsx, not-found.tsx
-- Created UI params schema"
-```
-
-**2. After creating types:**
-
-```bash
-git add src/types/mailchimp/{endpoint}.ts src/types/mailchimp/index.ts
-git commit -m "feat: add {Endpoint} TypeScript types
-
-- Inferred types from Zod schemas
-- Exported from types/mailchimp/index.ts"
-```
-
-**3. After implementing display components:**
-
-```bash
-git add src/components/mailchimp/**/*{endpoint}* src/skeletons/mailchimp/*
-git commit -m "feat: implement {Endpoint} display components
-
-- Created {ComponentName} with proper table/display pattern
-- Added {SkeletonName} for loading states
-- Exported from component index"
-```
-
-**4. After updating DAL:**
-
-```bash
-git add src/dal/mailchimp.dal.ts
-git commit -m "feat: add fetch{Endpoint} to DAL
-
-- Proper schema validation
-- Type-safe API response handling"
-```
-
-**5. After adding utilities (metadata, breadcrumbs):**
-
-```bash
-git add src/utils/mailchimp/metadata.ts src/utils/metadata.ts src/utils/breadcrumbs/
-git commit -m "feat: add {Endpoint} metadata and navigation
-
-- Added generate{Endpoint}Metadata helper
-- Created breadcrumb builder function
-- Re-exported from utils/metadata.ts"
-```
-
-**6. After fixing validation errors:**
+**After ALL Phase 2 steps complete and validation passes:**
 
 ```bash
 git add .
-git commit -m "chore: fix validation errors and finalize
+git commit -m "feat: implement {Endpoint Name} (Phase 1 & 2 complete)
 
-- Fixed type errors
-- Corrected path aliases
-- All validation passing"
+Implements comprehensive {feature description} following AI-first workflow.
+
+**Phase 1: Schema Creation & Review**
+- Created Zod schemas for {Endpoint} API endpoint
+- Params schema: {list key validation patterns used}
+- Success schema: {list key data structures}
+- {List special validations: IP addresses, ISO 8601 timestamps, currency codes, etc.}
+
+**Phase 2: Page Generation & Implementation**
+- Added PageConfig to registry (src/generation/page-configs.ts:{line}-{line})
+- Generated infrastructure using page generator
+- Created TypeScript types (src/types/mailchimp/{endpoint}.ts)
+- Implemented {SkeletonName} skeleton component
+- Built complete page.tsx with proper error handling
+- Created {ComponentName} table/display component with:
+  - {List key features: Server-side pagination, badges, formatting, etc.}
+
+**Infrastructure Updates:**
+- Updated DAL method with proper schemas (src/dal/mailchimp.dal.ts:{line}-{line})
+- Added breadcrumb builder function (bc.{functionName})
+- Created metadata helper (generate{Endpoint}Metadata)
+- Updated API coverage documentation ({X}/{Y} endpoints, {Z}%)
+
+**Files Created:**
+- {List all new files}
+
+**Validation:**
+- ✅ Type-check: passed
+- ✅ Lint: passed
+- ✅ Format: passed
+- ✅ Tests: {count} passed
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
-**7. Final commit (if needed for additional polish):**
-
-```bash
-git add docs/api-coverage.md
-git commit -m "docs: mark {Endpoint} as complete in api-coverage.md"
-```
-
-#### After All Commits Complete
+#### After Commit Complete
 
 **⏸️ STOP and present to user:**
 
-> "✅ Phase 2 implementation complete - 6 commits on local branch
+> "✅ Phase 2 implementation complete - 1 atomic commit on local branch
 >
-> **Commits created:**
+> **Commit:** `{short-hash} - feat: implement {Endpoint Name} (Phase 1 & 2 complete)`
 >
-> 1. {hash} - chore: generate infrastructure
-> 2. {hash} - feat: add types
-> 3. {hash} - feat: implement components
-> 4. {hash} - feat: add DAL method
-> 5. {hash} - feat: add utilities
-> 6. {hash} - chore: fix validation
+> **Changes:**
 >
-> **Ready for your review and testing**
+> - {count} files created, {count} modified
+> - {total} lines added
 >
-> Files: {count} created, {count} modified
+> **Validation Results:**
+>
+> - ✅ Type-check: passed
+> - ✅ Lint: passed
+> - ✅ Format: passed
+> - ✅ Tests: {count} passed
 >
 > ⚠️ PR has NOT been created yet - please review and test first
 >
-> Next: Phase 2.75 (your review & testing)"
+> **Next:** Phase 2.75 (your review & testing)
+>
+> When ready to push: Say 'ready to push' or 'create PR'"
 
-**Why granular commits:**
+**Why single atomic commit:**
 
-- Each commit is reviewable in 5-10 minutes
-- Easy to see what changed in each step
-- Better for code review and debugging
-- Can cherry-pick specific features if needed
-- Clear progression through implementation
+- ✅ Complete feature in one reviewable unit
+- ✅ Atomic delivery (all or nothing)
+- ✅ No broken intermediate states
+- ✅ Clean revert if needed
+- ✅ Matches deployment model (features as units)
 
-**DO NOT push to origin. DO NOT create PR. DO NOT proceed to Phase 3.**
+**DO NOT push to origin. DO NOT create PR. DO NOT proceed to Phase 3 without explicit user approval.**
 
 ### Phase 2.75: User Review & Testing Loop ⏸️ (REQUIRED CHECKPOINT)
 
@@ -562,16 +594,66 @@ git commit -m "docs: mark {Endpoint} as complete in api-coverage.md"
 3. Presents PR URL: "✅ PR created: {URL}"
 4. Waits for user to merge and confirm
 
-### Post-Merge Cleanup (Automatic)
+### Phase 4: Post-Merge Cleanup (Automatic)
 
-**AFTER user confirms "PR merged" (or similar), AI automatically:**
+**Trigger**: User says "PR merged", "merged and deleted remote", "merge complete", or similar confirmation
 
-1. Checks out main: `git checkout main`
-2. Pulls latest changes: `git pull origin main`
-3. Deletes feature branch: `git branch -d {branch-name}`
-4. Notifies user: "✅ Cleanup complete. On main branch, ready for next feature!"
+**AI automatically executes cleanup:**
 
-**DO NOT** wait for user to request cleanup.
+```bash
+git checkout main && git pull origin main && git branch -d {branch-name}
+```
+
+**Then notifies user:**
+
+> "✅ Cleanup complete
+>
+> - Switched to main branch
+> - Pulled latest changes (fast-forward: {old-hash}..{new-hash})
+> - Deleted local branch: {branch-name}
+>
+> Ready for next feature!"
+
+**Important**:
+
+- DO NOT wait for user to request cleanup
+- Only run after user explicitly confirms merge
+- Verify branch deletion succeeded
+
+### Enhancement Commits Pattern
+
+**When user requests small improvements AFTER main feature is merged:**
+
+Make separate focused commits (< 20 lines ideal):
+
+```bash
+# Example: User requests "make emails clickable for future detail page"
+git add src/components/mailchimp/lists/list-members-content.tsx
+git commit -m "feat: make member emails clickable links to detail pages
+
+Prepares for future Member Info implementation by converting email
+addresses in the members table to clickable links that navigate to
+/lists/{list_id}/members/{subscriber_hash}.
+
+Changes:
+- Added Link component to list-members-content.tsx
+- Email addresses now link to member detail pages
+- Applied primary color and hover underline styling
+
+Related to future endpoint: GET /lists/{list_id}/members/{subscriber_hash}
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+**Guidelines**:
+
+- Separate commit when user explicitly requests enhancement
+- Include "Related to" or "Prepares for" context
+- Reference future work in commit message
+- Keep focused and small
+- Create new PR if needed
 
 ### What Gets Generated Automatically
 
@@ -1614,6 +1696,43 @@ ls src/schemas/mailchimp/*-success.schema.ts
 4. ✅ **If duplicating schemas**, create GitHub issue for future refactoring
    - Add TODO comment with issue number
 
+**Advanced Validation Patterns:**
+
+From List Members implementation (October 2025):
+
+```typescript
+// ISO 8601 datetime with timezone offset
+since_timestamp_opt: z.iso.datetime({ offset: true }).optional();
+
+// IP address (IPv4 or IPv6)
+ip_signup: z.union([z.ipv4(), z.ipv6()]).optional();
+
+// ISO 4217 currency code (3 uppercase letters)
+currency_code: z.string().length(3).toUpperCase();
+
+// Boolean from query param (requires coercion)
+vip_only: z.coerce.boolean().optional();
+
+// Extracted enum constants (reusable)
+export const MEMBER_STATUS_FILTER = [
+  "subscribed",
+  "unsubscribed",
+  "cleaned",
+  "pending",
+  "transactional",
+  "archived",
+] as const;
+status: z.enum(MEMBER_STATUS_FILTER).optional();
+```
+
+**Schema validation checklist:**
+
+- ✅ Use `z.iso.datetime({ offset: true })` for timestamps with timezone
+- ✅ Use `z.union([z.ipv4(), z.ipv6()])` for IP addresses
+- ✅ Use `.length(3).toUpperCase()` for ISO 4217 currency codes
+- ✅ Use `z.coerce.boolean()` for boolean query parameters
+- ✅ Extract enums to constants for reusability and type safety
+
 **Deprecated Fields:**
 
 - Use inline comments (not TypeScript `@deprecated` JSDoc):
@@ -1831,6 +1950,110 @@ export function MyTable({ data, currentPage, pageSize, totalItems }: Props) {
 - Enforced by architectural tests
 
 **Patterns:** Atomic design, shadcn/ui base, JSDoc comments
+
+### UI Component Patterns
+
+#### Star Rating Display
+
+**When to use**: Member ratings, reviews, quality scores (0-5 scale)
+
+```typescript
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star
+          key={index}
+          className={`h-3 w-3 ${
+            index < rating
+              ? "fill-yellow-400 text-yellow-400"
+              : "fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+**Key points**:
+
+- 5-star maximum (industry standard)
+- Dark mode support with conditional classes
+- Small size (`h-3 w-3`) for inline display
+- Yellow fill for active stars, gray for inactive
+
+#### Badge Variant Mapping
+
+**Problem**: shadcn/ui Badge only has 4 variants, but you have 6+ statuses
+
+**Solution**: Map multiple statuses to available variants
+
+```typescript
+function getStatusVariant(
+  status: string,
+): "default" | "secondary" | "destructive" | "outline" {
+  switch (status) {
+    case "subscribed":
+      return "default"; // Positive/active
+    case "unsubscribed":
+      return "destructive"; // Negative/error
+    case "cleaned":
+      return "secondary"; // Neutral/inactive
+    case "pending":
+      return "outline"; // Pending/transitional
+    case "transactional":
+      return "outline";
+    case "archived":
+      return "secondary";
+    default:
+      return "default";
+  }
+}
+```
+
+**Mapping strategy**:
+
+- **default**: Positive/active states (subscribed, success, active)
+- **destructive**: Negative/error states (unsubscribed, failed, error)
+- **secondary**: Neutral/inactive states (cleaned, archived, disabled)
+- **outline**: Pending/transitional states (pending, transactional, processing)
+
+#### Clickable Primary Identifier with Subtext
+
+**When to use**: Table cells with primary identifier + optional secondary info
+
+```typescript
+<TableCell>
+  <div className="space-y-1">
+    <Link
+      href={`/mailchimp/lists/${listId}/members/${member.id}`}
+      className="font-medium text-primary hover:underline"
+    >
+      {member.email_address}
+    </Link>
+    {member.full_name && (
+      <div className="text-sm text-muted-foreground">
+        {member.full_name}
+      </div>
+    )}
+  </div>
+</TableCell>
+```
+
+**Key points**:
+
+- Primary identifier is clickable link
+- `text-primary` for brand color consistency
+- `hover:underline` for clear affordance
+- Secondary info in smaller, muted text
+- Conditional rendering of optional fields
+
+**Examples**:
+
+- Email + Name (list members)
+- Campaign ID + Title (reports)
+- List ID + Description (lists)
 
 ### Mailchimp Fetch Client Architecture
 
