@@ -111,8 +111,8 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Opt-in Date</span>
                 <span className="font-medium">
-                  {data.timestamp_signup
-                    ? formatDateTimeSafe(data.timestamp_signup)
+                  {data.timestamp_opt
+                    ? formatDateTimeSafe(data.timestamp_opt)
                     : "N/A"}
                 </span>
               </div>
