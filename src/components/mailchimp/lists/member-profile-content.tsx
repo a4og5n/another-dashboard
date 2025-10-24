@@ -56,8 +56,14 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 <Mail className="h-5 w-5" />
                 {data.email_address}
               </CardTitle>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>ID: {data.unique_email_id}</span>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">{data.full_name || "N/A"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>ID: {data.unique_email_id}</span>
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
