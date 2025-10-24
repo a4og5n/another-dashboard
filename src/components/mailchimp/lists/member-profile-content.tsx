@@ -249,6 +249,71 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
         </CardContent>
       </Card>
 
+      {/* Merge Fields */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Tag className="h-5 w-5" />
+            Merge Fields ({Object.keys(data.merge_fields || {}).length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.merge_fields && Object.keys(data.merge_fields).length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(data.merge_fields).map(([key, value]) => (
+                <div key={key} className="space-y-1">
+                  <span className="text-sm text-muted-foreground font-mono">
+                    {key}
+                  </span>
+                  <p className="font-medium text-sm">
+                    {typeof value === "object"
+                      ? JSON.stringify(value, null, 2)
+                      : value || "N/A"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No merge fields configured
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Interests */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Star className="h-5 w-5" />
+            Interests ({Object.keys(data.interests || {}).length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.interests && Object.keys(data.interests).length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(data.interests).map(
+                ([interestId, subscribed]) => (
+                  <div
+                    key={interestId}
+                    className="flex items-center justify-between border-b pb-2 last:border-b-0"
+                  >
+                    <span className="text-sm font-mono">{interestId}</span>
+                    <Badge variant={subscribed ? "default" : "secondary"}>
+                      {subscribed ? "Subscribed" : "Not Subscribed"}
+                    </Badge>
+                  </div>
+                ),
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No interests configured
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Tags */}
       <Card>
         <CardHeader>
