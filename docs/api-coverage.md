@@ -79,10 +79,9 @@ Campaign reporting and analytics endpoints.
 
 ### Domain Performance
 
-- ⭐ **List Domain Performance Stats** - `GET /reports/{campaign_id}/domain-performance`
+- ✅ **List Domain Performance Stats** - `GET /reports/{campaign_id}/domain-performance`
   - Route: `/mailchimp/reports/[id]/domain-performance`
   - Features: Email provider performance breakdown (Gmail, Outlook, etc.)
-  - **Priority 1:** High value analytics
 
 ### Ecommerce Product Activity
 
@@ -190,10 +189,9 @@ Audience list management endpoints.
 
 ### Activity
 
-- ⭐ **List Recent Activity** - `GET /lists/{list_id}/activity`
+- ✅ **List Recent Activity** - `GET /lists/{list_id}/activity`
   - Route: `/mailchimp/lists/[id]/activity`
-  - Features: Recent list activity timeline
-  - **Priority 1:** High value overview
+  - Features: Recent list activity timeline, pagination, daily metrics
 
 ### Clients
 
@@ -590,34 +588,35 @@ Domain verification and management.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 11 endpoints
-- ⭐ Priority 1 (Next): 3 endpoints (Domain Performance, List Activity, Growth History)
+- ✅ Implemented: 13 endpoints
+- ⭐ Priority 1 (Next): 1 endpoint (Growth History)
 - ⭐ Priority 2: 3 endpoints (List Members, Search Members, List Segments)
 - 📋 Priority 3-4: 60+ endpoints
 - 🔒 Write Operations: 40+ endpoints (future consideration)
 
-**Total Progress (Read-Only):** 11/77+ read endpoints (~14%)
+**Total Progress (Read-Only):** 13/77+ read endpoints (~17%)
 
 **Recent Implementations:**
 
+- List Activity (daily activity timeline with engagement metrics)
+- Domain Performance (email provider performance breakdown)
 - Campaign Advice (performance recommendations with sentiment icons)
 - Campaign Locations (geographic engagement data)
 - Campaign Recipients/Sent To (recipient delivery status)
 - Campaign Email Activity (subscriber activity timeline)
 - Campaign Unsubscribes (unsubscribe tracking)
-- Campaign Clicks (click tracking per link)
 
 **Focus Areas:**
 
-1. **Current Sprint:** Complete high-value Reports endpoints (Domain Performance)
-2. **Next Sprint:** Lists API analytics (Activity, Growth History, Members)
-3. **Future Sprint:** Search, Templates, Reporting
+1. **Current Sprint:** Complete Lists API analytics (Growth History)
+2. **Next Sprint:** Core list management (Members, Segments)
+3. **Future Sprint:** Search functionality, Templates, Reporting APIs
 4. **Long-term:** Drill-down details, write operations, advanced features
 
 **API Coverage by Section:**
 
-- Reports API: 11/28 endpoints (39%)
-- Lists API: 2/45 endpoints (4%)
+- Reports API: 12/28 endpoints (43%)
+- Lists API: 3/45 endpoints (7%)
 - Reporting API: 0/7 endpoints (0%)
 - Search API: 0/2 endpoints (0%)
 - Template Folders: 0/5 endpoints (0%)
@@ -629,35 +628,34 @@ Domain verification and management.
 
 ## Recommended Next Implementation
 
-### 🎯 Top 3 Priority Endpoints:
+### 🎯 Top Priority Endpoints:
 
-**1. Domain Performance** (`GET /reports/{campaign_id}/domain-performance`) ⭐⭐⭐
+**1. List Growth History** (`GET /lists/{list_id}/growth-history`) ⭐⭐⭐
 
-- **Value:** Shows which email providers perform best (Gmail vs Outlook vs Yahoo)
-- **Complexity:** Low (similar to locations endpoint)
-- **User Benefit:** Critical insight for email deliverability optimization
-- **Route:** `/mailchimp/reports/[id]/domain-performance`
-
-**2. List Activity** (`GET /lists/{list_id}/activity`) ⭐⭐⭐
-
-- **Value:** Recent activity timeline for list (subscribes, unsubscribes, profile updates)
-- **Complexity:** Medium (timeline display)
-- **User Benefit:** Quick overview of list health and engagement
-- **Route:** `/mailchimp/lists/[id]/activity`
-
-**3. List Growth History** (`GET /lists/{list_id}/growth-history`) ⭐⭐⭐
-
-- **Value:** Historical growth data with charts
-- **Complexity:** Medium (data visualization with charts)
-- **User Benefit:** Track audience growth trends over time
+- **Value:** Historical growth data showing list size over time
+- **Complexity:** Medium (data visualization with charts recommended)
+- **User Benefit:** Track audience growth trends, identify growth/decline patterns
 - **Route:** `/mailchimp/lists/[id]/growth-history`
+- **Status:** Not yet implemented
+- **Why Next:** Natural progression after List Activity, completes analytics suite
 
-**4. List Members** (`GET /lists/{list_id}/members`) ⭐⭐
+**2. List Members** (`GET /lists/{list_id}/members`) ⭐⭐
 
-- **Value:** Core member management and search
-- **Complexity:** High (filtering, search, pagination)
-- **User Benefit:** Essential for audience management
+- **Value:** Core member management - browse, search, filter list members
+- **Complexity:** High (filtering, search, pagination, status management)
+- **User Benefit:** Essential for audience management and member lookup
 - **Route:** `/mailchimp/lists/[id]/members`
+- **Status:** Not yet implemented
+- **Why Important:** Foundation for member detail pages and segmentation
+
+**3. Search Members** (`GET /search-members`) ⭐⭐
+
+- **Value:** Global search across all list members
+- **Complexity:** Medium (search interface, result display)
+- **User Benefit:** Quick member lookup across all audiences
+- **Route:** `/mailchimp/search/members`
+- **Status:** Not yet implemented
+- **Why Useful:** Complements List Members for cross-list member discovery
 
 ---
 
