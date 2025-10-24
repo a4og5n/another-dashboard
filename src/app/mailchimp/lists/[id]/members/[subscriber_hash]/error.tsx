@@ -26,6 +26,8 @@ export default function Error({
 
   const handleRetry = async () => {
     setIsRetrying(true);
+    // Small delay to ensure UI updates before reset
+    await new Promise((resolve) => setTimeout(resolve, 300));
     // Reset error boundary (this triggers re-render)
     reset();
     // Note: reset() will unmount this component on success,
