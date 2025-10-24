@@ -213,10 +213,9 @@ Audience list management endpoints.
 
 ### Growth History
 
-- ⭐ **List Growth History Data** - `GET /lists/{list_id}/growth-history`
+- ✅ **List Growth History Data** - `GET /lists/{list_id}/growth-history`
   - Route: `/mailchimp/lists/[id]/growth-history`
-  - Features: Historical growth data, charts
-  - **Priority 1:** Analytics visualization
+  - Features: Historical growth data, monthly metrics, pagination
 
 - 📋 **Get Growth History by Month** - `GET /lists/{list_id}/growth-history/{month}`
   - Route: `/mailchimp/lists/[id]/growth-history/[month]`
@@ -588,16 +587,17 @@ Domain verification and management.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 13 endpoints
-- ⭐ Priority 1 (Next): 1 endpoint (Growth History)
-- ⭐ Priority 2: 3 endpoints (List Members, Search Members, List Segments)
+- ✅ Implemented: 14 endpoints
+- ⭐ Priority 1 (Next): 2 endpoints (List Members, Search Members)
+- ⭐ Priority 2: 1 endpoint (List Segments)
 - 📋 Priority 3-4: 60+ endpoints
 - 🔒 Write Operations: 40+ endpoints (future consideration)
 
-**Total Progress (Read-Only):** 13/77+ read endpoints (~17%)
+**Total Progress (Read-Only):** 14/77+ read endpoints (~18%)
 
 **Recent Implementations:**
 
+- List Growth History (monthly subscriber growth trends and metrics)
 - List Activity (daily activity timeline with engagement metrics)
 - Domain Performance (email provider performance breakdown)
 - Campaign Advice (performance recommendations with sentiment icons)
@@ -608,15 +608,15 @@ Domain verification and management.
 
 **Focus Areas:**
 
-1. **Current Sprint:** Complete Lists API analytics (Growth History)
-2. **Next Sprint:** Core list management (Members, Segments)
-3. **Future Sprint:** Search functionality, Templates, Reporting APIs
+1. **Current Sprint:** Core list management (Members, Segments)
+2. **Next Sprint:** Search functionality, Member details
+3. **Future Sprint:** Templates, Reporting APIs, Advanced analytics
 4. **Long-term:** Drill-down details, write operations, advanced features
 
 **API Coverage by Section:**
 
 - Reports API: 12/28 endpoints (43%)
-- Lists API: 3/45 endpoints (7%)
+- Lists API: 4/45 endpoints (9%)
 - Reporting API: 0/7 endpoints (0%)
 - Search API: 0/2 endpoints (0%)
 - Template Folders: 0/5 endpoints (0%)
@@ -630,16 +630,7 @@ Domain verification and management.
 
 ### 🎯 Top Priority Endpoints:
 
-**1. List Growth History** (`GET /lists/{list_id}/growth-history`) ⭐⭐⭐
-
-- **Value:** Historical growth data showing list size over time
-- **Complexity:** Medium (data visualization with charts recommended)
-- **User Benefit:** Track audience growth trends, identify growth/decline patterns
-- **Route:** `/mailchimp/lists/[id]/growth-history`
-- **Status:** Not yet implemented
-- **Why Next:** Natural progression after List Activity, completes analytics suite
-
-**2. List Members** (`GET /lists/{list_id}/members`) ⭐⭐
+**1. List Members** (`GET /lists/{list_id}/members`) ⭐⭐⭐
 
 - **Value:** Core member management - browse, search, filter list members
 - **Complexity:** High (filtering, search, pagination, status management)
@@ -648,7 +639,7 @@ Domain verification and management.
 - **Status:** Not yet implemented
 - **Why Important:** Foundation for member detail pages and segmentation
 
-**3. Search Members** (`GET /search-members`) ⭐⭐
+**2. Search Members** (`GET /search-members`) ⭐⭐
 
 - **Value:** Global search across all list members
 - **Complexity:** Medium (search interface, result display)
