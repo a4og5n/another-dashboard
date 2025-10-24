@@ -18,6 +18,7 @@ import {
   TrendingUp,
   Calendar,
   Smartphone,
+  FileText,
 } from "lucide-react";
 import type { MemberInfoResponse } from "@/types/mailchimp/member-info";
 import { formatDateTimeSafe } from "@/utils";
@@ -170,18 +171,46 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 <span className="text-muted-foreground">Member Rating</span>
                 <StarRating rating={data.member_rating} size="sm" />
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Last Note</span>
-                <span className="font-medium">
-                  {data.last_note
-                    ? formatDateTimeSafe(data.last_note.created_at)
-                    : "N/A"}
-                </span>
-              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Last Note */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Last Note
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.last_note ? (
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Note ID</span>
+                <span className="font-medium">{data.last_note.note_id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Created At</span>
+                <span className="font-medium">
+                  {formatDateTimeSafe(data.last_note.created_at)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Created By</span>
+                <span className="font-medium">{data.last_note.created_by}</span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-sm text-muted-foreground">Note</span>
+                <p className="font-medium text-sm">{data.last_note.note}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No notes added</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* SMS Information */}
       <Card>
