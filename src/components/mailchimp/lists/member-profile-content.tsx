@@ -65,28 +65,30 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <span>ID: {data.unique_email_id}</span>
                 </div>
-                {data.status === "unsubscribed" && data.unsubscribe_reason && (
-                  <div className="flex items-center gap-2 text-sm text-red-600 mt-2">
-                    <span className="font-medium">
-                      Reason: {data.unsubscribe_reason}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              {data.vip && (
-                <Badge variant="secondary" className="gap-1">
-                  <Star className="h-3 w-3" />
-                  VIP
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex items-center gap-2">
+                {data.vip && (
+                  <Badge variant="secondary" className="gap-1">
+                    <Star className="h-3 w-3" />
+                    VIP
+                  </Badge>
+                )}
+                <Badge
+                  variant="secondary"
+                  className={statusColorMap[data.status] || "bg-gray-500"}
+                >
+                  {data.status}
                 </Badge>
+              </div>
+              {data.status === "unsubscribed" && data.unsubscribe_reason && (
+                <div className="text-sm text-red-600">
+                  <span className="font-medium">
+                    Reason: {data.unsubscribe_reason}
+                  </span>
+                </div>
               )}
-              <Badge
-                variant="secondary"
-                className={statusColorMap[data.status] || "bg-gray-500"}
-              >
-                {data.status}
-              </Badge>
             </div>
           </div>
         </CardHeader>
