@@ -358,10 +358,10 @@ Audience list management endpoints.
 
 ### Members
 
-- ⭐ **List Members Info** - `GET /lists/{list_id}/members`
+- ✅ **List Members Info** - `GET /lists/{list_id}/members`
   - Route: `/mailchimp/lists/[id]/members`
-  - Features: Pagination, filtering, search
-  - **Priority 1:** Core member management
+  - Features: Pagination, filtering, member details, engagement stats
+  - Status tracking with badges, star ratings, VIP indicators
 
 - 🔒 **Add Member to List** - `POST /lists/{list_id}/members`
   - **Priority 5:** Write operation (future)
@@ -654,17 +654,18 @@ Domain verification and management.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 14 endpoints
-- ⭐ Priority 1 (Next): 1 endpoint (List Members)
-- ⭐ Priority 2: 2 endpoints (Get Member Info, List Segments)
-- ⭐ Priority 3: ~25 endpoints (Member details, analytics, segments, landing pages)
+- ✅ Implemented: 15 endpoints
+- ⭐ Priority 1 (Next): 2 endpoints (Get Member Info, List Segments)
+- ⭐ Priority 2: ~5 endpoints (Search members, member tags, notes, goals)
+- ⭐ Priority 3: ~23 endpoints (Member details, analytics, landing pages)
 - 📋 Priority 4: ~45 endpoints (surveys, templates, webhooks, drill-downs)
 - 🔒 Write Operations: ~50 endpoints (future consideration)
 
-**Total Progress (Read-Only):** 14/100+ read endpoints (~14%)
+**Total Progress (Read-Only):** 15/100+ read endpoints (~15%)
 
 **Recent Implementations:**
 
+- List Members (view and manage list members with filtering and engagement stats)
 - List Growth History (monthly subscriber growth trends and metrics)
 - List Activity (daily activity timeline with engagement metrics)
 - Domain Performance (email provider performance breakdown)
@@ -684,7 +685,7 @@ Domain verification and management.
 **API Coverage by Section:**
 
 - Reports API: 12/28 endpoints (43%)
-- Lists API: 4/45 endpoints (9%)
+- Lists API: 5/45 endpoints (11%)
 - Reporting API: 0/15 endpoints (0%)
 - Search API: 0/2 endpoints (0%)
 - Landing Pages: 0/8 endpoints (0%)

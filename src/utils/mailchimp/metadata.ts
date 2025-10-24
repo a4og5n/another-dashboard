@@ -22,6 +22,7 @@ import { campaignAdvicePageParamsSchema } from "@/schemas/components/mailchimp/r
 import { domainPerformancePageParamsSchema } from "@/schemas/components/mailchimp/report-domain-performance-page-params";
 import { listActivityPageParamsSchema } from "@/schemas/components/mailchimp/list-activity-page-params";
 import { listGrowthHistoryPageParamsSchema } from "@/schemas/components/mailchimp/list-growth-history-page-params";
+import { listPageParamsSchema } from "@/schemas/components/mailchimp/list-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -520,6 +521,42 @@ export async function generateListGrowthHistoryMetadata({
     openGraph: {
       title: `${data.name} - Growth History`,
       description: `Historical growth data for ${data.name} showing subscriber trends over time`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for list members pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the list members page
+ */
+export async function generateListMembersMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = listPageParamsSchema.parse(rawParams);
+
+  // Fetch list data for metadata
+  const response = await mailchimpDAL.fetchList(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "List Members - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const list = response.data;
+
+  return {
+    title: `${list.name} - Members`,
+    description: "View and manage members in this list",
+    openGraph: {
+      title: `${list.name} - Members`,
+      description: "View and manage members in this list",
       type: "website",
     },
   };

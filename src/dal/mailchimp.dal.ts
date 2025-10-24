@@ -279,6 +279,35 @@ export class MailchimpDAL {
       ),
     );
   }
+
+  /**
+   * List Members
+   * GET /lists/{list_id}/members
+   *
+   * @param id - List ID
+   * @param params - Query parameters for filtering, sorting, and pagination
+   * @returns List members with engagement statistics
+   */
+  async fetchListMembers(
+    id: string,
+    params?: z.infer<
+      typeof import("@/schemas/mailchimp/lists/members/params.schema").listMembersQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/lists/members/success.schema").listMembersSuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/lists/members/success.schema").listMembersSuccessSchema
+        >
+      >(`/lists/${id}/members`, params),
+    );
+  }
 }
 
 /**
