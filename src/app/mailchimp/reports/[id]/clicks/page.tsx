@@ -21,6 +21,7 @@ import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { handleApiError, bc } from "@/utils";
 import type { z } from "zod";
 import { reportClickListSuccessSchema } from "@/schemas/mailchimp/reports/click-details/success.schema";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
 
 type ClickListSuccess = z.infer<typeof reportClickListSuccessSchema>;
 
@@ -76,13 +77,14 @@ export default async function CampaignClicksPage({
       description="URLs clicked in this campaign"
       skeleton={<CampaignOpensSkeleton />}
     >
-      <ClickDetailsContent
-        clicksData={clicksData}
-        campaignId={campaignId}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        errorCode={response.errorCode}
-      />
+      <MailchimpConnectionGuard errorCode={response.errorCode}>
+        <ClickDetailsContent
+          clicksData={clicksData}
+          campaignId={campaignId}
+          currentPage={currentPage}
+          pageSize={pageSize}
+        />
+      </MailchimpConnectionGuard>
     </PageLayout>
   );
 }

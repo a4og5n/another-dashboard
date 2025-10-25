@@ -17,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MailchimpConnectionGuard } from "@/components/mailchimp/mailchimp-connection-guard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
@@ -40,7 +39,6 @@ interface ClickDetailsContentProps {
   campaignId: string;
   currentPage: number;
   pageSize: number;
-  errorCode?: string;
 }
 
 export function ClickDetailsContent({
@@ -48,7 +46,6 @@ export function ClickDetailsContent({
   campaignId,
   currentPage,
   pageSize,
-  errorCode,
 }: ClickDetailsContentProps) {
   const { urls_clicked, total_items } = clicksData || {};
 
@@ -62,148 +59,144 @@ export function ClickDetailsContent({
     pageSize,
   );
 
-  return (
-    <MailchimpConnectionGuard errorCode={errorCode}>
-      {!clicksData ? (
-        <DashboardInlineError error="Failed to load click details" />
-      ) : (
-        <>
-          {/* Click Details Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MousePointerClick className="h-5 w-5" />
-                Click Details
-                <span className="text-sm font-normal text-muted-foreground">
-                  ({total_items?.toLocaleString() || 0} URLs)
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="px-2">
-                        <div className="h-8 px-2 lg:px-3 flex items-center">
-                          URL
-                        </div>
-                      </TableHead>
-                      <TableHead className="px-2">
-                        <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-                          Total Clicks
-                        </div>
-                      </TableHead>
-                      <TableHead className="px-2">
-                        <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-                          Unique Clicks
-                        </div>
-                      </TableHead>
-                      <TableHead className="px-2">
-                        <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-                          Click %
-                        </div>
-                      </TableHead>
-                      <TableHead className="px-2">
-                        <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
-                          Unique %
-                        </div>
-                      </TableHead>
-                      <TableHead className="px-2">
-                        <div className="h-8 px-2 lg:px-3 flex items-center">
-                          Last Click
-                        </div>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {urls_clicked && urls_clicked.length > 0 ? (
-                      urls_clicked.map(
-                        (urlClick: UrlClicked, index: number) => (
-                          <TableRow key={urlClick.id || index}>
-                            <TableCell className="px-2">
-                              <div className="max-w-md">
-                                <div
-                                  className="text-sm truncate"
-                                  title={urlClick.url}
-                                >
-                                  {urlClick.url}
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell className="px-2">
-                              <div className="text-right">
-                                <span className="font-mono">
-                                  {urlClick.total_clicks.toLocaleString()}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="px-2">
-                              <div className="text-right">
-                                <span className="font-mono">
-                                  {urlClick.unique_clicks.toLocaleString()}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="px-2">
-                              <div className="text-right">
-                                <span className="font-mono">
-                                  {urlClick.click_percentage.toFixed(2)}%
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="px-2">
-                              <div className="text-right">
-                                <span className="font-mono">
-                                  {urlClick.unique_click_percentage.toFixed(2)}%
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="px-2">
-                              <div className="text-muted-foreground text-sm">
-                                {urlClick.last_click
-                                  ? formatDateTime(urlClick.last_click)
-                                  : "N/A"}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ),
-                      )
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center">
-                          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                            <MousePointerClick className="h-12 w-12 mb-3 opacity-50" />
-                            <p>No click data available for this campaign</p>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+  if (!clicksData) {
+    return <DashboardInlineError error="Failed to load click details" />;
+  }
 
-          {/* Pagination Controls */}
-          {total_items && total_items > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
-              <PerPageSelector
-                value={pageSize}
-                options={[...PER_PAGE_OPTIONS]}
-                createPerPageUrl={createPerPageUrl}
-              />
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  createPageUrl={createPageUrl}
-                />
-              )}
-            </div>
+  return (
+    <>
+      {/* Click Details Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MousePointerClick className="h-5 w-5" />
+            Click Details
+            <span className="text-sm font-normal text-muted-foreground">
+              ({total_items?.toLocaleString() || 0} URLs)
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      URL
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                      Total Clicks
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                      Unique Clicks
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                      Click %
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center justify-end text-right">
+                      Unique %
+                    </div>
+                  </TableHead>
+                  <TableHead className="px-2">
+                    <div className="h-8 px-2 lg:px-3 flex items-center">
+                      Last Click
+                    </div>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {urls_clicked && urls_clicked.length > 0 ? (
+                  urls_clicked.map((urlClick: UrlClicked, index: number) => (
+                    <TableRow key={urlClick.id || index}>
+                      <TableCell className="px-2">
+                        <div className="max-w-md">
+                          <div
+                            className="text-sm truncate"
+                            title={urlClick.url}
+                          >
+                            {urlClick.url}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-2">
+                        <div className="text-right">
+                          <span className="font-mono">
+                            {urlClick.total_clicks.toLocaleString()}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-2">
+                        <div className="text-right">
+                          <span className="font-mono">
+                            {urlClick.unique_clicks.toLocaleString()}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-2">
+                        <div className="text-right">
+                          <span className="font-mono">
+                            {urlClick.click_percentage.toFixed(2)}%
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-2">
+                        <div className="text-right">
+                          <span className="font-mono">
+                            {urlClick.unique_click_percentage.toFixed(2)}%
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-2">
+                        <div className="text-muted-foreground text-sm">
+                          {urlClick.last_click
+                            ? formatDateTime(urlClick.last_click)
+                            : "N/A"}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                        <MousePointerClick className="h-12 w-12 mb-3 opacity-50" />
+                        <p>No click data available for this campaign</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Pagination Controls */}
+      {total_items && total_items > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+          <PerPageSelector
+            value={pageSize}
+            options={[...PER_PAGE_OPTIONS]}
+            createPerPageUrl={createPerPageUrl}
+          />
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              createPageUrl={createPageUrl}
+            />
           )}
-        </>
+        </div>
       )}
-    </MailchimpConnectionGuard>
+    </>
   );
 }

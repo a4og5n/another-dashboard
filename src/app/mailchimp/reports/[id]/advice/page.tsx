@@ -8,7 +8,6 @@
  */
 
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 
 import { PageLayout } from "@/components/layout";
 import { BreadcrumbNavigation } from "@/components/layout/breadcrumb-navigation";
@@ -18,6 +17,8 @@ import { mailchimpDAL } from "@/dal";
 import { handleApiError } from "@/utils/errors";
 import { bc } from "@/utils/breadcrumbs";
 import { generateCampaignAdviceMetadata } from "@/utils/mailchimp/metadata";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
+import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 
 // Page params validation
 interface PageProps {
@@ -65,11 +66,12 @@ export default async function CampaignAdvicePage({ params }: PageProps) {
 
   // Fetch campaign advice data
   const response = await mailchimpDAL.fetchCampaignAdvice(campaignId);
-  const error = handleApiError(response);
 
-  if (error || !response.data) {
-    notFound();
-  }
+  // Handle API errors (auto-triggers notFound() for 404s)
+  handleApiError(response);
+
+  // Extract data safely
+  const data = response.success ? response.data : null;
 
   return (
     <PageLayout
@@ -82,7 +84,13 @@ export default async function CampaignAdvicePage({ params }: PageProps) {
         </Suspense>
       }
     >
-      <CampaignAdviceContent data={response.data} campaignId={campaignId} />
+      <MailchimpConnectionGuard errorCode={response.errorCode}>
+        {data ? (
+          <CampaignAdviceContent data={data} campaignId={campaignId} />
+        ) : (
+          <DashboardInlineError error="Failed to load campaign advice" />
+        )}
+      </MailchimpConnectionGuard>
     </PageLayout>
   );
 }

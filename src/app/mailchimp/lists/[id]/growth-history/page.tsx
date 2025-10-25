@@ -8,7 +8,6 @@
  */
 
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import { PageLayout } from "@/components/layout";
 import { BreadcrumbNavigation } from "@/components/layout";
 import { ListGrowthHistorySkeleton } from "@/skeletons/mailchimp";
@@ -16,6 +15,8 @@ import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { ListGrowthHistoryContent } from "@/components/mailchimp/lists/list-growth-history-content";
 import { handleApiError, bc } from "@/utils";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
+import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import {
   listGrowthHistoryPageParamsSchema,
   pageSearchParamsSchema,
@@ -48,13 +49,13 @@ export default async function Page({ params, searchParams }: PageProps) {
   // Fetch data
   const response = await mailchimpDAL.fetchListGrowthHistory(listId, apiParams);
 
-  // Handle API errors
-  const error = handleApiError(response);
-  if (error || !response.data) {
-    notFound();
-  }
+  // Handle API errors (auto-triggers notFound() for 404s)
+  handleApiError(response);
 
-  const data = response.data as GrowthHistoryResponse;
+  // Extract data safely
+  const data = response.success
+    ? (response.data as GrowthHistoryResponse)
+    : null;
 
   return (
     <PageLayout
@@ -67,12 +68,18 @@ export default async function Page({ params, searchParams }: PageProps) {
       description="Historical growth data showing list size over time"
       skeleton={<ListGrowthHistorySkeleton />}
     >
-      <ListGrowthHistoryContent
-        data={data}
-        listId={listId}
-        currentPage={currentPage}
-        pageSize={pageSize}
-      />
+      <MailchimpConnectionGuard errorCode={response.errorCode}>
+        {data ? (
+          <ListGrowthHistoryContent
+            data={data}
+            listId={listId}
+            currentPage={currentPage}
+            pageSize={pageSize}
+          />
+        ) : (
+          <DashboardInlineError error="Failed to load growth history" />
+        )}
+      </MailchimpConnectionGuard>
     </PageLayout>
   );
 }
