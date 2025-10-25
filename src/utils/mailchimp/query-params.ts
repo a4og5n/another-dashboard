@@ -137,11 +137,12 @@ export function validateReportsPageParams(
  * ```
  */
 function convertToISO(dateStr: string, isEndOfDay = false): string {
-  const date = new Date(dateStr);
+  // Append 'T00:00:00Z' to force UTC interpretation and avoid timezone shifts
+  const date = new Date(`${dateStr}T00:00:00Z`);
   if (isEndOfDay) {
-    date.setHours(23, 59, 59, 999);
+    date.setUTCHours(23, 59, 59, 999);
   } else {
-    date.setHours(0, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
   }
   return date.toISOString();
 }
