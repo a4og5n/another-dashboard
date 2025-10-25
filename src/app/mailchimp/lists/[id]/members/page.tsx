@@ -45,28 +45,11 @@ export default async function Page({
   // Fetch data
   const response = await mailchimpDAL.fetchListMembers(id, apiParams);
 
-  // Handle API errors (notFound() for 404s, returns error message for others)
-  const error = handleApiError(response);
-  if (error) {
-    return (
-      <PageLayout
-        breadcrumbsSlot={
-          <Suspense fallback={null}>
-            <BreadcrumbContent params={params} />
-          </Suspense>
-        }
-        title="List Members"
-        description="View and manage members in this list"
-        skeleton={<ListMembersSkeleton />}
-      >
-        <MailchimpConnectionGuard errorCode={response.errorCode}>
-          <DashboardInlineError error={error} />
-        </MailchimpConnectionGuard>
-      </PageLayout>
-    );
-  }
+  // Handle API errors (auto-triggers notFound() for 404s)
+  handleApiError(response);
 
-  const data = response.data!;
+  // Extract data safely
+  const data = response.success ? response.data : null;
 
   return (
     <PageLayout
@@ -80,12 +63,16 @@ export default async function Page({
       skeleton={<ListMembersSkeleton />}
     >
       <MailchimpConnectionGuard errorCode={response.errorCode}>
-        <ListMembersContent
-          data={data}
-          listId={id}
-          currentPage={currentPage}
-          pageSize={pageSize}
-        />
+        {data ? (
+          <ListMembersContent
+            data={data}
+            listId={id}
+            currentPage={currentPage}
+            pageSize={pageSize}
+          />
+        ) : (
+          <DashboardInlineError error="Failed to load list members" />
+        )}
       </MailchimpConnectionGuard>
     </PageLayout>
   );

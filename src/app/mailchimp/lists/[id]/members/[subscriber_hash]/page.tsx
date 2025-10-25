@@ -32,28 +32,11 @@ export default async function Page({
   // Fetch data
   const response = await mailchimpDAL.fetchMemberInfo(id, subscriber_hash);
 
-  // Handle API errors (notFound() for 404s, returns error message for others)
-  const error = handleApiError(response);
-  if (error) {
-    return (
-      <PageLayout
-        breadcrumbsSlot={
-          <Suspense fallback={null}>
-            <BreadcrumbContent params={params} />
-          </Suspense>
-        }
-        title="Member Profile"
-        description="Complete member profile with subscription details and engagement metrics"
-        skeleton={<MemberProfileSkeleton />}
-      >
-        <MailchimpConnectionGuard errorCode={response.errorCode}>
-          <DashboardInlineError error={error} />
-        </MailchimpConnectionGuard>
-      </PageLayout>
-    );
-  }
+  // Handle API errors (auto-triggers notFound() for 404s)
+  handleApiError(response);
 
-  const data = response.data!;
+  // Extract data safely
+  const data = response.success ? response.data : null;
 
   return (
     <PageLayout
@@ -67,11 +50,15 @@ export default async function Page({
       skeleton={<MemberProfileSkeleton />}
     >
       <MailchimpConnectionGuard errorCode={response.errorCode}>
-        <MemberProfileContent
-          data={data}
-          listId={id}
-          subscriberHash={subscriber_hash}
-        />
+        {data ? (
+          <MemberProfileContent
+            data={data}
+            listId={id}
+            subscriberHash={subscriber_hash}
+          />
+        ) : (
+          <DashboardInlineError error="Failed to load member profile" />
+        )}
       </MailchimpConnectionGuard>
     </PageLayout>
   );
