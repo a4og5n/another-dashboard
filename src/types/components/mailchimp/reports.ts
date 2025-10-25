@@ -26,8 +26,12 @@ export interface ReportsPageSearchParams {
   page?: string;
   perPage?: string;
   type?: string;
+  // Direct API params (backward compatibility)
   before_send_time?: string;
   since_send_time?: string;
+  // UI-friendly date filters (YYYY-MM-DD format)
+  from?: string;
+  to?: string;
 }
 
 /**

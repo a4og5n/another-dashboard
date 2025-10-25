@@ -124,17 +124,45 @@ export function validateReportsPageParams(
 }
 
 /**
+ * Converts YYYY-MM-DD date string to ISO 8601 with timezone
+ *
+ * @param dateStr - Date string in YYYY-MM-DD format
+ * @param isEndOfDay - If true, sets time to 23:59:59.999, otherwise 00:00:00.000
+ * @returns ISO 8601 date string with UTC timezone
+ *
+ * @example
+ * ```typescript
+ * convertToISO("2024-01-15", false) // "2024-01-15T00:00:00.000Z"
+ * convertToISO("2024-01-15", true)  // "2024-01-15T23:59:59.999Z"
+ * ```
+ */
+function convertToISO(dateStr: string, isEndOfDay = false): string {
+  const date = new Date(dateStr);
+  if (isEndOfDay) {
+    date.setHours(23, 59, 59, 999);
+  } else {
+    date.setHours(0, 0, 0, 0);
+  }
+  return date.toISOString();
+}
+
+/**
  * Transform campaign reports page parameters to Mailchimp API format
  * Combines pagination transformation with campaign-specific filters
+ *
+ * Handles date conversion:
+ * - from/to: UI-friendly YYYY-MM-DD format → ISO 8601 with timezone
+ * - from: Start of day (00:00:00) → since_send_time
+ * - to: End of day (23:59:59) → before_send_time
  *
  * @param params - Campaign reports page search parameters
  * @returns Object with API-ready parameters
  *
  * @example
  * ```typescript
- * const params = { page: "2", perPage: "25", type: "regular", before_send_time: "2024-01-01" };
+ * const params = { page: "2", perPage: "25", type: "regular", from: "2024-01-15", to: "2024-01-15" };
  * const result = transformCampaignReportsParams(params);
- * // Returns: { count: 25, offset: 25, type: "regular", before_send_time: "2024-01-01" }
+ * // Returns: { count: 25, offset: 25, type: "regular", since_send_time: "2024-01-15T00:00:00.000Z", before_send_time: "2024-01-15T23:59:59.999Z" }
  * ```
  */
 export function transformCampaignReportsParams(
@@ -148,10 +176,14 @@ export function transformCampaignReportsParams(
       ) && {
         type: params.type as (typeof REPORT_QUERY_TYPES)[number],
       }),
-    ...(params.before_send_time && {
-      before_send_time: params.before_send_time,
-    }),
-    ...(params.since_send_time && { since_send_time: params.since_send_time }),
+    // Handle new UI date params (priority over direct API params)
+    ...(params.from && { since_send_time: convertToISO(params.from, false) }),
+    ...(params.to && { before_send_time: convertToISO(params.to, true) }),
+    // Fallback to direct API params (for backward compatibility)
+    ...(!params.from &&
+      params.since_send_time && { since_send_time: params.since_send_time }),
+    ...(!params.to &&
+      params.before_send_time && { before_send_time: params.before_send_time }),
   };
 }
 
