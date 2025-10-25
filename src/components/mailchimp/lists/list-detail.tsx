@@ -377,7 +377,7 @@ export function ListDetail({
                     )}
                   </div>
                 </CardContent>
-                <CardFooter className="border-t pt-4">
+                <CardFooter className="border-t pt-4 flex flex-col gap-2">
                   <Button
                     asChild
                     variant="outline"
@@ -386,6 +386,17 @@ export function ListDetail({
                   >
                     <Link href={`/mailchimp/lists/${list.id}/growth-history`}>
                       View Growth History
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <Link href={`/mailchimp/lists/${list.id}/segments`}>
+                      View Segments
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>

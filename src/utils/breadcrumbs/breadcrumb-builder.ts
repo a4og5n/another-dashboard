@@ -376,6 +376,26 @@ export const bc = {
       href: `/mailchimp/lists/${id}/members/[subscriber_hash]`,
     };
   },
+
+  /**
+   * List Segments breadcrumb
+   *
+   * @param id - List ID
+   * @returns Breadcrumb item for list segments
+   *
+   * @example
+   * ```tsx
+   * bc.listSegments("abc123")
+   * // Returns: { label: "Segments", href: "/mailchimp/lists/abc123/segments" }
+   * ```
+   */
+  listSegments(id: string): BreadcrumbItem {
+    return {
+      label: "Segments",
+      href: `/mailchimp/lists/${id}/segments`,
+    };
+  },
+
   // Helper Functions
   // ============================================================================
 

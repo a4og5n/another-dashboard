@@ -73,3 +73,5 @@ export { generateDomainPerformanceMetadata } from "@/utils/mailchimp/metadata";
 export { generateListActivityMetadata } from "@/utils/mailchimp/metadata";
 
 export { generateListGrowthHistoryMetadata } from "@/utils/mailchimp/metadata";
+
+export { generateListSegmentsMetadata } from "@/utils/mailchimp/metadata";
