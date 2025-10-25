@@ -36,9 +36,34 @@ gh pr create --base main --head feature/endpoint-name
 - ✅ **CI runs on PRs** - Checks pass before merge, not after
 - ✅ **Safe experimentation** - Branch can be deleted if approach doesn't work
 
+### Exception: Documentation-Only Changes
+
+**ONLY commit directly to main for documentation files:**
+
+✅ **Safe for direct commit:**
+
+- `*.md` files in `/docs` directory (e.g., `docs/api-coverage.md`, `docs/PRD.md`)
+- `README.md` updates
+- `CLAUDE.md` updates
+- Comment-only changes in code
+
+❌ **NEVER commit directly to main:**
+
+- Code files (`*.ts`, `*.tsx`, `*.js`, `*.jsx`)
+- Schema files (`src/schemas/**/*.ts`)
+- Test files (`*.test.ts`, `*.test.tsx`)
+- Configuration files (`package.json`, `tsconfig.json`, etc.)
+- Any changes that affect runtime behavior
+
+**Rationale:** Documentation changes don't affect code execution and don't require CI/CD validation. All code changes MUST go through PR review and CI/CD checks.
+
 ### Historical Context:
 
-**2025-10-23**: Domain Performance endpoint was mistakenly pushed directly to main (commits c87c5f6 through cf324b4). While CI passed retroactively, this bypassed the PR review process. This mistake is documented here to ensure it never happens again.
+**2025-10-23**: Domain Performance endpoint was mistakenly pushed directly to main (commits c87c5f6 through cf324b4). While CI passed retroactively, this bypassed the PR review process.
+
+**2025-10-25**: Issue #239 cleanup was mistakenly committed directly to main (commit 440ee8a). The commit was reverted (ce4d609) and resubmitted via PR #243 for proper CI/CD validation.
+
+**Lesson:** Even low-risk technical debt cleanup MUST go through the PR process.
 
 ### AI Implementation:
 
