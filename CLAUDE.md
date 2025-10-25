@@ -2370,12 +2370,15 @@ git config core.hooksPath
 
 **Hooks run automatically on every commit:**
 
-1. Format staged files (`pnpm lint-staged`)
-2. Verify formatting (`pnpm format:check`)
-3. Type-check (`pnpm type-check`)
-4. Run tests (`pnpm test`)
-5. Accessibility tests (`pnpm test:a11y`)
-6. Secret scan (`pnpm check:no-secrets-logged`)
+1. **Quick validation** (`pnpm type-check`) - **NEW:** Catches type errors BEFORE formatting
+2. Format staged files (`pnpm lint-staged`)
+3. Verify formatting (`pnpm format:check`)
+4. Type-check again (`pnpm type-check`)
+5. Run tests (`pnpm test`)
+6. Accessibility tests (`pnpm test:a11y`)
+7. Secret scan (`pnpm check:no-secrets-logged`)
+
+**Note:** The early type-check (step 1) prevents lint-staged from removing "unused" type imports that are actually used. This improvement was added in Issue #213.
 
 **Troubleshooting:**
 

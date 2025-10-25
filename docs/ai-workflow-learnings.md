@@ -475,28 +475,61 @@ amount.toLocaleString("en-US", {
    # Should see: 🔍 Running pre-commit validation...
    ```
 
-### Pre-commit Hook Contents
+### Pre-commit Hook Contents (Updated 2025-10-25)
 
-**Current `.husky/pre-commit` runs:**
+**Current `.husky/pre-commit` runs (IMPROVED - catches errors earlier):**
 
 ```bash
 echo "🔍 Running pre-commit validation..."
+
+# ⚡ NEW - Run type-check BEFORE formatting
+echo "⚡ Quick validation (catches issues before formatting)..."
+pnpm type-check || { echo "❌ Type errors found! Fix before committing."; exit 1; }
+
 echo "📝 Formatting and linting staged files..."
 pnpm lint-staged  # Formats staged files
+
 echo "✅ Verifying code formatting..."
 pnpm format:check  # Catches formatting issues
+
 echo "🧪 Running full validation suite..."
 pnpm check:no-secrets-logged && pnpm type-check && pnpm test && pnpm test:a11y
 ```
 
 **What this catches:**
 
+- ✅ **Type errors BEFORE formatting** (prevents lint-staged from breaking types)
 - ✅ Prettier formatting issues
 - ✅ ESLint errors
-- ✅ TypeScript type errors
+- ✅ TypeScript type errors (double-checked after formatting)
 - ✅ Test failures
 - ✅ Accessibility violations
 - ✅ Accidentally logged secrets
+
+### Critical Improvement: Early Type-Check (2025-10-25)
+
+**Problem Discovered:** lint-staged can modify files after staging, removing "unused" type imports that ARE actually used for type annotations.
+
+**Scenario:**
+
+1. Write test with `import type { AuthErrorType } from "./component"`
+2. Run `git add -A` (stages all files)
+3. Pre-commit runs `pnpm lint-staged`
+4. Prettier removes "unused" type import
+5. Type-check fails with "Module declares 'AuthErrorType' locally but it is not exported"
+
+**Root Cause:** Type-only imports can be removed by formatters when they appear unused, even though they ARE used for type annotations in the test code.
+
+**Solution:** Run `pnpm type-check` BEFORE `pnpm lint-staged` to catch type errors in the original code before formatters can modify it.
+
+**Benefits:**
+
+- ✅ Catches type errors earlier in the workflow
+- ✅ Prevents formatters from introducing type errors
+- ✅ Provides clearer error messages (original code, not modified)
+- ✅ Reduces frustrating commit failures
+
+**Best Practice:** Always import types from `@/types` directories, not from component files directly. This architectural pattern is enforced by tests and prevents the formatter issue.
 
 ### Troubleshooting Pre-commit Hooks
 
