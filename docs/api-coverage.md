@@ -12,6 +12,122 @@ This file tracks which Mailchimp API endpoints have been implemented in the Fich
 
 ---
 
+## Classic Automations API
+
+Marketing automation workflow endpoints.
+
+### Automation Management
+
+- 📋 **List Automations** - `GET /automations`
+  - Features: List all automation workflows
+  - **Priority 3:** Automation management
+
+- 🔒 **Add Automation** - `POST /automations`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Automation Info** - `GET /automations/{workflow_id}`
+  - Features: Individual automation workflow details
+  - **Priority 3:** Automation analytics
+
+- 🔒 **Start Automation Emails** - `POST /automations/{workflow_id}/actions/start-all-emails`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Pause Automation Emails** - `POST /automations/{workflow_id}/actions/pause-all-emails`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Archive Automation** - `POST /automations/{workflow_id}/actions/archive`
+  - **Priority 5:** Write operation (future)
+
+### Automated Emails
+
+- 📋 **List Automated Emails** - `GET /automations/{workflow_id}/emails`
+  - Features: Emails within automation workflow
+  - **Priority 3:** Automation management
+
+- 📋 **Get Workflow Email Info** - `GET /automations/{workflow_id}/emails/{workflow_email_id}`
+  - Features: Individual automated email details
+  - **Priority 4:** Low priority
+
+- 🔒 **Delete Workflow Email** - `DELETE /automations/{workflow_id}/emails/{workflow_email_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Update Workflow Email** - `PATCH /automations/{workflow_id}/emails/{workflow_email_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Pause Automated Email** - `POST /automations/{workflow_id}/emails/{workflow_email_id}/actions/pause`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Start Automated Email** - `POST /automations/{workflow_id}/emails/{workflow_email_id}/actions/start`
+  - **Priority 5:** Write operation (future)
+
+### Automation Queue
+
+- 📋 **View Automation Queue** - `GET /automations/{workflow_id}/emails/{workflow_email_id}/queue`
+  - Features: View queued automation emails
+  - **Priority 4:** Advanced automation feature
+
+- 📋 **Get Automation Email Subscriber** - `GET /automations/{workflow_id}/emails/{workflow_email_id}/queue/{subscriber_hash}`
+  - Features: Individual subscriber queue details
+  - **Priority 4:** Low priority
+
+### Removed Subscribers
+
+- 📋 **List Automation Removed Subscribers** - `GET /automations/{workflow_id}/removed-subscribers`
+  - Features: Subscribers removed from automation
+  - **Priority 4:** Automation management
+
+- 🔒 **Remove Subscriber from Workflow** - `POST /automations/{workflow_id}/removed-subscribers`
+  - **Priority 5:** Write operation (future)
+
+---
+
+## Connected Sites API
+
+Website tracking and connected site management.
+
+- 📋 **List Connected Sites** - `GET /connected-sites`
+  - Features: Sites connected for tracking
+  - **Priority 4:** Integration feature
+
+- 🔒 **Add Connected Site** - `POST /connected-sites`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Connected Site** - `GET /connected-sites/{connected_site_id}`
+  - Features: Individual site connection details
+  - **Priority 4:** Low priority
+
+- 🔒 **Delete Connected Site** - `DELETE /connected-sites/{connected_site_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Verify Connected Site Script** - `POST /connected-sites/{connected_site_id}/actions/verify-script-installation`
+  - **Priority 5:** Write operation (future)
+
+---
+
+## Conversations API (Deprecated)
+
+**Note:** These endpoints are deprecated by Mailchimp. Listed for completeness only.
+
+- 📋 **List Conversations** - `GET /conversations` ⚠️ **DEPRECATED**
+  - Features: List conversation threads
+  - **Priority 5:** Deprecated API
+
+- 📋 **Get Conversation** - `GET /conversations/{conversation_id}` ⚠️ **DEPRECATED**
+  - Features: Individual conversation details
+  - **Priority 5:** Deprecated API
+
+### Conversation Messages (Deprecated)
+
+- 📋 **List Messages** - `GET /conversations/{conversation_id}/messages` ⚠️ **DEPRECATED**
+  - Features: Messages in conversation thread
+  - **Priority 5:** Deprecated API
+
+- 📋 **Get Message** - `GET /conversations/{conversation_id}/messages/{message_id}` ⚠️ **DEPRECATED**
+  - Features: Individual message details
+  - **Priority 5:** Deprecated API
+
+---
+
 ## File Manager API
 
 File storage and asset management endpoints.
@@ -940,11 +1056,12 @@ Facebook advertising integration endpoints.
 
 - ✅ Implemented: 17 endpoints
 - ⭐ Priority 2: ~5 endpoints (Search members, member tags, notes, goals)
-- ⭐ Priority 3: ~23 endpoints (Member details, analytics, landing pages)
-- 📋 Priority 4: ~101 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management)
-- 🔒 Write Operations: ~99 endpoints (future consideration)
+- ⭐ Priority 3: ~30 endpoints (Member details, analytics, landing pages, automations)
+- 📋 Priority 4: ~115 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites)
+- 🔒 Write Operations: ~110 endpoints (future consideration)
+- ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 17/190+ read endpoints (~9%)
+**Total Progress (Read-Only):** 17/215+ read endpoints (~8%)
 
 **Recent Implementations:**
 
@@ -969,18 +1086,21 @@ Facebook advertising integration endpoints.
 
 **API Coverage by Section:**
 
-- Reports API: 12/28 endpoints (43%)
-- Lists API: 7/45 endpoints (16%)
+- Classic Automations: 0/14 endpoints (0%)
+- Connected Sites: 0/5 endpoints (0%)
+- Conversations (Deprecated): 0/4 endpoints (0% - not planned)
 - E-commerce Stores: 0/62 endpoints (0%)
+- Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
+- Lists API: 7/45 endpoints (16%)
+- Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
+- Reports API: 12/28 endpoints (43%)
 - Search API: 0/2 endpoints (0%)
 - Template Folders: 0/5 endpoints (0%)
 - Templates: 0/7 endpoints (0%)
 - Verified Domains: 0/5 endpoints (0%)
-- Facebook Ads: 0/2 endpoints (0%)
-- Ping API: 0/1 endpoint (0%)
 
 ---
 
@@ -1095,26 +1215,42 @@ pnpm pre-commit
 
 ---
 
-**Last Updated:** 2025-01-24 (Added E-commerce Stores, Facebook Ads APIs)
+**Last Updated:** 2025-10-25 (Added Classic Automations, Connected Sites, Conversations APIs)
 **Maintained By:** Development team + AI assistants
 
 ---
 
-## Summary of New Endpoints Added
+## Summary of Recent Updates
 
-This update adds comprehensive coverage of previously undocumented Mailchimp API endpoints:
+### Update 2025-10-25: Automation & Connected Sites
+
+Added comprehensive coverage of automation and website tracking endpoints:
 
 **New Sections:**
 
-- **E-commerce Stores API** - 11 endpoints for e-commerce integration (stores, carts, cart lines)
-- **Facebook Ads API** - 2 endpoints for Facebook advertising integration
-- **File Manager API** - 1 endpoint for asset management
-- **Landing Pages API** - 8 endpoints for landing page creation and management
+- **Classic Automations API** - 14 endpoints for marketing automation workflows
+  - Automation management (list, get, start/pause/archive)
+  - Automated emails (list, get, update, delete, pause/start)
+  - Automation queue (view queue, get subscriber)
+  - Removed subscribers (list, remove from workflow)
 
-**Expanded Sections:**
+- **Connected Sites API** - 5 endpoints for website tracking
+  - Site management (list, add, get, delete)
+  - Script verification
 
-- **Reporting API** - Added 8 survey-related endpoints (questions, responses, answers)
+- **Conversations API (Deprecated)** - 4 endpoints marked as deprecated
+  - Conversations (list, get)
+  - Messages (list, get)
+  - **Note:** Not planned for implementation due to deprecation
 
-**Total New Endpoints Documented:** +30 endpoints
+**Total New Endpoints Documented:** +23 endpoints
 
-These additions bring the total tracked API surface to **130+ endpoints** (70+ read-only, 55+ write operations).
+These additions bring the total tracked API surface to **215+ endpoints** (100+ read-only, 110+ write operations, 4 deprecated).
+
+### Previous Update 2025-01-24: E-commerce & Ads
+
+- **E-commerce Stores API** - 62 endpoints for e-commerce integration
+- **Facebook Ads API** - 2 endpoints for Facebook advertising
+- **File Manager API** - 11 endpoints for asset management
+- **Landing Pages API** - 9 endpoints for landing page management
+- **Reporting API** - 15 endpoints for survey reporting
