@@ -78,7 +78,8 @@ export function ListActivityContent({
               </TableHeader>
               <TableBody>
                 {activity.map((item, index) => {
-                  // Extract YYYY-MM-DD from ISO 8601 format
+                  // Extract YYYY-MM-DD from ISO 8601 format in UTC
+                  // API returns dates like "2024-10-20T00:00:00Z"
                   const dateOnly = item.day.split("T")[0];
 
                   return (
@@ -88,7 +89,7 @@ export function ListActivityContent({
                           href={`/mailchimp/reports?from=${dateOnly}&to=${dateOnly}`}
                           className="text-primary hover:underline transition-colors"
                         >
-                          {formatDateShort(item.day)}
+                          {formatDateShort(item.day, true)}
                         </Link>
                       </TableCell>
                       <TableCell className="text-right">

@@ -16,12 +16,18 @@ export function formatDate(date: Date): string {
  * Formats a date string in short format: Mon Day, Year
  * Example: Jan 1, 2024
  * @param dateString - ISO date string or date string
+ * @param useUTC - If true, formats in UTC timezone instead of local (default: false)
  */
-export function formatDateShort(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
+export function formatDateShort(
+  dateString: string,
+  useUTC: boolean = false,
+): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: useUTC ? "UTC" : undefined,
   });
 }
 
