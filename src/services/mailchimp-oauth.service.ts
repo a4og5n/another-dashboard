@@ -1,5 +1,6 @@
 import { env } from "@/lib/config";
 import { nanoid } from "nanoid";
+import { retryWithBackoff, shouldRetryMailchimpAuth } from "@/utils/retry";
 import type {
   OAuthTokenResponse,
   OAuthMetadataResponse,
@@ -41,56 +42,122 @@ export class MailchimpOAuthService {
 
   /**
    * Exchange authorization code for access token
+   * Includes retry logic for transient failures
    * @param code - Authorization code from callback
    */
   async exchangeCodeForToken(code: string): Promise<OAuthTokenResponse> {
-    const body = new URLSearchParams({
-      grant_type: "authorization_code",
-      client_id: this.clientId || "",
-      client_secret: this.clientSecret || "",
-      redirect_uri: this.redirectUri || "",
-      code,
-    });
+    return retryWithBackoff(
+      async () => {
+        const body = new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id: this.clientId || "",
+          client_secret: this.clientSecret || "",
+          redirect_uri: this.redirectUri || "",
+          code,
+        });
 
-    const response = await fetch(this.tokenUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        try {
+          const response = await fetch(this.tokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: body.toString(),
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            const error = await response.text();
+            console.error(
+              `[Mailchimp OAuth] Token exchange failed (${response.status}):`,
+              error,
+            );
+
+            // Create error object with status for retry logic
+            const errorObj = {
+              status: response.status,
+              statusText: response.statusText,
+              message: `Failed to exchange code for token: ${response.statusText}`,
+              body: error,
+            };
+            throw errorObj;
+          }
+
+          const data = await response.json();
+          return data as OAuthTokenResponse;
+        } finally {
+          clearTimeout(timeoutId);
+        }
       },
-      body: body.toString(),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("Token exchange failed:", error);
-      throw new Error(
-        `Failed to exchange code for token: ${response.statusText}`,
-      );
-    }
-
-    const data = await response.json();
-    return data as OAuthTokenResponse;
+      {
+        maxRetries: 3,
+        shouldRetry: shouldRetryMailchimpAuth,
+        onRetry: (error, attempt, delayMs) => {
+          console.warn(
+            `[Mailchimp OAuth] Token exchange retry ${attempt} after ${delayMs}ms:`,
+            error,
+          );
+        },
+      },
+    );
   }
 
   /**
    * Get account metadata (server prefix, account info)
+   * Includes retry logic for transient failures
    * @param accessToken - OAuth access token
    */
   async getMetadata(accessToken: string): Promise<OAuthMetadataResponse> {
-    const response = await fetch(this.metadataUrl, {
-      headers: {
-        Authorization: `OAuth ${accessToken}`,
+    return retryWithBackoff(
+      async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        try {
+          const response = await fetch(this.metadataUrl, {
+            headers: {
+              Authorization: `OAuth ${accessToken}`,
+            },
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            const error = await response.text();
+            console.error(
+              `[Mailchimp OAuth] Metadata fetch failed (${response.status}):`,
+              error,
+            );
+
+            // Create error object with status for retry logic
+            const errorObj = {
+              status: response.status,
+              statusText: response.statusText,
+              message: `Failed to fetch metadata: ${response.statusText}`,
+              body: error,
+            };
+            throw errorObj;
+          }
+
+          const data = await response.json();
+          return data as OAuthMetadataResponse;
+        } finally {
+          clearTimeout(timeoutId);
+        }
       },
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("Metadata fetch failed:", error);
-      throw new Error(`Failed to fetch metadata: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data as OAuthMetadataResponse;
+      {
+        maxRetries: 3,
+        shouldRetry: shouldRetryMailchimpAuth,
+        onRetry: (error, attempt, delayMs) => {
+          console.warn(
+            `[Mailchimp OAuth] Metadata fetch retry ${attempt} after ${delayMs}ms:`,
+            error,
+          );
+        },
+      },
+    );
   }
 
   /**

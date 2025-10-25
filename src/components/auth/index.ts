@@ -11,3 +11,11 @@ export { AuthWrapper } from "@/components/auth/auth-wrapper";
 export { CustomLoginForm } from "@/components/auth/custom-login-form";
 export { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 export { AuthErrorContent } from "@/components/auth/auth-error-content";
+export {
+  AuthErrorRecovery,
+  detectAuthErrorType,
+} from "@/components/auth/auth-error-recovery";
+export type {
+  AuthErrorType,
+  AuthErrorRecoveryProps,
+} from "@/types/components/auth/error-recovery";

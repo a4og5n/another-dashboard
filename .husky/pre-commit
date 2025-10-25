@@ -1,4 +1,6 @@
 echo "🔍 Running pre-commit validation..."
+echo "⚡ Quick validation (catches issues before formatting)..."
+pnpm type-check || { echo "❌ Type errors found! Fix before committing."; exit 1; }
 echo "📝 Formatting and linting staged files..."
 pnpm lint-staged
 echo "✅ Verifying code formatting..."

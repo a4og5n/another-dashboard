@@ -15,7 +15,10 @@ import path from "path";
 const TYPES_DIR = path.resolve("src/types");
 const COMPONENTS_DIR = path.resolve("src/components");
 const ACTIONS_DIR = path.resolve("src/actions");
-const TYPE_DEF_REGEX = /export (interface|type) /;
+// Match inline type definitions, but NOT type re-exports from @/types
+// Matches: export interface Foo, export type Foo =
+// Excludes: export type { Foo } from "@/types/..."
+const TYPE_DEF_REGEX = /export (interface\s+\w+|type\s+\w+\s*=)/;
 const ZOD_SCHEMA_REGEX =
   /z\.(object|string|number|array|boolean|enum|union|literal|record|date|tuple|custom)/;
 // Only match actual function or arrow function definitions, not comments
