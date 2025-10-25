@@ -18,7 +18,6 @@ const SCHEMAS_FOLDER = "src/schemas";
 // Allowed exceptions: Schema factory functions in common/
 // These functions CREATE schemas and must live in schema files
 const ALLOWED_FUNCTIONS = [
-  "createPaginatedResponse", // Factory for paginated response schemas
   "createIdPathParams", // Factory for custom ID path parameters
 ];
 
