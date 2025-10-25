@@ -16,9 +16,49 @@ This file tracks which Mailchimp API endpoints have been implemented in the Fich
 
 File storage and asset management endpoints.
 
+### File Manager Files
+
 - 📋 **List Stored Files** - `GET /file-manager/files`
   - Features: File library, asset management
   - **Priority 4:** Asset management feature
+
+- 🔒 **Add File** - `POST /file-manager/files`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get File** - `GET /file-manager/files/{file_id}`
+  - Features: Individual file details
+  - **Priority 4:** Asset management
+
+- 🔒 **Update File** - `PATCH /file-manager/files/{file_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete File** - `DELETE /file-manager/files/{file_id}`
+  - **Priority 5:** Write operation (future)
+
+### File Manager Folders
+
+- 📋 **List Folders** - `GET /file-manager/folders`
+  - Features: Folder organization
+  - **Priority 4:** Asset management
+
+- 🔒 **Add Folder** - `POST /file-manager/folders`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Folder** - `GET /file-manager/folders/{folder_id}`
+  - Features: Folder details
+  - **Priority 4:** Asset management
+
+- 🔒 **Update Folder** - `PATCH /file-manager/folders/{folder_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Folder** - `DELETE /file-manager/folders/{folder_id}`
+  - **Priority 5:** Write operation (future)
+
+### Files in Folder
+
+- 📋 **List Stored Files in Folder** - `GET /file-manager/folders/{folder_id}/files`
+  - Features: Folder-specific file list
+  - **Priority 4:** Asset management
 
 ---
 
@@ -700,6 +740,184 @@ E-commerce integration endpoints.
   - Features: Shopping carts list
   - **Priority 4:** E-commerce integration
 
+- 🔒 **Add Cart** - `POST /ecommerce/stores/{store_id}/carts`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Cart Info** - `GET /ecommerce/stores/{store_id}/carts/{cart_id}`
+  - Features: Individual cart details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Update Cart** - `PATCH /ecommerce/stores/{store_id}/carts/{cart_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Cart** - `DELETE /ecommerce/stores/{store_id}/carts/{cart_id}`
+  - **Priority 5:** Write operation (future)
+
+### Customers
+
+- 📋 **List Customers** - `GET /ecommerce/stores/{store_id}/customers`
+  - Features: E-commerce customer list
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Customer** - `POST /ecommerce/stores/{store_id}/customers`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Customer Info** - `GET /ecommerce/stores/{store_id}/customers/{customer_id}`
+  - Features: Individual customer details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add or Update Customer** - `PUT /ecommerce/stores/{store_id}/customers/{customer_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Update Customer** - `PATCH /ecommerce/stores/{store_id}/customers/{customer_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Customer** - `DELETE /ecommerce/stores/{store_id}/customers/{customer_id}`
+  - **Priority 5:** Write operation (future)
+
+### Order Lines
+
+- 📋 **List Order Line Items** - `GET /ecommerce/stores/{store_id}/orders/{order_id}/lines`
+  - Features: Order line items
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Order Line Item** - `POST /ecommerce/stores/{store_id}/orders/{order_id}/lines`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Order Line Item** - `GET /ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}`
+  - Features: Individual order line details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Update Order Line Item** - `PATCH /ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Order Line Item** - `DELETE /ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}`
+  - **Priority 5:** Write operation (future)
+
+### Orders
+
+- 📋 **List Account Orders** - `GET /ecommerce/orders`
+  - Features: All account orders across stores
+  - **Priority 4:** E-commerce integration
+
+- 📋 **List Orders** - `GET /ecommerce/stores/{store_id}/orders`
+  - Features: Store-specific orders list
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Order** - `POST /ecommerce/stores/{store_id}/orders`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Order Info** - `GET /ecommerce/stores/{store_id}/orders/{order_id}`
+  - Features: Individual order details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add or Update Order** - `PUT /ecommerce/stores/{store_id}/orders/{order_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Update Order** - `PATCH /ecommerce/stores/{store_id}/orders/{order_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Order** - `DELETE /ecommerce/stores/{store_id}/orders/{order_id}`
+  - **Priority 5:** Write operation (future)
+
+### Product Images
+
+- 📋 **List Product Images** - `GET /ecommerce/stores/{store_id}/products/{product_id}/images`
+  - Features: Product image gallery
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Product Image** - `POST /ecommerce/stores/{store_id}/products/{product_id}/images`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Product Image Info** - `GET /ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}`
+  - Features: Individual product image details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Update Product Image** - `PATCH /ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Product Image** - `DELETE /ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}`
+  - **Priority 5:** Write operation (future)
+
+### Product Variants
+
+- 📋 **List Product Variants** - `GET /ecommerce/stores/{store_id}/products/{product_id}/variants`
+  - Features: Product variant options
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Product Variant** - `POST /ecommerce/stores/{store_id}/products/{product_id}/variants`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Product Variant Info** - `GET /ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}`
+  - Features: Individual variant details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add or Update Product Variant** - `PUT /ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Update Product Variant** - `PATCH /ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Product Variant** - `DELETE /ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}`
+  - **Priority 5:** Write operation (future)
+
+### Products
+
+- 📋 **List Products** - `GET /ecommerce/stores/{store_id}/products`
+  - Features: E-commerce product catalog
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Product** - `POST /ecommerce/stores/{store_id}/products`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Product Info** - `GET /ecommerce/stores/{store_id}/products/{product_id}`
+  - Features: Individual product details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Update Product** - `PATCH /ecommerce/stores/{store_id}/products/{product_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Product** - `DELETE /ecommerce/stores/{store_id}/products/{product_id}`
+  - **Priority 5:** Write operation (future)
+
+### Promo Codes
+
+- 📋 **List Promo Codes** - `GET /ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes`
+  - Features: Promotional code list
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Promo Code** - `POST /ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Promo Code** - `GET /ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}`
+  - Features: Individual promo code details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Update Promo Code** - `PATCH /ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Promo Code** - `DELETE /ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}`
+  - **Priority 5:** Write operation (future)
+
+### Promo Rules
+
+- 📋 **List Promo Rules** - `GET /ecommerce/stores/{store_id}/promo-rules`
+  - Features: Promotional rules list
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Promo Rule** - `POST /ecommerce/stores/{store_id}/promo-rules`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Promo Rule** - `GET /ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}`
+  - Features: Individual promo rule details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Update Promo Rule** - `PATCH /ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Promo Rule** - `DELETE /ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}`
+  - **Priority 5:** Write operation (future)
+
 ---
 
 ## Facebook Ads API
@@ -723,10 +941,10 @@ Facebook advertising integration endpoints.
 - ✅ Implemented: 17 endpoints
 - ⭐ Priority 2: ~5 endpoints (Search members, member tags, notes, goals)
 - ⭐ Priority 3: ~23 endpoints (Member details, analytics, landing pages)
-- 📋 Priority 4: ~50 endpoints (surveys, templates, webhooks, e-commerce, drill-downs)
-- 🔒 Write Operations: ~55 endpoints (future consideration)
+- 📋 Priority 4: ~101 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management)
+- 🔒 Write Operations: ~99 endpoints (future consideration)
 
-**Total Progress (Read-Only):** 17/110+ read endpoints (~15%)
+**Total Progress (Read-Only):** 17/190+ read endpoints (~9%)
 
 **Recent Implementations:**
 
@@ -753,15 +971,15 @@ Facebook advertising integration endpoints.
 
 - Reports API: 12/28 endpoints (43%)
 - Lists API: 7/45 endpoints (16%)
+- E-commerce Stores: 0/62 endpoints (0%)
+- File Manager: 0/11 endpoints (0%)
+- Landing Pages: 0/9 endpoints (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Search API: 0/2 endpoints (0%)
-- Landing Pages: 0/8 endpoints (0%)
 - Template Folders: 0/5 endpoints (0%)
-- Templates: 0/6 endpoints (0%)
+- Templates: 0/7 endpoints (0%)
 - Verified Domains: 0/5 endpoints (0%)
-- E-commerce Stores: 0/11 endpoints (0%)
 - Facebook Ads: 0/2 endpoints (0%)
-- File Manager: 0/1 endpoint (0%)
 - Ping API: 0/1 endpoint (0%)
 
 ---

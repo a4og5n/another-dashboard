@@ -116,6 +116,23 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 4. `docs/api-coverage.md` - Mailchimp API implementation status
 5. `docs/ai-workflow-learnings.md` - Learnings from recent implementations (table patterns, navigation, formatting)
 
+### Pre-Implementation Checklist
+
+**Before starting any new endpoint implementation**, verify:
+
+- [ ] **Review error handling pattern** - Check `docs/error-handling-quick-reference.md` for current standard pattern
+- [ ] **Confirm endpoint priority** - Verify in `docs/api-coverage.md` that this endpoint is next in priority
+- [ ] **Search for similar endpoints** - Find comparable pages to match patterns (e.g., other list detail pages, other report drill-downs)
+- [ ] **Verify parent page exists** - If nested endpoint (e.g., `/lists/[id]/segments`), confirm parent page (`/lists/[id]`) exists
+- [ ] **Check navigation integration** - Determine if parent page needs a link/button to this new page
+- [ ] **Review existing schemas** - Check `src/schemas/mailchimp/` for reusable common schemas before creating new ones
+
+**Quick References:**
+
+- Error handling: `docs/error-handling-quick-reference.md`
+- Comprehensive error analysis: `docs/error-handling-analysis.md`
+- Pattern examples: `src/app/mailchimp/lists/[id]/segments/page.tsx` (reference implementation)
+
 ---
 
 ## AI-First Development Workflow
