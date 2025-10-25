@@ -24,6 +24,7 @@ import { listActivityPageParamsSchema } from "@/schemas/components/mailchimp/lis
 import { listGrowthHistoryPageParamsSchema } from "@/schemas/components/mailchimp/list-growth-history-page-params";
 import { listPageParamsSchema } from "@/schemas/components/mailchimp/list-page-params";
 import { memberProfilePageParamsSchema } from "@/schemas/components/mailchimp/member-info-page-params";
+import { listSegmentsPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-segments-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -595,6 +596,48 @@ export async function generateMemberProfileMetadata({
     openGraph: {
       title: `${member.email_address} - Member Profile`,
       description: `View profile for ${member.email_address} - ${member.status} member`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata for list segments page
+ *
+ * @param params - Object containing the list ID
+ * @returns Next.js Metadata object for the page
+ *
+ * @example
+ * ```tsx
+ * export const generateMetadata = generateListSegmentsMetadata;
+ * ```
+ */
+export async function generateListSegmentsMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = listSegmentsPageRouteParamsSchema.parse(rawParams);
+
+  // Fetch list for metadata
+  const response = await mailchimpDAL.fetchList(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "List Segments - Not Found",
+      description: "The requested list could not be found.",
+    };
+  }
+
+  const list = response.data;
+
+  return {
+    title: `${list.name} - Segments`,
+    description: `View and manage segments for ${list.name}`,
+    openGraph: {
+      title: `${list.name} - Segments`,
+      description: `View and manage segments for ${list.name}`,
       type: "website",
     },
   };

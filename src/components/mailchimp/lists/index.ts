@@ -5,3 +5,4 @@ export { ListDetail } from "@/components/mailchimp/lists/list-detail";
 export { ListTabNavigation } from "@/components/mailchimp/lists/list-tab-navigation";
 export { ListOverview } from "@/components/mailchimp/lists/list-overview";
 export { ListMembersContent } from "@/components/mailchimp/lists/list-members-content";
+export { ListSegmentsContent } from "@/components/mailchimp/lists/list-segments-content";

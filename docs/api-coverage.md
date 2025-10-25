@@ -403,7 +403,10 @@ Audience list management endpoints.
 ### Segment Members
 
 - 📋 **List Members in Segment** - `GET /lists/{list_id}/segments/{segment_id}/members`
+  - Route: `/mailchimp/lists/[id]/segments/[segment_id]/members`
+  - Features: View members in a specific segment
   - **Priority 3:** Segmentation feature
+  - **Note:** Link from segments table already implemented
 
 - 🔒 **Add Member to Segment** - `POST /lists/{list_id}/segments/{segment_id}/members`
   - **Priority 5:** Write operation (future)
@@ -413,10 +416,9 @@ Audience list management endpoints.
 
 ### Segments
 
-- 📋 **List Segments** - `GET /lists/{list_id}/segments`
+- ✅ **List Segments** - `GET /lists/{list_id}/segments`
   - Route: `/mailchimp/lists/[id]/segments`
-  - Features: Audience segmentation
-  - **Priority 2:** Segmentation overview
+  - Features: Pagination, segment types (saved/static/predicted), member counts, condition display
 
 - 🔒 **Add Segment** - `POST /lists/{list_id}/segments`
   - **Priority 5:** Write operation (future)
@@ -650,21 +652,85 @@ Domain verification and management.
 
 ---
 
+## E-commerce Stores API
+
+E-commerce integration endpoints.
+
+### E-commerce Stores
+
+- 📋 **List Stores** - `GET /ecommerce/stores`
+  - Features: E-commerce store list
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Store** - `POST /ecommerce/stores`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Store Info** - `GET /ecommerce/stores/{store_id}`
+  - Features: Store details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Update Store** - `PATCH /ecommerce/stores/{store_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Store** - `DELETE /ecommerce/stores/{store_id}`
+  - **Priority 5:** Write operation (future)
+
+### Cart Lines
+
+- 📋 **List Cart Line Items** - `GET /ecommerce/stores/{store_id}/carts/{cart_id}/lines`
+  - Features: Cart line items
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Add Cart Line Item** - `POST /ecommerce/stores/{store_id}/carts/{cart_id}/lines`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Cart Line Item** - `GET /ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}`
+  - Features: Individual line item details
+  - **Priority 4:** E-commerce integration
+
+- 🔒 **Update Cart Line Item** - `PATCH /ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Cart Line Item** - `DELETE /ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}`
+  - **Priority 5:** Write operation (future)
+
+### Carts
+
+- 📋 **List Carts** - `GET /ecommerce/stores/{store_id}/carts`
+  - Features: Shopping carts list
+  - **Priority 4:** E-commerce integration
+
+---
+
+## Facebook Ads API
+
+Facebook advertising integration endpoints.
+
+- 📋 **List Facebook Ads** - `GET /facebook-ads`
+  - Features: Facebook Ads list
+  - **Priority 4:** Social media integration
+
+- 📋 **Get Facebook Ad Info** - `GET /facebook-ads/{outreach_id}`
+  - Features: Individual Facebook Ad details
+  - **Priority 4:** Social media integration
+
+---
+
 ## Implementation Stats
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 16 endpoints
-- ⭐ Priority 1 (Next): 1 endpoint (List Segments)
+- ✅ Implemented: 17 endpoints
 - ⭐ Priority 2: ~5 endpoints (Search members, member tags, notes, goals)
 - ⭐ Priority 3: ~23 endpoints (Member details, analytics, landing pages)
-- 📋 Priority 4: ~45 endpoints (surveys, templates, webhooks, drill-downs)
-- 🔒 Write Operations: ~50 endpoints (future consideration)
+- 📋 Priority 4: ~50 endpoints (surveys, templates, webhooks, e-commerce, drill-downs)
+- 🔒 Write Operations: ~55 endpoints (future consideration)
 
-**Total Progress (Read-Only):** 16/100+ read endpoints (~16%)
+**Total Progress (Read-Only):** 17/110+ read endpoints (~15%)
 
 **Recent Implementations:**
 
+- List Segments (audience segmentation with saved/static/predicted types)
 - Get Member Info (complete member profile with engagement stats and timeline)
 - List Members (view and manage list members with filtering and engagement stats)
 - List Growth History (monthly subscriber growth trends and metrics)
@@ -686,13 +752,15 @@ Domain verification and management.
 **API Coverage by Section:**
 
 - Reports API: 12/28 endpoints (43%)
-- Lists API: 6/45 endpoints (13%)
+- Lists API: 7/45 endpoints (16%)
 - Reporting API: 0/15 endpoints (0%)
 - Search API: 0/2 endpoints (0%)
 - Landing Pages: 0/8 endpoints (0%)
 - Template Folders: 0/5 endpoints (0%)
 - Templates: 0/6 endpoints (0%)
 - Verified Domains: 0/5 endpoints (0%)
+- E-commerce Stores: 0/11 endpoints (0%)
+- Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/1 endpoint (0%)
 - Ping API: 0/1 endpoint (0%)
 
@@ -809,7 +877,7 @@ pnpm pre-commit
 
 ---
 
-**Last Updated:** 2025-01-23 (Added File Manager, Landing Pages, expanded Reporting API sections)
+**Last Updated:** 2025-01-24 (Added E-commerce Stores, Facebook Ads APIs)
 **Maintained By:** Development team + AI assistants
 
 ---
@@ -820,14 +888,15 @@ This update adds comprehensive coverage of previously undocumented Mailchimp API
 
 **New Sections:**
 
+- **E-commerce Stores API** - 11 endpoints for e-commerce integration (stores, carts, cart lines)
+- **Facebook Ads API** - 2 endpoints for Facebook advertising integration
 - **File Manager API** - 1 endpoint for asset management
 - **Landing Pages API** - 8 endpoints for landing page creation and management
 
 **Expanded Sections:**
 
 - **Reporting API** - Added 8 survey-related endpoints (questions, responses, answers)
-- **Facebook Ads** - Added ecommerce product activity endpoint
 
-**Total New Endpoints Documented:** +18 endpoints
+**Total New Endpoints Documented:** +30 endpoints
 
-These additions bring the total tracked API surface to **115+ endpoints** (65 read-only, 50+ write operations).
+These additions bring the total tracked API surface to **130+ endpoints** (70+ read-only, 55+ write operations).

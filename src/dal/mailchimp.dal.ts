@@ -334,6 +334,31 @@ export class MailchimpDAL {
       >(`/lists/${listId}/members/${subscriberHash}`, params),
     );
   }
+
+  /**
+   * List Segments
+   * GET /lists/{list_id}/segments
+   */
+  async fetchListSegments(
+    listId: string,
+    params?: z.infer<
+      typeof import("@/schemas/mailchimp/lists/segments/params.schema").listSegmentsQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/lists/segments/success.schema").listSegmentsSuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/lists/segments/success.schema").listSegmentsSuccessSchema
+        >
+      >(`/lists/${listId}/segments`, params),
+    );
+  }
 }
 
 /**
