@@ -4,8 +4,10 @@
  *
  * Uses shadcn/ui Table component for consistency
  * Shows daily activity: emails sent, opens, clicks, bounces, subs/unsubs
+ * Dates are clickable links to filtered campaign reports
  */
 
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -75,40 +77,51 @@ export function ListActivityContent({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {activity.map((item, index) => (
-                  <TableRow key={`${item.day}-${index}`}>
-                    <TableCell className="font-medium">
-                      {formatDateShort(item.day)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.emails_sent.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.unique_opens.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.recipient_clicks.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.hard_bounce.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.soft_bounce.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.subs.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.unsubs.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.other_adds.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.other_removes.toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {activity.map((item, index) => {
+                  // Extract YYYY-MM-DD from ISO 8601 format in UTC
+                  // API returns dates like "2024-10-20T00:00:00Z"
+                  const dateOnly = item.day.split("T")[0];
+
+                  return (
+                    <TableRow key={`${item.day}-${index}`}>
+                      <TableCell className="font-medium">
+                        <Link
+                          href={`/mailchimp/reports?from=${dateOnly}&to=${dateOnly}`}
+                          className="text-primary hover:underline transition-colors"
+                        >
+                          {formatDateShort(item.day, true)}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.emails_sent.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.unique_opens.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.recipient_clicks.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.hard_bounce.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.soft_bounce.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.subs.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.unsubs.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.other_adds.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {item.other_removes.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
