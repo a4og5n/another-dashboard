@@ -89,7 +89,8 @@ async function BreadcrumbContent({
   params: Promise<{ id: string; subscriber_hash: string }>;
 }) {
   const rawParams = await params;
-  const { id } = memberTagsPageRouteParamsSchema.parse(rawParams);
+  const { id, subscriber_hash } =
+    memberTagsPageRouteParamsSchema.parse(rawParams);
 
   return (
     <BreadcrumbNavigation
@@ -99,7 +100,7 @@ async function BreadcrumbContent({
         bc.lists,
         bc.list(id),
         bc.listMembers(id),
-        bc.memberProfile(id),
+        bc.memberProfile(id, subscriber_hash),
         bc.current("Tags"),
       ]}
     />

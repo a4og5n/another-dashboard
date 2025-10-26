@@ -361,19 +361,20 @@ export const bc = {
   /**
    * Member Profile breadcrumb
    *
-   * @param id - ID
+   * @param listId - List ID
+   * @param subscriberHash - Subscriber hash (MD5 of lowercase email)
    * @returns Breadcrumb item for member profile
    *
    * @example
    * ```tsx
-   * bc.memberProfile("abc123")
-   * // Returns: { label: "Member Profile", href: "/mailchimp/lists/${id}/members/[subscriber_hash]" }
+   * bc.memberProfile("abc123", "def456")
+   * // Returns: { label: "Member Profile", href: "/mailchimp/lists/abc123/members/def456" }
    * ```
    */
-  memberProfile(id: string): BreadcrumbItem {
+  memberProfile(listId: string, subscriberHash: string): BreadcrumbItem {
     return {
       label: "Member Profile",
-      href: `/mailchimp/lists/${id}/members/[subscriber_hash]`,
+      href: `/mailchimp/lists/${listId}/members/${subscriberHash}`,
     };
   },
 
