@@ -398,6 +398,37 @@ export class MailchimpDAL {
   }
 
   /**
+   * Fetch Member Activity Feed
+   * GET /lists/{list_id}/members/{subscriber_hash}/activity-feed
+   *
+   * @param listId - The unique ID for the list
+   * @param subscriberHash - MD5 hash of the lowercase version of the list member's email address
+   * @param params - Query parameters (fields, exclude_fields, count, offset, activity_filters)
+   * @returns Paginated list of activity events for the member
+   */
+  async fetchMemberActivity(
+    listId: string,
+    subscriberHash: string,
+    params?: z.infer<
+      typeof import("@/schemas/mailchimp/lists/member-activity/params.schema").memberActivityQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/lists/member-activity/success.schema").memberActivitySuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/lists/member-activity/success.schema").memberActivitySuccessSchema
+        >
+      >(`/lists/${listId}/members/${subscriberHash}/activity-feed`, params),
+    );
+  }
+
+  /**
    * Search Members
    * GET /search-members
    *
