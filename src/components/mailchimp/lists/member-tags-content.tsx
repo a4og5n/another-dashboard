@@ -52,17 +52,17 @@ export function MemberTagsContent({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Member Tags ({total_items.toLocaleString()})</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {tags.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No tags assigned to this member.
-          </p>
-        ) : (
-          <>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Member Tags ({total_items.toLocaleString()})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {tags.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No tags assigned to this member.
+            </p>
+          ) : (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -81,23 +81,25 @@ export function MemberTagsContent({
                 ))}
               </TableBody>
             </Table>
+          )}
+        </CardContent>
+      </Card>
 
-            <div className="mt-4 flex items-center justify-between">
-              <PerPageSelector
-                value={pageSize}
-                createPerPageUrl={createPerPageUrl}
-                itemName="tags"
-              />
-
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                createPageUrl={createPageUrl}
-              />
-            </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
+      {/* Pagination Controls */}
+      {total_items > 0 && (
+        <div className="flex items-center justify-between">
+          <PerPageSelector
+            value={pageSize}
+            createPerPageUrl={createPerPageUrl}
+            itemName="tags"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            createPageUrl={createPageUrl}
+          />
+        </div>
+      )}
+    </div>
   );
 }
