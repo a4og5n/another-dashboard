@@ -268,6 +268,7 @@ This is enforced in Phase 0 below.
 
 **Phase 0: Git Setup** 🔧 (Automatic - Create branch)
 **Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
+**Phase 1.5: Pattern Reference** 🔍 (STOP POINT - Find similar components, plan navigation)
 **Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval, NO docs update)
 **Phase 2.4: Quick Smoke Test** 🧪 (STOP POINT - User tests in browser before commit)
 **Phase 2.5: Initial Local Commit** ✅ (Automatic LOCAL commit - DO NOT PUSH)
@@ -378,6 +379,13 @@ Before presenting schemas for review, AI must run this self-checklist:
 - [ ] ✅ Documented what was assumed and why
 - [ ] ✅ Told user: "These schemas need verification with real API response during testing"
 
+**Navigation Planning:**
+
+- [ ] ✅ Identified parent page(s) that should link to this new page
+- [ ] ✅ Identified where this page should link back (breadcrumbs, back buttons)
+- [ ] ✅ Identified related pages for cross-linking (siblings)
+- [ ] ✅ Planned button/link placement and labels
+
 ### Commit Strategy: Option A vs Option B
 
 After user approves schemas, choose ONE of these commit strategies:
@@ -483,6 +491,127 @@ git commit -m "feat: implement {Endpoint Name} page (Phase 2)"
 ---
 
 **DEFAULT: Use Option A unless user requests Option B**
+
+### Phase 1.5: Pattern Reference (MANDATORY - Do NOT Skip)
+
+**⚠️ CRITICAL:** This phase prevents 50% of fix commits by ensuring consistency with existing patterns.
+
+After schema approval, BEFORE starting implementation:
+
+#### Step 1: Find Similar Components
+
+**AI must run these searches:**
+
+```bash
+# Find pages with similar route structure
+find src/app/mailchimp -name "page.tsx" -path "*[id]*" | head -20
+
+# Find similar content components
+ls src/components/mailchimp/**/*-content.tsx | grep -E "(member|segment|list|report)" | head -20
+
+# Find similar skeletons
+ls src/skeletons/mailchimp/*.tsx | head -20
+```
+
+#### Step 2: Analyze Patterns
+
+**For the 2-3 most similar components, AI must check:**
+
+1. **Layout Structure:**
+   - Where is pagination placed? (inside Card vs outside in `space-y-6` wrapper)
+   - How are tables structured? (Server Component with shadcn Table vs TanStack Table)
+   - What's the Card/CardHeader/CardContent pattern?
+
+2. **Breadcrumb Patterns:**
+   - Single parameter: `bc.list(id)`
+   - Multiple parameters: `bc.memberProfile(listId, subscriberHash)`
+   - Parent relationship: `bc.report(id)` then `bc.current("Opens")`
+
+3. **Import Patterns:**
+   - Skeleton: `import { XSkeleton } from "@/skeletons/mailchimp"`
+   - Date utility: `import { formatDateTimeSafe } from "@/utils/format-date"`
+   - Types: `import type { X, Y } from "@/types/mailchimp/endpoint"`
+
+4. **Navigation Integration:**
+   - Does parent page have a "View All" or detail link?
+   - Example: Member Profile → "View All Tags" button
+   - Pattern: `<Button asChild variant="outline"><Link href={...}>View All</Link></Button>`
+
+#### Step 3: Document Findings
+
+**AI must create a pattern reference document:**
+
+```markdown
+## Pattern Reference for [New Endpoint]
+
+**Following pattern from:** `[similar-component].tsx`
+
+### Layout Pattern
+
+- Pagination: [inside Card | outside in space-y-6 wrapper]
+- Table: [Server Component with shadcn Table | TanStack Table]
+- Wrapper: [Card only | div with space-y-6]
+
+### Breadcrumb Pattern
+
+- Parameters: [single: listId | multiple: listId, subscriberHash]
+- Function: bc.newFunction([params])
+
+### Navigation Integration
+
+- Parent page: [page name]
+  - Add button: [location in component]
+  - Button label: "[label]"
+  - Link href: `[route]`
+- This page links back via: [breadcrumbs | back button]
+
+### Import Patterns
+
+- Skeleton: `import { [Name]Skeleton } from "@/skeletons/mailchimp"`
+- Types: `import type { ... } from "@/types/mailchimp/[endpoint]"`
+- Schemas: `import { ... } from "@/schemas/mailchimp/[endpoint]/..."`
+
+### Intentional Deviations
+
+[List any differences from the pattern and explain why]
+```
+
+#### Step 4: Present to User
+
+**AI must present:**
+
+```markdown
+## Phase 1.5: Pattern Reference
+
+I've analyzed similar components and will follow this pattern:
+
+**Reference component:** `src/components/mailchimp/[similar]/[component].tsx`
+
+**Key patterns:**
+
+- Layout: [describe]
+- Breadcrumbs: [describe]
+- Navigation: [describe planned integration]
+- Imports: [describe]
+
+**Deviations:** [list any or "None - following pattern exactly"]
+
+⏸️ **Ready to proceed with implementation?**
+```
+
+#### Step 5: Get Approval
+
+**⏸️ STOP - Wait for user confirmation**
+
+User can:
+
+- Approve: "looks good" / "proceed" / "yes"
+- Request changes: "use different pattern" / "change X"
+- Skip (rare): "skip pattern reference"
+
+**DO NOT proceed to Phase 2 without approval or explicit skip**
+
+---
 
 ### Phase 2: Page Generation (After Approval)
 
