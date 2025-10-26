@@ -336,6 +336,33 @@ export class MailchimpDAL {
   }
 
   /**
+   * Search Members
+   * GET /search-members
+   *
+   * @param params - Query parameters (query, list_id, fields, exclude_fields)
+   * @returns Search results with exact matches and full text search results
+   */
+  async searchMembers(
+    params: z.infer<
+      typeof import("@/schemas/mailchimp/search-members-params.schema").searchMembersQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/search-members-success.schema").searchMembersSuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/search-members-success.schema").searchMembersSuccessSchema
+        >
+      >("/search-members", params),
+    );
+  }
+
+  /**
    * List Segments
    * GET /lists/{list_id}/segments
    */

@@ -729,9 +729,12 @@ Search endpoints for campaigns and members.
 
 ### Search Members
 
-- 📋 **Search Members** - `GET /search-members`
-  - Features: Search across all list members
+- ✅ **Search Members** - `GET /search-members`
+  - Route: `/mailchimp/search/members`
+  - Features: Search across all list members by email, first name, or last name
+  - Returns: Exact matches and full-text search results
   - **Priority 2:** Member discovery
+  - **Status:** Implemented (Issue #246)
 
 ---
 

@@ -14,7 +14,7 @@ export const emailActivitySchema = z.object({
   list_id: z.string(),
   list_is_active: z.boolean(),
   email_id: z.string(),
-  email_address: z.string().email(),
+  email_address: z.email(),
   activity: z.array(
     z.object({
       action: z.string(),

@@ -603,6 +603,45 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Search Members Page
+   * Global search across all lists for members by email, first name, or last name
+   */
+  "search-members": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/search-members-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/search-members-success.schema.ts",
+      apiError: "src/schemas/mailchimp/search-members-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/search/members",
+      params: [],
+    },
+    api: {
+      endpoint: "/search-members",
+      method: "GET",
+      dalMethod: "searchMembers",
+    },
+    page: {
+      type: "list",
+      title: "Search Members",
+      description:
+        "Search for members across all lists by email, first name, or last name",
+      features: [
+        "Global search",
+        "Exact matches",
+        "Full-text search",
+        "Member details",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        label: "Search Members",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

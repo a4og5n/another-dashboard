@@ -15,33 +15,11 @@
 import { z } from "zod";
 import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
 import { mergeFieldSchema } from "@/schemas/mailchimp/common/report-list-member.schema";
-
-/**
- * Status values for member subscription status
- */
-export const MEMBER_STATUS = [
-  "subscribed",
-  "unsubscribed",
-  "cleaned",
-  "pending",
-  "transactional",
-  "archived",
-] as const;
-
-/**
- * Email type values
- */
-export const EMAIL_TYPE = ["html", "text"] as const;
-
-/**
- * The status of an SMS subscription
- */
-export const SMS_SUBSCRIPTION_STATUS = [
-  "subscribed",
-  "unsubscribed",
-  "nonsubscribed",
-  "pending",
-] as const;
+import {
+  MEMBER_STATUS,
+  EMAIL_TYPE,
+  SMS_SUBSCRIPTION_STATUS,
+} from "@/schemas/mailchimp/common/constants.schema";
 
 /**
  * Marketing permission schema
