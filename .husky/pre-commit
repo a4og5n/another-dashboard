@@ -1,3 +1,57 @@
+#!/usr/bin/env sh
+
+# ========================================
+# Git Branch Protection & Naming Enforcement
+# ========================================
+
+echo "🔒 Checking git branch rules..."
+
+# Get current branch name
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+# RULE 1: Block commits to protected branches (main/master)
+if [ "$branch" = "main" ] || [ "$branch" = "master" ]; then
+  echo ""
+  echo "❌ BLOCKED: Cannot commit directly to '$branch' branch"
+  echo ""
+  echo "📋 Required workflow:"
+  echo "  1. Create GitHub issue first: gh issue create --title \"...\""
+  echo "  2. Create feature branch: git checkout -b feature/description-issue-123"
+  echo "  3. Make your changes and commit on the feature branch"
+  echo "  4. Push and create PR: gh pr create"
+  echo ""
+  echo "See CLAUDE.md Git Workflow Best Practices for details"
+  echo ""
+  exit 1
+fi
+
+# RULE 2: Enforce issue number in branch name
+if ! echo "$branch" | grep -qE '^feature/.+-issue-[0-9]+$|^fix/.+-issue-[0-9]+$'; then
+  echo ""
+  echo "❌ BLOCKED: Branch name must include issue number"
+  echo ""
+  echo "Expected format:"
+  echo "  feature/description-issue-123"
+  echo "  fix/description-issue-456"
+  echo ""
+  echo "Current branch: $branch"
+  echo ""
+  echo "To fix:"
+  echo "  1. Create GitHub issue if you haven't: gh issue create"
+  echo "  2. Rename branch: git branch -m feature/description-issue-123"
+  echo ""
+  echo "See CLAUDE.md Phase 0 for workflow details"
+  echo ""
+  exit 1
+fi
+
+echo "✅ Branch check passed: $branch"
+echo ""
+
+# ========================================
+# Pre-commit Validation Suite
+# ========================================
+
 echo "🔍 Running pre-commit validation..."
 echo "⚡ Quick validation (catches issues before formatting)..."
 pnpm type-check || { echo "❌ Type errors found! Fix before committing."; exit 1; }
