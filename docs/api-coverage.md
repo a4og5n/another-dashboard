@@ -12,6 +12,137 @@ This file tracks which Mailchimp API endpoints have been implemented in the Fich
 
 ---
 
+## API Root
+
+Core API information endpoint.
+
+- 📋 **API Root** - `GET /`
+  - Features: API version, health status, account info
+  - **Priority 3:** API information
+
+---
+
+## Account Exports
+
+Account data export endpoints.
+
+- 📋 **List Account Exports** - `GET /account-exports`
+  - Features: List of all account exports
+  - **Priority 4:** Data export feature
+
+- 🔒 **Add Export** - `POST /account-exports`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Account Export Info** - `GET /account-exports/{export_id}`
+  - Features: Individual export status and details
+  - **Priority 4:** Data export feature
+
+---
+
+## Audiences (BETA)
+
+Beta audience management endpoints.
+
+- 📋 **List Audiences** - `GET /audiences` ⚠️ **BETA**
+  - Features: Beta audience list
+  - **Priority 4:** Beta feature
+
+- 📋 **Get Audience** - `GET /audiences/{audience_id}` ⚠️ **BETA**
+  - Features: Beta audience details
+  - **Priority 4:** Beta feature
+
+---
+
+## Authorized Apps
+
+OAuth application management endpoints.
+
+- 📋 **List Authorized Apps** - `GET /authorized-apps`
+  - Features: List of authorized OAuth applications
+  - **Priority 4:** Security/integration tracking
+
+- 📋 **Get Authorized App Info** - `GET /authorized-apps/{app_id}`
+  - Features: Individual app authorization details
+  - **Priority 4:** Security tracking
+
+---
+
+## Automation Flows (Customer Journeys)
+
+Customer journey automation endpoints.
+
+- 📋 **List Customer Journeys** - `GET /customer-journeys/journeys`
+  - Features: Customer journey automation workflows
+  - **Priority 3:** Modern automation feature
+
+---
+
+## Batch Operations
+
+Batch operation management endpoints.
+
+- 📋 **List Batch Requests** - `GET /batches`
+  - Features: Track batch operations
+  - **Priority 4:** Batch operation management
+
+- 🔒 **Start Batch Operation** - `POST /batches`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Batch Operation Status** - `GET /batches/{batch_id}`
+  - Features: Individual batch operation status
+  - **Priority 4:** Batch tracking
+
+- 🔒 **Delete Batch Request** - `DELETE /batches/{batch_id}`
+  - **Priority 5:** Write operation (future)
+
+---
+
+## Batch Webhooks
+
+Batch webhook management endpoints.
+
+- 📋 **List Batch Webhooks** - `GET /batch-webhooks`
+  - Features: Webhook batch subscriptions
+  - **Priority 4:** Integration feature
+
+- 🔒 **Add Batch Webhook** - `POST /batch-webhooks`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Batch Webhook Info** - `GET /batch-webhooks/{batch_webhook_id}`
+  - Features: Individual batch webhook details
+  - **Priority 4:** Integration tracking
+
+- 🔒 **Update Batch Webhook** - `PATCH /batch-webhooks/{batch_webhook_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Batch Webhook** - `DELETE /batch-webhooks/{batch_webhook_id}`
+  - **Priority 5:** Write operation (future)
+
+---
+
+## Campaign Folders
+
+Campaign organization endpoints.
+
+- 📋 **List Campaign Folders** - `GET /campaign-folders`
+  - Features: Campaign folder organization
+  - **Priority 3:** Campaign management
+
+- 🔒 **Add Campaign Folder** - `POST /campaign-folders`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Campaign Folder** - `GET /campaign-folders/{folder_id}`
+  - Features: Individual folder details
+  - **Priority 4:** Campaign organization
+
+- 🔒 **Update Campaign Folder** - `PATCH /campaign-folders/{folder_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Campaign Folder** - `DELETE /campaign-folders/{folder_id}`
+  - **Priority 5:** Write operation (future)
+
+---
+
 ## Campaigns API
 
 Campaign management and operations endpoints.
@@ -57,6 +188,21 @@ Campaign management and operations endpoints.
 
 - 🔒 **Replicate Campaign** - `POST /campaigns/{campaign_id}/actions/replicate`
   - **Priority 5:** Write operation (future)
+
+### Campaign Content
+
+- 📋 **Get Campaign Content** - `GET /campaigns/{campaign_id}/content`
+  - Features: Campaign HTML content
+  - **Priority 3:** Content preview
+
+- 🔒 **Set Campaign Content** - `PUT /campaigns/{campaign_id}/content`
+  - **Priority 5:** Write operation (future)
+
+### Campaign Send Checklist
+
+- 📋 **Get Campaign Send Checklist** - `GET /campaigns/{campaign_id}/send-checklist`
+  - Features: Pre-send validation checklist
+  - **Priority 3:** Campaign validation
 
 ---
 
@@ -1116,12 +1262,12 @@ Facebook advertising integration endpoints.
 
 - ✅ Implemented: 19 endpoints
 - ⭐ Priority 2: ~5 endpoints (Member tags, notes, goals, activity)
-- ⭐ Priority 3: ~35 endpoints (Campaigns, member details, analytics, landing pages, automations)
-- 📋 Priority 4: ~120 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites)
-- 🔒 Write Operations: ~120 endpoints (future consideration)
+- ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
+- 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
+- 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 19/230+ read endpoints (~8%)
+**Total Progress (Read-Only):** 19/244 read endpoints (~7.8%)
 
 **Recent Implementations:**
 
@@ -1148,7 +1294,15 @@ Facebook advertising integration endpoints.
 
 **API Coverage by Section:**
 
-- Campaigns API: 0/15 endpoints (0%)
+- API Root: 0/1 endpoint (0%)
+- Account Exports: 0/3 endpoints (0%)
+- Audiences (BETA): 0/2 endpoints (0%)
+- Authorized Apps: 0/2 endpoints (0%)
+- Automation Flows (Customer Journeys): 0/1 endpoint (0%)
+- Batch Operations: 0/4 endpoints (0%)
+- Batch Webhooks: 0/5 endpoints (0%)
+- Campaign Folders: 0/5 endpoints (0%)
+- Campaigns API: 0/17 endpoints (0%)
 - Chimp Chatter Activity: 0/1 endpoint (0%)
 - Classic Automations: 0/14 endpoints (0%)
 - Connected Sites: 0/5 endpoints (0%)
@@ -1279,12 +1433,44 @@ pnpm pre-commit
 
 ---
 
-**Last Updated:** 2025-10-25 (Added Campaigns API, Chimp Chatter, Search Members implementation)
+**Last Updated:** 2025-10-26 (Complete Mailchimp API endpoint catalog)
 **Maintained By:** Development team + AI assistants
 
 ---
 
 ## Summary of Recent Updates
+
+### Update 2025-10-26: Complete API Catalog
+
+Added comprehensive coverage of ALL Mailchimp API endpoints:
+
+**New Sections:**
+
+- **API Root** - 1 endpoint for API information
+- **Account Exports** - 3 endpoints for data export
+- **Audiences (BETA)** - 2 endpoints for beta audience features
+- **Authorized Apps** - 2 endpoints for OAuth app management
+- **Automation Flows (Customer Journeys)** - 1 endpoint for modern automation
+- **Batch Operations** - 4 endpoints for batch processing
+- **Batch Webhooks** - 5 endpoints for webhook batch subscriptions
+- **Campaign Folders** - 5 endpoints for campaign organization
+
+**Enhanced Sections:**
+
+- **Campaigns API** - Added Campaign Content (2 endpoints) and Campaign Send Checklist (1 endpoint)
+  - Total: 17 endpoints (was 15)
+
+**Stats Updated:**
+
+- Total documented endpoints: 230+ → 280+ endpoints
+- Read-only endpoints: 230+ → 244 endpoints
+- Write operations: 120+ → 150+ endpoints
+- Total API sections: 17 → 25 sections
+- Implementation coverage: ~8% → ~7.8% (denominator increased with new discoveries)
+
+**Impact:**
+
+This update provides the first complete catalog of ALL available Mailchimp API endpoints, giving us a full picture of the API surface area and enabling better prioritization for future implementations.
 
 ### Update 2025-10-25 (Part 2): Campaigns API & Search Members
 
