@@ -12,6 +12,64 @@ This file tracks which Mailchimp API endpoints have been implemented in the Fich
 
 ---
 
+## Campaigns API
+
+Campaign management and operations endpoints.
+
+### Campaign Management
+
+- 📋 **List Campaigns** - `GET /campaigns`
+  - Features: Campaign list with filtering and pagination
+  - **Priority 3:** Campaign management
+
+- 🔒 **Add Campaign** - `POST /campaigns`
+  - **Priority 5:** Write operation (future)
+
+- 📋 **Get Campaign Info** - `GET /campaigns/{campaign_id}`
+  - Features: Campaign details and settings
+  - **Priority 3:** Campaign analytics
+
+- 🔒 **Update Campaign Settings** - `PATCH /campaigns/{campaign_id}`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Delete Campaign** - `DELETE /campaigns/{campaign_id}`
+  - **Priority 5:** Write operation (future)
+
+### Campaign Actions
+
+- 🔒 **Cancel Campaign** - `POST /campaigns/{campaign_id}/actions/cancel-send`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Send Campaign** - `POST /campaigns/{campaign_id}/actions/send`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Schedule Campaign** - `POST /campaigns/{campaign_id}/actions/schedule`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Unschedule Campaign** - `POST /campaigns/{campaign_id}/actions/unschedule`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Pause RSS Campaign** - `POST /campaigns/{campaign_id}/actions/pause`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Resume RSS Campaign** - `POST /campaigns/{campaign_id}/actions/resume`
+  - **Priority 5:** Write operation (future)
+
+- 🔒 **Replicate Campaign** - `POST /campaigns/{campaign_id}/actions/replicate`
+  - **Priority 5:** Write operation (future)
+
+---
+
+## Chimp Chatter Activity
+
+Activity feed and notifications endpoints.
+
+- 📋 **Get Latest Chimp Chatter** - `GET /activity-feed/chimp-chatter`
+  - Features: Recent activity feed
+  - **Priority 4:** Dashboard widget
+
+---
+
 ## Classic Automations API
 
 Marketing automation workflow endpoints.
@@ -1057,17 +1115,18 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 17 endpoints
-- ⭐ Priority 2: ~5 endpoints (Search members, member tags, notes, goals)
-- ⭐ Priority 3: ~30 endpoints (Member details, analytics, landing pages, automations)
-- 📋 Priority 4: ~115 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites)
-- 🔒 Write Operations: ~110 endpoints (future consideration)
+- ✅ Implemented: 18 endpoints
+- ⭐ Priority 2: ~5 endpoints (Member tags, notes, goals, activity)
+- ⭐ Priority 3: ~35 endpoints (Campaigns, member details, analytics, landing pages, automations)
+- 📋 Priority 4: ~120 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites)
+- 🔒 Write Operations: ~120 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 17/215+ read endpoints (~8%)
+**Total Progress (Read-Only):** 18/230+ read endpoints (~8%)
 
 **Recent Implementations:**
 
+- Search Members (global member search across all lists - Issue #246)
 - List Segments (audience segmentation with saved/static/predicted types)
 - Get Member Info (complete member profile with engagement stats and timeline)
 - List Members (view and manage list members with filtering and engagement stats)
@@ -1089,6 +1148,8 @@ Facebook advertising integration endpoints.
 
 **API Coverage by Section:**
 
+- Campaigns API: 0/15 endpoints (0%)
+- Chimp Chatter Activity: 0/1 endpoint (0%)
 - Classic Automations: 0/14 endpoints (0%)
 - Connected Sites: 0/5 endpoints (0%)
 - Conversations (Deprecated): 0/4 endpoints (0% - not planned)
@@ -1100,7 +1161,7 @@ Facebook advertising integration endpoints.
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)
-- Search API: 0/2 endpoints (0%)
+- Search API: 1/2 endpoints (50%)
 - Template Folders: 0/5 endpoints (0%)
 - Templates: 0/7 endpoints (0%)
 - Verified Domains: 0/5 endpoints (0%)
@@ -1218,14 +1279,37 @@ pnpm pre-commit
 
 ---
 
-**Last Updated:** 2025-10-25 (Added Classic Automations, Connected Sites, Conversations APIs)
+**Last Updated:** 2025-10-25 (Added Campaigns API, Chimp Chatter, Search Members implementation)
 **Maintained By:** Development team + AI assistants
 
 ---
 
 ## Summary of Recent Updates
 
-### Update 2025-10-25: Automation & Connected Sites
+### Update 2025-10-25 (Part 2): Campaigns API & Search Members
+
+Added Campaigns API section and marked Search Members as implemented:
+
+**New Sections:**
+
+- **Campaigns API** - 15 endpoints for campaign management
+  - Campaign management (list, add, get, update, delete)
+  - Campaign actions (send, schedule, cancel, pause/resume, replicate)
+
+**Implemented Endpoints:**
+
+- **Search Members** (`GET /search-members`) - ✅ Implemented (Issue #246)
+  - Route: `/mailchimp/search/members`
+  - Features: Global member search across all lists
+  - Returns: Exact matches and full-text search results
+
+**Stats Updated:**
+
+- Total implemented: 17 → 18 endpoints
+- Search API coverage: 0/2 → 1/2 (50%)
+- Total tracked endpoints: 215+ → 230+
+
+### Update 2025-10-25 (Part 1): Automation & Connected Sites
 
 Added comprehensive coverage of automation and website tracking endpoints:
 
