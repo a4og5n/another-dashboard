@@ -679,10 +679,11 @@ Audience list management endpoints.
 
 ### Member Activity Feed
 
-- 📋 **View Recent Activity** - `GET /lists/{list_id}/members/{subscriber_hash}/activity-feed`
-  - Route: `/mailchimp/lists/[id]/members/[subscriber_hash]/activity-feed`
-  - Features: Complete activity timeline
+- ✅ **View Recent Activity** - `GET /lists/{list_id}/members/{subscriber_hash}/activity-feed`
+  - Route: `/mailchimp/lists/[id]/members/[subscriber_hash]/activity`
+  - Features: Complete activity timeline, discriminated union schemas for 7+ activity types, smart pagination, clickable campaign titles, timezone-aware date filtering
   - **Priority 3:** Member details
+  - **Implemented:** Issue #268, PR #270
 
 ### Member Goals
 
@@ -769,7 +770,7 @@ Audience list management endpoints.
 - ✅ **List Members in Segment** - `GET /lists/{list_id}/segments/{segment_id}/members`
   - Route: `/mailchimp/lists/[id]/segments/[segment_id]/members`
   - Features: View members in a specific segment, Pagination, Member details
-  - **Implemented:** Issue #250, PR #TBD
+  - **Implemented:** Issue #250, PR #253
 
 - 🔒 **Add Member to Segment** - `POST /lists/{list_id}/segments/{segment_id}/members`
   - **Priority 5:** Write operation (future)
@@ -1264,17 +1265,18 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 21 endpoints
-- ⭐ Priority 2: ~3 endpoints (Member goals, activity feed)
+- ✅ Implemented: 23 endpoints
+- ⭐ Priority 2: ~2 endpoints (Member goals)
 - ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 21/244 read endpoints (~8.6%)
+**Total Progress (Read-Only):** 23/244 read endpoints (~9.4%)
 
 **Recent Implementations:**
 
+- **Member Activity Feed** (complete engagement timeline with discriminated union schemas for 7+ activity types - Issue #268, PR #270)
 - **Member Notes** (view notes for list members - chronological timeline with pagination)
 - **Member Tags** (view tags assigned to list members - Issue #247, PR #254)
 - **Segment Members** (view members in audience segments - Issue #250, PR #253)
@@ -1340,22 +1342,14 @@ The following foundational endpoints are now implemented:
 - ✅ Segment Members (`GET /lists/{list_id}/segments/{segment_id}/members`)
 - ✅ Member Tags (`GET /lists/{list_id}/members/{subscriber_hash}/tags`)
 - ✅ Member Notes (`GET /lists/{list_id}/members/{subscriber_hash}/notes`)
+- ✅ Member Activity Feed (`GET /lists/{list_id}/members/{subscriber_hash}/activity-feed`)
 - ✅ Search Members (`GET /search-members`)
 
 ### 🎯 Next Priority Endpoints:
 
 **Option 1: Complete Member Detail Features** ⭐⭐⭐
 
-**1. Member Activity** (`GET /lists/{list_id}/members/{subscriber_hash}/activity`)
-
-- **Value:** View engagement timeline for individual members
-- **Complexity:** Medium (activity feed display, date formatting, action types)
-- **User Benefit:** Understand member engagement patterns
-- **Route:** `/mailchimp/lists/[id]/members/[subscriber_hash]/activity`
-- **Why Important:** Natural drill-down from member profile, completes member detail view
-- **Similar Pattern:** Campaign Email Activity (already implemented)
-
-**2. Member Goals** (`GET /lists/{list_id}/members/{subscriber_hash}/goals`)
+**1. Member Goals** (`GET /lists/{list_id}/members/{subscriber_hash}/goals`)
 
 - **Value:** Track goal completions for members
 - **Complexity:** Medium (goal tracking, completion status, timestamps)
@@ -1365,7 +1359,7 @@ The following foundational endpoints are now implemented:
 
 **Option 2: List Analytics & Geographic Data** ⭐⭐
 
-**3. List Locations** (`GET /lists/{list_id}/locations`)
+**2. List Locations** (`GET /lists/{list_id}/locations`)
 
 - **Value:** Geographic distribution of list members
 - **Complexity:** Low (simple table display, country/region breakdown)
@@ -1374,7 +1368,7 @@ The following foundational endpoints are now implemented:
 - **Why Important:** Quick win - similar pattern to Campaign Locations (already implemented)
 - **Quick Win:** Reuse existing components and patterns
 
-**4. List Interest Categories** (`GET /lists/{list_id}/interest-categories`)
+**3. List Interest Categories** (`GET /lists/{list_id}/interest-categories`)
 
 - **Value:** View interest groups/categories for list segmentation
 - **Complexity:** Medium (category hierarchy, member counts)
@@ -1384,7 +1378,7 @@ The following foundational endpoints are now implemented:
 
 **Option 3: Campaign Management** ⭐
 
-**5. List Campaigns** (`GET /campaigns`)
+**4. List Campaigns** (`GET /campaigns`)
 
 - **Value:** View all campaigns with filtering and search
 - **Complexity:** High (comprehensive campaign list, multiple statuses, filtering)
