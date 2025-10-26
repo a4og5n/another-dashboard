@@ -616,11 +616,10 @@ Audience list management endpoints.
 
 ### Segment Members
 
-- 📋 **List Members in Segment** - `GET /lists/{list_id}/segments/{segment_id}/members`
+- ✅ **List Members in Segment** - `GET /lists/{list_id}/segments/{segment_id}/members`
   - Route: `/mailchimp/lists/[id]/segments/[segment_id]/members`
-  - Features: View members in a specific segment
-  - **Priority 3:** Segmentation feature
-  - **Note:** Link from segments table already implemented
+  - Features: View members in a specific segment, Pagination, Member details
+  - **Implemented:** Issue #250, PR #TBD
 
 - 🔒 **Add Member to Segment** - `POST /lists/{list_id}/segments/{segment_id}/members`
   - **Priority 5:** Write operation (future)
@@ -1115,17 +1114,18 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 18 endpoints
+- ✅ Implemented: 19 endpoints
 - ⭐ Priority 2: ~5 endpoints (Member tags, notes, goals, activity)
 - ⭐ Priority 3: ~35 endpoints (Campaigns, member details, analytics, landing pages, automations)
 - 📋 Priority 4: ~120 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites)
 - 🔒 Write Operations: ~120 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 18/230+ read endpoints (~8%)
+**Total Progress (Read-Only):** 19/230+ read endpoints (~8%)
 
 **Recent Implementations:**
 
+- **Segment Members** (view members in audience segments - Issue #250)
 - Search Members (global member search across all lists - Issue #246)
 - List Segments (audience segmentation with saved/static/predicted types)
 - Get Member Info (complete member profile with engagement stats and timeline)
@@ -1157,7 +1157,7 @@ Facebook advertising integration endpoints.
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
-- Lists API: 7/45 endpoints (16%)
+- Lists API: 8/45 endpoints (18%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)

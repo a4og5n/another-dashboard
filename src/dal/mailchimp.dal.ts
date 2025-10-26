@@ -386,6 +386,32 @@ export class MailchimpDAL {
       >(`/lists/${listId}/segments`, params),
     );
   }
+
+  /**
+   * List Members in Segment
+   * GET /lists/{list_id}/segments/{segment_id}/members
+   */
+  async fetchSegmentMembers(
+    listId: string,
+    segmentId: string,
+    params?: z.infer<
+      typeof import("@/schemas/mailchimp/lists/segments/members/params.schema").segmentMembersQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/lists/segments/members/success.schema").segmentMembersSuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/lists/segments/members/success.schema").segmentMembersSuccessSchema
+        >
+      >(`/lists/${listId}/segments/${segmentId}/members`, params),
+    );
+  }
 }
 
 /**
