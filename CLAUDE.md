@@ -149,7 +149,12 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 - [ ] **Confirm endpoint priority** - Verify in `docs/api-coverage.md` that this endpoint is next in priority
 - [ ] **Search for similar endpoints** - Find comparable pages to match patterns (e.g., other list detail pages, other report drill-downs)
 - [ ] **Verify parent page exists** - If nested endpoint (e.g., `/lists/[id]/segments`), confirm parent page (`/lists/[id]`) exists
-- [ ] **Check navigation integration** - Determine if parent page needs a link/button to this new page
+- [ ] **Plan navigation integration** - Determine ALL navigation entry points:
+  - [ ] Should this page be linked from main dashboard (`/mailchimp`)?
+  - [ ] Should parent page have a button/tab/link to this page?
+  - [ ] Should this be in sidebar navigation?
+  - [ ] Does this replace an existing page or add new functionality?
+  - [ ] Should there be breadcrumb navigation?
 - [ ] **Review existing schemas** - Check `src/schemas/mailchimp/` for reusable common schemas before creating new ones
 
 **Quick References:**
@@ -179,8 +184,9 @@ This is enforced in Phase 0 below.
 **Phase 0: Git Setup** 🔧 (Automatic - Create branch)
 **Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
 **Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval)
-**Phase 2.5: Single Atomic Commit** ✅ (Automatic LOCAL commit - After validation)
-**Phase 2.75: User Review & Testing** ⏸️ (STOP POINT - User testing required)
+**Phase 2.4: Quick Smoke Test** 🧪 (STOP POINT - User tests in browser before commit)
+**Phase 2.5: Single Atomic Commit** ✅ (Automatic LOCAL commit - After smoke test passes)
+**Phase 2.75: User Review & Testing** ⏸️ (STOP POINT - Full user testing with real data)
 **Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
 **Phase 4: Post-Merge Cleanup** 🧹 (Automatic - After PR merged)
 
@@ -251,22 +257,39 @@ When implementing a new Mailchimp API endpoint:
 
 ### Phase 1 Verification Checklist
 
-Before presenting schemas for review:
+Before presenting schemas for review, AI must run this self-checklist:
 
-**If API docs accessible:**
+**API Documentation:**
 
-- [ ] ✅ Fetched official Mailchimp API documentation
+- [ ] ✅ Fetched official Mailchimp API documentation (or used assumptions with user approval)
 - [ ] ✅ Located exact response example in docs
 - [ ] ✅ Extracted all field names from response
-- [ ] ✅ Verified field types
+- [ ] ✅ Verified field types match API
 - [ ] ✅ Added source documentation URL to schema comments
+
+**Architecture & Best Practices:**
+
+- [ ] ✅ No type exports in schema files (types go in `/src/types`)
+- [ ] ✅ Used modern Zod 4 syntax (`z.email()`, `z.ipv4()`, not `.string().email()`)
+- [ ] ✅ Applied DRY principle (imported shared schemas from `common/`)
+- [ ] ✅ Created shared constants for enums used in multiple schemas
+- [ ] ✅ All ID fields use `.min(1)` to prevent empty strings
+- [ ] ✅ Input schemas use `.strict()` to reject unknown properties
+- [ ] ✅ DateTime fields use `z.iso.datetime({ offset: true })`
+- [ ] ✅ Used proper `z.record()` syntax: `z.record(keyType, valueType)`
+
+**Documentation & Readability:**
+
+- [ ] ✅ Used JSDoc comments above declarations (not inline comments)
+- [ ] ✅ Named nested schemas for readability (avoid deeply nested objects)
+- [ ] ✅ Checked `common/` folder for reusable schemas before creating new ones
+- [ ] ✅ Verified enum values match API documentation exactly
 
 **If using assumptions (user approved Option C):**
 
 - [ ] ✅ Marked schemas with `⚠️ ASSUMED FIELDS`
 - [ ] ✅ Documented what was assumed and why
 - [ ] ✅ Told user: "These schemas need verification with real API response during testing"
-- [ ] ✅ User aware they must test with real data to verify schema
 
 ### Commit Strategy: Option A vs Option B
 
@@ -448,6 +471,58 @@ Once schemas are approved, the AI follows these steps:
     - `pnpm test` - All tests pass
 
 15. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
+
+16. **AI checks navigation integration** (from Pre-Implementation Checklist):
+    - If page should be linked from dashboard, add navigation card
+    - If parent page needs link/button, add it
+    - Ensure breadcrumbs are properly configured
+
+### Phase 2.4: Quick Smoke Test (BEFORE COMMIT)
+
+**⚠️ NEW: Mandatory smoke test to catch runtime issues before committing**
+
+**AI must verify the page works in browser:**
+
+1. **Check if dev server is running:**
+   - If `pnpm dev` is already running (background process), use existing server
+   - If not running, start it: `pnpm dev` (run in background if possible)
+
+2. **Inform user to perform quick smoke test:**
+
+   ```
+   ✅ Validation passed. Before committing, please verify:
+
+   **Quick Smoke Test (2-3 minutes):**
+   1. Visit: https://127.0.0.1:3000/mailchimp/{route-path}
+   2. Check browser console for errors/warnings
+   3. Verify page loads without errors
+   4. Test basic functionality (search, pagination, etc.)
+
+   **Common issues to check:**
+   - ❌ Duplicate React keys (console warnings)
+   - ❌ Missing data / API errors
+   - ❌ Layout issues / broken UI
+   - ❌ Console errors
+
+   Reply "smoke test passed" to proceed with commit, or describe any issues found.
+   ```
+
+3. **⏸️ STOP - Wait for user confirmation**
+   - User tests page in browser
+   - User checks console for warnings
+   - User verifies basic functionality
+
+4. **If user reports issues:**
+   - Fix the issues
+   - Re-run validation
+   - Request smoke test again
+
+5. **If user says "smoke test passed":**
+   - Proceed to Phase 2.5 (commit)
+
+**Rationale:** Catches runtime-only bugs (duplicate keys, React warnings, API errors) before committing.
+
+**Time Cost:** 2-3 minutes (saves hours of debugging post-commit)
 
 ### Phase 2.5: Single Atomic Commit (LOCAL ONLY)
 
