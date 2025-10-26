@@ -129,6 +129,12 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
                 <span className="font-medium">{data.language || "N/A"}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-muted-foreground">Email Client</span>
+                <span className="font-medium">
+                  {data.email_client || "N/A"}
+                </span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-muted-foreground">
                   One-to-One Messaging
                 </span>

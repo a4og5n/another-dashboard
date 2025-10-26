@@ -642,3 +642,47 @@ export async function generateListSegmentsMetadata({
     },
   };
 }
+
+/**
+ * Generates metadata specifically for segment members pages
+ * @param params - Object containing the id (list) and segment_id
+ * @returns Next.js Metadata object for the segment members page
+ *
+ * @example
+ * ```tsx
+ * export const generateMetadata = generateSegmentMembersMetadata;
+ * ```
+ */
+export async function generateSegmentMembersMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; segment_id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { segmentMembersRouteParamsSchema } = await import(
+    "@/schemas/components/mailchimp/segment-members-route-params"
+  );
+  const { id } = segmentMembersRouteParamsSchema.parse(rawParams);
+
+  // Fetch list for metadata
+  const response = await mailchimpDAL.fetchList(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Segment Members - Not Found",
+      description: "The requested segment could not be found.",
+    };
+  }
+
+  const list = response.data;
+
+  return {
+    title: `${list.name} - Segment Members`,
+    description: `View members in this segment from ${list.name}`,
+    openGraph: {
+      title: `${list.name} - Segment Members`,
+      description: `View members in this segment from ${list.name}`,
+      type: "website",
+    },
+  };
+}
