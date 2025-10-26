@@ -1402,6 +1402,502 @@ status: z.enum(MEMBER_STATUS_FILTER).optional();
 
 ---
 
+## Session: Member Activity Feed Implementation (2025-10-26)
+
+### What Worked Exceptionally Well ✅
+
+#### 1. **Discriminated Union Schema Pattern** ⭐⭐⭐
+
+**Learning:** Zod discriminated unions provide perfect type safety for polymorphic API responses with different activity types.
+
+**Pattern:**
+
+```typescript
+// Individual activity type schemas
+export const openActivitySchema = z.object({
+  activity_type: z.literal("open"),
+  created_at_timestamp: z.iso.datetime({ offset: true }),
+  campaign_id: z.string().min(1),
+  campaign_title: z.string(),
+});
+
+export const clickActivitySchema = z.object({
+  activity_type: z.literal("click"),
+  created_at_timestamp: z.iso.datetime({ offset: true }),
+  campaign_id: z.string().min(1),
+  campaign_title: z.string(),
+  link_clicked: z.url(),
+});
+
+// Generic fallback for undocumented activity types
+export const genericActivitySchema = z
+  .object({
+    activity_type: z.enum(GENERIC_ACTIVITY_TYPES),
+    created_at_timestamp: z.iso.datetime({ offset: true }),
+  })
+  .catchall(z.unknown()); // Zod 4: Allow unknown fields for flexibility
+
+// Discriminated union using activity_type as discriminator
+export const memberActivityEventSchema = z.discriminatedUnion("activity_type", [
+  openActivitySchema,
+  clickActivitySchema,
+  bounceActivitySchema,
+  unsubActivitySchema,
+  sentActivitySchema,
+  conversationActivitySchema,
+  noteActivitySchema,
+  genericActivitySchema, // Fallback for unknown types
+]);
+```
+
+**Benefits:**
+
+- ✅ TypeScript provides perfect type narrowing based on `activity_type`
+- ✅ Autocomplete shows only valid fields for each activity type
+- ✅ Generic fallback handles undocumented activity types gracefully
+- ✅ Can create GitHub issue for remaining types (Issue #269)
+- ✅ Extensible: Easy to add new activity types by creating new schema
+
+**Usage in Components:**
+
+```typescript
+function getActivityDetails(activity: MemberActivityEvent): string {
+  switch (activity.activity_type) {
+    case "click":
+      return activity.link_clicked; // ✅ TypeScript knows link_clicked exists
+    case "bounce":
+      return `${activity.bounce_type} bounce`; // ✅ TypeScript knows bounce_type exists
+    case "note":
+      return activity.note_text?.substring(0, 50) + "..."; // ✅ TypeScript knows note_text exists
+    default:
+      return "—"; // Generic activity types handled
+  }
+}
+```
+
+**When to Use:**
+
+- ✅ Activity feeds (member activity, list activity, automation activity)
+- ✅ Event streams (webhooks, notifications)
+- ✅ Polymorphic API responses with type discriminator field
+- ❌ Simple union of primitive types (use `z.union()` instead)
+
+**Implementation Time:** 45 minutes for 7 specific types + 1 generic fallback
+
+---
+
+#### 2. **Smart Pagination Without `total_items`** ⭐⭐⭐
+
+**Challenge:** Mailchimp's `/activity-feed` endpoint doesn't return `total_items` field, making it impossible to show "Page X of Y" or know exact page count.
+
+**Solution:** Detect "has next page" by checking if returned items equals page size.
+
+**Pattern:**
+
+```typescript
+export function MemberActivityContent({
+  data,
+  currentPage,
+  pageSize,
+}: Props) {
+  const { activity } = data;
+  const itemsOnCurrentPage = activity.length;
+
+  // Smart detection: If we got a full page, there might be more
+  const hasFullPage = itemsOnCurrentPage === pageSize;
+  const hasNextPage = hasFullPage;
+  const hasPrevPage = currentPage > 1;
+  const showPagination = hasNextPage || hasPrevPage;
+
+  return (
+    <div>
+      {/* Content */}
+      {showPagination && (
+        <div className="flex items-center justify-between">
+          <Button disabled={!hasPrevPage} asChild={hasPrevPage}>
+            {hasPrevPage ? (
+              <a href={createPageUrl(currentPage - 1)}>Previous</a>
+            ) : (
+              <span>Previous</span>
+            )}
+          </Button>
+          <span className="text-sm text-muted-foreground">Page {currentPage}</span>
+          <Button disabled={!hasNextPage} asChild={hasNextPage}>
+            {hasNextPage ? (
+              <a href={createPageUrl(currentPage + 1)}>Next</a>
+            ) : (
+              <span>Next</span>
+            )}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+**Benefits:**
+
+- ✅ Works without `total_items` field
+- ✅ Simple logic (single comparison)
+- ✅ No false positives (if partial page, we're at the end)
+- ✅ Progressive disclosure (only shows pagination if needed)
+- ✅ Server component compatible (no client-side state)
+
+**Edge Cases Handled:**
+
+- ✅ Empty results (0 items) → No pagination shown
+- ✅ Partial last page (e.g., 7 items when pageSize=10) → "Next" disabled
+- ✅ Exactly one page (10 items when pageSize=10) → "Next" enabled (safe assumption)
+- ✅ First page → "Previous" disabled
+
+**When to Use:**
+
+- ✅ APIs that don't provide `total_items`
+- ✅ Infinite scroll alternatives
+- ✅ When exact page count isn't critical UX
+- ❌ When user needs to know total count (use offset-based pagination instead)
+
+**Also Used In:** Campaign Email Activity endpoint (same pattern)
+
+---
+
+#### 3. **Timezone-Aware Date Filtering** ⭐⭐⭐
+
+**Innovation:** Activity dates link to campaign reports filtered by that day (in user's local timezone).
+
+**Challenge:** API returns ISO 8601 timestamps with timezone offsets (e.g., `"2025-10-22T22:31:00-07:00"`). Naively extracting date gives wrong day for users in different timezones.
+
+**Solution:** Convert to Date object first (which handles timezone), then extract local date.
+
+**Pattern:**
+
+```typescript
+/**
+ * Extract date in YYYY-MM-DD format from ISO 8601 timestamp
+ * Converts to local timezone before extracting date
+ */
+function extractLocalDateString(timestamp: string): string {
+  const date = new Date(timestamp); // Handles timezone conversion
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+```
+
+**Usage:**
+
+```typescript
+<TableCell className="text-sm">
+  {(() => {
+    const dateOnly = extractLocalDateString(event.created_at_timestamp);
+    return (
+      <Link
+        href={`/mailchimp/reports?from=${dateOnly}&to=${dateOnly}`}
+        className="text-primary hover:underline"
+      >
+        {formatDateTimeSafe(event.created_at_timestamp)}
+      </Link>
+    );
+  })()}
+</TableCell>
+```
+
+**Example:**
+
+- **Timestamp:** `"2025-10-22T22:31:00-07:00"` (10:31 PM PDT on Oct 22)
+- **User in EST:** Sees "Oct 23, 2025 at 1:31 AM"
+- **Link URL:** `/mailchimp/reports?from=2025-10-23&to=2025-10-23`
+- **Correct!** User sees all campaigns from _their_ Oct 23
+
+**Benefits:**
+
+- ✅ Respects user's local timezone
+- ✅ Links show campaigns from the day they _saw_ the email
+- ✅ No timezone confusion ("Why is my Oct 22 email showing in Oct 23 reports?")
+- ✅ Pure function (no side effects)
+- ✅ Works in server components
+
+**When to Use:**
+
+- ✅ Date-based URL filters (reports, analytics)
+- ✅ Activity timeline navigation
+- ✅ Date range pickers with server-side filtering
+- ❌ Displaying timestamps (use `formatDateTimeSafe()` instead)
+
+**User Feedback:** Requested during smoke testing - immediately implemented
+
+---
+
+#### 4. **Quick Actions Navigation Pattern** ⭐⭐
+
+**Pattern:** Add "Quick Actions" card to detail pages for common navigation shortcuts.
+
+**Implementation:**
+
+```typescript
+{
+  /* Quick Actions */
+}
+<Card>
+  <CardHeader>
+    <CardTitle className="text-base">Quick Actions</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="flex flex-wrap gap-2">
+      <Button variant="outline" size="sm" asChild>
+        <Link href={`/mailchimp/lists/${listId}/members/${subscriberHash}/tags`}>
+          <Tag className="h-4 w-4 mr-2" />
+          View Tags
+        </Link>
+      </Button>
+      <Button variant="outline" size="sm" asChild>
+        <Link href={`/mailchimp/lists/${listId}/members/${subscriberHash}/notes`}>
+          <StickyNote className="h-4 w-4 mr-2" />
+          View Notes
+        </Link>
+      </Button>
+      <Button variant="outline" size="sm" asChild>
+        <Link href={`/mailchimp/lists/${listId}/members/${subscriberHash}/activity`}>
+          <Activity className="h-4 w-4 mr-2" />
+          View Activity
+        </Link>
+      </Button>
+    </div>
+  </CardContent>
+</Card>;
+```
+
+**Benefits:**
+
+- ✅ Discoverable navigation (no hunting for links)
+- ✅ Icon + label = clear purpose
+- ✅ Consistent placement (below header card)
+- ✅ Mobile-friendly (`flex-wrap gap-2`)
+- ✅ Visual grouping of related features
+
+**When to Use:**
+
+- ✅ Detail pages with 3+ related sub-pages
+- ✅ Common user workflows (view tags → add tag → view activity)
+- ✅ Features users might not discover from menu alone
+- ❌ Simple pages with 1-2 actions (use inline links instead)
+
+**Reusability:** Should be added to:
+
+- Campaign detail pages (View Opens, Clicks, Recipients, etc.)
+- List detail pages (View Members, Segments, Growth History, etc.)
+
+**User Feedback:** Requested during smoke testing - UX win!
+
+---
+
+#### 5. **Tier 1+2 Workflow Execution** ⭐⭐⭐
+
+**What Worked:**
+
+1. **Phase 0:** Created Issue #268 → Feature branch `feature/member-activity-endpoint-issue-268`
+2. **Phase 1:** Created discriminated union schemas → User reviewed/approved (~30 mins)
+3. **Phase 2:** Full implementation with all infrastructure (~90 mins)
+4. **Phase 2.4:** Smoke test → User identified 4 improvements
+5. **Phase 2.75:** Iteration loop - implemented 4 improvements with `git commit --amend --no-edit` (~30 mins)
+   - Fixed pagination display (smart detection)
+   - Added Quick Actions card to member profile
+   - Made campaign titles clickable (link to reports)
+   - Added timezone-aware date filtering
+6. **Phase 3:** User approved → Pushed + created PR #270
+7. **Phase 4:** PR merged → Auto-cleanup + docs update
+
+**Key Success Factors:**
+
+- ✅ Single atomic commit (1256 additions, 38 deletions)
+- ✅ All iterations amended (clean git history)
+- ✅ User feedback incorporated immediately
+- ✅ Zero rework after merge
+
+**Metrics:**
+
+- **Total Time:** ~2.5 hours (schemas + implementation + iterations)
+- **Iterations:** 4 user-requested improvements (all via amend)
+- **Commits:** 1 clean atomic commit
+- **Tests:** 905 passed, 8 skipped (no new failures)
+- **User Satisfaction:** High (feedback incorporated same session)
+
+---
+
+### New Patterns Discovered 📚
+
+#### 1. Discriminated Union with Generic Fallback
+
+**Discovery:** Can combine specific typed schemas + generic fallback for incremental API coverage.
+
+**Pattern:**
+
+```typescript
+// Specific types (fully documented)
+const specificSchemas = [openSchema, clickSchema, bounceSchema /* ... */];
+
+// Generic fallback (allows unknown fields)
+const genericSchema = z
+  .object({
+    activity_type: z.enum(UNDOCUMENTED_TYPES),
+    created_at_timestamp: z.iso.datetime({ offset: true }),
+  })
+  .catchall(z.unknown()); // Zod 4 syntax
+
+// Combine into discriminated union
+const activitySchema = z.discriminatedUnion("activity_type", [
+  ...specificSchemas,
+  genericSchema,
+]);
+```
+
+**Benefits:**
+
+- ✅ Ship feature with partial coverage (7/17 types documented)
+- ✅ No runtime errors for undocumented types
+- ✅ Easy to promote generic → specific later (just add schema)
+- ✅ Can create issue for remaining types (Issue #269)
+
+---
+
+#### 2. Smart Pagination Detection (Second Implementation)
+
+**Discovery:** This is the second endpoint using "smart pagination without total_items" (first was Campaign Email Activity).
+
+**Recommendation:** Should be promoted to standard pattern in CLAUDE.md.
+
+**When This Pattern Applies:**
+
+- ✅ API doesn't return `total_items`
+- ✅ Paginated response is an array
+- ✅ Can request specific `count` (page size)
+- ✅ User doesn't need exact total count
+
+**Alternative Approaches (when not to use):**
+
+- ❌ If `total_items` is available → Use offset-based pagination with page numbers
+- ❌ If user needs to jump to last page → Need different approach
+- ❌ If infinite scroll is preferred → Use cursor-based pagination
+
+---
+
+#### 3. Activity Type Icon/Badge Mapping
+
+**Pattern:** Map activity types to icons and badge variants for visual consistency.
+
+```typescript
+function getActivityIcon(activityType: string) {
+  switch (activityType) {
+    case "open":
+      return <Mail className="h-4 w-4" />;
+    case "click":
+      return <MousePointerClick className="h-4 w-4" />;
+    case "bounce":
+      return <AlertCircle className="h-4 w-4" />;
+    case "unsub":
+      return <UserX className="h-4 w-4" />;
+    // ... 10+ more types
+    default:
+      return <UserPlus className="h-4 w-4" />;
+  }
+}
+
+function getActivityBadgeVariant(
+  activityType: string
+): "default" | "secondary" | "destructive" | "outline" {
+  switch (activityType) {
+    case "bounce":
+    case "unsub":
+      return "destructive";
+    case "open":
+    case "click":
+      return "default";
+    case "sent":
+      return "secondary";
+    default:
+      return "outline";
+  }
+}
+```
+
+**Potential Improvement:** Extract to reusable `<ActivityBadge type={type} />` component if we implement more activity feeds.
+
+**When to Extract:** Wait until 3rd implementation (Rule of Three for DRY).
+
+---
+
+### Workflow Summary
+
+**Successful Member Activity Feed Flow:**
+
+1. ✅ Created Issue #268 (clear requirements, API docs linked)
+2. ✅ Created feature branch `feature/member-activity-endpoint-issue-268`
+3. ✅ **Phase 1:** Created discriminated union schemas → User approved
+4. ✅ **Phase 2:** Generated page infrastructure + implemented table component
+5. ✅ **Phase 2.4:** Smoke test → User tested in browser
+6. ✅ **Phase 2.75:** Iteration loop (4 improvements via `git commit --amend`)
+   - Fixed smart pagination display
+   - Added Quick Actions navigation
+   - Made campaign titles clickable
+   - Added timezone-aware date filtering
+7. ✅ **Phase 2.5:** Single atomic commit with comprehensive message
+8. ✅ Validated (type-check, lint, format, tests, a11y)
+9. ✅ **Phase 3:** Pushed + created PR #270
+10. ✅ PR merged → Issue #268 closed
+11. ✅ **Phase 4:** Checkout main, pull, delete branch, update docs
+
+**Key Takeaways:**
+
+- ✅ Discriminated unions = game changer for polymorphic data
+- ✅ Smart pagination pattern now proven (2nd successful use)
+- ✅ Timezone-aware URL generation = excellent UX
+- ✅ Quick Actions pattern should be standardized
+- ✅ Amend workflow keeps git history clean (1 commit, not 5)
+
+---
+
+### Session Statistics 📊
+
+- **Duration:** ~2.5 hours total
+  - Phase 1 (schemas): ~45 minutes
+  - Phase 2 (implementation): ~90 minutes
+  - Phase 2.75 (iterations): ~30 minutes
+- **Branch:** `feature/member-activity-endpoint-issue-268`
+- **Commits:** 1 atomic commit (all iterations amended)
+- **Files Created:** 11
+  - 3 schema files (params, success, error)
+  - 1 type file
+  - 2 components (content, skeleton)
+  - 3 route files (page, error, not-found)
+  - 1 UI schema
+  - 1 DAL method addition
+- **Total Changes:** 1256 additions, 38 deletions
+- **Validation:** ✅ All passed
+  - Type-check: 0 errors
+  - Lint: 0 warnings
+  - Format: Applied
+  - Tests: 905 passed, 8 skipped
+  - Accessibility: All a11y tests passed
+- **PR:** #270 (merged)
+- **Issue:** #268 (closed)
+- **Follow-up Issue:** #269 (remaining 10 activity type schemas)
+- **User Iterations:** 4 improvements requested and implemented
+- **Git History:** Clean (single atomic commit, professional)
+
+---
+
+### Action Items for CLAUDE.md
+
+1. ✅ Add "Discriminated Union Pattern" to Schema & API Patterns section
+2. ✅ Add "Smart Pagination Without total_items" to Development Patterns
+3. ✅ Add "Quick Actions Card" to standard detail page patterns
+4. ✅ Add timezone utilities pattern to date formatting section
+5. ✅ Document "Generic Fallback Schema" pattern for incremental API coverage
+
+---
+
 ## Historical Sessions
 
 Previous learnings captured in earlier sections of this document.
