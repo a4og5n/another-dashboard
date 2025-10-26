@@ -183,12 +183,12 @@ This is enforced in Phase 0 below.
 
 **Phase 0: Git Setup** 🔧 (Automatic - Create branch)
 **Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
-**Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval)
+**Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval, NO docs update)
 **Phase 2.4: Quick Smoke Test** 🧪 (STOP POINT - User tests in browser before commit)
 **Phase 2.5: Single Atomic Commit** ✅ (Automatic LOCAL commit - After smoke test passes)
 **Phase 2.75: User Review & Testing** ⏸️ (STOP POINT - Full user testing with real data)
 **Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
-**Phase 4: Post-Merge Cleanup** 🧹 (Automatic - After PR merged)
+**Phase 4: Post-Merge Cleanup & Documentation** 📝 (Automatic - Update docs AFTER PR merged)
 
 ### Phase 0: Git Setup (Automatic)
 
@@ -399,6 +399,8 @@ git commit -m "feat: implement {Endpoint Name} page (Phase 2)"
 
 ### Phase 2: Page Generation (After Approval)
 
+**⚠️ CRITICAL:** DO NOT update `docs/api-coverage.md` during this phase. Documentation is updated in Phase 4 (post-merge).
+
 Once schemas are approved, the AI follows these steps:
 
 #### Step 1: Add Config to Registry
@@ -555,7 +557,6 @@ Implements comprehensive {feature description} following AI-first workflow.
 - Updated DAL method with proper schemas (src/dal/mailchimp.dal.ts:{line}-{line})
 - Added breadcrumb builder function (bc.{functionName})
 - Created metadata helper (generate{Endpoint}Metadata)
-- Updated API coverage documentation ({X}/{Y} endpoints, {Z}%)
 
 **Files Created:**
 - {List all new files}
@@ -711,31 +712,56 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 3. Presents PR URL: "✅ PR created: {URL}"
 4. Waits for user to merge and confirm
 
-### Phase 4: Post-Merge Cleanup (Automatic)
+### Phase 4: Post-Merge Cleanup & Documentation (Automatic)
 
 **Trigger**: User says "PR merged", "merged and deleted remote", "merge complete", or similar confirmation
 
-**AI automatically executes cleanup:**
+**AI automatically executes these steps in order:**
+
+#### Step 1: Branch Cleanup
 
 ```bash
 git checkout main && git pull origin main && git branch -d {branch-name}
 ```
 
+#### Step 2: Update API Coverage Documentation
+
+**⚠️ CRITICAL:** Documentation updates happen AFTER merge, not during implementation.
+
+**For Mailchimp endpoint implementations only:**
+
+1. Update `docs/api-coverage.md`:
+   - Mark endpoint as ✅ Implemented
+   - Add implementation details (route, features, PR number)
+   - Update coverage stats (X/Y endpoints, Z%)
+
+2. Commit documentation update:
+   ```bash
+   git add docs/api-coverage.md
+   git commit -m "docs: mark {Endpoint Name} as implemented (Issue #{N})"
+   git push origin main
+   ```
+
+**Why post-merge?** If PR is rejected or requires major changes, pre-merge docs would claim "implemented" but code wouldn't be in main.
+
 **Then notifies user:**
 
-> "✅ Cleanup complete
+> "✅ Post-merge tasks complete
 >
 > - Switched to main branch
 > - Pulled latest changes (fast-forward: {old-hash}..{new-hash})
 > - Deleted local branch: {branch-name}
+> - Updated API coverage documentation (committed to main)
 >
 > Ready for next feature!"
 
 **Important**:
 
-- DO NOT wait for user to request cleanup
+- DO NOT wait for user to request cleanup or documentation
+- DO NOT update `docs/api-coverage.md` during implementation (Phase 2)
 - Only run after user explicitly confirms merge
 - Verify branch deletion succeeded
+- Documentation commits go directly to main (docs-only exception)
 
 ### Enhancement Commits Pattern
 
