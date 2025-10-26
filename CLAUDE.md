@@ -264,9 +264,85 @@ This project uses an **AI-assisted, automated workflow** for implementing new Ma
 
 This is enforced in Phase 0 below.
 
+### 🎯 User Intent Classification (Read This First!)
+
+**Before proceeding with ANY work, AI MUST classify user intent correctly:**
+
+| User Says                                     | Intent            | AI Response                                                      |
+| --------------------------------------------- | ----------------- | ---------------------------------------------------------------- |
+| "Can we learn from X?"                        | Research/Analysis | Present findings + ASK: "Should I implement these improvements?" |
+| "Review our workflow"                         | Research/Analysis | Analyze + present recommendations + ASK before implementing      |
+| "Improve X" / "Add Y to workflow"             | **AMBIGUOUS**     | ⚠️ ASK: "(A) Analyze only (B) Create issue (C) Implement now?"   |
+| "Implement X"                                 | Implementation    | ✅ Proceed to Phase 0 (create issue first!)                      |
+| "Create X endpoint"                           | Implementation    | ✅ Proceed to Phase 0 (create issue first!)                      |
+| "approved" / "looks good" / "yes" / "proceed" | Approval          | ✅ Proceed to next phase                                         |
+
+**🚨 CRITICAL RULES:**
+
+1. **If user didn't say "implement" explicitly → ASK FIRST**
+   - Don't assume "improve" means "implement"
+   - Don't assume "add" means "implement now"
+   - Don't assume "can we" means "do it"
+
+2. **Before ANY implementation work → Phase 0 REQUIRED**
+   - Create GitHub issue FIRST
+   - Create feature branch with issue number
+   - Initialize TodoWrite tracker with issue number
+   - Get user approval before Phase 1
+
+3. **Default to Research mode when ambiguous**
+   - Better to ask than to implement prematurely
+   - User can always say "implement it" after reviewing analysis
+
+**Example: Ambiguous Request**
+
+```
+User: "Can we improve our error handling?"
+
+❌ WRONG: [starts implementing immediately]
+
+✅ CORRECT:
+AI: "I can see several improvements to our error handling:
+     1. Add validation for X
+     2. Improve error messages for Y
+     3. Add retry logic for Z
+
+     Should I:
+     (A) Just present detailed recommendations
+     (B) Create an issue to track this work
+     (C) Implement the improvements now
+
+     Which would you prefer?"
+```
+
+**Example: Clear Implementation Request**
+
+```
+User: "Implement the Member Events endpoint"
+
+✅ CORRECT:
+AI: "I'll implement the Member Events endpoint.
+
+     Starting Phase 0: Creating GitHub issue..."
+
+     [Creates issue #264]
+     [Creates branch feature/add-member-events-issue-264]
+     [Initializes phase tracker]
+
+     "⏸️ Ready to proceed to Phase 1?"
+```
+
+**Red Flags (ALWAYS ASK):**
+
+- ❌ User didn't say "implement" or "create"
+- ❌ No issue number mentioned yet
+- ❌ Currently on main branch
+- ❌ No feature branch exists yet
+- ❌ Request is vague or open-ended
+
 ### Overview
 
-**Phase 0: Git Setup** 🔧 (Automatic - Create branch)
+**Phase 0: Issue Creation & Git Setup** 🎫 (MANDATORY - Create issue + branch with issue number)
 **Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
 **Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval, NO docs update)
 **Phase 2.4: Quick Smoke Test** 🧪 (STOP POINT - User tests in browser before commit)
@@ -275,25 +351,183 @@ This is enforced in Phase 0 below.
 **Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
 **Phase 4: Post-Merge Cleanup & Documentation** 📝 (Automatic - Update docs AFTER PR merged)
 
-**Key Workflow Change:** All iterations in Phase 2.75 use `git commit --amend --no-edit` to maintain ONE clean commit. PR is only created in Phase 3 after user explicitly approves.
+**Key Workflow Changes:**
 
-### Phase 0: Git Setup (Automatic)
+1. **Issue-First:** GitHub issue MUST be created before ANY code (Phase 0)
+2. **Branch naming:** MUST include issue number: `feature/description-issue-123` (enforced by git hook)
+3. **Phase tracking:** TodoWrite MUST reference issue number in each phase
+4. **Git hook enforcement:** Blocks commits to main + enforces branch naming
+5. **Amend workflow:** All iterations in Phase 2.75 use `git commit --amend --no-edit` for ONE clean commit
 
-**BEFORE starting any feature work, AI automatically:**
+### Phase 0: Issue Creation & Git Setup (MANDATORY)
 
-1. Checks current branch: `git branch --show-current`
-2. If on `main` or `master`:
-   - Creates feature branch: `git checkout -b feature/{endpoint-name}`
-   - Example: `git checkout -b feature/location-activity-endpoint`
-   - Notifies user: "✅ Created branch: feature/{endpoint-name}"
-3. If already on a feature branch: Continues work
+**⚠️ CRITICAL: This phase is MANDATORY before ANY implementation work. Creating code without an issue is FORBIDDEN.**
 
-**Branch Naming Convention:**
+**🛑 STOP: Before writing ANY code, AI MUST complete these steps:**
 
-- Features: `feature/{descriptive-name}` (lowercase with hyphens)
-- Fixes: `fix/{descriptive-name}`
+#### Step 1: Create GitHub Issue FIRST
 
-**DO NOT** wait for user to request branch creation.
+**When to create issue:**
+
+- User says "implement X"
+- User says "add Y"
+- User approves moving from research/discussion → implementation
+- **ANY time you're about to write production code**
+
+**How to create issue:**
+
+```bash
+gh issue create --title "Brief description" --body "$(cat <<'EOF'
+## Summary
+[One paragraph describing what needs to be implemented]
+
+## Background
+[Why is this needed? What problem does it solve?]
+
+## Proposed Solution
+[High-level approach - what will be implemented]
+
+## Expected Impact
+[What improves? Metrics if applicable]
+
+## Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] All tests pass
+EOF
+)"
+```
+
+**AI MUST:**
+
+1. Create the issue and capture the issue number (e.g., #264)
+2. Report to user: "✅ Issue #264 created: [title]"
+3. **DO NOT proceed without getting the issue number**
+
+#### Step 2: Create Feature Branch with Issue Number
+
+**Branch Naming Convention (ENFORCED by git hook):**
+
+- Features: `feature/{description}-issue-{number}`
+- Fixes: `fix/{description}-issue-{number}`
+
+**Examples:**
+
+- `feature/add-member-events-issue-264`
+- `fix/pagination-bug-issue-265`
+
+**AI MUST check current branch and create feature branch:**
+
+```bash
+# Check current branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+  # Create feature branch with issue number
+  git checkout -b feature/add-member-events-issue-264
+  echo "✅ Created branch: feature/add-member-events-issue-264"
+else
+  echo "✅ Already on feature branch: $BRANCH"
+fi
+```
+
+**⚠️ IMPORTANT:** Git hook will BLOCK commits if:
+
+- You're on `main` or `master` branch
+- Branch name doesn't include issue number in format `-issue-123`
+
+#### Step 3: Initialize Phase Tracker
+
+**AI MUST create TodoWrite tracker with issue number:**
+
+```typescript
+TodoWrite({
+  todos: [
+    {
+      content: "Phase 0: Create issue #264 and feature branch",
+      activeForm: "Creating issue #264 and feature branch",
+      status: "completed", // Mark complete after issue created
+    },
+    {
+      content: "Phase 1: Create and review schemas (Issue #264)",
+      activeForm: "Creating and reviewing schemas (Issue #264)",
+      status: "in_progress",
+    },
+    {
+      content: "Phase 1.5: Pattern reference (Issue #264)",
+      activeForm: "Running pattern reference check (Issue #264)",
+      status: "pending",
+    },
+    {
+      content: "Phase 2: Implementation (Issue #264)",
+      activeForm: "Implementing endpoint (Issue #264)",
+      status: "pending",
+    },
+    {
+      content: "Phase 2.4: Smoke test (Issue #264)",
+      activeForm: "Running smoke tests (Issue #264)",
+      status: "pending",
+    },
+    {
+      content: "Phase 2.5: Local commit (Issue #264)",
+      activeForm: "Creating local commit (Issue #264)",
+      status: "pending",
+    },
+    {
+      content: "Phase 2.75: User testing loop (Issue #264)",
+      activeForm: "User testing and fixes (Issue #264)",
+      status: "pending",
+    },
+    {
+      content: "Phase 3: Push & create PR (Issue #264)",
+      activeForm: "Pushing and creating PR (Issue #264)",
+      status: "pending",
+    },
+  ],
+});
+```
+
+**Each phase item MUST reference the issue number.**
+
+#### Step 4: Report Phase 0 Completion
+
+**AI MUST output:**
+
+```
+✅ Phase 0 Complete
+
+📋 Deliverables:
+  - ✅ GitHub Issue #264 created
+       https://github.com/user/repo/issues/264
+  - ✅ Feature branch created: feature/add-member-events-issue-264
+  - ✅ Phase tracker initialized
+
+⏸️ Ready to proceed to Phase 1 (Schema Creation)?
+```
+
+**🛑 STOP: Wait for user confirmation ("yes" / "approved" / "proceed")**
+
+**DO NOT proceed to Phase 1 without explicit user approval.**
+
+---
+
+**🚫 Common Mistakes to Avoid:**
+
+- ❌ Creating feature branch without issue number
+- ❌ Starting implementation without creating issue first
+- ❌ Committing to `main` branch (git hook will block this)
+- ❌ Using branch name without `-issue-123` format (git hook will block this)
+- ❌ Proceeding to Phase 1 without user confirmation
+
+**✅ Correct Flow:**
+
+1. User: "Implement Member Events endpoint"
+2. AI: Creates issue #264
+3. AI: Creates branch `feature/add-member-events-issue-264`
+4. AI: Initializes TodoWrite tracker with issue #264
+5. AI: "⏸️ Ready for Phase 1?"
+6. User: "yes"
+7. AI: Proceeds to Phase 1
 
 ### Phase 1: Schema Creation & Review
 
