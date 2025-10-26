@@ -3,7 +3,7 @@
  * Displays segment members in a table format
  *
  * Uses shadcn/ui Table component for consistency
- * Shows member details: email, status, rating, VIP status, engagement stats
+ * Shows member details: email, status, rating, email client, language, engagement stats
  */
 
 import Link from "next/link";
@@ -116,7 +116,8 @@ export function SegmentMembersContent({
                   <TableHead>Email Address</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Rating</TableHead>
-                  <TableHead>VIP</TableHead>
+                  <TableHead>Email Client</TableHead>
+                  <TableHead>Language</TableHead>
                   <TableHead className="text-right">Open Rate</TableHead>
                   <TableHead className="text-right">Click Rate</TableHead>
                 </TableRow>
@@ -148,11 +149,12 @@ export function SegmentMembersContent({
                       <StarRating rating={member.member_rating} />
                     </TableCell>
                     <TableCell>
-                      {member.vip ? (
-                        <Badge variant="outline" className="text-xs">
-                          VIP
-                        </Badge>
-                      ) : (
+                      {member.email_client || (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {member.language || (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </TableCell>

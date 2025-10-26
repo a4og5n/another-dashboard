@@ -3,7 +3,7 @@
  * Skeleton loading state for segment members table
  *
  * Shows loading placeholders matching the structure of the segment members table
- * with email addresses, status badges, member ratings, and engagement stats.
+ * with email addresses, status badges, member ratings, email client, language, and engagement stats.
  */
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -29,17 +29,19 @@ export function SegmentMembersSkeleton() {
         <CardContent>
           {/* Table Header */}
           <div className="space-y-4">
-            <div className="grid grid-cols-5 gap-4 py-3 border-b">
+            <div className="grid grid-cols-7 gap-4 py-3 border-b">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-4 w-24" />
               <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-24" />
               <Skeleton className="h-4 w-24" />
             </div>
 
             {/* Table Rows - 10 rows for members */}
             {Array.from({ length: 10 }).map((_, index) => (
-              <div key={index} className="grid grid-cols-5 gap-4 py-3">
+              <div key={index} className="grid grid-cols-7 gap-4 py-3">
                 {/* Email Address Column */}
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-48" />
@@ -52,13 +54,14 @@ export function SegmentMembersSkeleton() {
                 <Skeleton className="h-5 w-24" />
                 {/* Member Rating Column */}
                 <Skeleton className="h-4 w-20" />
-                {/* VIP Column */}
-                <Skeleton className="h-3 w-12" />
-                {/* Engagement Column */}
-                <div className="space-y-1">
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-3 w-16" />
-                </div>
+                {/* Email Client Column */}
+                <Skeleton className="h-4 w-24" />
+                {/* Language Column */}
+                <Skeleton className="h-4 w-16" />
+                {/* Open Rate Column */}
+                <Skeleton className="h-4 w-16" />
+                {/* Click Rate Column */}
+                <Skeleton className="h-4 w-16" />
               </div>
             ))}
           </div>
