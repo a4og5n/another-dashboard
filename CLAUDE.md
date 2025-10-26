@@ -454,6 +454,11 @@ TodoWrite({
       status: "in_progress",
     },
     {
+      content: "⏸️ CHECKPOINT: Phase 1 schema review (Issue #264)",
+      activeForm: "Waiting for schema approval (Issue #264)",
+      status: "pending",
+    },
+    {
       content: "Phase 1.5: Pattern reference (Issue #264)",
       activeForm: "Running pattern reference check (Issue #264)",
       status: "pending",
@@ -469,6 +474,11 @@ TodoWrite({
       status: "pending",
     },
     {
+      content: "⏸️ CHECKPOINT: Smoke test confirmation (Issue #264)",
+      activeForm: "Waiting for smoke test results (Issue #264)",
+      status: "pending",
+    },
+    {
       content: "Phase 2.5: Local commit (Issue #264)",
       activeForm: "Creating local commit (Issue #264)",
       status: "pending",
@@ -476,6 +486,11 @@ TodoWrite({
     {
       content: "Phase 2.75: User testing loop (Issue #264)",
       activeForm: "User testing and fixes (Issue #264)",
+      status: "pending",
+    },
+    {
+      content: "⏸️ CHECKPOINT: Ready to push (Issue #264)",
+      activeForm: "Waiting for push approval (Issue #264)",
       status: "pending",
     },
     {
@@ -528,6 +543,33 @@ TodoWrite({
 5. AI: "⏸️ Ready for Phase 1?"
 6. User: "yes"
 7. AI: Proceeds to Phase 1
+
+### Phase 0 Pre-Work Checklist
+
+**Before proceeding to Phase 1, AI MUST verify:**
+
+```
+✅ Phase 0 Pre-Work Checklist:
+
+[ ] GitHub issue exists (created in Step 1)
+[ ] Issue number extracted from issue URL
+[ ] Feature branch created with format: feature/description-issue-{number}
+[ ] Current branch includes issue number (verified via git branch --show-current)
+[ ] NOT on main/master branch (git hook will catch this, but verify early)
+[ ] TodoWrite tracker initialized
+[ ] All TodoWrite items reference the issue number
+[ ] User approved proceeding to Phase 1
+```
+
+**If ANY item is unchecked, STOP and complete Phase 0 first.**
+
+**Red Flags (STOP if any are true):**
+
+- ❌ No GitHub issue created yet
+- ❌ Branch name missing issue number
+- ❌ Still on main/master branch
+- ❌ TodoWrite not initialized
+- ❌ User hasn't approved moving to Phase 1
 
 ### Phase 1: Schema Creation & Review
 
@@ -611,6 +653,55 @@ Before presenting schemas for review, AI must run this self-checklist:
 - [ ] ✅ Marked schemas with `⚠️ ASSUMED FIELDS`
 - [ ] ✅ Documented what was assumed and why
 - [ ] ✅ Told user: "These schemas need verification with real API response during testing"
+
+### ⏸️ CHECKPOINT: Phase 1 → Phase 2 (Schema Review)
+
+**🛑 STOP: AI MUST present schemas for review and WAIT for approval**
+
+After completing schema creation, AI MUST:
+
+1. **Present schemas** with:
+   - File paths of schemas created
+   - Source documentation link (or note about assumptions)
+   - Brief summary of key validations
+
+2. **Output checkpoint message:**
+
+```
+✅ Phase 1 Complete - Schemas Created
+
+📋 Schemas:
+  - src/schemas/mailchimp/{endpoint}-params.schema.ts
+  - src/schemas/mailchimp/{endpoint}-success.schema.ts
+  - src/schemas/mailchimp/{endpoint}-error.schema.ts
+
+📖 Source: {API documentation URL or "Assumptions - needs verification"}
+
+🔍 Key Validations:
+  - {validation 1}
+  - {validation 2}
+  - {validation 3}
+
+⏸️ Please review the schemas above.
+
+Type "approved" or "looks good" when ready to proceed to Phase 2.
+If you see any issues, let me know and I'll adjust the schemas.
+```
+
+3. **WAIT for explicit user approval:**
+   - "approved"
+   - "looks good"
+   - "proceed"
+   - "yes" (if clear from context)
+
+4. **DO NOT proceed to Phase 2 without approval** - This checkpoint prevents generating 500+ lines of code based on incorrect schemas
+
+**Red Flags (STOP if any are true):**
+
+- ❌ Haven't presented schemas yet
+- ❌ No source documentation URL (unless user approved assumptions)
+- ❌ User hasn't said "approved" or equivalent
+- ❌ Skipping directly from schema creation to implementation
 
 ### Commit Strategy: Option A vs Option B
 
@@ -890,6 +981,56 @@ Once schemas are approved, the AI follows these steps:
 **Rationale:** Catches runtime-only bugs (duplicate keys, React warnings, API errors) before committing.
 
 **Time Cost:** 2-3 minutes (saves hours of debugging post-commit)
+
+### ⏸️ CHECKPOINT: Phase 2.4 → Phase 2.5 (Smoke Test)
+
+**🛑 STOP: AI MUST wait for smoke test confirmation before committing**
+
+After validation passes, AI MUST:
+
+1. **Output checkpoint message:**
+
+```
+✅ Phase 2 Implementation Complete
+✅ Validation passed (type-check, lint, format, tests)
+
+🧪 Smoke Test Required (Phase 2.4)
+
+Before committing, please test in browser:
+1. Visit: https://127.0.0.1:3000/mailchimp/{route-path}
+2. Open browser console (F12)
+3. Check for errors/warnings
+4. Test basic functionality
+
+Common issues to verify:
+- ❌ No duplicate React keys
+- ❌ No API errors
+- ❌ No console warnings
+- ❌ Page loads and displays data
+
+⏸️ Reply "smoke test passed" to proceed with commit
+   OR describe any issues you found
+```
+
+2. **WAIT for explicit user confirmation:**
+   - "smoke test passed"
+   - "looks good"
+   - "no issues"
+
+3. **If user reports issues:**
+   - Fix the reported issues
+   - Re-run validation
+   - Request smoke test again
+   - DO NOT commit until issues are fixed
+
+4. **DO NOT commit without smoke test confirmation** - This checkpoint prevents committing broken code
+
+**Red Flags (STOP if any are true):**
+
+- ❌ Haven't asked user to test in browser
+- ❌ User hasn't confirmed smoke test passed
+- ❌ Skipping directly from validation to commit
+- ❌ User reported issues but they're not fixed yet
 
 ### Phase 2.5: Initial Local Commit (LOCAL ONLY - DO NOT PUSH)
 
@@ -1198,6 +1339,60 @@ git push --force-with-lease origin feature/branch-name
 **Our workflow prevents this:** We don't create PR until Phase 3, so all iterations use amend safely.
 
 ---
+
+### ⏸️ CHECKPOINT: Phase 2.75 → Phase 3 (Ready to Push)
+
+**🛑 STOP: AI MUST wait for explicit "ready to push" approval**
+
+After user completes testing and review, AI MUST:
+
+1. **Output checkpoint message:**
+
+```
+✅ Phase 2.75 Complete - Testing & Iteration Done
+
+📋 Current Status:
+  - ✅ Implementation complete
+  - ✅ All validation passing
+  - ✅ Smoke test passed
+  - ✅ User testing complete
+  - ✅ All requested changes applied
+  - ✅ Clean commit history (1 atomic commit)
+
+🚀 Ready for Phase 3: Push & Create PR
+
+This will:
+1. Push branch to remote: git push -u origin {branch-name}
+2. Create pull request on GitHub
+3. Trigger CI/CD pipeline
+4. Make changes visible to team
+
+⏸️ Type "ready to push" or "create PR" when you want to proceed
+
+   (This gives you a chance to do final review before making it public)
+```
+
+2. **WAIT for explicit user approval:**
+   - "ready to push"
+   - "create PR"
+   - "push to origin"
+   - "ready for PR"
+
+3. **DO NOT accept vague approval:**
+   - ❌ "looks good" - too vague
+   - ❌ "nice" - not explicit enough
+   - ❌ "thanks" - not a push request
+   - ✅ "ready to push" - clear intent
+
+4. **DO NOT push without explicit approval** - This checkpoint gives user final chance to review before making changes public
+
+**Red Flags (STOP if any are true):**
+
+- ❌ Haven't completed user testing loop (Phase 2.75)
+- ❌ User hasn't explicitly said "ready to push"
+- ❌ Still have unresolved issues from testing
+- ❌ Validation not passing
+- ❌ Jumping from commit directly to push
 
 ### Phase 3: Push & Create PR (ONLY after explicit approval)
 
