@@ -710,8 +710,10 @@ Audience list management endpoints.
 
 ### Member Tags
 
-- 📋 **List Member Tags** - `GET /lists/{list_id}/members/{subscriber_hash}/tags`
-  - **Priority 3:** Segmentation feature
+- ✅ **List Member Tags** - `GET /lists/{list_id}/members/{subscriber_hash}/tags`
+  - Route: `/mailchimp/lists/[id]/members/[subscriber_hash]/tags`
+  - Features: Pagination, tag display with ID/name/date, member tagging history
+  - **Implemented:** Issue #247, PR #254
 
 - 🔒 **Add or Remove Member Tags** - `POST /lists/{list_id}/members/{subscriber_hash}/tags`
   - **Priority 5:** Write operation (future)
@@ -1260,19 +1262,20 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 19 endpoints
-- ⭐ Priority 2: ~5 endpoints (Member tags, notes, goals, activity)
+- ✅ Implemented: 20 endpoints
+- ⭐ Priority 2: ~4 endpoints (Member notes, goals, activity feed)
 - ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 19/244 read endpoints (~7.8%)
+**Total Progress (Read-Only):** 20/244 read endpoints (~8.2%)
 
 **Recent Implementations:**
 
-- **Segment Members** (view members in audience segments - Issue #250)
-- Search Members (global member search across all lists - Issue #246)
+- **Member Tags** (view tags assigned to list members - Issue #247, PR #254)
+- **Segment Members** (view members in audience segments - Issue #250, PR #253)
+- Search Members (global member search across all lists - Issue #246, PR #251)
 - List Segments (audience segmentation with saved/static/predicted types)
 - Get Member Info (complete member profile with engagement stats and timeline)
 - List Members (view and manage list members with filtering and engagement stats)
@@ -1311,7 +1314,7 @@ Facebook advertising integration endpoints.
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
-- Lists API: 8/45 endpoints (18%)
+- Lists API: 9/45 endpoints (20%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)

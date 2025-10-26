@@ -191,10 +191,20 @@ export function MemberProfileContent({
       {/* Last Note */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Last Note
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Last Note
+            </CardTitle>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                href={`/mailchimp/lists/${listId}/members/${subscriberHash}/notes`}
+              >
+                View All Notes
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {data.last_note ? (
