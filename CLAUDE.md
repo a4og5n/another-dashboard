@@ -120,6 +120,86 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 - Define shared types in `/src/types` only (no inline) - enforced by tests
 - Define Zod schemas in `/src/schemas` only (no inline) - enforced by tests
 
+### Common Import Patterns
+
+**⚠️ CRITICAL: Use correct import paths to avoid errors**
+
+**Skeletons:**
+
+```typescript
+import { MemberTagsSkeleton } from "@/skeletons/mailchimp";
+// NOT: "@/components/ui/skeleton" ❌
+```
+
+**Date Utilities:**
+
+```typescript
+import { formatDateTimeSafe } from "@/utils/format-date";
+// NOT: "@/utils/mailchimp/date" ❌
+```
+
+**Breadcrumbs:**
+
+```typescript
+import { bc } from "@/utils/breadcrumbs";
+// Usage: bc.memberProfile(listId, subscriberHash)
+// NEVER use route placeholders: bc.memberProfile(id, "[subscriber_hash]") ❌
+```
+
+**Error Handling:**
+
+```typescript
+import { handleApiError } from "@/utils/errors";
+// Usage: const error = handleApiError(response); if (error) return <ErrorDisplay />;
+```
+
+**Page Params Validation:**
+
+```typescript
+import { validatePageParams } from "@/utils/mailchimp/page-params";
+// UI schema MUST use optional strings: z.object({ page: z.string().optional() })
+// NOT coerced numbers: z.coerce.number().optional() ❌
+```
+
+**UI Components:**
+
+```typescript
+// shadcn/ui components
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+// Pagination components
+import { Pagination } from "@/components/ui/pagination";
+import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
+```
+
+**Mailchimp Types:**
+
+```typescript
+// Import from @/types/mailchimp, not inline definitions
+import type {
+  MemberNote,
+  MemberNotesResponse,
+} from "@/types/mailchimp/member-notes";
+```
+
+**Zod Schemas:**
+
+```typescript
+// Import from @/schemas/mailchimp, not inline definitions
+import {
+  memberNotesPathParamsSchema,
+  memberNotesQueryParamsSchema,
+} from "@/schemas/mailchimp/lists/member-notes/params.schema";
+```
+
 ### Testing & Quality
 
 **Pre-commit hooks:** Auto-format, lint, type-check, test, a11y test, secret scan (Husky + lint-staged)

@@ -397,4 +397,94 @@ describe("Breadcrumb Builder (bc)", () => {
       });
     });
   });
+
+  describe("Dynamic Href Validation (Issue #247 Prevention)", () => {
+    /**
+     * CRITICAL: Ensure no breadcrumb functions return route placeholders in hrefs
+     *
+     * Background:
+     * - Issue #247 (Member Tags): bc.memberProfile() used hardcoded [subscriber_hash] placeholder
+     * - Next.js App Router throws runtime error: "Dynamic href `[param]` found in <Link>"
+     * - This test prevents such errors by validating all dynamic hrefs use actual parameter values
+     *
+     * See: docs/implementation-review-member-tags.md - Issue #3
+     */
+    it("should not contain route placeholders in dynamic function hrefs", () => {
+      // Test all dynamic breadcrumb functions with sample IDs
+      const dynamicBreadcrumbs = [
+        bc.report("test-id"),
+        bc.list("test-id"),
+        bc.reportOpens("test-id"),
+        bc.reportAbuseReports("test-id"),
+        bc.campaignAdvice("test-id"),
+        bc.campaignLocations("test-id"),
+        bc.campaignRecipients("test-id"),
+        bc.campaignUnsubscribes("test-id"),
+        bc.clickDetails("test-id"),
+        bc.domainPerformance("test-id"),
+        bc.emailActivity("test-id"),
+        bc.listActivity("test-id"),
+        bc.listGrowthHistory("test-id"),
+        bc.listMembers("test-id"),
+        bc.listSegments("test-id"),
+        bc.memberProfile("list-id", "subscriber-hash"),
+        bc.memberTags("list-id", "subscriber-hash"),
+        bc.memberNotes("list-id", "subscriber-hash"),
+      ];
+
+      dynamicBreadcrumbs.forEach((breadcrumb) => {
+        if (breadcrumb.href) {
+          // Ensure href doesn't contain route placeholders like [id], [slug], [subscriber_hash]
+          expect(breadcrumb.href).not.toMatch(/\[[\w_-]+\]/);
+
+          // Additional check: ensure no literal "undefined" in href
+          expect(breadcrumb.href).not.toContain("undefined");
+        }
+      });
+    });
+
+    it("should handle multi-parameter breadcrumb functions correctly", () => {
+      // Functions that require multiple parameters (most common source of errors)
+      const listId = "list123";
+      const subscriberHash = "sub456";
+
+      const memberProfile = bc.memberProfile(listId, subscriberHash);
+      const memberTags = bc.memberTags(listId, subscriberHash);
+      const memberNotes = bc.memberNotes(listId, subscriberHash);
+
+      // Verify actual parameter values are in hrefs
+      expect(memberProfile.href).toBe(
+        `/mailchimp/lists/${listId}/members/${subscriberHash}`,
+      );
+      expect(memberTags.href).toBe(
+        `/mailchimp/lists/${listId}/members/${subscriberHash}/tags`,
+      );
+      expect(memberNotes.href).toBe(
+        `/mailchimp/lists/${listId}/members/${subscriberHash}/notes`,
+      );
+
+      // Ensure no placeholders
+      [memberProfile, memberTags, memberNotes].forEach((bc) => {
+        expect(bc.href).not.toMatch(/\[[\w_-]+\]/);
+      });
+    });
+
+    it("should validate static breadcrumbs have no placeholders", () => {
+      const staticBreadcrumbs = [
+        bc.home,
+        bc.mailchimp,
+        bc.reports,
+        bc.lists,
+        bc.generalInfo,
+        bc.settings,
+        bc.integrations,
+      ];
+
+      staticBreadcrumbs.forEach((breadcrumb) => {
+        if (breadcrumb.href) {
+          expect(breadcrumb.href).not.toMatch(/\[[\w_-]+\]/);
+        }
+      });
+    });
+  });
 });
