@@ -367,6 +367,37 @@ export class MailchimpDAL {
   }
 
   /**
+   * Fetch Member Notes
+   * GET /lists/{list_id}/members/{subscriber_hash}/notes
+   *
+   * @param listId - The unique ID for the list
+   * @param subscriberHash - MD5 hash of the lowercase version of the list member's email address
+   * @param params - Query parameters (count, offset, fields, exclude_fields, sort_field, sort_dir)
+   * @returns Paginated list of notes for the member
+   */
+  async fetchMemberNotes(
+    listId: string,
+    subscriberHash: string,
+    params?: z.infer<
+      typeof import("@/schemas/mailchimp/lists/member-notes/params.schema").memberNotesQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/lists/member-notes/success.schema").memberNotesSuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/lists/member-notes/success.schema").memberNotesSuccessSchema
+        >
+      >(`/lists/${listId}/members/${subscriberHash}/notes`, params),
+    );
+  }
+
+  /**
    * Search Members
    * GET /search-members
    *

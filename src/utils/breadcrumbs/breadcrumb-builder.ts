@@ -399,6 +399,26 @@ export const bc = {
   },
 
   /**
+   * Member Notes breadcrumb
+   *
+   * @param listId - List ID
+   * @param subscriberHash - Subscriber hash
+   * @returns Breadcrumb item for member notes
+   *
+   * @example
+   * ```tsx
+   * bc.memberNotes("abc123", "def456")
+   * // Returns: { label: "Notes", href: "/mailchimp/lists/abc123/members/def456/notes" }
+   * ```
+   */
+  memberNotes(listId: string, subscriberHash: string): BreadcrumbItem {
+    return {
+      label: "Notes",
+      href: `/mailchimp/lists/${listId}/members/${subscriberHash}/notes`,
+    };
+  },
+
+  /**
    * List Segments breadcrumb
    *
    * @param id - List ID

@@ -149,12 +149,17 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 - [ ] **Confirm endpoint priority** - Verify in `docs/api-coverage.md` that this endpoint is next in priority
 - [ ] **Search for similar endpoints** - Find comparable pages to match patterns (e.g., other list detail pages, other report drill-downs)
 - [ ] **Verify parent page exists** - If nested endpoint (e.g., `/lists/[id]/segments`), confirm parent page (`/lists/[id]`) exists
-- [ ] **Plan navigation integration** - Determine ALL navigation entry points:
-  - [ ] Should this page be linked from main dashboard (`/mailchimp`)?
-  - [ ] Should parent page have a button/tab/link to this page?
-  - [ ] Should this be in sidebar navigation?
+- [ ] **⚠️ Plan navigation integration** - Determine ALL navigation entry points (WILL BE IMPLEMENTED IN STEP 16):
+  - [ ] **For nested pages:** Which parent page needs a link/button to this new page?
+  - [ ] **For top-level pages:** Should this be linked from main dashboard (`/mailchimp`)?
+  - [ ] **Navigation pattern:** Find similar existing navigation (e.g., "View All Tags" button in member-profile-content.tsx)
+  - [ ] **Breadcrumbs:** Ensure bc.funcName helper exists in breadcrumb-builder.ts
   - [ ] Does this replace an existing page or add new functionality?
-  - [ ] Should there be breadcrumb navigation?
+
+  **Example:** For Member Notes (`/lists/[id]/members/[subscriber_hash]/notes`):
+  - Parent page: Member Profile (`/lists/[id]/members/[subscriber_hash]`)
+  - Add "View All Notes" button in "Last Note" card header (following "View All Tags" pattern)
+
 - [ ] **Review existing schemas** - Check `src/schemas/mailchimp/` for reusable common schemas before creating new ones
 
 **Quick References:**
@@ -185,10 +190,12 @@ This is enforced in Phase 0 below.
 **Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
 **Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval, NO docs update)
 **Phase 2.4: Quick Smoke Test** 🧪 (STOP POINT - User tests in browser before commit)
-**Phase 2.5: Single Atomic Commit** ✅ (Automatic LOCAL commit - After smoke test passes)
-**Phase 2.75: User Review & Testing** ⏸️ (STOP POINT - Full user testing with real data)
+**Phase 2.5: Initial Local Commit** ✅ (Automatic LOCAL commit - DO NOT PUSH)
+**Phase 2.75: User Review & Testing Loop** ⏸️ (STOP POINT - Iterate with `git commit --amend`)
 **Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
 **Phase 4: Post-Merge Cleanup & Documentation** 📝 (Automatic - Update docs AFTER PR merged)
+
+**Key Workflow Change:** All iterations in Phase 2.75 use `git commit --amend --no-edit` to maintain ONE clean commit. PR is only created in Phase 3 after user explicitly approves.
 
 ### Phase 0: Git Setup (Automatic)
 
@@ -474,10 +481,54 @@ Once schemas are approved, the AI follows these steps:
 
 15. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
 
-16. **AI checks navigation integration** (from Pre-Implementation Checklist):
-    - If page should be linked from dashboard, add navigation card
-    - If parent page needs link/button, add it
-    - Ensure breadcrumbs are properly configured
+16. **⚠️ CRITICAL: AI adds navigation links** (MANDATORY - Do NOT skip):
+
+    **For ALL new pages, check and add navigation links:**
+
+    a. **Nested pages** (e.g., `/lists/[id]/members/[subscriber_hash]/notes`):
+    - **MUST add link from parent page** to new child page
+    - Example: Add "View All Notes" button to Member Profile page
+    - Pattern: Follow existing navigation buttons (see Tags card in member-profile-content.tsx)
+    - Location: Usually in CardHeader alongside the CardTitle
+
+    b. **Top-level pages** (e.g., `/reports`, `/lists`):
+    - Check if should be linked from main dashboard (`/mailchimp`)
+    - Add navigation card if appropriate
+
+    c. **Verify breadcrumbs**:
+    - Ensure breadcrumb helpers exist (bc.funcName in breadcrumb-builder.ts)
+    - Verify breadcrumbs render correctly in page
+
+    **Common Patterns:**
+
+    ```tsx
+    // Pattern 1: Button in CardHeader (for nested pages)
+    <CardHeader>
+      <div className="flex items-center justify-between">
+        <CardTitle>Section Title</CardTitle>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/path/to/detail`}>
+            View All
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+    </CardHeader>
+
+    // Pattern 2: Navigation card (for dashboard pages)
+    <Card>
+      <CardHeader>
+        <CardTitle>Feature Name</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Button asChild>
+          <Link href="/feature/path">Go to Feature</Link>
+        </Button>
+      </CardContent>
+    </Card>
+    ```
+
+    **⚠️ DO NOT PROCEED to Phase 2.4 without completing this step!**
 
 ### Phase 2.4: Quick Smoke Test (BEFORE COMMIT)
 
@@ -526,15 +577,17 @@ Once schemas are approved, the AI follows these steps:
 
 **Time Cost:** 2-3 minutes (saves hours of debugging post-commit)
 
-### Phase 2.5: Single Atomic Commit (LOCAL ONLY)
+### Phase 2.5: Initial Local Commit (LOCAL ONLY - DO NOT PUSH)
 
 **⚠️ CRITICAL: Commit to LOCAL branch only - DO NOT push to origin**
 
-**After ALL Phase 2 steps complete and validation passes:**
+**After ALL Phase 2 steps complete and smoke test passes:**
+
+1. **Create initial local commit:**
 
 ```bash
-git add .
-git commit -m "feat: implement {Endpoint Name} (Phase 1 & 2 complete)
+git add -A
+git commit -m "feat: implement {Endpoint Name} (Issue #XXX)
 
 Implements comprehensive {feature description} following AI-first workflow.
 
@@ -566,11 +619,14 @@ Implements comprehensive {feature description} following AI-first workflow.
 - ✅ Lint: passed
 - ✅ Format: passed
 - ✅ Tests: {count} passed
+- ✅ Smoke test: passed
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
+
+2. **DO NOT push** - Commit stays local for iteration
 
 #### After Commit Complete
 
@@ -622,10 +678,27 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 **If user identifies improvements:**
 
-- User describes needed changes
-- AI implements improvements
-- AI commits improvements to LOCAL branch
-- Return to user testing
+1. User describes needed changes (e.g., "move pagination outside card", "add navigation link")
+2. AI implements improvements
+3. AI stages changes: `git add -A`
+4. **AI amends the existing commit** (keeping history clean):
+   ```bash
+   git commit --amend --no-edit
+   ```
+5. AI informs user: "✅ Changes applied and commit amended. Please test again."
+6. Return to user testing
+
+**Key Rule: Use `git commit --amend` for ALL iterations**
+
+- ✅ **CORRECT:** `git commit --amend --no-edit` (keeps one clean commit)
+- ❌ **WRONG:** `git commit -m "fix: ..."` (creates multiple commits)
+
+**Why amend instead of new commits:**
+
+- One atomic commit instead of 4-5 small commits
+- Cleaner PR review (final state, not iteration history)
+- Easier to revert if needed
+- Professional git history
 
 **Repeat until user is satisfied**
 
@@ -663,6 +736,154 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - "ready for PR"
 
 **Only then proceed to Phase 3.**
+
+---
+
+## Git Amend Workflow Reference
+
+**Use during Phase 2.75 (User Review & Testing Loop)**
+
+### When to Use `git commit --amend`
+
+Use amend for ALL fixes and improvements during local iteration:
+
+- ✅ Bug fixes discovered during testing
+- ✅ Layout improvements requested by user
+- ✅ Navigation enhancements
+- ✅ Code refactoring
+- ✅ Import path corrections
+- ✅ Schema adjustments
+- ✅ Any change that belongs to the same feature
+
+**DO NOT amend if:**
+
+- ❌ Commit has already been pushed to origin
+- ❌ Creating a completely different feature
+- ❌ User explicitly requests separate commit (rare)
+
+### Amend Workflow
+
+**Basic amend (most common):**
+
+```bash
+# 1. Make changes to files
+# 2. Stage all changes
+git add -A
+
+# 3. Amend without changing commit message
+git commit --amend --no-edit
+```
+
+**Amend with message update:**
+
+```bash
+git add -A
+git commit --amend
+# Editor opens - update message, save, close
+```
+
+**Verify amend worked:**
+
+```bash
+git log --oneline -1
+# Should show same commit hash (or new hash if message changed)
+# Should show updated timestamp
+```
+
+### Example Iteration Flow
+
+**Initial commit:**
+
+```bash
+git add -A
+git commit -m "feat: implement Member Tags endpoint"
+# Commit: abc1234
+```
+
+**User: "Move pagination outside card"**
+
+```bash
+# Fix pagination layout
+git add -A
+git commit --amend --no-edit
+# Still commit: abc1234 (or abc5678 with updated changes)
+```
+
+**User: "Add navigation link from profile"**
+
+```bash
+# Add navigation link
+git add -A
+git commit --amend --no-edit
+# Still ONE commit with all changes
+```
+
+**Result:** One clean commit instead of 3 commits
+
+### Amend vs New Commit Comparison
+
+**❌ Without amend (messy history):**
+
+```
+abc1234 feat: implement Member Tags endpoint
+def5678 refactor: move pagination outside card
+ghi9012 feat: add navigation link
+```
+
+**PR shows:** 3 commits, reviewer sees iteration process
+
+**✅ With amend (clean history):**
+
+```
+abc1234 feat: implement Member Tags endpoint
+```
+
+**PR shows:** 1 commit, reviewer sees final polished state
+
+### Safety Notes
+
+**Amend is safe when:**
+
+- ✅ Commit is only on your local branch
+- ✅ Commit has NOT been pushed to origin
+- ✅ No one else is working on your branch
+
+**Amend is dangerous when:**
+
+- ❌ Commit has been pushed to origin (would require force-push)
+- ❌ Others have pulled your branch
+- ❌ PR has already been created (can still amend, but see below)
+
+### Amending After PR Created
+
+**If you already created PR and need to fix something:**
+
+**Option 1 (Preferred): New commit**
+
+```bash
+git add -A
+git commit -m "fix: address review feedback"
+git push origin feature/branch-name
+```
+
+**Option 2 (Only if PR is fresh/no reviews yet): Amend + force-push**
+
+```bash
+git add -A
+git commit --amend --no-edit
+git push --force-with-lease origin feature/branch-name
+```
+
+⚠️ **Only force-push if:**
+
+- PR just created (< 30 minutes ago)
+- No one has reviewed yet
+- No CI/CD running
+- You're confident no one pulled your branch
+
+**Our workflow prevents this:** We don't create PR until Phase 3, so all iterations use amend safely.
+
+---
 
 ### Phase 3: Push & Create PR (ONLY after explicit approval)
 
@@ -1319,21 +1540,63 @@ After completing all phases:
 
 ### Error Handling
 
+**⚠️ CRITICAL: Standard Error Handling Pattern (Issue #240)**
+
+All dynamic route pages MUST follow this pattern:
+
+**Required Files:**
+
+- ✅ **error.tsx** - Client Component for unexpected crashes
+- ✅ **not-found.tsx** - Server Component for 404 errors
+- ❌ **NO loading.tsx** - Interferes with 404 flow (NEVER use)
+
+**Enforced by:** `src/test/architectural-enforcement/error-handling-enforcement.test.ts`
+
+**Standard Pattern:**
+
+```tsx
+export default async function Page({ params, searchParams }: PageProps) {
+  // 1. Parse route params
+  const { id } = routeParamsSchema.parse(await params);
+
+  // 2. Fetch data
+  const response = await mailchimpDAL.fetchData(id, apiParams);
+
+  // 3. Handle API errors (auto-triggers notFound() for 404s)
+  handleApiError(response);
+
+  // 4. Extract data safely
+  const data = response.success ? response.data : null;
+
+  // 5. Render with connection guard
+  return (
+    <PageLayout {...}>
+      <MailchimpConnectionGuard errorCode={response.errorCode}>
+        {data ? (
+          <ContentComponent data={data} {...} />
+        ) : (
+          <DashboardInlineError error="Failed to load data" />
+        )}
+      </MailchimpConnectionGuard>
+    </PageLayout>
+  );
+}
+```
+
 **Utilities:** `src/utils/errors/`
 
 - `handleApiError(response)` - Auto-handles 404s with `notFound()`, returns error message for UI
 - `handleApiErrorWithFallback(response, fallback)` - Same with custom fallback
 - `is404Error(message)` - Detects 404/not found errors
 
-**Usage:**
+**Key Principles:**
 
-```tsx
-import { handleApiError } from "@/utils/errors";
-const response = await mailchimpDAL.fetchCampaignReport(id);
-const error = handleApiError(response); // Triggers notFound() for 404s
-if (error) return <ErrorDisplay message={error} />;
-// Render success UI
-```
+1. ✅ **404 Handling**: Always use `handleApiError()` - it auto-triggers `notFound()`
+2. ✅ **Connection Errors**: Always use `MailchimpConnectionGuard` with `errorCode`
+3. ✅ **Other Errors**: Use `DashboardInlineError` component (not raw divs)
+4. ❌ **Never**: Call `notFound()` manually - `handleApiError()` does it
+5. ❌ **Never**: Use loading.tsx - interferes with 404 flow
+6. 📄 **error.tsx**: Only for unexpected crashes, not API errors
 
 **Philosophy:** Return expected errors as values, use `notFound()` for 404s, let error boundaries catch unexpected errors.
 
