@@ -7,6 +7,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/ui/star-rating";
 import {
   Mail,
@@ -18,7 +19,9 @@ import {
   Calendar,
   Smartphone,
   FileText,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 import type { MemberInfoResponse } from "@/types/mailchimp/member-info";
 import { formatDateTimeSafe } from "@/utils";
 
@@ -32,7 +35,11 @@ interface MemberProfileContentProps {
  * Member Profile Content Component
  * Displays complete member information including contact details, status, and engagement metrics
  */
-export function MemberProfileContent({ data }: MemberProfileContentProps) {
+export function MemberProfileContent({
+  data,
+  listId,
+  subscriberHash,
+}: MemberProfileContentProps) {
   const statusColorMap: Record<string, string> = {
     subscribed: "bg-green-500",
     unsubscribed: "bg-red-500",
@@ -323,10 +330,20 @@ export function MemberProfileContent({ data }: MemberProfileContentProps) {
       {/* Tags */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Tag className="h-5 w-5" />
-            Tags ({data.tags?.length || 0})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Tag className="h-5 w-5" />
+              Tags ({data.tags?.length || 0})
+            </CardTitle>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                href={`/mailchimp/lists/${listId}/members/${subscriberHash}/tags`}
+              >
+                View All Tags
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {data.tags && data.tags.length > 0 ? (
