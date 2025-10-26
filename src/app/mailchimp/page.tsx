@@ -43,7 +43,7 @@ async function MailchimpDashboardContent({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl">
             <Link
               href="/mailchimp/general-info"
               className="flex flex-col items-center p-8 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -74,6 +74,17 @@ async function MailchimpDashboardContent({
               <h2 className="text-xl font-semibold mb-2">Reports</h2>
               <p className="text-sm text-muted-foreground">
                 View campaign performance and analytics
+              </p>
+            </Link>
+
+            <Link
+              href="/mailchimp/search/members"
+              className="flex flex-col items-center p-8 border rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="text-3xl mb-4">🔍</div>
+              <h2 className="text-xl font-semibold mb-2">Search Members</h2>
+              <p className="text-sm text-muted-foreground">
+                Find members across all lists
               </p>
             </Link>
           </div>
