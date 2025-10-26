@@ -82,6 +82,37 @@ export interface ValidatedPageParams<T, U> {
  * redirects to clean URLs when needed, transforms UI params to API format, and
  * returns both API-ready parameters and UI display values.
  *
+ * **⚠️ CRITICAL: Schema Requirements**
+ *
+ * **UI Schema (uiSchema)** MUST use **optional strings**:
+ * ```typescript
+ * // ✅ CORRECT
+ * export const myPageSearchParamsSchema = z.object({
+ *   page: z.string().optional(),      // String from URL query params
+ *   perPage: z.string().optional(),   // String from URL query params
+ * }).strict();
+ *
+ * // ❌ WRONG - Will cause TypeScript errors
+ * export const myPageSearchParamsSchema = z.object({
+ *   page: z.coerce.number().optional(),     // Don't coerce in UI schema
+ *   perPage: z.coerce.number().optional(),  // Don't coerce in UI schema
+ * });
+ * ```
+ *
+ * **API Schema (apiSchema)** SHOULD use **coerced numbers with defaults**:
+ * ```typescript
+ * // ✅ CORRECT
+ * export const myApiParamsSchema = z.object({
+ *   count: z.coerce.number().min(1).max(1000).default(10),
+ *   offset: z.coerce.number().min(0).default(0),
+ * }).strict();
+ * ```
+ *
+ * **Why this matters:**
+ * - URL params are always strings (`?page=2` → `"2"`)
+ * - This function transforms strings to numbers internally
+ * - Coercing in UI schema causes type mismatches
+ *
  * **Processing Flow:**
  * 1. **Parse & Validate** - Await and validate raw URL search params using UI schema
  * 2. **Check Redirect** - Determine if URL cleanup is needed (remove default values)

@@ -32,6 +32,11 @@ const TARGET_FOLDERS = [
   "src/utils", // Utils should import from schemas (except config utils)
 ];
 
+// Files that contain documentation examples of schemas (exceptions)
+const DOCUMENTATION_FILES = [
+  "src/utils/mailchimp/page-params.ts", // Contains schema examples in JSDoc
+];
+
 // Regex patterns to detect Zod schema definitions
 const ZOD_SCHEMA_PATTERNS = [
   /z\.object\s*\(/, // z.object(
@@ -112,12 +117,19 @@ describe("Schema Folder Enforcement", () => {
         const files = getAllFiles(folderPath);
 
         files.forEach((file) => {
+          const relativePath = path.relative(process.cwd(), file);
+
+          // Skip documentation files that contain schema examples
+          if (DOCUMENTATION_FILES.includes(relativePath)) {
+            return;
+          }
+
           const content = fs.readFileSync(file, "utf8");
           const schemaViolations = detectZodSchemas(content);
 
           if (schemaViolations.length > 0) {
             violations.push({
-              file: path.relative(process.cwd(), file),
+              file: relativePath,
               violations: schemaViolations,
             });
           }
