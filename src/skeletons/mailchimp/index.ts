@@ -26,3 +26,4 @@ export * from "@/skeletons/mailchimp/SegmentMembersSkeleton";
 export * from "@/skeletons/mailchimp/SearchMembersSkeleton";
 export * from "@/skeletons/mailchimp/MemberTagsSkeleton";
 export * from "@/skeletons/mailchimp/MemberNotesSkeleton";
+export * from "@/skeletons/mailchimp/MemberActivitySkeleton";

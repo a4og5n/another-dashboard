@@ -25,6 +25,7 @@ import { listGrowthHistoryPageParamsSchema } from "@/schemas/components/mailchim
 import { listPageParamsSchema } from "@/schemas/components/mailchimp/list-page-params";
 import { memberProfilePageParamsSchema } from "@/schemas/components/mailchimp/member-info-page-params";
 import { listSegmentsPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-segments-page-params";
+import { memberActivityPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-activity-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -682,6 +683,49 @@ export async function generateMemberNotesMetadata({
     openGraph: {
       title: `Notes - ${member.email_address}`,
       description: `View notes for ${member.email_address}`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata for member activity page
+ *
+ * @param params - Object containing the list ID and subscriber hash
+ * @returns Next.js Metadata object for the page
+ *
+ * @example
+ * ```tsx
+ * export const generateMetadata = generateMemberActivityMetadata;
+ * ```
+ */
+export async function generateMemberActivityMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; subscriber_hash: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id, subscriber_hash } =
+    memberActivityPageRouteParamsSchema.parse(rawParams);
+
+  // Fetch member info for email address
+  const response = await mailchimpDAL.fetchMemberInfo(id, subscriber_hash);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Member Activity - Not Found",
+      description: "The requested member could not be found.",
+    };
+  }
+
+  const member = response.data;
+
+  return {
+    title: `Activity - ${member.email_address}`,
+    description: `View activity feed for ${member.email_address} - opens, clicks, bounces, and more`,
+    openGraph: {
+      title: `Activity - ${member.email_address}`,
+      description: `View activity feed for ${member.email_address}`,
       type: "website",
     },
   };

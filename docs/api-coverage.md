@@ -693,8 +693,10 @@ Audience list management endpoints.
 
 ### Member Notes
 
-- 📋 **List Recent Member Notes** - `GET /lists/{list_id}/members/{subscriber_hash}/notes`
+- ✅ **List Recent Member Notes** - `GET /lists/{list_id}/members/{subscriber_hash}/notes`
   - **Priority 3:** Member management
+  - **Route:** `/mailchimp/lists/[id]/members/[subscriber_hash]/notes`
+  - **Features:** Pagination, Note display, Chronological timeline
 
 - 🔒 **Add Member Note** - `POST /lists/{list_id}/members/{subscriber_hash}/notes`
   - **Priority 5:** Write operation (future)
@@ -1262,17 +1264,18 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 20 endpoints
-- ⭐ Priority 2: ~4 endpoints (Member notes, goals, activity feed)
+- ✅ Implemented: 21 endpoints
+- ⭐ Priority 2: ~3 endpoints (Member goals, activity feed)
 - ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 20/244 read endpoints (~8.2%)
+**Total Progress (Read-Only):** 21/244 read endpoints (~8.6%)
 
 **Recent Implementations:**
 
+- **Member Notes** (view notes for list members - chronological timeline with pagination)
 - **Member Tags** (view tags assigned to list members - Issue #247, PR #254)
 - **Segment Members** (view members in audience segments - Issue #250, PR #253)
 - Search Members (global member search across all lists - Issue #246, PR #251)
@@ -1314,7 +1317,7 @@ Facebook advertising integration endpoints.
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
-- Lists API: 9/45 endpoints (20%)
+- Lists API: 10/45 endpoints (22%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)
@@ -1327,53 +1330,99 @@ Facebook advertising integration endpoints.
 
 ## Recommended Next Implementation
 
-### 🎯 Top Priority Endpoints:
+### 🎯 Status Update: Core Member Management Complete ✅
 
-**1. List Members** (`GET /lists/{list_id}/members`) ⭐⭐⭐
+The following foundational endpoints are now implemented:
 
-- **Value:** Core member management - browse, search, filter list members
-- **Complexity:** High (filtering, search, pagination, status management)
-- **User Benefit:** Essential for audience management and member lookup
-- **Route:** `/mailchimp/lists/[id]/members`
-- **Status:** Not yet implemented
-- **Why Important:** Foundation for 10+ member-related endpoints (details, activity, tags, notes, goals)
-- **Unlocks:** Member detail pages, member activity tracking, tag management, segmentation
+- ✅ List Members (`GET /lists/{list_id}/members`)
+- ✅ Get Member Info (`GET /lists/{list_id}/members/{subscriber_hash}`)
+- ✅ List Segments (`GET /lists/{list_id}/segments`)
+- ✅ Segment Members (`GET /lists/{list_id}/segments/{segment_id}/members`)
+- ✅ Member Tags (`GET /lists/{list_id}/members/{subscriber_hash}/tags`)
+- ✅ Member Notes (`GET /lists/{list_id}/members/{subscriber_hash}/notes`)
+- ✅ Search Members (`GET /search-members`)
 
-**After List Members - Logical Progression:**
+### 🎯 Next Priority Endpoints:
 
-**2. Get Member Info** (`GET /lists/{list_id}/members/{subscriber_hash}`) ⭐⭐
+**Option 1: Complete Member Detail Features** ⭐⭐⭐
 
-- **Value:** Member detail page with full profile
-- **Complexity:** Medium (profile display, merge fields, status history)
-- **Depends On:** List Members (drill-down from members table)
-- **Route:** `/mailchimp/lists/[id]/members/[subscriber_hash]`
+**1. Member Activity** (`GET /lists/{list_id}/members/{subscriber_hash}/activity`)
 
-**3. List Segments** (`GET /lists/{list_id}/segments`) ⭐⭐
+- **Value:** View engagement timeline for individual members
+- **Complexity:** Medium (activity feed display, date formatting, action types)
+- **User Benefit:** Understand member engagement patterns
+- **Route:** `/mailchimp/lists/[id]/members/[subscriber_hash]/activity`
+- **Why Important:** Natural drill-down from member profile, completes member detail view
+- **Similar Pattern:** Campaign Email Activity (already implemented)
 
-- **Value:** Audience segmentation for targeted campaigns
-- **Complexity:** Medium (segment list, member counts, conditions)
-- **Route:** `/mailchimp/lists/[id]/segments`
-- **Why Important:** Core feature for audience targeting
+**2. Member Goals** (`GET /lists/{list_id}/members/{subscriber_hash}/goals`)
 
-**Alternative Considerations:**
+- **Value:** Track goal completions for members
+- **Complexity:** Medium (goal tracking, completion status, timestamps)
+- **User Benefit:** See conversion tracking and goal progress
+- **Route:** `/mailchimp/lists/[id]/members/[subscriber_hash]/activity-feed` (note: different from activity)
+- **Why Important:** Completes member profile features
 
-**Landing Pages** (`GET /landing-pages`) - NEW from endpoint review
+**Option 2: List Analytics & Geographic Data** ⭐⭐
 
-- Interesting feature for conversion tracking
-- Lower priority than member management
-- Can be implemented after Lists section is complete
+**3. List Locations** (`GET /lists/{list_id}/locations`)
 
-**Search Members** (`GET /search-members`)
+- **Value:** Geographic distribution of list members
+- **Complexity:** Low (simple table display, country/region breakdown)
+- **User Benefit:** Understand audience geography
+- **Route:** `/mailchimp/lists/[id]/locations`
+- **Why Important:** Quick win - similar pattern to Campaign Locations (already implemented)
+- **Quick Win:** Reuse existing components and patterns
 
-- Global search across all lists
-- Complements List Members but not essential first
-- Better after member detail pages exist
+**4. List Interest Categories** (`GET /lists/{list_id}/interest-categories`)
 
-**List Locations** (`GET /lists/{list_id}/locations`)
+- **Value:** View interest groups/categories for list segmentation
+- **Complexity:** Medium (category hierarchy, member counts)
+- **User Benefit:** Understand how list is organized by interests
+- **Route:** `/mailchimp/lists/[id]/interest-categories`
+- **Why Important:** Foundation for Interest Groups endpoint
 
-- Geographic distribution analytics
-- Similar pattern to campaign locations (already implemented)
-- Could be quick win for analytics
+**Option 3: Campaign Management** ⭐
+
+**5. List Campaigns** (`GET /campaigns`)
+
+- **Value:** View all campaigns with filtering and search
+- **Complexity:** High (comprehensive campaign list, multiple statuses, filtering)
+- **User Benefit:** Central campaign management view
+- **Route:** `/mailchimp/campaigns`
+- **Why Important:** Foundation for campaign CRUD operations (future)
+- **Note:** Would unlock ~17 campaign management endpoints
+
+**Option 4: Landing Pages** ⭐
+
+**6. List Landing Pages** (`GET /landing-pages`)
+
+- **Value:** View all landing pages with performance metrics
+- **Complexity:** Medium (landing page list, publication status, visit tracking)
+- **User Benefit:** Track landing page performance
+- **Route:** `/mailchimp/landing-pages`
+- **Why Important:** New feature area for conversion tracking
+- **Would Unlock:** ~9 landing page endpoints
+
+### 💡 Recommendation:
+
+**Top Choice: Member Activity** (`GET /lists/{list_id}/members/{subscriber_hash}/activity`)
+
+**Rationale:**
+
+1. **Natural progression:** Completes member detail view after notes and tags
+2. **User value:** High - users want to see member engagement timeline
+3. **Complexity:** Medium - similar pattern to Campaign Email Activity (already done)
+4. **Quick win:** Reuse existing activity feed patterns and components
+
+**Second Choice: List Locations** (`GET /lists/{list_id}/locations`)
+
+**Rationale:**
+
+1. **Quick win:** Very similar to Campaign Locations (already implemented)
+2. **Low complexity:** Reuse existing table components and geographic display
+3. **High value:** Users want to know where their audience is located
+4. **Analytics completion:** Rounds out list analytics features
 
 ---
 

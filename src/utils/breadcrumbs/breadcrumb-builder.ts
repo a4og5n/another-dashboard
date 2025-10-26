@@ -419,6 +419,46 @@ export const bc = {
   },
 
   /**
+   * List Member breadcrumb (individual member page)
+   *
+   * @param listId - List ID
+   * @param subscriberHash - Subscriber hash
+   * @returns Breadcrumb item for individual member page
+   *
+   * @example
+   * ```tsx
+   * bc.listMember("abc123", "def456")
+   * // Returns: { label: "Member", href: "/mailchimp/lists/abc123/members/def456" }
+   * ```
+   */
+  listMember(listId: string, subscriberHash: string): BreadcrumbItem {
+    return {
+      label: "Member",
+      href: `/mailchimp/lists/${listId}/members/${subscriberHash}`,
+    };
+  },
+
+  /**
+   * Member Activity breadcrumb
+   *
+   * @param listId - List ID
+   * @param subscriberHash - Subscriber hash
+   * @returns Breadcrumb item for member activity
+   *
+   * @example
+   * ```tsx
+   * bc.memberActivity("abc123", "def456")
+   * // Returns: { label: "Activity", href: "/mailchimp/lists/abc123/members/def456/activity" }
+   * ```
+   */
+  memberActivity(listId: string, subscriberHash: string): BreadcrumbItem {
+    return {
+      label: "Activity",
+      href: `/mailchimp/lists/${listId}/members/${subscriberHash}/activity`,
+    };
+  },
+
+  /**
    * List Segments breadcrumb
    *
    * @param id - List ID

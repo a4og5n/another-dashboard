@@ -20,6 +20,8 @@ import {
   Smartphone,
   FileText,
   ArrowRight,
+  Activity,
+  StickyNote,
 } from "lucide-react";
 import Link from "next/link";
 import type { MemberInfoResponse } from "@/types/mailchimp/member-info";
@@ -99,6 +101,41 @@ export function MemberProfileContent({
             </div>
           </div>
         </CardHeader>
+      </Card>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link
+                href={`/mailchimp/lists/${listId}/members/${subscriberHash}/tags`}
+              >
+                <Tag className="h-4 w-4 mr-2" />
+                View Tags
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link
+                href={`/mailchimp/lists/${listId}/members/${subscriberHash}/notes`}
+              >
+                <StickyNote className="h-4 w-4 mr-2" />
+                View Notes
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link
+                href={`/mailchimp/lists/${listId}/members/${subscriberHash}/activity`}
+              >
+                <Activity className="h-4 w-4 mr-2" />
+                View Activity
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
       </Card>
 
       {/* Member Details Grid */}
