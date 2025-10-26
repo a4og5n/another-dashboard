@@ -378,6 +378,26 @@ export const bc = {
   },
 
   /**
+   * Member Tags breadcrumb
+   *
+   * @param listId - List ID
+   * @param subscriberHash - Subscriber hash
+   * @returns Breadcrumb item for member tags
+   *
+   * @example
+   * ```tsx
+   * bc.memberTags("abc123", "def456")
+   * // Returns: { label: "Tags", href: "/mailchimp/lists/abc123/members/def456/tags" }
+   * ```
+   */
+  memberTags(listId: string, subscriberHash: string): BreadcrumbItem {
+    return {
+      label: "Tags",
+      href: `/mailchimp/lists/${listId}/members/${subscriberHash}/tags`,
+    };
+  },
+
+  /**
    * List Segments breadcrumb
    *
    * @param id - List ID

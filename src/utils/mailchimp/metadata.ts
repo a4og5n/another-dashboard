@@ -602,6 +602,49 @@ export async function generateMemberProfileMetadata({
 }
 
 /**
+ * Generates metadata for member tags page
+ *
+ * @param params - Object containing the list ID and subscriber hash
+ * @returns Next.js Metadata object for the page
+ *
+ * @example
+ * ```tsx
+ * export const generateMetadata = generateMemberTagsMetadata;
+ * ```
+ */
+export async function generateMemberTagsMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; subscriber_hash: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id, subscriber_hash } =
+    memberProfilePageParamsSchema.parse(rawParams);
+
+  // Fetch member info for email address
+  const response = await mailchimpDAL.fetchMemberInfo(id, subscriber_hash);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Member Tags - Not Found",
+      description: "The requested member could not be found.",
+    };
+  }
+
+  const member = response.data;
+
+  return {
+    title: `Tags - ${member.email_address}`,
+    description: `View and manage tags for ${member.email_address}`,
+    openGraph: {
+      title: `Tags - ${member.email_address}`,
+      description: `View and manage tags for ${member.email_address}`,
+      type: "website",
+    },
+  };
+}
+
+/**
  * Generates metadata for list segments page
  *
  * @param params - Object containing the list ID

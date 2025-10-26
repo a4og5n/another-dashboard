@@ -336,6 +336,37 @@ export class MailchimpDAL {
   }
 
   /**
+   * Fetch Member Tags
+   * GET /lists/{list_id}/members/{subscriber_hash}/tags
+   *
+   * @param listId - List ID
+   * @param subscriberHash - MD5 hash of lowercase email address
+   * @param params - Query parameters (fields, exclude_fields, count, offset)
+   * @returns Paginated list of tags assigned to the member
+   */
+  async fetchMemberTags(
+    listId: string,
+    subscriberHash: string,
+    params?: z.infer<
+      typeof import("@/schemas/mailchimp/lists/member-tags/params.schema").memberTagsQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/lists/member-tags/success.schema").memberTagsSuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/lists/member-tags/success.schema").memberTagsSuccessSchema
+        >
+      >(`/lists/${listId}/members/${subscriberHash}/tags`, params),
+    );
+  }
+
+  /**
    * Search Members
    * GET /search-members
    *
