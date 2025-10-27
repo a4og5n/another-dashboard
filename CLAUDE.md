@@ -384,12 +384,15 @@ git add -A && git commit --amend --no-edit
 **Automatic (no user action):**
 
 1. Checkout main, pull changes
-2. Delete branches
+2. Delete implementation branch
 3. Close GitHub issue
-4. Update `docs/api-coverage.md`
-5. **CLAUDE.md documentation review** (check for redundancy, bloat, new patterns)
-6. Add session review to `ai-workflow-learnings.md`
-7. Present completion summary
+4. Create `docs/post-merge-issue-{number}` branch
+5. Update `docs/api-coverage.md` (commit to docs branch)
+6. **CLAUDE.md documentation review** (check for redundancy, bloat, new patterns)
+7. Add session review to `ai-workflow-learnings.md` (commit to docs branch)
+8. Push docs branch & create PR
+9. Auto-merge docs PR when CI passes
+10. Present completion summary
 
 ---
 
@@ -665,9 +668,20 @@ gh issue close {issue_number} --comment "Implemented in PR #{pr_number} and merg
 gh issue close {related_issue} --comment "Fixed as part of {Endpoint Name} implementation (PR #{pr_number})."
 ```
 
-#### Step 3: Update API Coverage Documentation
+#### Step 3: Create Branch for Post-Merge Documentation
 
-**⚠️ CRITICAL:** Documentation updates happen AFTER merge, not during implementation.
+**⚠️ CRITICAL:** All changes go through PR workflow, including post-merge documentation.
+
+**Create documentation branch:**
+
+```bash
+# Create branch for post-merge documentation updates
+git checkout -b docs/post-merge-issue-{issue_number}
+```
+
+**Why a new branch?** Maintains consistent workflow - all changes go through PR, no exceptions.
+
+#### Step 4: Update API Coverage Documentation
 
 **For Mailchimp endpoint implementations:**
 
@@ -689,7 +703,7 @@ gh issue close {related_issue} --comment "Fixed as part of {Endpoint Name} imple
   - **Implemented:** Issue #278, PR #279
 ```
 
-2. Commit documentation update directly to main:
+2. Commit to documentation branch:
    ```bash
    git add docs/api-coverage.md
    git commit -m "docs: mark {Endpoint Name} as implemented
@@ -706,17 +720,16 @@ Updated API coverage:
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
-git push origin main
 
-`````
+````
 
-**Why post-merge?** If PR is rejected or requires major changes, pre-merge docs would claim "implemented" but code wouldn't be in main.
+**Note:** No push yet - will be included in final step.
 
-#### Step 4: CLAUDE.md Documentation Review (MANDATORY)
+#### Step 5: CLAUDE.md Documentation Review (MANDATORY)
 
 **⚠️ CRITICAL: AI MUST perform this check after EVERY implementation, not just when patterns change.**
 
-**4.1: Check for New Patterns**
+**5.1: Check for New Patterns**
 
 Did this implementation introduce:
 - New component architecture?
@@ -725,7 +738,7 @@ Did this implementation introduce:
 - New navigation pattern?
 - Any deviation from existing workflow?
 
-**4.2: Check for Redundancy & Bloat**
+**5.2: Check for Redundancy & Bloat**
 
 **Token Awareness Check:**
 - Does CLAUDE.md have duplicate sections?
@@ -739,25 +752,28 @@ Did this implementation introduce:
 wc -l CLAUDE.md
 grep -c "^## " CLAUDE.md  # Count major sections
 grep -c "CRITICAL" CLAUDE.md  # Should be <20
-```
+````
 
 **Red Flags:**
+
 - ❌ CLAUDE.md >3,000 lines (extract to sub-docs)
 - ❌ Same content in 2+ places (consolidate)
 - ❌ >20 "CRITICAL" warnings (dilutes importance)
 - ❌ Verbose workflow steps (create condensed version)
 
-**4.3: Take Action**
+**5.3: Take Action**
 
 **If new patterns found:**
+
 ```bash
 # Add to appropriate section (NOT as new top-level section)
 git add CLAUDE.md
 git commit -m "docs: document {pattern} from Issue #${issue_number}"
-git push origin main
+# Note: Committed to docs branch, will be pushed in final step
 ```
 
 **If redundancy/bloat detected:**
+
 ```bash
 # Create issue for future cleanup
 gh issue create --title "docs: CLAUDE.md cleanup needed" --body "$(cat <<'EOF'
@@ -781,9 +797,10 @@ EOF
 )"
 ```
 
-**4.4: Documentation Principles (Apply Always)**
+**5.4: Documentation Principles (Apply Always)**
 
 ✅ **DO:**
+
 - Extract workflows >200 lines to `docs/workflows/`
 - Extract patterns >300 lines to `docs/development-patterns.md`
 - Create condensed summaries with links to detailed docs
@@ -791,6 +808,7 @@ EOF
 - Define things ONCE, reference everywhere
 
 ❌ **DON'T:**
+
 - Duplicate content across sections
 - Create verbose examples inline (extract to docs/)
 - Add new top-level sections (group under existing)
@@ -798,17 +816,20 @@ EOF
 - Embed complete workflows (summarize + link)
 
 **Example: Good Documentation Structure**
+
 ```markdown
 ## Feature X
 
 **Quick Reference:** See [docs/feature-x-guide.md](docs/feature-x-guide.md)
 
 ### Essential Info (keep in CLAUDE.md)
+
 - Critical rules (2-3 bullet points)
 - Common command: `command --flags`
 - Link to detailed guide
 
 ### Detailed Guide (extract to docs/)
+
 - Step-by-step instructions
 - All edge cases
 - Verbose examples
@@ -816,11 +837,12 @@ EOF
 ```
 
 **Token Cost Awareness:**
+
 - Every 1,000 lines ≈ 3,000 tokens
 - CLAUDE.md should stay <2,500 lines (<7,500 tokens)
 - Aim for: "Can AI read entire file in one context window"`
 
-#### Step 5: Add Session Review to ai-workflow-learnings.md
+#### Step 6: Add Session Review to ai-workflow-learnings.md
 
 **AI MUST document this implementation session:**
 
@@ -847,7 +869,7 @@ EOF
 ```{language}
 // Show code example if relevant
 ```
-`````
+````
 
 **Why This Matters:**
 
@@ -977,10 +999,50 @@ Captured:
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
-git push origin main
+# Note: No push yet - will be included in final step
 ````
 
-#### Step 6: Implementation Review & Improvement Identification
+#### Step 7: Push Documentation Branch & Create PR
+
+**Push all documentation updates and create PR:**
+
+```bash
+# Push documentation branch
+git push -u origin docs/post-merge-issue-{issue_number}
+
+# Create PR for post-merge documentation
+gh pr create --title "docs: post-merge updates for {Endpoint Name} (Issue #{issue_number})" --body "$(cat <<'EOF'
+## Summary
+Post-merge documentation updates for {Endpoint Name} implementation.
+
+## Updates
+- ✅ Updated API coverage documentation
+- ✅ Added CLAUDE.md patterns (if applicable)
+- ✅ Added session review to ai-workflow-learnings.md
+
+## Related
+- Original implementation: PR #{pr_number}
+- Issue: #{issue_number}
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+EOF
+)"
+
+# Monitor CI/CD checks
+gh pr checks --watch
+
+# Auto-merge when checks pass
+gh pr merge --squash --delete-branch
+```
+
+**After documentation PR merges:**
+
+```bash
+# Return to main and pull
+git checkout main && git pull origin main
+```
+
+#### Step 8: Implementation Review & Improvement Identification
 
 **AI MUST review the merged implementation and identify improvements:**
 
@@ -1033,7 +1095,7 @@ git push origin main
 >
 > What would you prefer?"
 
-#### Step 7: Create Improvement Branch (If Requested)
+#### Step 9: Create Improvement Branch (If Requested)
 
 **If user says "implement improvements" or similar:**
 
@@ -1059,7 +1121,7 @@ git push origin main
    - Explain improvements made
    - Show before/after examples
 
-#### Step 8: Final Summary
+#### Step 10: Final Summary
 
 **AI presents complete summary:**
 
@@ -1068,14 +1130,15 @@ git push origin main
 
 **Git Operations:**
 - ✅ Switched to main branch
-- ✅ Pulled latest changes (fast-forward: {old_hash}..{new_hash})
-- ✅ Deleted local branch: {branch-name}
+- ✅ Pulled latest changes
+- ✅ Deleted implementation branch: {branch-name}
 
 **Documentation Updates:**
 - ✅ Closed Issue #{issue_number}
-- ✅ Updated docs/api-coverage.md (commit: {hash})
-- ✅ Updated CLAUDE.md with new patterns (commit: {hash}) [if applicable]
-- ✅ Added session review to ai-workflow-learnings.md (commit: {hash})
+- ✅ Created docs PR: #{docs_pr_number}
+- ✅ Updated docs/api-coverage.md (if applicable)
+- ✅ Updated CLAUDE.md with new patterns (if applicable)
+- ✅ Added session review to ai-workflow-learnings.md
 
 **Implementation Review:**
 - ✅ Quality assessment: {rating}
@@ -1094,7 +1157,8 @@ git push origin main
 - DO NOT update `docs/api-coverage.md` during implementation (Phase 2)
 - DO NOT skip session review - it's required for all implementations
 - DO NOT skip improvement review - continuous improvement is mandatory
-- All documentation commits go directly to main (docs-only exception)
+- ✅ **ALL changes go through PR workflow** - including documentation
+- Create `docs/post-merge-issue-{number}` branch for Phase 4 updates
 - Always close related GitHub issues
 - Always ask before creating improvement branch
 
