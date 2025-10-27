@@ -4,12 +4,538 @@ This document captures key learnings from implementing Mailchimp dashboard featu
 
 ## Table of Contents
 
+- [Session Reviews](#session-reviews)
 - [Component Architecture](#component-architecture)
 - [Table Implementation Patterns](#table-implementation-patterns)
 - [Navigation & UX Patterns](#navigation--ux-patterns)
 - [Number & Data Formatting](#number--data-formatting)
 - [Pre-commit Hook Setup](#pre-commit-hook-setup)
 - [Commit Strategy](#commit-strategy)
+
+---
+
+## Session Reviews
+
+### Session: Workflow Enhancement - CI/CD & Post-Merge Review (2025-10-26)
+
+**Type:** Documentation improvement
+**Issue:** #282 | **PR:** TBD | **Status:** 🚧 In Progress
+
+#### What Was Enhanced ✅
+
+**1. Phase 3.5: CI/CD Monitoring & Failure Recovery** ⭐⭐⭐
+
+**What Changed:**
+
+- Added automatic CI/CD monitoring after PR creation
+- Created failure recovery workflow with test prevention
+- Added common CI/CD failure table with fix strategies
+- Continuous monitoring until ALL checks pass
+
+**Key Features:**
+
+```bash
+# Monitor PR until complete
+gh run watch {run_id} --interval 5 --exit-status
+
+# Fix failures and add prevention tests
+git commit -m "fix: resolve CI/CD failure - {description}
+
+Issue: {what failed}
+Root Cause: {why}
+Solution: {fix}
+Prevention: {test added}
+
+CI Run: {run_id}"
+```
+
+**Why This Matters:**
+
+- No more manual CI/CD babysitting
+- Failures are caught and fixed automatically
+- Prevention tests ensure issues don't recur
+- Complete visibility into PR status
+
+**2. Phase 4: Comprehensive Post-Merge Review Process** ⭐⭐⭐
+
+**What Changed:**
+
+- Close related GitHub issues automatically
+- Update api-coverage.md with Issue/PR numbers
+- Update CLAUDE.md if new patterns introduced
+- **Required session review in ai-workflow-learnings.md**
+- **Implementation quality review with improvement identification**
+- Option to create improvement branch immediately
+
+**Step-by-Step Post-Merge:**
+
+1. Branch cleanup & sync
+2. Close GitHub issues
+3. Update api-coverage.md
+4. Update CLAUDE.md (if patterns changed)
+5. Add session review to ai-workflow-learnings.md
+6. Review implementation for improvements
+7. Create improvement branch (if requested)
+8. Final summary
+
+**Why This Matters:**
+
+- Complete documentation trail
+- Continuous improvement cycle
+- Learning captured for future work
+- No manual cleanup needed
+
+#### Implementation Stats 📊
+
+**Development Time:**
+
+- Research & Design: ~30 minutes
+- Documentation Writing: ~45 minutes
+- **Total:** ~1.25 hours
+
+**Code Metrics:**
+
+- Files Modified: 2 (CLAUDE.md, ai-workflow-learnings.md)
+- Lines Added: ~450
+- Lines Removed: ~50
+
+**Impact:**
+
+- ✅ Complete end-to-end workflow
+- ✅ Automatic failure recovery
+- ✅ Mandatory learning documentation
+- ✅ Continuous improvement loop
+
+#### Key Learnings for Future Workflows 💡
+
+1. **CI/CD Monitoring is Critical**
+   - Don't assume checks will pass
+   - Watch PR until ALL checks complete
+   - Fix failures immediately with prevention tests
+
+2. **Documentation Happens Post-Merge**
+   - api-coverage.md updated after merge (not during)
+   - Session reviews are mandatory
+   - Learning capture prevents repeat mistakes
+
+3. **Improvement Cycle is Mandatory**
+   - Every implementation gets reviewed
+   - Improvements identified proactively
+   - Option to implement immediately
+
+4. **Automation Reduces Cognitive Load**
+   - No need to remember cleanup steps
+   - Workflow guides through all phases
+   - Documentation happens automatically
+
+---
+
+### Session: List Locations Implementation (2025-10-26)
+
+**Endpoint:** `GET /lists/{list_id}/locations`
+**Route:** `/mailchimp/lists/[id]/locations`
+**Issue:** #278 | **PR:** #279 | **Status:** ✅ Merged
+
+#### What Worked Exceptionally Well ✅
+
+**1. Two-Phase Workflow with User Schema Corrections** ⭐⭐⭐
+
+**What Happened:**
+
+- AI created initial schemas based on Mailchimp API documentation
+- User immediately caught 2 critical issues before implementation
+- Corrected schemas approved, then proceeded to implementation
+
+**User Corrections Made:**
+
+```typescript
+// ❌ AI's Initial Schema
+listLocationsQueryParamsSchema = z.object({
+  count: z.coerce.number().min(1).max(1000).default(10),  // Pagination not supported!
+  offset: z.coerce.number().min(0).default(0),
+  // ...
+});
+
+cc: z.string().length(2),  // Allows ANY 2 characters (e.g., "12", "!!")
+
+// ✅ User's Corrections
+listLocationsQueryParamsSchema = z.object({
+  fields: z.string().optional(),
+  exclude_fields: z.string().optional(),
+  // No pagination - API returns all locations in single response
+});
+
+cc: z.string().regex(/^[A-Z]{2}$/),  // ISO 3166-1 alpha-2 validation
+```
+
+**Why This Worked:**
+
+- **API Knowledge:** User knew this endpoint doesn't support pagination
+- **Data Integrity:** Regex validation ensures proper country codes (not "12" or "ab")
+- **Prevention:** Caught before generating pagination UI/logic that wouldn't work
+
+**2. Consistent Pattern Application** ⭐⭐
+
+**Implementation Speed:** ~30 minutes from approval to merged PR
+
+**Patterns Applied:**
+
+- Standard file structure (page.tsx, error.tsx, not-found.tsx)
+- Proper helpers (breadcrumb, metadata, DAL method)
+- Navigation integration with Globe icon
+- Server Component with shadcn/ui Table
+- No loading.tsx (per architectural requirements)
+
+**Why This Worked:**
+
+- **Established Patterns:** Following Member Goals/Growth History patterns
+- **Muscle Memory:** Workflow is now second nature (create schemas → review → implement)
+- **Automation:** Pre-commit hooks catch architectural violations automatically
+
+**3. Navigation Integration Clarity** ⭐⭐
+
+**What Happened:**
+
+- Feature complete, all tests passing
+- User requested: "Add a link to the locations page from the list detail page"
+- Added "View Locations" button with Globe icon to Stats tab
+- Validated and committed in single flow
+
+**Why This Worked:**
+
+- **Clear Request:** User specified exact navigation path
+- **Contextual Placement:** Stats tab is logical location for geographic analytics
+- **Icon Choice:** Globe icon clearly communicates geographic data
+
+#### Process Improvements Discovered 📝
+
+**1. Schema Review Prevents Infrastructure Rework**
+
+**Observation:**
+
+- User corrections took <1 minute
+- Would have required deleting pagination UI, params processing, URL builders
+- Estimated savings: 45+ minutes of rework + confusion
+
+**Lesson:** Schema review phase is highest-ROI checkpoint in the workflow
+
+**2. Architectural Tests Catch Missing Files**
+
+**What Happened:**
+
+- Initially created loading.tsx (habit from other frameworks)
+- Pre-commit hook blocked commit: "loading.tsx interferes with 404 flow"
+- Removed file, commit succeeded
+
+**Why This Worked:**
+
+- **Immediate Feedback:** Hook runs before commit is created
+- **Learning:** Reinforces project-specific patterns
+- **Prevention:** Can't accidentally merge architectural violations
+
+#### Implementation Stats 📊
+
+**Files Created:** 14 files
+**Lines Added:** +575 (schemas, types, page, components, helpers)
+**Lines Deleted:** -7 (API coverage updates)
+**Time to First Commit:** ~30 minutes (from schema approval)
+**CI/CD Duration:** ~4 minutes (all checks passed)
+
+**Code Distribution:**
+
+- Schemas & Types: ~175 lines (30%)
+- Page Infrastructure: ~163 lines (28%)
+- Component & Skeleton: ~122 lines (21%)
+- Helpers (DAL, breadcrumb, metadata): ~79 lines (14%)
+- Navigation: ~13 lines (2%)
+- Documentation: ~23 lines (5%)
+
+#### Key Takeaways 💡
+
+1. **Schema Phase is Critical:**
+   - User caught pagination mistake that would have required significant rework
+   - Country code validation ensures data integrity
+   - Spending 2-3 minutes on schema review saves 30+ minutes of implementation fixes
+
+2. **Pattern Consistency Accelerates Development:**
+   - Using established patterns from Member Goals/Growth History implementations
+   - Clear file structure makes navigation and maintenance easy
+   - Pre-commit hooks enforce standards automatically
+
+3. **Navigation Integration is Feature Completion:**
+   - Don't just implement the endpoint - integrate it into user flows
+   - Stats tab placement makes geographic data discoverable
+   - Icon choice (Globe) provides visual context
+
+4. **CI/CD Validates Quality:**
+   - All 913 tests passing
+   - Type-check, lint, format, accessibility checks automated
+   - Build verification ensures no bundle size issues
+
+#### Session Conclusion
+
+**Status:** ✅ **Complete & Merged**
+
+**Highlights:**
+
+- User's schema corrections prevented pagination UI rework
+- Consistent pattern application enabled fast implementation
+- Navigation integration completed user flow
+- API Coverage: 25/244 endpoints (10.2%)
+
+**Next Focus:** Continue implementing Priority 3 endpoints using this proven workflow.
+
+---
+
+### Session: Member Goals Implementation (2025-10-26)
+
+**Endpoint:** `GET /lists/{list_id}/members/{subscriber_hash}/goals`
+**Route:** `/mailchimp/lists/[id]/members/[subscriber_hash]/goals`
+**Issue:** #276 | **PR:** #277 | **Status:** ✅ Merged
+
+#### What Worked Exceptionally Well ✅
+
+**1. Two-Phase Workflow with User Schema Review** ⭐⭐⭐
+
+**What Happened:**
+
+- AI created initial schemas based on Mailchimp API docs
+- User manually corrected 3 key schema issues before implementation
+- All corrections caught before generating 692 lines of code
+
+**User Corrections Made:**
+
+```typescript
+// ❌ AI's Initial Schema
+goal_id: z.number().int().min(0),  // Allows ID = 0
+data: z.record(z.unknown()).optional(),  // Complex, optional
+
+// ✅ User's Corrections
+goal_id: z.number().int().min(1),  // Proper validation
+data: z.string(),  // Simpler, matches actual API
+```
+
+**Why This Worked:**
+
+- **Early Feedback:** Caught validation issues before infrastructure generation
+- **Quality Improvement:** User's domain knowledge improved schema accuracy
+- **Time Savings:** No need to refactor 692 lines later
+- **Learning Loop:** AI learns correct patterns for future endpoints
+
+**Pattern to Repeat:**
+
+```
+Phase 1: Schema Creation → User Review → Approval
+         ↓ (User catches issues here)
+Phase 2: Generate infrastructure with correct schemas
+         ↓
+Result: High-quality implementation, zero schema rework
+```
+
+**2. Consistent File Naming and Structure** ⭐⭐⭐
+
+**What Happened:**
+
+- All schema files followed established pattern:
+  - `params.schema.ts` (path + query params)
+  - `success.schema.ts` (response structure)
+  - `error.schema.ts` (error handling)
+- Types file: `member-goals.ts` with standard exports
+- Component: `member-goals-content.tsx` (Server Component)
+- Skeleton: `MemberGoalsSkeleton.tsx`
+
+**Why This Worked:**
+
+- **Discoverability:** Developers know exactly where to find files
+- **Consistency:** Same structure as Member Notes, Tags, Activity
+- **Maintainability:** Predictable patterns = easier updates
+- **IDE Support:** Auto-complete works perfectly
+
+**Pattern to Repeat:**
+
+```
+src/schemas/mailchimp/{resource}/{endpoint}/
+├── params.schema.ts
+├── success.schema.ts
+└── error.schema.ts
+
+src/types/mailchimp/{endpoint}.ts
+src/components/mailchimp/{resource}/{endpoint}-content.tsx
+src/skeletons/mailchimp/{Endpoint}Skeleton.tsx
+```
+
+**3. Navigation Integration from Member Profile** ⭐⭐
+
+**What Happened:**
+
+- User tested page by accessing URL directly
+- User reported: "I do not see the goals link from the member page"
+- AI immediately added "View Goals" button to Quick Actions
+- Seamless navigation integration completed
+
+**Why This Worked:**
+
+- **User-Driven Discovery:** Real testing revealed missing navigation
+- **Fast Fix:** Button added in <2 minutes with proper pattern
+- **Complete UX:** Users can now discover Goals from profile page
+
+**Pattern to Repeat:**
+
+```typescript
+// Always check: Is this page accessible from natural navigation paths?
+<Button variant="outline" size="sm" asChild>
+  <Link href={`/mailchimp/lists/${listId}/members/${subscriberHash}/goals`}>
+    <Target className="h-4 w-4 mr-2" />
+    View Goals
+  </Link>
+</Button>
+```
+
+**Learnings:**
+
+- ✅ Test navigation paths, not just direct URL access
+- ✅ Quick Actions cards are the right pattern for member sub-pages
+- ✅ Icon choice matters (Target icon = goals)
+
+#### Process Improvements Discovered 🔍
+
+**1. Missing error.tsx Caught by Pre-Commit Hook**
+
+**What Happened:**
+
+- First commit attempt failed: "Dynamic routes missing error.tsx files"
+- Architectural test enforced error.tsx requirement (Issue #240)
+- AI created error.tsx following existing pattern
+- Commit succeeded on second attempt
+
+**Why This is Good:**
+
+- **Quality Gate:** Prevents incomplete implementations from merging
+- **Consistency:** All dynamic routes have proper error handling
+- **Self-Documenting:** Tests encode architectural requirements
+
+**Pattern to Remember:**
+
+```
+Dynamic routes MUST have:
+✅ page.tsx
+✅ error.tsx (for runtime errors)
+✅ not-found.tsx (for 404s)
+❌ loading.tsx (optional - we use Suspense + skeletons)
+```
+
+**2. Schema Assumptions Clearly Marked**
+
+**What Happened:**
+
+- WebFetch couldn't parse Mailchimp docs (returned CSS)
+- AI marked schemas with ⚠️ ASSUMED FIELDS warnings
+- User reviewed and corrected assumptions before implementation
+
+**Why This Worked:**
+
+- **Transparency:** Clear documentation of uncertainty
+- **User Trust:** User knows which fields need verification
+- **Risk Mitigation:** Smoke testing catches API mismatches
+
+**Pattern to Keep:**
+
+```typescript
+/**
+ * ⚠️ ASSUMED FIELDS - Based on Mailchimp API documentation and patterns
+ * Source: https://mailchimp.com/developer/marketing/api/...
+ * Pattern based on: Member Notes, Member Tags endpoints
+ * Verification required: Test with real API response during implementation
+ */
+```
+
+#### Implementation Stats 📊
+
+**Files Changed:** 16 files (+692 additions, -5 deletions)
+
+**Breakdown:**
+
+- **New Files:** 10 (schemas, types, components, pages)
+- **Modified Files:** 6 (navigation, metadata, DAL, exports)
+- **Lines of Code:** 692 additions
+
+**Time Investment:**
+
+- **Phase 1 (Schemas):** ~15 minutes (AI) + user review
+- **Phase 2 (Implementation):** ~30 minutes (AI)
+- **Phase 2.4 (Smoke Test):** ~5 minutes (User discovered navigation gap)
+- **Phase 2.5 (Commit):** ~5 minutes (error.tsx fix)
+- **Phase 3 (PR + Merge):** ~10 minutes
+- **Total:** ~65 minutes (AI + User collaboration)
+
+**Quality Metrics:**
+
+- ✅ 905/905 tests passing
+- ✅ Zero TypeScript errors
+- ✅ Zero ESLint warnings
+- ✅ 100% Prettier compliance
+- ✅ All architectural rules enforced
+
+**Code Quality:**
+
+- Server Component architecture
+- Full type safety with Zod schemas
+- Comprehensive error handling
+- Proper pagination support
+- Metadata generation
+- Skeleton loading states
+
+#### Key Takeaways for Future Implementations 💡
+
+**Do More Of:**
+
+1. ✅ **User schema review before implementation** - Caught 3 critical issues early
+2. ✅ **Test navigation paths during smoke test** - Discovered missing Quick Actions link
+3. ✅ **Mark schema assumptions clearly** - Builds trust, enables verification
+4. ✅ **Follow established file naming patterns** - Consistency aids discovery
+5. ✅ **Use architectural tests as quality gates** - Enforces completeness
+
+**Process Validated:**
+
+1. ✅ **Two-phase workflow** works perfectly for schema validation
+2. ✅ **Pre-commit hooks** catch architectural gaps (error.tsx)
+3. ✅ **Smoke testing** reveals real UX issues (navigation)
+4. ✅ **Git amend workflow** keeps commit history clean
+
+**Patterns to Repeat:**
+
+1. ✅ Server Component tables with shadcn/ui Table
+2. ✅ URL-based pagination with validatePageParams()
+3. ✅ Metadata helpers in dedicated files
+4. ✅ Quick Actions navigation cards on detail pages
+5. ✅ Skeleton components matching table structure
+
+#### Session Conclusion
+
+**Status:** ✅ Successfully completed all phases
+
+- Phase 0: Issue + branch ✓
+- Phase 1: Schema review (user corrected 3 issues) ✓
+- Phase 2: Implementation (692 lines, 16 files) ✓
+- Phase 2.4: Smoke test (navigation gap discovered & fixed) ✓
+- Phase 2.5: Local commit (error.tsx added after test failure) ✓
+- Phase 3: PR #277 merged ✓
+
+**Impact:**
+
+- **API Coverage:** 23 → 24 endpoints (~9.8%)
+- **Member Management:** Now complete (Goals, Activity, Notes, Tags)
+- **Priority 2:** 1 endpoint remaining (List Locations)
+
+**What Made This Session Successful:**
+
+1. User's schema corrections prevented future rework
+2. Architectural tests enforced completeness (error.tsx)
+3. Smoke testing revealed missing navigation
+4. Fast iteration loop (user feedback → fix → deploy)
+5. Clean commit history via git amend
+
+**Recommendation:** Continue this exact workflow for remaining Priority 2-3 endpoints.
 
 ---
 
