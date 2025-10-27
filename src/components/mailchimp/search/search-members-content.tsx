@@ -216,7 +216,10 @@ export function SearchMembersContent({
                   </TableHeader>
                   <TableBody>
                     {exactMatches.members.map((member) => (
-                      <MemberRow key={`exact-${member.id}`} member={member} />
+                      <MemberRow
+                        key={`exact-${member.list_id}-${member.id}`}
+                        member={member}
+                      />
                     ))}
                   </TableBody>
                 </Table>
@@ -248,7 +251,10 @@ export function SearchMembersContent({
                   </TableHeader>
                   <TableBody>
                     {fullSearch.members.map((member) => (
-                      <MemberRow key={`full-${member.id}`} member={member} />
+                      <MemberRow
+                        key={`full-${member.list_id}-${member.id}`}
+                        member={member}
+                      />
                     ))}
                   </TableBody>
                 </Table>
