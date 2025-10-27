@@ -3649,7 +3649,7 @@ describe("Common Schema Pattern", () => {
 
 ## Git Strategy
 
-**Branches:** `feature/description` or `fix/description` (lowercase, hyphens)
+**Branches:** `feature/description-issue-123`, `fix/description-issue-456`, or `docs/description-issue-789` (lowercase, hyphens, issue number required)
 
 **Commits:** Conventional commits (`feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`)
 
