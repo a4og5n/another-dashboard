@@ -27,6 +27,7 @@ import { memberProfilePageParamsSchema } from "@/schemas/components/mailchimp/me
 import { listSegmentsPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-segments-page-params";
 import { memberActivityPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-activity-page-params";
 import { memberGoalsPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-goals-page-params";
+import { listLocationsPageParamsSchema } from "@/schemas/components/mailchimp/list-locations-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -525,6 +526,43 @@ export async function generateListGrowthHistoryMetadata({
     openGraph: {
       title: `${data.name} - Growth History`,
       description: `Historical growth data for ${data.name} showing subscriber trends over time`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata for list locations page
+ *
+ * @param params - Object containing the list ID
+ * @returns Next.js Metadata object for the page
+ */
+export async function generateListLocationsMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = listLocationsPageParamsSchema.parse(rawParams);
+
+  // Fetch list data for metadata
+  const response = await mailchimpDAL.fetchList(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "List Locations - Not Found",
+      description: "The requested list could not be found.",
+    };
+  }
+
+  const data = response.data as List;
+
+  return {
+    title: `${data.name} - Locations`,
+    description: `Geographic distribution of subscribers for ${data.name} by country`,
+    openGraph: {
+      title: `${data.name} - Locations`,
+      description: `Geographic distribution of subscribers for ${data.name} by country`,
       type: "website",
     },
   };

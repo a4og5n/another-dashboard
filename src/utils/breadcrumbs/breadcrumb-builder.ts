@@ -340,6 +340,25 @@ export const bc = {
   },
 
   /**
+   * List Locations breadcrumb
+   *
+   * @param id - List ID
+   * @returns Breadcrumb item for list locations
+   *
+   * @example
+   * ```tsx
+   * bc.listLocations("abc123")
+   * // { label: "Locations", href: "/mailchimp/lists/abc123/locations" }
+   * ```
+   */
+  listLocations(id: string): BreadcrumbItem {
+    return {
+      label: "Locations",
+      href: `/mailchimp/lists/${id}/locations`,
+    };
+  },
+
+  /**
    * List Members breadcrumb
    *
    * @param id - ID
