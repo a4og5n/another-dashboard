@@ -1280,7 +1280,7 @@ Facebook advertising integration endpoints.
 
 - **List Interest Categories** (subscription preference groups with category types - Issue #288, PR #289)
 - **List Locations** (geographic member distribution - Issue #278, PR #279)
-- **Member Goals** (goal completion tracking for list members - Issue #276, PR #279)
+- **Member Goals** (goal completion tracking for list members - Issue #276, PR #277)
 - **Member Activity Feed** (complete engagement timeline with discriminated union schemas for 7+ activity types - Issue #268, PR #270)
 - **Member Notes** (view notes for list members - chronological timeline with pagination)
 - **Member Tags** (view tags assigned to list members - Issue #247, PR #254)
