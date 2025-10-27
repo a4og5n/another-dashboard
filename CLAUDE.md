@@ -69,7 +69,7 @@ gh pr create --base main --head feature/endpoint-name
 
 See "Phase 0: Git Setup" in the AI-First Development Workflow section below for how AI should automatically enforce this.
 
-## Commands
+## Commands {#commands}
 
 **Development:** `pnpm dev` (HTTPS + Turbopack) | `pnpm build` | `pnpm start` | `pnpm clean`
 
@@ -78,6 +78,13 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 **Testing:** `pnpm test` | `pnpm test:watch` | `pnpm test:ui` | `pnpm test:coverage` | `pnpm test:a11y`
 
 **Workflows:** `pnpm quick-check` (type + lint) | `pnpm pre-commit` (full validation) | `pnpm validate` (includes build)
+
+**Standard Validation Suite** (run before committing):
+
+1. `pnpm type-check` - Must pass with zero errors
+2. `pnpm lint:fix` - Auto-fix linting issues
+3. `pnpm format` - Format all files
+4. `pnpm test` - All tests must pass
 
 **Database:** `pnpm db:push` | `pnpm db:generate` | `pnpm db:migrate` | `pnpm db:studio`
 
@@ -252,1246 +259,108 @@ import {
 
 ## AI-First Development Workflow
 
-This project uses an **AI-assisted, automated workflow** for implementing new Mailchimp dashboard pages with **mandatory user checkpoints**.
+**📚 Complete workflow:** [docs/workflows/README.md](docs/workflows/README.md)
 
-### ⚠️ CRITICAL: Always Start on a Feature Branch
+### Quick Reference
 
-**BEFORE starting ANY feature work:**
+**Phases:** 0 (Git Setup) → 1 (Schemas) → 2 (Implementation) → 3 (PR) → 4 (Post-Merge)
 
-1. Check current branch: `git branch --show-current`
-2. If on `main` or `master`, **STOP** and create a feature branch first
-3. Never commit directly to `main`
+**Checkpoints:**
 
-This is enforced in Phase 0 below.
+- Phase 0 → 1: User says "yes" after issue created
+- Phase 1 → 2: User says "approved" after schema review
+- Phase 2.4: User confirms "smoke test passed"
+- Phase 2.75 → 3: User says "ready to push"
 
-### 🎯 User Intent Classification (Read This First!)
+### User Intent Classification
 
-**Before proceeding with ANY work, AI MUST classify user intent correctly:**
+| User Says                 | Intent         | AI Response                                        |
+| ------------------------- | -------------- | -------------------------------------------------- |
+| "Can we learn from X?"    | Research       | Present findings + ASK before implementing         |
+| "Improve X"               | Ambiguous      | ASK: "(A) Analyze (B) Create issue (C) Implement?" |
+| "Implement X"             | Implementation | ✅ Proceed to Phase 0                              |
+| "approved" / "looks good" | Approval       | ✅ Proceed to next phase                           |
 
-| User Says                                     | Intent            | AI Response                                                      |
-| --------------------------------------------- | ----------------- | ---------------------------------------------------------------- |
-| "Can we learn from X?"                        | Research/Analysis | Present findings + ASK: "Should I implement these improvements?" |
-| "Review our workflow"                         | Research/Analysis | Analyze + present recommendations + ASK before implementing      |
-| "Improve X" / "Add Y to workflow"             | **AMBIGUOUS**     | ⚠️ ASK: "(A) Analyze only (B) Create issue (C) Implement now?"   |
-| "Implement X"                                 | Implementation    | ✅ Proceed to Phase 0 (create issue first!)                      |
-| "Create X endpoint"                           | Implementation    | ✅ Proceed to Phase 0 (create issue first!)                      |
-| "approved" / "looks good" / "yes" / "proceed" | Approval          | ✅ Proceed to next phase                                         |
+**Red Flags:**
 
-**🚨 CRITICAL RULES:**
-
-1. **If user didn't say "implement" explicitly → ASK FIRST**
-   - Don't assume "improve" means "implement"
-   - Don't assume "add" means "implement now"
-   - Don't assume "can we" means "do it"
-
-2. **Before ANY implementation work → Phase 0 REQUIRED**
-   - Create GitHub issue FIRST
-   - Create feature branch with issue number
-   - Initialize TodoWrite tracker with issue number
-   - Get user approval before Phase 1
-
-3. **Default to Research mode when ambiguous**
-   - Better to ask than to implement prematurely
-   - User can always say "implement it" after reviewing analysis
-
-**Example: Ambiguous Request**
-
-```
-User: "Can we improve our error handling?"
-
-❌ WRONG: [starts implementing immediately]
-
-✅ CORRECT:
-AI: "I can see several improvements to our error handling:
-     1. Add validation for X
-     2. Improve error messages for Y
-     3. Add retry logic for Z
-
-     Should I:
-     (A) Just present detailed recommendations
-     (B) Create an issue to track this work
-     (C) Implement the improvements now
-
-     Which would you prefer?"
-```
-
-**Example: Clear Implementation Request**
-
-```
-User: "Implement the Member Events endpoint"
-
-✅ CORRECT:
-AI: "I'll implement the Member Events endpoint.
-
-     Starting Phase 0: Creating GitHub issue..."
-
-     [Creates issue #264]
-     [Creates branch feature/add-member-events-issue-264]
-     [Initializes phase tracker]
-
-     "⏸️ Ready to proceed to Phase 1?"
-```
-
-**Red Flags (ALWAYS ASK):**
-
-- ❌ User didn't say "implement" or "create"
-- ❌ No issue number mentioned yet
+- ❌ User didn't say "implement" explicitly
+- ❌ No issue number yet
 - ❌ Currently on main branch
-- ❌ No feature branch exists yet
-- ❌ Request is vague or open-ended
+- ❌ Request is vague
 
-### Overview
+### Phase 0: Git Setup (MANDATORY)
 
-**Phase 0: Issue Creation & Git Setup** 🎫 (MANDATORY - Create issue + branch with issue number)
-**Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
-**Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval)
+**Before ANY code:**
 
-- **⚠️ Step 0 (NEW):** Immediately create issue + branch if on main (before any implementation)
-- Steps 1-17: Implementation work (NO docs update)
-  **Phase 2.4: Quick Smoke Test** 🧪 (STOP POINT - User tests in browser before commit)
-  **Phase 2.5: Initial Local Commit** ✅ (Automatic LOCAL commit - DO NOT PUSH)
-  **Phase 2.75: User Review & Testing Loop** ⏸️ (STOP POINT - Iterate with `git commit --amend`)
-  **Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
-  **Phase 4: Post-Merge Cleanup & Documentation** 📝 (Automatic - Update docs AFTER PR merged)
+1. Create GitHub issue: `gh issue create --title "..." --body "..."`
+2. Create branch: `git checkout -b feature/description-issue-123`
+3. Initialize TodoWrite with issue number
+4. ⏸️ Wait for user: "yes" / "proceed"
 
-**Key Workflow Changes:**
+### Phase 1: Schema Creation
 
-1. **Issue-First:** GitHub issue MUST be created before ANY code (Phase 0)
-2. **Branch naming:** MUST include issue number: `feature/description-issue-123` (enforced by git hook)
-3. **Phase tracking:** TodoWrite MUST reference issue number in each phase
-4. **Git hook enforcement:** Blocks commits to main + enforces branch naming
-5. **Amend workflow:** All iterations in Phase 2.75 use `git commit --amend --no-edit` for ONE clean commit
+1. Fetch Mailchimp API docs
+2. Create Zod schemas: `*-params.schema.ts`, `*-success.schema.ts`, `*-error.schema.ts`
+3. Present schemas for review
+4. ⏸️ Wait for user: "approved"
 
-### Phase 0: Issue Creation & Git Setup (MANDATORY)
+### Phase 2: Implementation
 
-**⚠️ CRITICAL: This phase is MANDATORY before ANY implementation work. Creating code without an issue is FORBIDDEN.**
+1. Add PageConfig to `src/generation/page-configs.ts`
+2. Run page generator
+3. Implement: types, skeleton, page.tsx, components
+4. Update DAL method
+5. Run [Standard Validation Suite](#commands)
+6. **Add navigation links** (MANDATORY)
+7. ⏸️ User: "smoke test passed"
+8. Create local commit (DO NOT PUSH)
+9. ⏸️ User testing loop: `git commit --amend --no-edit`
 
-**🛑 STOP: Before writing ANY code, AI MUST complete these steps:**
+### Phase 2.75: Testing Loop
 
-#### Step 1: Create GitHub Issue FIRST
-
-**When to create issue:**
-
-- User says "implement X"
-- User says "add Y"
-- User approves moving from research/discussion → implementation
-- **ANY time you're about to write production code**
-
-**How to create issue:**
+**User reviews → AI fixes → amend commit → repeat**
 
 ```bash
-gh issue create --title "Brief description" --body "$(cat <<'EOF'
-## Summary
-[One paragraph describing what needs to be implemented]
-
-## Background
-[Why is this needed? What problem does it solve?]
-
-## Proposed Solution
-[High-level approach - what will be implemented]
-
-## Expected Impact
-[What improves? Metrics if applicable]
-
-## Acceptance Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] All tests pass
-EOF
-)"
+git add -A && git commit --amend --no-edit
 ```
 
-**AI MUST:**
+⏸️ When done, user says: "ready to push"
 
-1. Create the issue and capture the issue number (e.g., #264)
-2. Report to user: "✅ Issue #264 created: [title]"
-3. **DO NOT proceed without getting the issue number**
+### Phase 3: PR Creation
 
-#### Step 2: Create Feature Branch with Issue Number
+1. Push: `git push -u origin {branch}`
+2. Create PR: `gh pr create ...`
+3. Monitor CI/CD (auto-fix failures)
+4. Auto-merge when checks pass
 
-**Branch Naming Convention (ENFORCED by git hook):**
+### Phase 4: Post-Merge
 
-- Features: `feature/{description}-issue-{number}`
-- Fixes: `fix/{description}-issue-{number}`
+**Automatic (no user action):**
 
-**Examples:**
-
-- `feature/add-member-events-issue-264`
-- `fix/pagination-bug-issue-265`
-
-**AI MUST check current branch and create feature branch:**
-
-```bash
-# Check current branch
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-
-if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
-  # Create feature branch with issue number
-  git checkout -b feature/add-member-events-issue-264
-  echo "✅ Created branch: feature/add-member-events-issue-264"
-else
-  echo "✅ Already on feature branch: $BRANCH"
-fi
-```
-
-**⚠️ IMPORTANT:** Git hook will BLOCK commits if:
-
-- You're on `main` or `master` branch
-- Branch name doesn't include issue number in format `-issue-123`
-
-#### Step 3: Initialize Phase Tracker
-
-**AI MUST create TodoWrite tracker with issue number:**
-
-```typescript
-TodoWrite({
-  todos: [
-    {
-      content: "Phase 0: Create issue #264 and feature branch",
-      activeForm: "Creating issue #264 and feature branch",
-      status: "completed", // Mark complete after issue created
-    },
-    {
-      content: "Phase 1: Create and review schemas (Issue #264)",
-      activeForm: "Creating and reviewing schemas (Issue #264)",
-      status: "in_progress",
-    },
-    {
-      content: "⏸️ CHECKPOINT: Phase 1 schema review (Issue #264)",
-      activeForm: "Waiting for schema approval (Issue #264)",
-      status: "pending",
-    },
-    {
-      content: "Phase 1.5: Pattern reference (Issue #264)",
-      activeForm: "Running pattern reference check (Issue #264)",
-      status: "pending",
-    },
-    {
-      content: "Phase 2: Implementation (Issue #264)",
-      activeForm: "Implementing endpoint (Issue #264)",
-      status: "pending",
-    },
-    {
-      content: "Phase 2.4: Smoke test (Issue #264)",
-      activeForm: "Running smoke tests (Issue #264)",
-      status: "pending",
-    },
-    {
-      content: "⏸️ CHECKPOINT: Smoke test confirmation (Issue #264)",
-      activeForm: "Waiting for smoke test results (Issue #264)",
-      status: "pending",
-    },
-    {
-      content: "Phase 2.5: Local commit (Issue #264)",
-      activeForm: "Creating local commit (Issue #264)",
-      status: "pending",
-    },
-    {
-      content: "Phase 2.75: User testing loop (Issue #264)",
-      activeForm: "User testing and fixes (Issue #264)",
-      status: "pending",
-    },
-    {
-      content: "⏸️ CHECKPOINT: Ready to push (Issue #264)",
-      activeForm: "Waiting for push approval (Issue #264)",
-      status: "pending",
-    },
-    {
-      content: "Phase 3: Push & create PR (Issue #264)",
-      activeForm: "Pushing and creating PR (Issue #264)",
-      status: "pending",
-    },
-  ],
-});
-```
-
-**Each phase item MUST reference the issue number.**
-
-#### Step 4: Report Phase 0 Completion
-
-**AI MUST output:**
-
-```
-✅ Phase 0 Complete
-
-📋 Deliverables:
-  - ✅ GitHub Issue #264 created
-       https://github.com/user/repo/issues/264
-  - ✅ Feature branch created: feature/add-member-events-issue-264
-  - ✅ Phase tracker initialized
-
-⏸️ Ready to proceed to Phase 1 (Schema Creation)?
-```
-
-**🛑 STOP: Wait for user confirmation ("yes" / "approved" / "proceed")**
-
-**DO NOT proceed to Phase 1 without explicit user approval.**
+1. Checkout main, pull changes
+2. Delete branches
+3. Close GitHub issue
+4. Update `docs/api-coverage.md`
+5. **CLAUDE.md documentation review** (check for redundancy, bloat, new patterns)
+6. Add session review to `ai-workflow-learnings.md`
+7. Present completion summary
 
 ---
 
-**🚫 Common Mistakes to Avoid:**
+**See [docs/workflows/](docs/workflows/) for detailed phase documentation.**
 
-- ❌ Creating feature branch without issue number
-- ❌ Starting implementation without creating issue first
-- ❌ Committing to `main` branch (git hook will block this)
-- ❌ Using branch name without `-issue-123` format (git hook will block this)
-- ❌ Proceeding to Phase 1 without user confirmation
+## Git Amend Workflow (Phase 2.75 Reference)
 
-**✅ Correct Flow:**
-
-1. User: "Implement Member Events endpoint"
-2. AI: Creates issue #264
-3. AI: Creates branch `feature/add-member-events-issue-264`
-4. AI: Initializes TodoWrite tracker with issue #264
-5. AI: "⏸️ Ready for Phase 1?"
-6. User: "yes"
-7. AI: Proceeds to Phase 1
-
-### Phase 0 Pre-Work Checklist
-
-**Before proceeding to Phase 1, AI MUST verify:**
-
-```
-✅ Phase 0 Pre-Work Checklist:
-
-[ ] GitHub issue exists (created in Step 1)
-[ ] Issue number extracted from issue URL
-[ ] Feature branch created with format: feature/description-issue-{number}
-[ ] Current branch includes issue number (verified via git branch --show-current)
-[ ] NOT on main/master branch (git hook will catch this, but verify early)
-[ ] TodoWrite tracker initialized
-[ ] All TodoWrite items reference the issue number
-[ ] User approved proceeding to Phase 1
-```
-
-**If ANY item is unchecked, STOP and complete Phase 0 first.**
-
-**Red Flags (STOP if any are true):**
-
-- ❌ No GitHub issue created yet
-- ❌ Branch name missing issue number
-- ❌ Still on main/master branch
-- ❌ TodoWrite not initialized
-- ❌ User hasn't approved moving to Phase 1
-
-### Phase 1: Schema Creation & Review
-
-When implementing a new Mailchimp API endpoint:
-
-1. **AI attempts to fetch Mailchimp API documentation:**
-
-   **Attempt 1:** Use WebFetch on official API docs URL
-
-   **Attempt 2:** If WebFetch fails, use WebSearch for response examples
-
-   **If both fail:**
-
-   **⏸️ STOP and ask user:**
-
-   > "I cannot access the Mailchimp API documentation for [endpoint].
-   >
-   > Options:
-   >
-   > - **A)** You visit [URL] and paste the response example
-   > - **B)** You test the endpoint and share actual API response
-   > - **C)** I create schemas based on Mailchimp API patterns (marked as ⚠️ ASSUMED - requires verification)
-   >
-   > Which would you prefer?"
-
-   **DO NOT proceed with assumptions (Option C) without user explicitly choosing it.**
-
-2. **AI creates Zod schemas** in `src/schemas/mailchimp/`:
-   - `{endpoint}-params.schema.ts` - Request parameters (path + query params)
-   - `{endpoint}-success.schema.ts` - Successful response structure
-   - `{endpoint}-error.schema.ts` (optional) - Error response structure
-   - Every field name must match API documentation exactly
-   - Include source URL in schema file comments
-   - If using assumptions: Mark with `⚠️ ASSUMED FIELDS` and document reasoning
-
-3. **AI presents schemas for review** with:
-   - Schema files created
-   - Source documentation link (or note about assumptions)
-   - API response example (if available)
-
-4. **⏸️ STOP - User reviews schemas**
-   - Check field names match Mailchimp API exactly
-   - Verify types are correct (string, number, boolean, etc.)
-   - Confirm pagination structure if applicable
-   - Request changes if needed
-
-5. **User approves schemas** - Say "approved" or "looks good"
-   - **🚀 AI MUST immediately proceed to Phase 2 WITHOUT asking for additional permission**
-   - "approved" = explicit authorization to continue automatically
-   - DO NOT ask "Would you like me to proceed?"
-   - DO NOT wait for additional confirmation
-   - Immediately respond: "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
-   - Then start Phase 2 implementation tasks (Step 6 below)
-
-### Phase 1 Verification Checklist
-
-Before presenting schemas for review, AI must run this self-checklist:
-
-**API Documentation:**
-
-- [ ] ✅ Fetched official Mailchimp API documentation (or used assumptions with user approval)
-- [ ] ✅ Located exact response example in docs
-- [ ] ✅ Extracted all field names from response
-- [ ] ✅ Verified field types match API
-- [ ] ✅ Added source documentation URL to schema comments
-
-**Architecture & Best Practices:**
-
-- [ ] ✅ No type exports in schema files (types go in `/src/types`)
-- [ ] ✅ Used modern Zod 4 syntax (`z.email()`, `z.ipv4()`, not `.string().email()`)
-- [ ] ✅ Applied DRY principle (imported shared schemas from `common/`)
-- [ ] ✅ Created shared constants for enums used in multiple schemas
-- [ ] ✅ All ID fields use `.min(1)` to prevent empty strings
-- [ ] ✅ Input schemas use `.strict()` to reject unknown properties
-- [ ] ✅ DateTime fields use `z.iso.datetime({ offset: true })`
-- [ ] ✅ Used proper `z.record()` syntax: `z.record(keyType, valueType)`
-
-**Documentation & Readability:**
-
-- [ ] ✅ Used JSDoc comments above declarations (not inline comments)
-- [ ] ✅ Named nested schemas for readability (avoid deeply nested objects)
-- [ ] ✅ Checked `common/` folder for reusable schemas before creating new ones
-- [ ] ✅ Verified enum values match API documentation exactly
-
-**If using assumptions (user approved Option C):**
-
-- [ ] ✅ Marked schemas with `⚠️ ASSUMED FIELDS`
-- [ ] ✅ Documented what was assumed and why
-- [ ] ✅ Told user: "These schemas need verification with real API response during testing"
-
-### ⏸️ CHECKPOINT: Phase 1 → Phase 2 (Schema Review)
-
-**🛑 STOP: AI MUST present schemas for review and WAIT for approval**
-
-After completing schema creation, AI MUST:
-
-1. **Present schemas** with:
-   - File paths of schemas created
-   - Source documentation link (or note about assumptions)
-   - Brief summary of key validations
-
-2. **Output checkpoint message:**
-
-```
-✅ Phase 1 Complete - Schemas Created
-
-📋 Schemas:
-  - src/schemas/mailchimp/{endpoint}-params.schema.ts
-  - src/schemas/mailchimp/{endpoint}-success.schema.ts
-  - src/schemas/mailchimp/{endpoint}-error.schema.ts
-
-📖 Source: {API documentation URL or "Assumptions - needs verification"}
-
-🔍 Key Validations:
-  - {validation 1}
-  - {validation 2}
-  - {validation 3}
-
-⏸️ Please review the schemas above.
-
-Type "approved" or "looks good" when ready to proceed to Phase 2.
-If you see any issues, let me know and I'll adjust the schemas.
-```
-
-3. **WAIT for explicit user approval:**
-   - "approved"
-   - "looks good"
-   - "proceed"
-   - "yes" (if clear from context)
-
-4. **Once approved, IMMEDIATELY proceed to Phase 2:**
-   - DO NOT ask "Would you like me to proceed with Phase 2?"
-   - DO NOT ask "Should I continue?"
-   - DO NOT wait for additional confirmation
-   - Respond: "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
-   - Start Phase 2 implementation automatically
-
-5. **DO NOT proceed to Phase 2 without approval** - This checkpoint prevents generating 500+ lines of code based on incorrect schemas
-
-**Red Flags (STOP if any are true):**
-
-- ❌ Haven't presented schemas yet
-- ❌ No source documentation URL (unless user approved assumptions)
-- ❌ User hasn't said "approved" or equivalent
-- ❌ Skipping directly from schema creation to implementation
-
-### Commit Strategy: Option A vs Option B
-
-After user approves schemas, choose ONE of these commit strategies:
-
-#### ✅ Option A - Single Atomic Commit (RECOMMENDED - Default)
-
-**Pattern**: Complete Phase 2 fully, then commit everything together.
-
-**When user approves schemas**, AI responds:
-
-> "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
-
-**After Phase 2 complete and validation passes**, make ONE commit:
+During Phase 2.75 local iteration, use `git commit --amend --no-edit` to keep one clean commit:
 
 ```bash
-git add .
-git commit -m "feat: implement {Endpoint Name} (Phase 1 & 2 complete)
-
-Implements comprehensive {feature description} following AI-first workflow.
-
-**Phase 1: Schema Creation & Review**
-- Created Zod schemas for {Endpoint} API endpoint
-- Params schema: {key validation patterns}
-- Success schema: {key data structures}
-- {Special validations: IP addresses, currency codes, etc.}
-
-**Phase 2: Page Generation & Implementation**
-- Added PageConfig to registry (src/generation/page-configs.ts:XXX-YYY)
-- Generated infrastructure using page generator
-- Created TypeScript types (src/types/mailchimp/{endpoint}.ts)
-- Implemented {ComponentName} component
-- Built complete page.tsx with proper error handling
-
-**Infrastructure Updates:**
-- Updated DAL method with proper schemas
-- Added breadcrumb builder function
-- Created metadata helper
-- Updated API coverage documentation
-
-**Validation:**
-- ✅ Type-check: passed
-- ✅ Lint: passed
-- ✅ Format: passed
-- ✅ Tests: {count} passed"
+# Make changes, then:
+git add -A && git commit --amend --no-edit
 ```
 
-**Pros**:
+**Why:** Single atomic commit instead of messy "fix: X", "fix: Y" history.
 
-- ✅ Atomic feature delivery (all or nothing)
-- ✅ Easier PR review (complete context in one place)
-- ✅ No broken intermediate states
-- ✅ Pre-commit hooks validate everything together
-- ✅ Clean revert (entire feature removed)
-
-**Cons**:
-
-- ⚠️ Larger commits (~1000 lines, but still reviewable)
-- ⚠️ Can't cherry-pick just schemas (rare need)
-
-**When to use**: Default for all feature implementations
-
-#### Option B - Separate Schema Commit (Alternative)
-
-**Pattern**: Commit schemas immediately after approval, then commit implementation separately.
-
-**When user approves schemas**, AI immediately commits:
-
-```bash
-git add src/schemas/mailchimp/*{endpoint}*
-git commit -m "feat: add {Endpoint Name} schemas (Phase 1)
-
-Created Zod schemas for {endpoint description}:
-- {endpoint}-params.schema.ts
-- {endpoint}-success.schema.ts
-- {endpoint}-error.schema.ts
-
-Source: {API documentation URL}"
-```
-
-Then notifies user: "✅ Schemas committed. Proceeding to Phase 2..."
-
-**After Phase 2 complete**, commit implementation:
-
-```bash
-git add .
-git commit -m "feat: implement {Endpoint Name} page (Phase 2)"
-```
-
-**Pros**:
-
-- ✅ Granular history (clear phase separation)
-- ✅ Can cherry-pick schemas to other branches
-
-**Cons**:
-
-- ⚠️ Phase 1 commit isn't independently useful
-- ⚠️ Extra workflow step
-- ⚠️ More commits to manage
-- ⚠️ Potential for broken state between commits
-
-**When to use**: Only if team/user specifically requires phase separation
-
----
-
-**DEFAULT: Use Option A unless user requests Option B**
-
-### Phase 2: Page Generation (After Approval)
-
-**⚠️ CRITICAL:** DO NOT update `docs/api-coverage.md` during this phase. Documentation is updated in Phase 4 (post-merge).
-
-Once schemas are approved, the AI **immediately** follows these steps:
-
-#### Step 0: Create Issue + Branch (IMMEDIATELY After Approval)
-
-**🛑 CRITICAL:** This step happens BEFORE any Phase 2 implementation work begins.
-
-When user says "approved", AI must:
-
-1. **Check if on main branch:**
-
-   ```bash
-   git branch --show-current
-   ```
-
-   - If on `main` or `master`: **STOP** - must create branch now
-   - If already on feature branch: Can skip to Step 1
-
-2. **If on main, immediately create GitHub issue:**
-
-   ```bash
-   gh issue create --title "feat: implement {Endpoint Name}" --body "..."
-   ```
-
-   - Capture issue number (e.g., #288)
-   - Report to user: "✅ Created Issue #288"
-
-3. **Create feature branch with issue number:**
-
-   ```bash
-   git checkout -b feature/{endpoint-name}-issue-288
-   ```
-
-   - Use descriptive name + issue number
-   - Report to user: "✅ Created branch: feature/{name}-issue-288"
-
-4. **Commit schemas to branch (checkpoint):**
-
-   ```bash
-   git add src/schemas/mailchimp/...
-   git commit -m "feat: add {Endpoint Name} schemas (Phase 1)
-
-   Create Zod schemas for {endpoint description}.
-
-   - Parameters schema with validation
-   - Success response schema
-   - Error response schema
-
-   Part of Phase 1 (Schema Creation) for Issue #288"
-   ```
-
-5. **Push branch (recovery point):**
-
-   ```bash
-   git push -u origin feature/{endpoint-name}-issue-288
-   ```
-
-   - This creates a safe recovery point
-   - If session crashes, schemas are saved
-   - Can resume Phase 2 from this checkpoint
-
-6. **Update TodoWrite with issue number:**
-   ```typescript
-   TodoWrite({
-     todos: [
-       { content: "Phase 1: Create schemas", status: "completed" },
-       { content: "Phase 2: Implement {Endpoint} (Issue #288)", status: "in_progress" },
-       ...
-     ]
-   })
-   ```
-
-**Why This Order Is Critical:**
-
-✅ **Prevents working on main** - All Phase 2 work happens on feature branch
-✅ **Creates checkpoint** - Schemas committed early for recovery
-✅ **Matches Git workflow** - Issue → Branch → Commit (standard practice)
-✅ **Session crash protection** - Work is saved incrementally
-✅ **Zero main branch risk** - No chance of accidental commits to main
-
-**After completing Step 0, proceed to Step 1 below ↓**
-
-#### Step 1: Add Config to Registry
-
-7. **AI adds PageConfig** to `src/generation/page-configs.ts`:
-   ```typescript
-   "report-endpoint": {
-     schemas: { apiParams: "...", apiResponse: "...", apiError: "..." },
-     route: { path: "/mailchimp/reports/[id]/endpoint", params: ["id"] },
-     api: { endpoint: "/reports/{campaign_id}/endpoint", method: "GET" },
-     page: { type: "nested-detail", title: "...", description: "...", features: [...] },
-     ui: { hasPagination: true, breadcrumbs: { parent: "report-detail", label: "..." } },
-   } satisfies PageConfig,
-   ```
-
-#### Step 2: Run Page Generator
-
-8. **AI runs generator programmatically** (creates infrastructure files):
-   ```typescript
-   // Creates page skeleton with TODOs/placeholders
-   const config = getPageConfig("report-endpoint");
-   const result = await generatePageFromConfig(config, "report-endpoint");
-   ```
-
-**Generator Output:** Creates infrastructure files with TODOs and type errors (this is expected!)
-
-#### Step 3: Manual Implementation (AI completes these)
-
-9. **AI creates proper TypeScript types** in `src/types/mailchimp/{endpoint}.ts`:
-   - Export types inferred from Zod schemas
-   - Follow existing pattern from `abuse-reports.ts`, `opens.ts`, etc.
-
-10. **AI creates skeleton component** in `src/skeletons/mailchimp/`:
-    - Copy pattern from similar pages (e.g., `CampaignAbuseReportsSkeleton.tsx`)
-    - Export from `src/skeletons/mailchimp/index.ts`
-
-11. **AI replaces generated page.tsx** with proper implementation:
-    - Follow exact pattern from `abuse-reports/page.tsx` or `opens/page.tsx`
-    - Use proper types (not `any`)
-    - Include proper error handling with `handleApiError()`
-    - Add metadata generation
-
-12. **AI implements table/display component**:
-    - **IMPORTANT:** Use existing shared components whenever possible:
-      - **For ALL tables:** Use shadcn/ui `Table` component (from `@/components/ui/table`)
-        - Simple lists: `Card` + `Table` (see `campaign-unsubscribes-table.tsx`, `reports-overview.tsx`)
-        - Complex tables with sorting: `Card` + TanStack Table + shadcn `Table` (see `click-details-content.tsx`)
-        - **NEVER use raw HTML `<table>` markup** - always use shadcn/ui components
-      - For data display: Use `StatCard`, `StatsGridCard`, or `StatusCard`
-    - **If no suitable component exists:** Create placeholder Card with TODO:
-      ```tsx
-      <Card>
-        <CardHeader>
-          <CardTitle>TODO: Implement {ComponentName}</CardTitle>
-        </CardHeader>
-        <CardContent>Data structure ready, UI pending</CardContent>
-      </Card>
-      ```
-
-13. **AI creates not-found.tsx** (copy from similar page, update text)
-
-14. **AI updates DAL method** in `src/dal/mailchimp.dal.ts`:
-    - Replace `unknown` types with proper schemas
-    - Follow existing method patterns
-
-15. **AI runs validation**:
-    - `pnpm type-check` - Must pass with zero errors
-    - `pnpm lint:fix` - Auto-fix linting issues
-    - `pnpm format` - Format all files
-    - `pnpm test` - All tests pass
-
-16. **⚠️ CRITICAL: AI adds navigation links** (MANDATORY - Do NOT skip):
-
-    **For ALL new pages, check and add navigation links:**
-
-    a. **Nested pages** (e.g., `/lists/[id]/members/[subscriber_hash]/notes`):
-    - **MUST add link from parent page** to new child page
-    - Example: Add "View All Notes" button to Member Profile page
-    - Pattern: Follow existing navigation buttons (see Tags card in member-profile-content.tsx)
-    - Location: Usually in CardHeader alongside the CardTitle
-
-    b. **Top-level pages** (e.g., `/reports`, `/lists`):
-    - Check if should be linked from main dashboard (`/mailchimp`)
-    - Add navigation card if appropriate
-
-    c. **Verify breadcrumbs**:
-    - Ensure breadcrumb helpers exist (bc.funcName in breadcrumb-builder.ts)
-    - Verify breadcrumbs render correctly in page
-
-    **Common Patterns:**
-
-    ```tsx
-    // Pattern 1: Button in CardHeader (for nested pages)
-    <CardHeader>
-      <div className="flex items-center justify-between">
-        <CardTitle>Section Title</CardTitle>
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/path/to/detail`}>
-            View All
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
-      </div>
-    </CardHeader>
-
-    // Pattern 2: Navigation card (for dashboard pages)
-    <Card>
-      <CardHeader>
-        <CardTitle>Feature Name</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Button asChild>
-          <Link href="/feature/path">Go to Feature</Link>
-        </Button>
-      </CardContent>
-    </Card>
-    ```
-
-    **⚠️ DO NOT PROCEED to Phase 2.4 without completing this step!**
-
-17. **📋 Note: Documentation Updates Happen in Phase 4** (Post-Merge)
-    - Do NOT update `docs/api-coverage.md` during Phase 2
-    - Do NOT close GitHub issues during Phase 2
-    - These tasks are handled automatically in Phase 4 after PR merge
-    - See Phase 4 Step 2 (Issue Closure) and Step 3 (API Coverage Update)
-
-### Phase 2.4: Quick Smoke Test (BEFORE COMMIT)
-
-**⚠️ NEW: Mandatory smoke test to catch runtime issues before committing**
-
-**AI must verify the page works in browser:**
-
-1. **Check if dev server is running:**
-   - If `pnpm dev` is already running (background process), use existing server
-   - If not running, start it: `pnpm dev` (run in background if possible)
-
-2. **Inform user to perform quick smoke test:**
-
-   ```
-   ✅ Validation passed. Before committing, please verify:
-
-   **Quick Smoke Test (2-3 minutes):**
-   1. Visit: https://127.0.0.1:3000/mailchimp/{route-path}
-   2. Check browser console for errors/warnings
-   3. Verify page loads without errors
-   4. Test basic functionality (search, pagination, etc.)
-
-   **Common issues to check:**
-   - ❌ Duplicate React keys (console warnings)
-   - ❌ Missing data / API errors
-   - ❌ Layout issues / broken UI
-   - ❌ Console errors
-
-   Reply "smoke test passed" to proceed with commit, or describe any issues found.
-   ```
-
-3. **⏸️ STOP - Wait for user confirmation**
-   - User tests page in browser
-   - User checks console for warnings
-   - User verifies basic functionality
-
-4. **If user reports issues:**
-   - Fix the issues
-   - Re-run validation
-   - Request smoke test again
-
-5. **If user says "smoke test passed":**
-   - Proceed to Phase 2.5 (commit)
-
-**Rationale:** Catches runtime-only bugs (duplicate keys, React warnings, API errors) before committing.
-
-**Time Cost:** 2-3 minutes (saves hours of debugging post-commit)
-
-### ⏸️ CHECKPOINT: Phase 2.4 → Phase 2.5 (Smoke Test)
-
-**🛑 STOP: AI MUST wait for smoke test confirmation before committing**
-
-After validation passes, AI MUST:
-
-1. **Output checkpoint message:**
-
-```
-✅ Phase 2 Implementation Complete
-✅ Validation passed (type-check, lint, format, tests)
-
-🧪 Smoke Test Required (Phase 2.4)
-
-Before committing, please test in browser:
-1. Visit: https://127.0.0.1:3000/mailchimp/{route-path}
-2. Open browser console (F12)
-3. Check for errors/warnings
-4. Test basic functionality
-
-Common issues to verify:
-- ❌ No duplicate React keys
-- ❌ No API errors
-- ❌ No console warnings
-- ❌ Page loads and displays data
-
-⏸️ Reply "smoke test passed" to proceed with commit
-   OR describe any issues you found
-```
-
-2. **WAIT for explicit user confirmation:**
-   - "smoke test passed"
-   - "looks good"
-   - "no issues"
-
-3. **If user reports issues:**
-   - Fix the reported issues
-   - Re-run validation
-   - Request smoke test again
-   - DO NOT commit until issues are fixed
-
-4. **DO NOT commit without smoke test confirmation** - This checkpoint prevents committing broken code
-
-**Red Flags (STOP if any are true):**
-
-- ❌ Haven't asked user to test in browser
-- ❌ User hasn't confirmed smoke test passed
-- ❌ Skipping directly from validation to commit
-- ❌ User reported issues but they're not fixed yet
-
-### Phase 2.5: Initial Local Commit (LOCAL ONLY - DO NOT PUSH)
-
-**⚠️ CRITICAL: Commit to LOCAL branch only - DO NOT push to origin**
-
-**After ALL Phase 2 steps complete and smoke test passes:**
-
-1. **Create initial local commit:**
-
-```bash
-git add -A
-git commit -m "feat: implement {Endpoint Name} (Issue #XXX)
-
-Implements comprehensive {feature description} following AI-first workflow.
-
-**Phase 1: Schema Creation & Review**
-- Created Zod schemas for {Endpoint} API endpoint
-- Params schema: {list key validation patterns used}
-- Success schema: {list key data structures}
-- {List special validations: IP addresses, ISO 8601 timestamps, currency codes, etc.}
-
-**Phase 2: Page Generation & Implementation**
-- Added PageConfig to registry (src/generation/page-configs.ts:{line}-{line})
-- Generated infrastructure using page generator
-- Created TypeScript types (src/types/mailchimp/{endpoint}.ts)
-- Implemented {SkeletonName} skeleton component
-- Built complete page.tsx with proper error handling
-- Created {ComponentName} table/display component with:
-  - {List key features: Server-side pagination, badges, formatting, etc.}
-
-**Infrastructure Updates:**
-- Updated DAL method with proper schemas (src/dal/mailchimp.dal.ts:{line}-{line})
-- Added breadcrumb builder function (bc.{functionName})
-- Created metadata helper (generate{Endpoint}Metadata)
-
-**Files Created:**
-- {List all new files}
-
-**Validation:**
-- ✅ Type-check: passed
-- ✅ Lint: passed
-- ✅ Format: passed
-- ✅ Tests: {count} passed
-- ✅ Smoke test: passed
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
-```
-
-2. **DO NOT push** - Commit stays local for iteration
-
-#### After Commit Complete
-
-**⏸️ STOP and present to user:**
-
-> "✅ Phase 2 implementation complete - 1 atomic commit on local branch
->
-> **Commit:** `{short-hash} - feat: implement {Endpoint Name} (Phase 1 & 2 complete)`
->
-> **Changes:**
->
-> - {count} files created, {count} modified
-> - {total} lines added
->
-> **Validation Results:**
->
-> - ✅ Type-check: passed
-> - ✅ Lint: passed
-> - ✅ Format: passed
-> - ✅ Tests: {count} passed
->
-> ⚠️ PR has NOT been created yet - please review and test first
->
-> **Next:** Phase 2.75 (your review & testing)
->
-> When ready to push: Say 'ready to push' or 'create PR'"
-
-**Why single atomic commit:**
-
-- ✅ Complete feature in one reviewable unit
-- ✅ Atomic delivery (all or nothing)
-- ✅ No broken intermediate states
-- ✅ Clean revert if needed
-- ✅ Matches deployment model (features as units)
-
-**DO NOT push to origin. DO NOT create PR. DO NOT proceed to Phase 3 without explicit user approval.**
-
-### Phase 2.75: User Review & Testing Loop ⏸️ (REQUIRED CHECKPOINT)
-
-**⚠️ CRITICAL: This happens entirely on LOCAL branch before any push to origin**
-
-**User reviews implementation:**
-
-1. Review code locally
-2. **Test page in browser with REAL Mailchimp data**
-3. Verify schemas match actual API responses
-4. Check navigation and UX
-5. Test edge cases (empty data, errors, etc.)
-
-**If user identifies improvements:**
-
-1. User describes needed changes (e.g., "move pagination outside card", "add navigation link")
-2. AI implements improvements
-3. AI stages changes: `git add -A`
-4. **AI amends the existing commit** (keeping history clean):
-   ```bash
-   git commit --amend --no-edit
-   ```
-5. AI informs user: "✅ Changes applied and commit amended. Please test again."
-6. Return to user testing
-
-**Key Rule: Use `git commit --amend` for ALL iterations**
-
-- ✅ **CORRECT:** `git commit --amend --no-edit` (keeps one clean commit)
-- ❌ **WRONG:** `git commit -m "fix: ..."` (creates multiple commits)
-
-**Why amend instead of new commits:**
-
-- One atomic commit instead of 4-5 small commits
-- Cleaner PR review (final state, not iteration history)
-- Easier to revert if needed
-- Professional git history
-
-**Repeat until user is satisfied**
-
-**Benefits of local-only workflow:**
-
-- ✅ Single, clean commit history (or 2-3 logical commits)
-- ✅ No wasted CI runs on every small change
-- ✅ PR is complete and tested when created
-- ✅ Faster iteration (no push/pull cycles)
-
-**Why manual testing is CRITICAL:**
-
-**AI CANNOT:**
-
-- ❌ Test pages in browser
-- ❌ Access real Mailchimp API
-- ❌ Verify actual data structures
-- ❌ Test user experience
-- ❌ See rendered HTML/CSS
-- ❌ Click links and verify navigation
-
-**USER MUST:**
-
-- ✅ Test with real Mailchimp data
-- ✅ Verify schema matches API response (especially if schemas were assumed)
-- ✅ Check all links work
-- ✅ Verify HTML renders correctly
-- ✅ Test error states and edge cases
-
-**When user is satisfied, they explicitly say:**
-
-- "ready to push"
-- "create PR"
-- "push to origin"
-- "ready for PR"
-
-**Only then proceed to Phase 3.**
-
----
-
-## Git Amend Workflow Reference
-
-**Use during Phase 2.75 (User Review & Testing Loop)**
-
-### When to Use `git commit --amend`
-
-Use amend for ALL fixes and improvements during local iteration:
-
-- ✅ Bug fixes discovered during testing
-- ✅ Layout improvements requested by user
-- ✅ Navigation enhancements
-- ✅ Code refactoring
-- ✅ Import path corrections
-- ✅ Schema adjustments
-- ✅ Any change that belongs to the same feature
-
-**DO NOT amend if:**
-
-- ❌ Commit has already been pushed to origin
-- ❌ Creating a completely different feature
-- ❌ User explicitly requests separate commit (rare)
-
-### Amend Workflow
-
-**Basic amend (most common):**
-
-```bash
-# 1. Make changes to files
-# 2. Stage all changes
-git add -A
-
-# 3. Amend without changing commit message
-git commit --amend --no-edit
-```
-
-**Amend with message update:**
-
-```bash
-git add -A
-git commit --amend
-# Editor opens - update message, save, close
-```
-
-**Verify amend worked:**
-
-```bash
-git log --oneline -1
-# Should show same commit hash (or new hash if message changed)
-# Should show updated timestamp
-```
-
-### Example Iteration Flow
-
-**Initial commit:**
-
-```bash
-git add -A
-git commit -m "feat: implement Member Tags endpoint"
-# Commit: abc1234
-```
-
-**User: "Move pagination outside card"**
-
-```bash
-# Fix pagination layout
-git add -A
-git commit --amend --no-edit
-# Still commit: abc1234 (or abc5678 with updated changes)
-```
-
-**User: "Add navigation link from profile"**
-
-```bash
-# Add navigation link
-git add -A
-git commit --amend --no-edit
-# Still ONE commit with all changes
-```
-
-**Result:** One clean commit instead of 3 commits
-
-### Amend vs New Commit Comparison
-
-**❌ Without amend (messy history):**
-
-```
-abc1234 feat: implement Member Tags endpoint
-def5678 refactor: move pagination outside card
-ghi9012 feat: add navigation link
-```
-
-**PR shows:** 3 commits, reviewer sees iteration process
-
-**✅ With amend (clean history):**
-
-```
-abc1234 feat: implement Member Tags endpoint
-```
-
-**PR shows:** 1 commit, reviewer sees final polished state
-
-### Safety Notes
-
-**Amend is safe when:**
-
-- ✅ Commit is only on your local branch
-- ✅ Commit has NOT been pushed to origin
-- ✅ No one else is working on your branch
-
-**Amend is dangerous when:**
-
-- ❌ Commit has been pushed to origin (would require force-push)
-- ❌ Others have pulled your branch
-- ❌ PR has already been created (can still amend, but see below)
-
-### Amending After PR Created
-
-**If you already created PR and need to fix something:**
-
-**Option 1 (Preferred): New commit**
-
-```bash
-git add -A
-git commit -m "fix: address review feedback"
-git push origin feature/branch-name
-```
-
-**Option 2 (Only if PR is fresh/no reviews yet): Amend + force-push**
-
-```bash
-git add -A
-git commit --amend --no-edit
-git push --force-with-lease origin feature/branch-name
-```
-
-⚠️ **Only force-push if:**
-
-- PR just created (< 30 minutes ago)
-- No one has reviewed yet
-- No CI/CD running
-- You're confident no one pulled your branch
-
-**Our workflow prevents this:** We don't create PR until Phase 3, so all iterations use amend safely.
-
----
-
-### ⏸️ CHECKPOINT: Phase 2.75 → Phase 3 (Ready to Push)
-
-**🛑 STOP: AI MUST wait for explicit "ready to push" approval**
-
-After user completes testing and review, AI MUST:
-
-1. **Output checkpoint message:**
-
-```
-✅ Phase 2.75 Complete - Testing & Iteration Done
-
-📋 Current Status:
-  - ✅ Implementation complete
-  - ✅ All validation passing
-  - ✅ Smoke test passed
-  - ✅ User testing complete
-  - ✅ All requested changes applied
-  - ✅ Clean commit history (1 atomic commit)
-
-🚀 Ready for Phase 3: Push & Create PR
-
-This will:
-1. Push branch to remote: git push -u origin {branch-name}
-2. Create pull request on GitHub
-3. Trigger CI/CD pipeline
-4. Make changes visible to team
-
-⏸️ Type "ready to push" or "create PR" when you want to proceed
-
-   (This gives you a chance to do final review before making it public)
-```
-
-2. **WAIT for explicit user approval:**
-   - "ready to push"
-   - "create PR"
-   - "push to origin"
-   - "ready for PR"
-
-3. **DO NOT accept vague approval:**
-   - ❌ "looks good" - too vague
-   - ❌ "nice" - not explicit enough
-   - ❌ "thanks" - not a push request
-   - ✅ "ready to push" - clear intent
-
-4. **DO NOT push without explicit approval** - This checkpoint gives user final chance to review before making changes public
-
-**Red Flags (STOP if any are true):**
-
-- ❌ Haven't completed user testing loop (Phase 2.75)
-- ❌ User hasn't explicitly said "ready to push"
-- ❌ Still have unresolved issues from testing
-- ❌ Validation not passing
-- ❌ Jumping from commit directly to push
+**Safe when:** Commit is local-only (not pushed). **Never** amend after pushing without force-push.
 
 ### Phase 3: Push & Create PR (ONLY after explicit approval)
 
@@ -1793,35 +662,117 @@ Updated API coverage:
 Co-Authored-By: Claude <noreply@anthropic.com>"
 git push origin main
 
-````
+`````
 
 **Why post-merge?** If PR is rejected or requires major changes, pre-merge docs would claim "implemented" but code wouldn't be in main.
 
-#### Step 4: Update CLAUDE.md (If Workflow Changed)
+#### Step 4: CLAUDE.md Documentation Review (MANDATORY)
 
-**AI MUST check if this implementation introduced new patterns:**
+**⚠️ CRITICAL: AI MUST perform this check after EVERY implementation, not just when patterns change.**
 
-- New component architecture
-- New error handling pattern
-- New validation approach
-- New navigation pattern
-- Any deviation from existing workflow
+**4.1: Check for New Patterns**
 
-**If new patterns were introduced:**
+Did this implementation introduce:
+- New component architecture?
+- New error handling pattern?
+- New validation approach?
+- New navigation pattern?
+- Any deviation from existing workflow?
 
+**4.2: Check for Redundancy & Bloat**
+
+**Token Awareness Check:**
+- Does CLAUDE.md have duplicate sections?
+- Is any section >500 lines? (Consider extracting to `docs/`)
+- Are there verbose examples that could be condensed?
+- Can any section reference external docs instead of repeating?
+
+**Documentation Health Metrics:**
 ```bash
-# Add section to CLAUDE.md documenting the new pattern
+# Run this check
+wc -l CLAUDE.md
+grep -c "^## " CLAUDE.md  # Count major sections
+grep -c "CRITICAL" CLAUDE.md  # Should be <20
+```
+
+**Red Flags:**
+- ❌ CLAUDE.md >3,000 lines (extract to sub-docs)
+- ❌ Same content in 2+ places (consolidate)
+- ❌ >20 "CRITICAL" warnings (dilutes importance)
+- ❌ Verbose workflow steps (create condensed version)
+
+**4.3: Take Action**
+
+**If new patterns found:**
+```bash
+# Add to appropriate section (NOT as new top-level section)
 git add CLAUDE.md
-git commit -m "docs: document {new pattern} from {Endpoint Name} implementation
-
-Added guidance for {pattern description} based on learnings from
-Issue #${issue_number}, PR #${pr_number}.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
+git commit -m "docs: document {pattern} from Issue #${issue_number}"
 git push origin main
-````
+```
+
+**If redundancy/bloat detected:**
+```bash
+# Create issue for future cleanup
+gh issue create --title "docs: CLAUDE.md cleanup needed" --body "$(cat <<'EOF'
+## Problem
+CLAUDE.md has grown to {lines} lines with detected redundancy.
+
+## Redundancy Found
+- {duplicate section 1}
+- {verbose section 2}
+
+## Proposed Solution
+- Extract {section} to docs/{file}.md
+- Consolidate {duplicate content}
+- Create condensed reference in CLAUDE.md
+
+## Benefits
+- Reduce token usage
+- Improve readability
+- Easier maintenance
+EOF
+)"
+```
+
+**4.4: Documentation Principles (Apply Always)**
+
+✅ **DO:**
+- Extract workflows >200 lines to `docs/workflows/`
+- Extract patterns >300 lines to `docs/development-patterns.md`
+- Create condensed summaries with links to detailed docs
+- Use markdown anchors for cross-referencing
+- Define things ONCE, reference everywhere
+
+❌ **DON'T:**
+- Duplicate content across sections
+- Create verbose examples inline (extract to docs/)
+- Add new top-level sections (group under existing)
+- Repeat validation commands (reference Standard Validation Suite)
+- Embed complete workflows (summarize + link)
+
+**Example: Good Documentation Structure**
+```markdown
+## Feature X
+
+**Quick Reference:** See [docs/feature-x-guide.md](docs/feature-x-guide.md)
+
+### Essential Info (keep in CLAUDE.md)
+- Critical rules (2-3 bullet points)
+- Common command: `command --flags`
+- Link to detailed guide
+
+### Detailed Guide (extract to docs/)
+- Step-by-step instructions
+- All edge cases
+- Verbose examples
+- Troubleshooting
+```
+
+**Token Cost Awareness:**
+- Every 1,000 lines ≈ 3,000 tokens
+- CLAUDE.md should stay <2,500 lines (<7,500 tokens)
+- Aim for: "Can AI read entire file in one context window"`
 
 #### Step 5: Add Session Review to ai-workflow-learnings.md
 
@@ -1850,7 +801,7 @@ git push origin main
 ```{language}
 // Show code example if relevant
 ```
-````
+`````
 
 **Why This Matters:**
 
@@ -2853,7 +1804,7 @@ import { ArrowRight } from "lucide-react";
 - Campaign Reports: `src/components/dashboard/reports/CampaignReportDetail.tsx`
 - List Details: `src/components/mailchimp/lists/list-detail.tsx:369-381`
 
-### Table Implementation Patterns
+### Table Implementation Patterns {#table-implementation-patterns}
 
 #### Pagination Placement (CRITICAL)
 
@@ -3135,6 +2086,8 @@ import { errorSchema } from "@/schemas/mailchimp/common/error.schema";
 export const endpointErrorSchema = errorSchema;
 ```
 
+#### Schema Creation Checklist (Critical Rules) {#schema-creation-checklist-critical-rules}
+
 **Before creating new schemas, always check existing patterns:**
 
 ```bash
@@ -3147,8 +2100,6 @@ grep -r "schemaName" src/schemas/mailchimp/common/
 # Find similar endpoint schemas (for pattern reference)
 ls src/schemas/mailchimp/*-success.schema.ts
 ```
-
-#### Schema Creation Checklist (Critical Rules)
 
 **Parameter Schemas (`*-params.schema.ts`):**
 
@@ -3315,152 +2266,9 @@ export const {endpoint}ErrorSchema = errorSchema;
 
 **Reference**: `src/schemas/mailchimp/domain-performance-error.schema.ts`
 
-#### Schema Creation Rules
+**Note:** See [Schema Creation Checklist](#schema-creation-checklist-critical-rules) above for comprehensive schema standards and patterns.
 
-**Before creating new schemas, always check existing patterns:**
-
-```bash
-# Check parameter schema patterns
-grep -r "ParamsSchema" src/schemas/mailchimp/*-params.schema.ts
-
-# Check for reusable common schemas
-grep -r "schemaName" src/schemas/mailchimp/common/
-
-# Find similar endpoint schemas (for pattern reference)
-ls src/schemas/mailchimp/*-success.schema.ts
-```
-
-**Example:**
-
-```typescript
-/**
- * Mailchimp API Campaign Location Activity Success Response Schema
- *
- * Endpoint: GET /reports/{campaign_id}/locations
- * Documentation: https://mailchimp.com/developer/marketing/api/location-reports/list-top-open-activities/
- *
- * ✅ VERIFIED FIELDS (from API response example):
- * - country_code: string (ISO 3166-1 alpha-2)
- * - region: string (optional)
- * - region_name: string (default: "Rest of Country")
- * - opens: number
- * - proxy_excluded_opens: number
- *
- * Last verified: 2025-01-22
- */
-```
-
-**Schema Creation Rules:**
-
-1. **Parameter Schemas** (`*-params.schema.ts`):
-   - Export path and query schemas separately (do NOT use `.merge()`)
-   - Path params: `{endpoint}PathParamsSchema`
-   - Query params: `{endpoint}QueryParamsSchema`
-   - Always add `.strict()` with comment: `// Reject unknown properties for input validation`
-   - ID fields MUST use `.min(1)` to prevent empty strings
-   - Include schema file header with API documentation URL
-
-2. **Zod 4 Best Practices**:
-   - Optional with default: `.default(value)` alone (NOT `.default().optional()`)
-   - Optional without default: `.optional()` alone
-   - NEVER use `.default().optional()` (redundant, `.default()` makes field optional automatically)
-
-3. **Success Schemas** (`*-success.schema.ts`):
-   - All ID fields (`campaign_id`, `list_id`, `email_id`, etc.) MUST use `.min(1)`
-   - Compare with similar endpoints to match flat vs nested patterns
-   - Check `common/` directory for reusable schemas before inlining
-   - If duplicating schemas, create GitHub issue for future refactoring
-
-4. **Error Schemas** (`*-error.schema.ts`):
-   - Usually just extends `errorSchema` from `@/schemas/mailchimp/common/error.schema`
-
-**Standard Patterns:**
-
-- **API naming:** Always match API property names in Zod schemas and types
-- **Enums:** `export const VISIBILITY = ["pub", "prv"] as const;` + `z.enum(VISIBILITY)`
-- **DateTime:** Use `z.iso.datetime({ offset: true })` for ISO 8601 (recommended), `z.iso.datetime()` for UTC-only
-- **Deprecated:** Never use `z.string().datetime()` (enforced by tests)
-
-**Example Pattern** (from `report-click-details-params.schema.ts`):
-
-```typescript
-// Path params
-export const clickListPathParamsSchema = z
-  .object({
-    campaign_id: z.string().min(1),
-  })
-  .strict();
-
-// Query params
-export const clickListQueryParamsSchema = z
-  .object({
-    fields: z.string().optional(),
-    exclude_fields: z.string().optional(),
-    count: z.coerce.number().min(1).max(1000).default(10), // Note: .default() alone
-    offset: z.coerce.number().min(0).default(0),
-  })
-  .strict(); // Reject unknown properties for input validation
-
-// Do NOT export a merged schema
-```
-
-### Table Implementation Patterns
-
-**Decision Tree:**
-
-1. **Simple List Display** (recommended default):
-   - Use shadcn/ui `Table` component in a Server Component
-   - URL-based pagination with `URLSearchParams`
-   - Examples: `reports-table.tsx`, `campaign-unsubscribes-table.tsx`, `campaign-email-activity-table.tsx`
-   - **When:** Read-only tables, simple sorting, no complex filtering
-
-2. **Interactive Tables** (only when necessary):
-   - Use TanStack Table + shadcn/ui `Table` in a Client Component
-   - Examples: `campaign-opens-table.tsx`, `campaign-abuse-reports-table.tsx`, `click-details-content.tsx`
-   - **When:** Multi-column sorting, column visibility toggles, complex filtering
-
-**Server Component Pagination Pattern:**
-
-```tsx
-export function MyTable({ data, currentPage, pageSize, totalItems }: Props) {
-  const baseUrl = `/path/to/page`;
-
-  // URL generation functions
-  const createPageUrl = (page: number) => {
-    const params = new URLSearchParams();
-    params.set("page", page.toString());
-    params.set("perPage", pageSize.toString());
-    return `${baseUrl}?${params.toString()}`;
-  };
-
-  const createPerPageUrl = (newPerPage: number) => {
-    const params = new URLSearchParams();
-    params.set("page", "1");
-    params.set("perPage", newPerPage.toString());
-    return `${baseUrl}?${params.toString()}`;
-  };
-
-  return (
-    <Card>
-      {/* Table content */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={Math.ceil(totalItems / pageSize)}
-        createPageUrl={createPageUrl}
-      />
-      <PerPageSelector
-        value={pageSize}
-        createPerPageUrl={createPerPageUrl}
-        itemName="items per page"
-      />
-    </Card>
-  );
-}
-```
-
-**⚠️ NEVER use raw HTML `<table>` markup** - always use shadcn/ui `Table` components
-
-**See:** `docs/ai-workflow-learnings.md` for complete decision tree and examples
+**Note:** For table implementation patterns, see [Table Implementation Patterns](#table-implementation-patterns) in the Development Patterns section.
 
 ### Component Development
 
@@ -3828,15 +2636,7 @@ describe("Common Schema Pattern", () => {
 
 **Related Issues:** #222 (folder reorganization), #223 (DRY refactoring)
 
-## Git Strategy
-
-**Branches:** `feature/description-issue-123`, `fix/description-issue-456`, or `docs/description-issue-789` (lowercase, hyphens, issue number required)
-
-**Commits:** Conventional commits (`feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`)
-
-**Workflow:** Always use PRs, never push to main directly
-
-### Pre-commit Hooks Setup
+## Pre-commit Hooks Setup
 
 **First-time setup:**
 
