@@ -309,7 +309,7 @@ import {
 **Checkpoints:**
 
 - Phase 0 → 1: User says "yes" after issue created
-- Phase 1 → 2: User says "approved" after schema review
+- Phase 1 → 2: User says "approved" (AI proceeds automatically to Phase 2)
 - Phase 2.4: User confirms "smoke test passed"
 - Phase 2.75 → 3: User says "ready to push"
 
@@ -320,7 +320,7 @@ import {
 | "Can we learn from X?"    | Research       | Present findings + ASK before implementing         |
 | "Improve X"               | Ambiguous      | ASK: "(A) Analyze (B) Create issue (C) Implement?" |
 | "Implement X"             | Implementation | ✅ Proceed to Phase 0                              |
-| "approved" / "looks good" | Approval       | ✅ Proceed to next phase                           |
+| "approved" / "looks good" | Approval       | ✅ Proceed automatically (no additional pause)     |
 
 **Red Flags:**
 
@@ -344,6 +344,11 @@ import {
 2. Create Zod schemas: `*-params.schema.ts`, `*-success.schema.ts`, `*-error.schema.ts`
 3. Present schemas for review
 4. ⏸️ Wait for user: "approved"
+5. **When user says "approved":** Immediately proceed to Phase 2 (no additional pause)
+   - DO NOT ask "Would you like me to proceed?"
+   - DO NOT wait for additional confirmation
+   - Respond: "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
+   - Start Phase 2 implementation immediately
 
 ### Phase 2: Implementation
 
