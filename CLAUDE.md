@@ -1896,6 +1896,49 @@ git push origin main
 
 ---
 
+#### Step 6: Present Completion Summary (Automatic - DO NOT SKIP)
+
+**⚠️ CRITICAL: After completing all Phase 4 steps, AI MUST automatically present a completion summary. DO NOT wait for user to ask.**
+
+**AI must immediately output:**
+
+```
+✅ Workflow Complete
+
+**PR #{pr_number} Status:**
+- ✅ All CI/CD checks passed
+- ✅ Merged to main
+- ✅ Branches cleaned up (remote and local)
+
+**Phase 4 Cleanup Complete:**
+- ✅ Issue #{issue_number} closed
+- ✅ API coverage updated: docs/api-coverage.md (if applicable)
+- ✅ Workflow documentation updated: CLAUDE.md (if applicable)
+- ✅ Session review added: docs/ai-workflow-learnings.md (if applicable)
+
+**Changes Merged:**
+{Brief 1-2 sentence summary of what was implemented/fixed}
+
+**Implementation Summary:**
+- Files created: {count}
+- Files modified: {count}
+- Tests: {count} passing
+- Total time: ~{time}
+
+The workflow is now complete. All changes have been merged to main and documented.
+```
+
+**Rules:**
+
+1. **DO NOT STOP** after Phase 4 cleanup - immediately present this summary
+2. **DO NOT WAIT** for user to ask "is it done?" or "did it work?"
+3. **DO NOT ASK** "would you like a summary?" - just present it
+4. This is the final step of the workflow - present it automatically
+
+**Why this matters:** Silent completion makes the workflow appear stuck or incomplete. Users should not have to prompt AI to confirm the workflow finished successfully.
+
+---
+
 ````
 
 **Commit the session review:**
