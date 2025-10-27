@@ -629,10 +629,11 @@ Audience list management endpoints.
 
 ### Interest Categories
 
-- 📋 **List Interest Categories** - `GET /lists/{list_id}/interest-categories`
+- ✅ **List Interest Categories** - `GET /lists/{list_id}/interest-categories`
   - Route: `/mailchimp/lists/[id]/interest-categories`
-  - Features: Subscription preferences
+  - Features: Subscription preference groups, Category types (checkboxes/dropdown/radio/hidden), Display order
   - **Priority 3:** Segmentation feature
+  - **Implemented:** Issue TBD, PR TBD
 
 - 🔒 **Add Interest Category** - `POST /lists/{list_id}/interest-categories`
   - **Priority 5:** Write operation (future)
@@ -1267,16 +1268,17 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 26 endpoints
+- ✅ Implemented: 27 endpoints
 - ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 26/244 read endpoints (~10.7%)
+**Total Progress (Read-Only):** 27/244 read endpoints (~11.1%)
 
 **Recent Implementations:**
 
+- **List Interest Categories** (subscription preference groups with category types - Issue TBD, PR TBD)
 - **List Locations** (geographic member distribution - Issue #278, PR #279)
 - **Member Goals** (goal completion tracking for list members - Issue #276, PR #279)
 - **Member Activity Feed** (complete engagement timeline with discriminated union schemas for 7+ activity types - Issue #268, PR #270)
@@ -1322,7 +1324,7 @@ Facebook advertising integration endpoints.
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
-- Lists API: 11/45 endpoints (24%)
+- Lists API: 12/45 endpoints (27%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)

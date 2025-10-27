@@ -28,6 +28,7 @@ import { listSegmentsPageRouteParamsSchema } from "@/schemas/components/mailchim
 import { memberActivityPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-activity-page-params";
 import { memberGoalsPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-goals-page-params";
 import { listLocationsPageParamsSchema } from "@/schemas/components/mailchimp/list-locations-page-params";
+import { listInterestCategoriesPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-interest-categories-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -894,6 +895,42 @@ export async function generateSegmentMembersMetadata({
     openGraph: {
       title: `${list.name} - Segment Members`,
       description: `View members in this segment from ${list.name}`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata for list interest categories page
+ * @param params - Object containing the list ID
+ * @returns Next.js Metadata object for the interest categories page
+ */
+export async function generateListInterestCategoriesMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = listInterestCategoriesPageRouteParamsSchema.parse(rawParams);
+
+  // Fetch list data for metadata
+  const response = await mailchimpDAL.fetchList(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Interest Categories - List Not Found",
+      description: "The requested list could not be found.",
+    };
+  }
+
+  const list = response.data as List;
+
+  return {
+    title: `${list.name} - Interest Categories`,
+    description: `Subscription preference groups for ${list.name}`,
+    openGraph: {
+      title: `${list.name} - Interest Categories`,
+      description: `Subscription preference groups for ${list.name}`,
       type: "website",
     },
   };

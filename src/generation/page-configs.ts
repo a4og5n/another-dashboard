@@ -642,6 +642,47 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * List Interest Categories Page
+   */
+  "list-interest-categories": {
+    schemas: {
+      apiParams:
+        "src/schemas/mailchimp/lists/interest-categories/params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/lists/interest-categories/success.schema.ts",
+      apiError:
+        "src/schemas/mailchimp/lists/interest-categories/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/lists/[id]/interest-categories",
+      params: ["id"],
+    },
+    api: {
+      endpoint: "/lists/{list_id}/interest-categories",
+      method: "GET",
+      dalMethod: "fetchListInterestCategories",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Interest Categories",
+      description: "Subscription preference groups for list members",
+      features: [
+        "Pagination",
+        "Dynamic routing",
+        "Category types",
+        "Display order",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        parent: "list-detail",
+        label: "Interest Categories",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
