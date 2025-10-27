@@ -29,6 +29,7 @@ import { memberActivityPageRouteParamsSchema } from "@/schemas/components/mailch
 import { memberGoalsPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-goals-page-params";
 import { listLocationsPageParamsSchema } from "@/schemas/components/mailchimp/list-locations-page-params";
 import { listInterestCategoriesPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-interest-categories-page-params";
+import { listInterestsPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-interests-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -947,6 +948,42 @@ export function generateAutomationsMetadata(): Metadata {
     openGraph: {
       title: "Automations | Fichaz",
       description: "View and manage your automation workflows",
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for interests in category pages
+ * @param params - Object containing the id
+ * @returns Next.js Metadata object for the interests in category page
+ */
+export async function generateInterestsInCategoryMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; interest_category_id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id } = listInterestsPageRouteParamsSchema.parse(rawParams);
+
+  // Fetch data for metadata
+  const response = await mailchimpDAL.fetchList(id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Interests - Not Found",
+      description: "The requested list could not be found.",
+    };
+  }
+
+  const list = response.data;
+
+  return {
+    title: `${list.name} - Interests`,
+    description: `Individual interests within an interest category for ${list.name}`,
+    openGraph: {
+      title: `${list.name} - Interests`,
+      description: `Individual interests within an interest category for ${list.name}`,
       type: "website",
     },
   };
