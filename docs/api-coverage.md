@@ -1288,15 +1288,15 @@ Facebook advertising integration endpoints.
 - **Search Members** (global member search across all lists - Issue #246, PR #251)
 - **List Segments** (audience segmentation with saved/static/predicted types - PR #241)
 - **Get Member Info** (complete member profile with engagement stats and timeline - PR #238)
-- **List Members** (view and manage list members with filtering and engagement stats)
+- **List Members** (view and manage list members with filtering and engagement stats - PR #236)
 - **List Growth History** (monthly subscriber growth trends and metrics - PR #235)
 - **List Activity** (daily activity timeline with engagement metrics - PR #221)
-- **Domain Performance** (email provider performance breakdown)
-- **Campaign Advice** (performance recommendations with sentiment icons)
-- **Campaign Locations** (geographic engagement data)
+- **Domain Performance** (email provider performance breakdown - no PR, committed directly to main)
+- **Campaign Advice** (performance recommendations with sentiment icons - PR #219)
+- **Campaign Locations** (geographic engagement data - PR #218)
 - **Campaign Recipients/Sent To** (recipient delivery status - PR #217)
 - **Campaign Email Activity** (subscriber activity timeline - PR #215)
-- **Campaign Unsubscribes** (unsubscribe tracking)
+- **Campaign Unsubscribes** (unsubscribe tracking - PR #211)
 
 **Focus Areas:**
 
