@@ -234,6 +234,42 @@ export function convertFieldsToCommaString<
 }
 
 /**
+ * Transform automations page parameters to API format
+ * Converts page/perPage UI params to count/offset API params
+ *
+ * @param params - UI search parameters from automations page
+ * @returns Object with API-ready parameters
+ *
+ * @example
+ * ```typescript
+ * const params = { page: "2", perPage: "25", status: "sending" };
+ * const result = transformAutomationsParams(params);
+ * // Returns: { count: 25, offset: 25, status: "sending" }
+ * ```
+ */
+export function transformAutomationsParams(params: {
+  page?: string;
+  perPage?: string;
+  status?: string;
+  since_create_time?: string;
+  before_create_time?: string;
+}) {
+  return {
+    ...transformPaginationParams(params),
+    ...(params.status &&
+      ["save", "paused", "sending"].includes(params.status) && {
+        status: params.status as "save" | "paused" | "sending",
+      }),
+    ...(params.since_create_time && {
+      since_create_time: params.since_create_time,
+    }),
+    ...(params.before_create_time && {
+      before_create_time: params.before_create_time,
+    }),
+  };
+}
+
+/**
  * Export the server-compatible transformPaginationParams function
  * for use in service layer and other server-side code
  */

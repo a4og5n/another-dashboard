@@ -221,6 +221,39 @@ export const pageConfigs = {
   } satisfies PageConfig,
 
   /**
+   * Automations List Page
+   * Display and manage marketing automation workflows
+   */
+  "automations-list": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/automations-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/automations-success.schema.ts",
+      apiError: "src/schemas/mailchimp/automations-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/automations",
+      params: [],
+    },
+    api: {
+      endpoint: "/automations",
+      method: "GET",
+      dalMethod: "fetchAutomations",
+    },
+    page: {
+      type: "list",
+      title: "Automations",
+      description: "View and manage your automation workflows",
+      features: ["Pagination", "Status filtering", "Workflow metrics"],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        label: "Automations",
+      },
+    },
+  } satisfies PageConfig,
+
+  /**
    * Example: Campaign Opens Page (existing page for reference)
    */
   "report-opens": {

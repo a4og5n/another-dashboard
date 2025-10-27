@@ -21,6 +21,8 @@ import type {
   OpenListQueryParams,
 } from "@/types/mailchimp";
 import { z } from "zod";
+import { automationsQueryParamsSchema } from "@/schemas/mailchimp/automations-params.schema";
+import { automationsSuccessSchema } from "@/schemas/mailchimp/automations-success.schema";
 import { clickListQueryParamsSchema } from "@/schemas/mailchimp/reports/click-details/params.schema";
 import { reportClickListSuccessSchema } from "@/schemas/mailchimp/reports/click-details/success.schema";
 import { unsubscribesSuccessSchema } from "@/schemas/mailchimp/reports/unsubscribes/success.schema";
@@ -572,6 +574,24 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof listInterestCategoriesSuccessSchema>>(
         `/lists/${listId}/interest-categories`,
+        params,
+      ),
+    );
+  }
+
+  /**
+   * Fetch Automations
+   * GET /automations
+   *
+   * @param params - Query parameters (fields, exclude_fields, count, offset, status, date filters)
+   * @returns Paginated list of automation workflows
+   */
+  async fetchAutomations(
+    params?: z.infer<typeof automationsQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof automationsSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof automationsSuccessSchema>>(
+        "/automations",
         params,
       ),
     );
