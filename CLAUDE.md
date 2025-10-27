@@ -1554,19 +1554,40 @@ This will:
 gh pr checks {pr_number}
 ```
 
-#### Step 2: Continuous Monitoring
+#### Step 2: Continuous Monitoring (FOREGROUND - DO NOT RUN IN BACKGROUND)
+
+**⚠️ CRITICAL: This command MUST run in FOREGROUND mode. DO NOT use run_in_background parameter.**
 
 AI MUST keep watching PR until ALL checks pass:
 
 ```bash
-gh run watch {run_id} --interval 5 --exit-status
+# Monitor PR checks in FOREGROUND (this will block until complete)
+gh pr checks {pr_number} --watch
+
+# DO NOT run this in background mode
+# DO NOT use: gh pr checks {pr_number} --watch --run-in-background
+# This command will exit with code 0 when ALL checks pass
 ```
+
+**Why FOREGROUND is required:**
+
+- Background processes cannot trigger automatic workflow continuation
+- Foreground command blocks until checks complete, then AI can immediately proceed
+- When this command exits (code 0), ALL checks have passed - proceed immediately to Step 4
 
 **While monitoring:**
 
-- Report status updates every 30-60 seconds
-- Identify which checks are running/pending/passed/failed
-- DO NOT proceed until all checks are complete
+- The command will refresh status every 10 seconds automatically
+- Output shows which checks are running/pending/passed/failed
+- Command will exit when all checks are complete
+
+**When monitoring completes (exit code 0):**
+
+- **IMMEDIATELY proceed to Step 4 (Auto-Merge)**
+- DO NOT stop to check BashOutput
+- DO NOT wait for user confirmation
+- DO NOT ask "should I proceed?"
+- The foreground command completion IS the signal to continue
 
 #### Step 3: Handle CI/CD Failures
 
