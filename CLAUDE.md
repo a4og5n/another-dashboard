@@ -979,9 +979,7 @@ When user says "approved", AI must:
     - `pnpm format` - Format all files
     - `pnpm test` - All tests pass
 
-16. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
-
-17. **⚠️ CRITICAL: AI adds navigation links** (MANDATORY - Do NOT skip):
+16. **⚠️ CRITICAL: AI adds navigation links** (MANDATORY - Do NOT skip):
 
     **For ALL new pages, check and add navigation links:**
 
@@ -1029,6 +1027,12 @@ When user says "approved", AI must:
     ```
 
     **⚠️ DO NOT PROCEED to Phase 2.4 without completing this step!**
+
+17. **📋 Note: Documentation Updates Happen in Phase 4** (Post-Merge)
+    - Do NOT update `docs/api-coverage.md` during Phase 2
+    - Do NOT close GitHub issues during Phase 2
+    - These tasks are handled automatically in Phase 4 after PR merge
+    - See Phase 4 Step 2 (Issue Closure) and Step 3 (API Coverage Update)
 
 ### Phase 2.4: Quick Smoke Test (BEFORE COMMIT)
 
