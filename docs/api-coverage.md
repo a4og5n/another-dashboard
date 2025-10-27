@@ -669,7 +669,7 @@ Audience list management endpoints.
   - Route: `/mailchimp/lists/[id]/locations`
   - Features: Geographic member distribution, Country-based subscriber analytics
   - **Priority 3:** Analytics insight
-  - **Implemented:** Issue TBD, PR TBD
+  - **Implemented:** Issue #278, PR #279
 
 ### Member Activity
 
@@ -692,7 +692,7 @@ Audience list management endpoints.
   - Route: `/mailchimp/lists/[id]/members/[subscriber_hash]/goals`
   - Features: Goal completion tracking
   - **Priority 2:** Member management
-  - **Implemented:** Issue #276, PR #277
+  - **Implemented:** Issue #276, PR #279
 
 ### Member Notes
 
@@ -1267,17 +1267,18 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 25 endpoints
+- ✅ Implemented: 26 endpoints
 - ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 25/244 read endpoints (~10.2%)
+**Total Progress (Read-Only):** 26/244 read endpoints (~10.7%)
 
 **Recent Implementations:**
 
-- **Member Goals** (goal completion tracking for list members - Issue #276, PR TBD)
+- **List Locations** (geographic member distribution - Issue #278, PR #279)
+- **Member Goals** (goal completion tracking for list members - Issue #276, PR #279)
 - **Member Activity Feed** (complete engagement timeline with discriminated union schemas for 7+ activity types - Issue #268, PR #270)
 - **Member Notes** (view notes for list members - chronological timeline with pagination)
 - **Member Tags** (view tags assigned to list members - Issue #247, PR #254)
@@ -1321,7 +1322,7 @@ Facebook advertising integration endpoints.
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
-- Lists API: 10/45 endpoints (22%)
+- Lists API: 11/45 endpoints (24%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)
