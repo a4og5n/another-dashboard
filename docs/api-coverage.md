@@ -633,7 +633,7 @@ Audience list management endpoints.
   - Route: `/mailchimp/lists/[id]/interest-categories`
   - Features: Subscription preference groups, Category types (checkboxes/dropdown/radio/hidden), Display order
   - **Priority 3:** Segmentation feature
-  - **Implemented:** Issue TBD, PR TBD
+  - **Implemented:** Issue #288, PR #289
 
 - 🔒 **Add Interest Category** - `POST /lists/{list_id}/interest-categories`
   - **Priority 5:** Write operation (future)
@@ -1278,7 +1278,7 @@ Facebook advertising integration endpoints.
 
 **Recent Implementations:**
 
-- **List Interest Categories** (subscription preference groups with category types - Issue TBD, PR TBD)
+- **List Interest Categories** (subscription preference groups with category types - Issue #288, PR #289)
 - **List Locations** (geographic member distribution - Issue #278, PR #279)
 - **Member Goals** (goal completion tracking for list members - Issue #276, PR #279)
 - **Member Activity Feed** (complete engagement timeline with discriminated union schemas for 7+ activity types - Issue #268, PR #270)
