@@ -63,6 +63,14 @@ export const bc = {
   } as const satisfies BreadcrumbItem,
 
   /**
+   * Automations list page breadcrumb
+   */
+  automations: {
+    label: "Automations",
+    href: "/mailchimp/automations",
+  } as const satisfies BreadcrumbItem,
+
+  /**
    * General info page breadcrumb
    */
   generalInfo: {

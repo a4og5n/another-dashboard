@@ -935,3 +935,19 @@ export async function generateListInterestCategoriesMetadata({
     },
   };
 }
+
+/**
+ * Generates metadata for automations list page
+ * @returns Next.js Metadata object for the automations page
+ */
+export function generateAutomationsMetadata(): Metadata {
+  return {
+    title: "Automations | Fichaz",
+    description: "View and manage your automation workflows",
+    openGraph: {
+      title: "Automations | Fichaz",
+      description: "View and manage your automation workflows",
+      type: "website",
+    },
+  };
+}
