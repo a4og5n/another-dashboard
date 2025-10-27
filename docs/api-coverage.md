@@ -222,9 +222,10 @@ Marketing automation workflow endpoints.
 
 ### Automation Management
 
-- 📋 **List Automations** - `GET /automations`
-  - Features: List all automation workflows
-  - **Priority 3:** Automation management
+- ✅ **List Automations** - `GET /automations`
+  - Route: `/mailchimp/automations`
+  - Features: Automation workflows, 6-column table, status badges, list integration, performance metrics, clickable workflows/lists, server-side pagination
+  - **Implemented:** Issue #248, PR #317
 
 - 🔒 **Add Automation** - `POST /automations`
   - **Priority 5:** Write operation (future)
@@ -1268,16 +1269,17 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 27 endpoints
-- ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
+- ✅ Implemented: 28 endpoints
+- ⭐ Priority 3: ~49 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 27/244 read endpoints (~11.1%)
+**Total Progress (Read-Only):** 28/244 read endpoints (~11.5%)
 
 **Recent Implementations:**
 
+- **List Automations** (automation workflow management with status tracking - Issue #248, PR #317)
 - **List Interest Categories** (subscription preference groups with category types - Issue #288, PR #289)
 - **List Locations** (geographic member distribution - Issue #278, PR #279)
 - **Member Goals** (goal completion tracking for list members - Issue #276, PR #277)
@@ -1317,7 +1319,7 @@ Facebook advertising integration endpoints.
 - Campaign Folders: 0/5 endpoints (0%)
 - Campaigns API: 0/17 endpoints (0%)
 - Chimp Chatter Activity: 0/1 endpoint (0%)
-- Classic Automations: 0/14 endpoints (0%)
+- Classic Automations: 1/14 endpoints (7%)
 - Connected Sites: 0/5 endpoints (0%)
 - Conversations (Deprecated): 0/4 endpoints (0% - not planned)
 - E-commerce Stores: 0/62 endpoints (0%)
