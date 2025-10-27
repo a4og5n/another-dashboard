@@ -39,6 +39,8 @@ import { growthHistoryQueryParamsSchema } from "@/schemas/mailchimp/lists/growth
 import { growthHistorySuccessSchema } from "@/schemas/mailchimp/lists/growth-history/success.schema";
 import { listLocationsQueryParamsSchema } from "@/schemas/mailchimp/lists/locations/params.schema";
 import { listLocationsSuccessSchema } from "@/schemas/mailchimp/lists/locations/success.schema";
+import { listInterestCategoriesQueryParamsSchema } from "@/schemas/mailchimp/lists/interest-categories/params.schema";
+import { listInterestCategoriesSuccessSchema } from "@/schemas/mailchimp/lists/interest-categories/success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -556,6 +558,22 @@ export class MailchimpDAL {
           typeof import("@/schemas/mailchimp/lists/segments/members/success.schema").segmentMembersSuccessSchema
         >
       >(`/lists/${listId}/segments/${segmentId}/members`, params),
+    );
+  }
+
+  /**
+   * Interest Categories
+   * GET /lists/{list_id}/interest-categories
+   */
+  async fetchListInterestCategories(
+    listId: string,
+    params?: z.infer<typeof listInterestCategoriesQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof listInterestCategoriesSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof listInterestCategoriesSuccessSchema>>(
+        `/lists/${listId}/interest-categories`,
+        params,
+      ),
     );
   }
 }

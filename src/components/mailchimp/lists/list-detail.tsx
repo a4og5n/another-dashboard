@@ -411,6 +411,19 @@ export function ListDetail({
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <Link
+                      href={`/mailchimp/lists/${list.id}/interest-categories`}
+                    >
+                      View Interest Categories
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
                 </CardFooter>
               </Card>
             </div>

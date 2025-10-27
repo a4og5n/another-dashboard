@@ -313,6 +313,25 @@ export const bc = {
    * // Returns: { label: "Activity", href: "/mailchimp/lists/${id}/activity" }
    * ```
    */
+
+  /**
+   * Interest Categories breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for interest categories
+   *
+   * @example
+   * ```tsx
+   * bc.interestCategories("abc123")
+   * // Returns: { label: "Interest Categories", href: "/mailchimp/lists/${id}/interest-categories" }
+   * ```
+   */
+  interestCategories(id: string): BreadcrumbItem {
+    return {
+      label: "Interest Categories",
+      href: `/mailchimp/lists/${id}/interest-categories`,
+    };
+  },
   listActivity(id: string): BreadcrumbItem {
     return {
       label: "Activity",
