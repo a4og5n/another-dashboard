@@ -36,26 +36,32 @@ gh pr create --base main --head feature/endpoint-name
 - ✅ **CI runs on PRs** - Checks pass before merge, not after
 - ✅ **Safe experimentation** - Branch can be deleted if approach doesn't work
 
-### Exception: Documentation-Only Changes
+### No Exceptions: All Changes Go Through PRs
 
-**ONLY commit directly to main for documentation files:**
+**⚠️ CRITICAL: Git hooks enforce branch-first workflow for ALL changes (including documentation).**
 
-✅ **Safe for direct commit:**
+**Correct workflow for ANY change:**
 
-- `*.md` files in `/docs` directory (e.g., `docs/api-coverage.md`, `docs/PRD.md`)
-- `README.md` updates
-- `CLAUDE.md` updates
-- Comment-only changes in code
+1. Create GitHub issue (if not exists)
+2. Create feature branch: `docs/description-issue-123` or `feature/description-issue-123`
+3. Make changes and commit on branch
+4. Push and create PR
+5. Merge after CI/CD passes
 
-❌ **NEVER commit directly to main:**
+**Why no exceptions:**
 
-- Code files (`*.ts`, `*.tsx`, `*.js`, `*.jsx`)
-- Schema files (`src/schemas/**/*.ts`)
-- Test files (`*.test.ts`, `*.test.tsx`)
-- Configuration files (`package.json`, `tsconfig.json`, etc.)
-- Any changes that affect runtime behavior
+- ✅ **Consistent workflow:** Same process for all changes (simpler mental model)
+- ✅ **Git hook enforcement:** Pre-commit hook blocks commits to main
+- ✅ **AI workflow alignment:** AI always creates branches first, never assumes exceptions
+- ✅ **Audit trail:** All changes trackable via PRs and issues
+- ✅ **CI/CD validation:** Even docs go through linting and formatting checks
 
-**Rationale:** Documentation changes don't affect code execution and don't require CI/CD validation. All code changes MUST go through PR review and CI/CD checks.
+**Previous exception removed (2025-10-27):**
+
+- Old rule: "Documentation can be committed directly to main"
+- Problem: AI relied on git hooks to catch mistakes instead of being proactive
+- New rule: AI creates branches FIRST, for all changes (code or docs)
+- Result: No failed attempts, cleaner workflow, better audit trail
 
 ### Historical Context:
 
@@ -65,9 +71,34 @@ gh pr create --base main --head feature/endpoint-name
 
 **Lesson:** Even low-risk technical debt cleanup MUST go through the PR process.
 
-### AI Implementation:
+**2025-10-27**: Updated workflow to remove documentation exception. AI now creates branches FIRST for all changes (code or docs), preventing reliance on git hooks to catch mistakes.
 
-See "Phase 0: Git Setup" in the AI-First Development Workflow section below for how AI should automatically enforce this.
+### AI Implementation Guidelines
+
+**Before making ANY changes (code or documentation):**
+
+1. ✅ **Check current branch:** `git branch --show-current`
+2. ✅ **If on main:** Create issue + feature branch IMMEDIATELY
+3. ✅ **Never assume exceptions:** All changes go through PR workflow
+4. ✅ **Be proactive:** Don't wait for git hooks to block commits
+
+**Decision Tree:**
+
+```
+User requests change
+    ↓
+Is there an issue for this work?
+    ├─ NO → Create issue first (gh issue create)
+    └─ YES → Continue
+         ↓
+Are we on main branch?
+    ├─ YES → Create feature branch NOW (git checkout -b docs/... or feature/...)
+    └─ NO → Continue on existing feature branch
+         ↓
+Make changes → Commit → Push → Create PR → Merge
+```
+
+See "Phase 0: Git Setup" in the AI-First Development Workflow section below for complete implementation details.
 
 ## Commands {#commands}
 
