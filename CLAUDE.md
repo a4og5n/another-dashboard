@@ -1447,13 +1447,132 @@ This will:
    - [x] Checked navigation works
    - [x] Tested error states
 
+   Resolves #{issue_number}
+
    🤖 Generated with [Claude Code](https://claude.com/claude-code)
    EOF
    )"
    ```
 
 3. Presents PR URL: "✅ PR created: {URL}"
-4. Waits for user to merge and confirm
+
+### Phase 3.5: CI/CD Monitoring & Failure Recovery (Automatic)
+
+**⚠️ CRITICAL: AI MUST monitor PR until all checks pass. DO NOT proceed to merge with failing checks.**
+
+**After PR creation, AI automatically monitors CI/CD:**
+
+#### Step 1: Initial Check Status
+
+```bash
+gh pr checks {pr_number}
+```
+
+#### Step 2: Continuous Monitoring
+
+AI MUST keep watching PR until ALL checks pass:
+
+```bash
+gh run watch {run_id} --interval 5 --exit-status
+```
+
+**While monitoring:**
+
+- Report status updates every 30-60 seconds
+- Identify which checks are running/pending/passed/failed
+- DO NOT proceed until all checks are complete
+
+#### Step 3: Handle CI/CD Failures
+
+**If ANY check fails, AI MUST:**
+
+1. **Identify the failure:**
+
+   ```bash
+   gh run view {run_id}
+   ```
+
+2. **Analyze the error:**
+   - Read failure logs
+   - Identify root cause (type error, test failure, lint issue, etc.)
+   - Determine if it's a real issue or flaky test
+
+3. **Fix the issue:**
+   - Make necessary code changes
+   - Run local validation: `pnpm type-check && pnpm lint && pnpm test`
+   - Ensure fix resolves the issue
+
+4. **Create test to prevent regression:**
+   - If failure was missed by local tests, add new test case
+   - If architectural rule was violated, enhance enforcement test
+   - Document why failure wasn't caught locally
+
+5. **Commit the fix:**
+
+   ```bash
+   git add -A
+   git commit -m "fix: resolve CI/CD failure - {brief description}
+
+   Issue: {describe what failed in CI/CD}
+   Root Cause: {why it failed}
+   Solution: {what was fixed}
+   Prevention: {test added to catch this earlier}
+
+   CI Run: {run_id}"
+   ```
+
+6. **Push the fix:**
+
+   ```bash
+   git push origin {branch-name}
+   ```
+
+7. **Resume monitoring** - Go back to Step 1 and watch new CI/CD run
+
+**Common CI/CD Failures & Fixes:**
+
+| Failure Type      | Local Command to Reproduce | Fix Strategy                                 |
+| ----------------- | -------------------------- | -------------------------------------------- |
+| **Type errors**   | `pnpm type-check`          | Fix type issues, ensure local command passes |
+| **Lint errors**   | `pnpm lint`                | Run `pnpm lint:fix`, commit fixes            |
+| **Test failures** | `pnpm test`                | Fix failing test, ensure it passes locally   |
+| **Format issues** | `pnpm format:check`        | Run `pnpm format`, commit changes            |
+| **Accessibility** | `pnpm test:a11y`           | Fix a11y violations, test locally            |
+| **Build errors**  | `pnpm build`               | Fix build issues, test production build      |
+
+**Prevention: Add Tests for Missed Failures**
+
+If CI catches something local validation missed:
+
+```typescript
+// Example: Add architectural test for new pattern
+test("should enforce new pattern", () => {
+  const files = glob.sync("src/**/*.tsx");
+  files.forEach((file) => {
+    const content = fs.readFileSync(file, "utf-8");
+    expect(content).not.toMatch(/anti-pattern/);
+  });
+});
+```
+
+#### Step 4: Confirm All Checks Pass
+
+Once ALL checks pass:
+
+```
+✅ CI/CD Complete - All checks passed
+
+**Check Results:**
+- ✅ Code Quality Checks (1m 30s)
+- ✅ Security Audit (45s)
+- ✅ Test Suite (2m 15s)
+- ✅ Vercel Preview (deployed)
+
+**PR Status:** Ready for merge
+**Next:** Waiting for user to merge PR
+```
+
+**Then wait for user to merge and confirm (do NOT auto-merge)**
 
 ### Phase 4: Post-Merge Cleanup & Documentation (Automatic)
 
@@ -1461,50 +1580,345 @@ This will:
 
 **AI automatically executes these steps in order:**
 
-#### Step 1: Branch Cleanup
+#### Step 1: Branch Cleanup & Sync
 
 ```bash
-git checkout main && git pull origin main && git branch -d {branch-name}
+# Checkout main, pull changes, verify local branch was deleted
+git checkout main && git pull origin main
+
+# Check if local branch still exists (should be auto-deleted by GitHub)
+BRANCH_EXISTS=$(git branch --list {branch-name})
+if [ -n "$BRANCH_EXISTS" ]; then
+  git branch -d {branch-name}
+  echo "✅ Deleted local branch: {branch-name}"
+else
+  echo "✅ Local branch already deleted: {branch-name}"
+fi
 ```
 
-#### Step 2: Update API Coverage Documentation
+#### Step 2: Close Related GitHub Issues
+
+**AI MUST close the issue that triggered this implementation:**
+
+```bash
+# Close the issue that was implemented
+gh issue close {issue_number} --comment "Implemented in PR #{pr_number} and merged to main."
+```
+
+**If there were related issues mentioned in commits, close those too:**
+
+```bash
+# Example: If implementation also fixed a bug
+gh issue close {related_issue} --comment "Fixed as part of {Endpoint Name} implementation (PR #{pr_number})."
+```
+
+#### Step 3: Update API Coverage Documentation
 
 **⚠️ CRITICAL:** Documentation updates happen AFTER merge, not during implementation.
 
-**For Mailchimp endpoint implementations only:**
+**For Mailchimp endpoint implementations:**
 
 1. Update `docs/api-coverage.md`:
    - Mark endpoint as ✅ Implemented
-   - Add implementation details (route, features, PR number)
+   - Add implementation details:
+     - Route: `/mailchimp/{path}`
+     - Features: List key features
+     - Issue/PR numbers
    - Update coverage stats (X/Y endpoints, Z%)
 
-2. Commit documentation update:
+**Example update:**
+
+```markdown
+- ✅ **List Locations** - `GET /lists/{list_id}/locations`
+  - Route: `/mailchimp/lists/[id]/locations`
+  - Features: Geographic member distribution, Country-based subscriber analytics
+  - **Priority 3:** Analytics insight
+  - **Implemented:** Issue #278, PR #279
+```
+
+2. Commit documentation update directly to main:
    ```bash
    git add docs/api-coverage.md
-   git commit -m "docs: mark {Endpoint Name} as implemented (Issue #{N})"
-   git push origin main
+   git commit -m "docs: mark {Endpoint Name} as implemented
    ```
+
+Issue #${issue_number}, PR #${pr_number}
+
+Updated API coverage:
+
+- Marked {Endpoint Name} as ✅ implemented
+- Added route and features documentation
+- Updated progress: X/Y endpoints (Z%)
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+git push origin main
+
+````
 
 **Why post-merge?** If PR is rejected or requires major changes, pre-merge docs would claim "implemented" but code wouldn't be in main.
 
-**Then notifies user:**
+#### Step 4: Update CLAUDE.md (If Workflow Changed)
 
-> "✅ Post-merge tasks complete
->
-> - Switched to main branch
-> - Pulled latest changes (fast-forward: {old-hash}..{new-hash})
-> - Deleted local branch: {branch-name}
-> - Updated API coverage documentation (committed to main)
->
-> Ready for next feature!"
+**AI MUST check if this implementation introduced new patterns:**
 
-**Important**:
+- New component architecture
+- New error handling pattern
+- New validation approach
+- New navigation pattern
+- Any deviation from existing workflow
+
+**If new patterns were introduced:**
+
+```bash
+# Add section to CLAUDE.md documenting the new pattern
+git add CLAUDE.md
+git commit -m "docs: document {new pattern} from {Endpoint Name} implementation
+
+Added guidance for {pattern description} based on learnings from
+Issue #${issue_number}, PR #${pr_number}.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+git push origin main
+````
+
+#### Step 5: Add Session Review to ai-workflow-learnings.md
+
+**AI MUST document this implementation session:**
+
+**Create comprehensive session review at the TOP of the "Session Reviews" section:**
+
+````markdown
+### Session: {Endpoint Name} Implementation (YYYY-MM-DD)
+
+**Endpoint:** `{HTTP_METHOD} /path/to/endpoint`
+**Route:** `/mailchimp/{route}`
+**Issue:** #{issue_number} | **PR:** #{pr_number} | **Status:** ✅ Merged
+
+#### What Worked Exceptionally Well ✅
+
+**1. {Pattern/Approach That Worked}** ⭐⭐⭐
+
+**What Happened:**
+
+- {Describe what was successful}
+- {Why it worked well}
+
+**Implementation Details:**
+
+```{language}
+// Show code example if relevant
+```
+````
+
+**Why This Matters:**
+
+- {Benefit 1}
+- {Benefit 2}
+
+#### Issues Encountered & Solutions 🔧
+
+**1. {Problem Description}**
+
+**Problem:** {What went wrong}
+
+**Root Cause:** {Why it happened}
+
+**Solution:** {How it was fixed}
+
+**Prevention:** {How to avoid in future}
+
+#### Implementation Stats 📊
+
+**Development Time:**
+
+- Phase 1 (Schemas): ~X minutes
+- Phase 2 (Implementation): ~Y minutes
+- Phase 2.75 (Testing & Iteration): ~Z iterations
+- **Total:** ~N hours
+
+**Code Metrics:**
+
+- Files Created: {count}
+- Files Modified: {count}
+- Lines Added: ~{count}
+- Lines Removed: ~{count}
+
+**Validation:**
+
+- ✅ Type-check: passed
+- ✅ Lint: passed
+- ✅ Format: passed
+- ✅ Tests: {count} passing
+- ✅ CI/CD: All checks passed
+
+#### Key Learnings for Future Implementations 💡
+
+1. **{Learning 1 Title}**
+   - {Description}
+   - {Actionable takeaway}
+
+2. **{Learning 2 Title}**
+   - {Description}
+   - {Actionable takeaway}
+
+#### Files Modified/Created 📁
+
+**Created:**
+
+- `{file_path}` - {purpose}
+- `{file_path}` - {purpose}
+
+**Modified:**
+
+- `{file_path}` - {change description}
+- `{file_path}` - {change description}
+
+---
+
+````
+
+**Commit the session review:**
+
+```bash
+git add docs/ai-workflow-learnings.md
+git commit -m "docs: add session review for {Endpoint Name} implementation
+
+Documented implementation session for Issue #${issue_number}, PR #${pr_number}.
+
+Captured:
+- What worked exceptionally well
+- Issues encountered and solutions
+- Implementation stats and metrics
+- Key learnings for future work
+- Complete file change list
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+git push origin main
+````
+
+#### Step 6: Implementation Review & Improvement Identification
+
+**AI MUST review the merged implementation and identify improvements:**
+
+**Review Checklist:**
+
+- [ ] Are there repeated code patterns that could be extracted?
+- [ ] Could any components be more reusable?
+- [ ] Is the error handling consistent with other pages?
+- [ ] Are there accessibility improvements needed?
+- [ ] Could the user experience be enhanced?
+- [ ] Are there performance optimizations possible?
+- [ ] Is the navigation intuitive?
+- [ ] Are there missing features that would add value?
+
+**Create improvement recommendations:**
+
+```
+✅ Post-merge review complete
+
+**Implementation Quality:** {Excellent/Good/Needs Improvement}
+
+**Identified Improvements:**
+
+1. **{Improvement Title}** (Priority: High/Medium/Low)
+   - Current: {What it does now}
+   - Improvement: {What could be better}
+   - Benefit: {Why this matters}
+   - Effort: {Small/Medium/Large}
+
+2. **{Improvement Title}** (Priority: High/Medium/Low)
+   - Current: {What it does now}
+   - Improvement: {What could be better}
+   - Benefit: {Why this matters}
+   - Effort: {Small/Medium/Large}
+
+**Recommendation:** {Create follow-up branch now / Address later / No changes needed}
+```
+
+**If improvements are identified, ask user:**
+
+> "I've identified {count} potential improvements to the {Endpoint Name} implementation:
+>
+> {List improvements with priorities}
+>
+> Would you like me to:
+>
+> 1. Create a new branch and implement these improvements now
+> 2. Create GitHub issues for future work
+> 3. Skip improvements for now
+>
+> What would you prefer?"
+
+#### Step 7: Create Improvement Branch (If Requested)
+
+**If user says "implement improvements" or similar:**
+
+1. **Create new issue for improvements:**
+
+   ```bash
+   gh issue create --title "refactor: improve {Endpoint Name} implementation" --body "..."
+   ```
+
+2. **Create feature branch:**
+
+   ```bash
+   git checkout -b feature/improve-{endpoint}-issue-{new_number}
+   ```
+
+3. **Implement improvements:**
+   - Follow same Phase 1-3 workflow
+   - Keep changes focused and reviewable
+   - Maintain backward compatibility
+
+4. **Create PR when ready:**
+   - Reference original implementation
+   - Explain improvements made
+   - Show before/after examples
+
+#### Step 8: Final Summary
+
+**AI presents complete summary:**
+
+```
+✅ Phase 4 Complete - Post-Merge Tasks Finished
+
+**Git Operations:**
+- ✅ Switched to main branch
+- ✅ Pulled latest changes (fast-forward: {old_hash}..{new_hash})
+- ✅ Deleted local branch: {branch-name}
+
+**Documentation Updates:**
+- ✅ Closed Issue #{issue_number}
+- ✅ Updated docs/api-coverage.md (commit: {hash})
+- ✅ Updated CLAUDE.md with new patterns (commit: {hash}) [if applicable]
+- ✅ Added session review to ai-workflow-learnings.md (commit: {hash})
+
+**Implementation Review:**
+- ✅ Quality assessment: {rating}
+- ✅ Improvements identified: {count}
+- ✅ Follow-up: {action taken}
+
+**Next Steps:**
+- {Improvement branch created | Ready for next feature | Other}
+
+🎉 {Endpoint Name} implementation cycle complete!
+```
+
+**Important Rules:**
 
 - DO NOT wait for user to request cleanup or documentation
 - DO NOT update `docs/api-coverage.md` during implementation (Phase 2)
-- Only run after user explicitly confirms merge
-- Verify branch deletion succeeded
-- Documentation commits go directly to main (docs-only exception)
+- DO NOT skip session review - it's required for all implementations
+- DO NOT skip improvement review - continuous improvement is mandatory
+- All documentation commits go directly to main (docs-only exception)
+- Always close related GitHub issues
+- Always ask before creating improvement branch
 
 ### Enhancement Commits Pattern
 
@@ -3235,7 +3649,7 @@ describe("Common Schema Pattern", () => {
 
 ## Git Strategy
 
-**Branches:** `feature/description` or `fix/description` (lowercase, hyphens)
+**Branches:** `feature/description-issue-123`, `fix/description-issue-456`, or `docs/description-issue-789` (lowercase, hyphens, issue number required)
 
 **Commits:** Conventional commits (`feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`)
 
