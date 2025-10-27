@@ -716,6 +716,42 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  "list-interests": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/lists/interests/params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/lists/interests/success.schema.ts",
+      apiError: "src/schemas/mailchimp/lists/interests/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/lists/[id]/interest-categories/[interest_category_id]/interests",
+      params: ["id", "interest_category_id"],
+    },
+    api: {
+      endpoint:
+        "/lists/{list_id}/interest-categories/{interest_category_id}/interests",
+      method: "GET",
+      dalMethod: "fetchListInterests",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Interests in Category",
+      description: "Individual interests within an interest category",
+      features: [
+        "Pagination",
+        "Dynamic routing",
+        "Subscriber counts",
+        "Display order",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        parent: "list-interest-categories",
+        label: "Interests",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

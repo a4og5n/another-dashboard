@@ -340,6 +340,44 @@ export const bc = {
       href: `/mailchimp/lists/${id}/interest-categories`,
     };
   },
+
+  /**
+   * List Interest Categories breadcrumb (alias for interestCategories)
+   *
+   * @param id - List ID
+   * @returns Breadcrumb item for list interest categories
+   *
+   * @example
+   * ```tsx
+   * bc.listInterestCategories("abc123")
+   * // Returns: { label: "Interest Categories", href: "/mailchimp/lists/abc123/interest-categories" }
+   * ```
+   */
+  listInterestCategories(id: string): BreadcrumbItem {
+    return {
+      label: "Interest Categories",
+      href: `/mailchimp/lists/${id}/interest-categories`,
+    };
+  },
+
+  /**
+   * Interests in Category breadcrumb
+   *
+   * @param id - ID
+   * @returns Breadcrumb item for interests in category
+   *
+   * @example
+   * ```tsx
+   * bc.interestsInCategory("abc123")
+   * // Returns: { label: "Interests", href: "/mailchimp/lists/${id}/interest-categories/[interest_category_id]/interests" }
+   * ```
+   */
+  interestsInCategory(id: string): BreadcrumbItem {
+    return {
+      label: "Interests",
+      href: `/mailchimp/lists/${id}/interest-categories/[interest_category_id]/interests`,
+    };
+  },
   listActivity(id: string): BreadcrumbItem {
     return {
       label: "Activity",

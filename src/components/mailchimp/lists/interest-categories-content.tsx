@@ -101,13 +101,13 @@ export function InterestCategoriesContent({
               <TableBody>
                 {categories.map((category) => {
                   const typeInfo = formatCategoryType(category.type);
-                  const detailUrl = `/mailchimp/lists/${listId}/interest-categories/${category.id}`;
+                  const interestsUrl = `/mailchimp/lists/${listId}/interest-categories/${category.id}/interests`;
 
                   return (
                     <TableRow key={category.id}>
                       <TableCell>
                         <Link
-                          href={detailUrl}
+                          href={interestsUrl}
                           className="font-medium hover:underline"
                         >
                           {category.title}
@@ -124,7 +124,7 @@ export function InterestCategoriesContent({
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Link href={detailUrl}>
+                        <Link href={interestsUrl}>
                           <code className="text-xs bg-muted px-2 py-1 rounded hover:bg-muted/80 transition-colors cursor-pointer">
                             {category.id}
                           </code>

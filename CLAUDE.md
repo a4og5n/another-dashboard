@@ -309,9 +309,9 @@ import {
 **Checkpoints:**
 
 - Phase 0 → 1: User says "yes" after issue created
-- Phase 1 → 2: User says "approved" (AI proceeds automatically to Phase 2)
-- Phase 2.4: User confirms "smoke test passed"
-- Phase 2.75 → 3: User says "ready to push"
+- Phase 1 → 2: User says "approved" (AI proceeds automatically through Phase 2 completion)
+- Phase 2 → 2.75: AI presents summary, user tests naturally (no explicit checkpoint)
+- Phase 2.75 → 3: User says "ready to push" or "smoke test passed"
 
 ### User Intent Classification
 
@@ -358,11 +358,39 @@ import {
 4. Update DAL method
 5. Run [Standard Validation Suite](#commands)
 6. **Add navigation links** (MANDATORY)
-7. ⏸️ User: "smoke test passed"
-8. Create local commit (DO NOT PUSH)
-9. ⏸️ User testing loop: `git commit --amend --no-edit`
+7. Create local commit (DO NOT PUSH)
+8. **Present implementation summary immediately** (don't ask for permission to continue)
 
-### Phase 2.75: Testing Loop
+**Phase 2 completion message format:**
+
+```
+✅ Phase 2 Implementation Complete
+
+**List [Endpoint Name] endpoint is now fully implemented:**
+
+### Files Created (X):
+- [list files]
+
+### Files Modified (Y):
+- [list files]
+
+### Validation Results:
+- ✅ Type-check: Passes
+- ✅ Lint: Passes
+- ✅ Format: Passes
+- ✅ Tests: X/Y passing
+
+### Commit Created:
+- Commit hash: [hash]
+- Branch: [branch-name]
+- Status: Local only (NOT PUSHED)
+
+The implementation is ready for testing. I'll wait for your feedback.
+```
+
+**Important:** Don't ask "Would you like to test now?" or "Please confirm smoke test" - just present what was done and naturally wait for user feedback.
+
+### Phase 2.75: Testing Loop (User-Driven)
 
 **User reviews → AI fixes → amend commit → repeat**
 
@@ -370,7 +398,7 @@ import {
 git add -A && git commit --amend --no-edit
 ```
 
-⏸️ When done, user says: "ready to push"
+⏸️ When done, user says: "ready to push" or "smoke test passed"
 
 ### Phase 3: PR Creation
 
