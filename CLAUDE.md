@@ -4,6 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## ⚠️ CRITICAL: Git Branching Strategy
 
+**🛑 BEFORE EDITING ANY FILE - CHECK YOUR BRANCH FIRST:**
+
+```bash
+git branch --show-current  # MUST run this BEFORE making ANY changes
+```
+
+**If output is "main" → STOP and create feature branch NOW**
+
+---
+
 **NEVER WORK DIRECTLY ON MAIN BRANCH**
 
 This project uses a **feature branch workflow**. All development MUST happen on feature branches, never directly on `main`.
