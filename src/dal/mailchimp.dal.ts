@@ -429,6 +429,37 @@ export class MailchimpDAL {
   }
 
   /**
+   * Fetch Member Goals
+   * GET /lists/{list_id}/members/{subscriber_hash}/goals
+   *
+   * @param listId - The unique ID for the list
+   * @param subscriberHash - MD5 hash of the lowercase version of the list member's email address
+   * @param params - Query parameters (fields, exclude_fields)
+   * @returns Last 50 goal events for the member
+   */
+  async fetchMemberGoals(
+    listId: string,
+    subscriberHash: string,
+    params?: z.infer<
+      typeof import("@/schemas/mailchimp/lists/member-goals/params.schema").memberGoalsQueryParamsSchema
+    >,
+  ): Promise<
+    ApiResponse<
+      z.infer<
+        typeof import("@/schemas/mailchimp/lists/member-goals/success.schema").memberGoalsSuccessSchema
+      >
+    >
+  > {
+    return mailchimpApiCall((client) =>
+      client.get<
+        z.infer<
+          typeof import("@/schemas/mailchimp/lists/member-goals/success.schema").memberGoalsSuccessSchema
+        >
+      >(`/lists/${listId}/members/${subscriberHash}/goals`, params),
+    );
+  }
+
+  /**
    * Search Members
    * GET /search-members
    *

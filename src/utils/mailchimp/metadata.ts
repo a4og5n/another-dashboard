@@ -26,6 +26,7 @@ import { listPageParamsSchema } from "@/schemas/components/mailchimp/list-page-p
 import { memberProfilePageParamsSchema } from "@/schemas/components/mailchimp/member-info-page-params";
 import { listSegmentsPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-segments-page-params";
 import { memberActivityPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-activity-page-params";
+import { memberGoalsPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-goals-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -726,6 +727,49 @@ export async function generateMemberActivityMetadata({
     openGraph: {
       title: `Activity - ${member.email_address}`,
       description: `View activity feed for ${member.email_address}`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata for member goals page
+ *
+ * @param params - Object containing the list ID and subscriber hash
+ * @returns Next.js Metadata object for the page
+ *
+ * @example
+ * ```tsx
+ * export const generateMetadata = generateMemberGoalsMetadata;
+ * ```
+ */
+export async function generateMemberGoalsMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; subscriber_hash: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id, subscriber_hash } =
+    memberGoalsPageRouteParamsSchema.parse(rawParams);
+
+  // Fetch member info for email address
+  const response = await mailchimpDAL.fetchMemberInfo(id, subscriber_hash);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Member Goals - Not Found",
+      description: "The requested member could not be found.",
+    };
+  }
+
+  const member = response.data;
+
+  return {
+    title: `Goals - ${member.email_address}`,
+    description: `View goal events for ${member.email_address}`,
+    openGraph: {
+      title: `Goals - ${member.email_address}`,
+      description: `View goal events for ${member.email_address}`,
       type: "website",
     },
   };
