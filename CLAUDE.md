@@ -616,7 +616,13 @@ When implementing a new Mailchimp API endpoint:
    - Confirm pagination structure if applicable
    - Request changes if needed
 
-5. **User approves schemas** - Say "approved" or "looks good" to proceed
+5. **User approves schemas** - Say "approved" or "looks good"
+   - **🚀 AI MUST immediately proceed to Phase 2 WITHOUT asking for additional permission**
+   - "approved" = explicit authorization to continue automatically
+   - DO NOT ask "Would you like me to proceed?"
+   - DO NOT wait for additional confirmation
+   - Immediately respond: "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
+   - Then start Phase 2 implementation tasks (Step 6 below)
 
 ### Phase 1 Verification Checklist
 
@@ -694,7 +700,14 @@ If you see any issues, let me know and I'll adjust the schemas.
    - "proceed"
    - "yes" (if clear from context)
 
-4. **DO NOT proceed to Phase 2 without approval** - This checkpoint prevents generating 500+ lines of code based on incorrect schemas
+4. **Once approved, IMMEDIATELY proceed to Phase 2:**
+   - DO NOT ask "Would you like me to proceed with Phase 2?"
+   - DO NOT ask "Should I continue?"
+   - DO NOT wait for additional confirmation
+   - Respond: "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
+   - Start Phase 2 implementation automatically
+
+5. **DO NOT proceed to Phase 2 without approval** - This checkpoint prevents generating 500+ lines of code based on incorrect schemas
 
 **Red Flags (STOP if any are true):**
 
