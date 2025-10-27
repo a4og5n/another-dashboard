@@ -22,6 +22,7 @@ import {
   ArrowRight,
   Activity,
   StickyNote,
+  Target,
 } from "lucide-react";
 import Link from "next/link";
 import type { MemberInfoResponse } from "@/types/mailchimp/member-info";
@@ -132,6 +133,14 @@ export function MemberProfileContent({
               >
                 <Activity className="h-4 w-4 mr-2" />
                 View Activity
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link
+                href={`/mailchimp/lists/${listId}/members/${subscriberHash}/goals`}
+              >
+                <Target className="h-4 w-4 mr-2" />
+                View Goals
               </Link>
             </Button>
           </div>

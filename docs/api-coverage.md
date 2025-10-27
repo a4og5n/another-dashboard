@@ -687,10 +687,11 @@ Audience list management endpoints.
 
 ### Member Goals
 
-- 📋 **List Member Goal Events** - `GET /lists/{list_id}/members/{subscriber_hash}/goals`
+- ✅ **List Member Goal Events** - `GET /lists/{list_id}/members/{subscriber_hash}/goals`
   - Route: `/mailchimp/lists/[id]/members/[subscriber_hash]/goals`
   - Features: Goal completion tracking
-  - **Priority 4:** Advanced feature
+  - **Priority 2:** Member management
+  - **Implemented:** Issue #276, PR TBD
 
 ### Member Notes
 
@@ -1265,17 +1266,18 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 23 endpoints
-- ⭐ Priority 2: ~2 endpoints (Member goals)
+- ✅ Implemented: 24 endpoints
+- ⭐ Priority 2: ~1 endpoint (List Locations)
 - ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 23/244 read endpoints (~9.4%)
+**Total Progress (Read-Only):** 24/244 read endpoints (~9.8%)
 
 **Recent Implementations:**
 
+- **Member Goals** (goal completion tracking for list members - Issue #276, PR TBD)
 - **Member Activity Feed** (complete engagement timeline with discriminated union schemas for 7+ activity types - Issue #268, PR #270)
 - **Member Notes** (view notes for list members - chronological timeline with pagination)
 - **Member Tags** (view tags assigned to list members - Issue #247, PR #254)
