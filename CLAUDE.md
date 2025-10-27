@@ -1652,7 +1652,9 @@ gh pr merge {pr_number} --squash --delete-branch
 # The --delete-branch flag automatically deletes the remote branch after merge
 ```
 
-**Confirmation message:**
+**After merge completes, AI MUST immediately proceed to Phase 4:**
+
+1. **Output status message:**
 
 ```
 ✅ CI/CD Complete - All checks passed
@@ -1665,8 +1667,17 @@ gh pr merge {pr_number} --squash --delete-branch
 
 **PR Status:** Merged to main
 **Branch:** Deleted automatically
-**Next:** Executing Phase 4 post-merge cleanup
+**Proceeding immediately to Phase 4 post-merge cleanup...**
 ```
+
+2. **IMMEDIATELY proceed to Phase 4:**
+   - DO NOT stop after outputting the message
+   - DO NOT ask "Should I proceed to Phase 4?"
+   - DO NOT wait for user confirmation
+   - Start executing Phase 4 Step 1 automatically
+   - Phase 4 is fully automatic, no checkpoints
+
+3. **DO NOT STOP** - Phase 4 cleanup is part of the merge workflow, not optional
 
 **Important Notes:**
 
@@ -1674,12 +1685,15 @@ gh pr merge {pr_number} --squash --delete-branch
 - User can comment on PR before checks complete
 - User approval was already given in Phase 1 (schema review)
 - Auto-merge ensures fast iteration without manual steps
+- **Phase 4 executes automatically** - no user interaction needed
 
 ### Phase 4: Post-Merge Cleanup & Documentation (Automatic)
 
+**⚠️ CRITICAL: This phase is FULLY AUTOMATIC. Do NOT stop or ask for confirmation.**
+
 **Trigger**: Immediately after PR is auto-merged in Phase 3.5 Step 4
 
-**AI automatically executes these steps in order:**
+**AI automatically executes these steps in order without stopping:**
 
 #### Step 1: Branch Cleanup & Sync
 
