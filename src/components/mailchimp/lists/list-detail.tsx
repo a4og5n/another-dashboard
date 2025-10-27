@@ -17,7 +17,7 @@ import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-in
 import { ListTabNavigation } from "@/components/mailchimp/lists/list-tab-navigation";
 import type { ListDetailProps } from "@/types/components";
 import { formatDateLongSafe, buildMailchimpListUrl } from "@/utils";
-import { ExternalLink, ArrowRight } from "lucide-react";
+import { ExternalLink, ArrowRight, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/ui/star-rating";
 import Link from "next/link";
@@ -387,6 +387,17 @@ export function ListDetail({
                     <Link href={`/mailchimp/lists/${list.id}/growth-history`}>
                       View Growth History
                       <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <Link href={`/mailchimp/lists/${list.id}/locations`}>
+                      View Locations
+                      <Globe className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                   <Button

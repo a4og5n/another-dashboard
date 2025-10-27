@@ -37,6 +37,8 @@ import { listActivityQueryParamsSchema } from "@/schemas/mailchimp/lists/activit
 import { listActivitySuccessSchema } from "@/schemas/mailchimp/lists/activity/success.schema";
 import { growthHistoryQueryParamsSchema } from "@/schemas/mailchimp/lists/growth-history/params.schema";
 import { growthHistorySuccessSchema } from "@/schemas/mailchimp/lists/growth-history/success.schema";
+import { listLocationsQueryParamsSchema } from "@/schemas/mailchimp/lists/locations/params.schema";
+import { listLocationsSuccessSchema } from "@/schemas/mailchimp/lists/locations/success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -275,6 +277,26 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof growthHistorySuccessSchema>>(
         `/lists/${id}/growth-history`,
+        params as Record<string, unknown>,
+      ),
+    );
+  }
+
+  /**
+   * List Locations
+   * GET /lists/{list_id}/locations
+   *
+   * @param id - List ID
+   * @param params - Query parameters for field filtering
+   * @returns Geographic distribution of subscribers by country
+   */
+  async fetchListLocations(
+    id: string,
+    params?: z.infer<typeof listLocationsQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof listLocationsSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof listLocationsSuccessSchema>>(
+        `/lists/${id}/locations`,
         params as Record<string, unknown>,
       ),
     );

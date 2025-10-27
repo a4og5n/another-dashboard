@@ -665,10 +665,11 @@ Audience list management endpoints.
 
 ### Locations
 
-- 📋 **List Locations** - `GET /lists/{list_id}/locations`
+- ✅ **List Locations** - `GET /lists/{list_id}/locations`
   - Route: `/mailchimp/lists/[id]/locations`
-  - Features: Geographic member distribution
+  - Features: Geographic member distribution, Country-based subscriber analytics
   - **Priority 3:** Analytics insight
+  - **Implemented:** Issue TBD, PR TBD
 
 ### Member Activity
 
@@ -691,7 +692,7 @@ Audience list management endpoints.
   - Route: `/mailchimp/lists/[id]/members/[subscriber_hash]/goals`
   - Features: Goal completion tracking
   - **Priority 2:** Member management
-  - **Implemented:** Issue #276, PR TBD
+  - **Implemented:** Issue #276, PR #277
 
 ### Member Notes
 
@@ -1266,14 +1267,13 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 24 endpoints
-- ⭐ Priority 2: ~1 endpoint (List Locations)
+- ✅ Implemented: 25 endpoints
 - ⭐ Priority 3: ~50 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 24/244 read endpoints (~9.8%)
+**Total Progress (Read-Only):** 25/244 read endpoints (~10.2%)
 
 **Recent Implementations:**
 
