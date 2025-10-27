@@ -1324,7 +1324,7 @@ Facebook advertising integration endpoints.
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
-- Lists API: 12/45 endpoints (27%)
+- Lists API: 14/45 endpoints (31%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)
