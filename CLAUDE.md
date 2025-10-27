@@ -344,12 +344,15 @@ AI: "I'll implement the Member Events endpoint.
 
 **Phase 0: Issue Creation & Git Setup** 🎫 (MANDATORY - Create issue + branch with issue number)
 **Phase 1: Schema Creation & Review** ✋ (STOP POINT - User approval required)
-**Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval, NO docs update)
-**Phase 2.4: Quick Smoke Test** 🧪 (STOP POINT - User tests in browser before commit)
-**Phase 2.5: Initial Local Commit** ✅ (Automatic LOCAL commit - DO NOT PUSH)
-**Phase 2.75: User Review & Testing Loop** ⏸️ (STOP POINT - Iterate with `git commit --amend`)
-**Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
-**Phase 4: Post-Merge Cleanup & Documentation** 📝 (Automatic - Update docs AFTER PR merged)
+**Phase 2: Page Generation & Implementation** 🚀 (Automatic - After approval)
+
+- **⚠️ Step 0 (NEW):** Immediately create issue + branch if on main (before any implementation)
+- Steps 1-17: Implementation work (NO docs update)
+  **Phase 2.4: Quick Smoke Test** 🧪 (STOP POINT - User tests in browser before commit)
+  **Phase 2.5: Initial Local Commit** ✅ (Automatic LOCAL commit - DO NOT PUSH)
+  **Phase 2.75: User Review & Testing Loop** ⏸️ (STOP POINT - Iterate with `git commit --amend`)
+  **Phase 3: Push & Create PR** 📤 (ONLY after explicit "ready to push" approval)
+  **Phase 4: Post-Merge Cleanup & Documentation** 📝 (Automatic - Update docs AFTER PR merged)
 
 **Key Workflow Changes:**
 
@@ -826,11 +829,90 @@ git commit -m "feat: implement {Endpoint Name} page (Phase 2)"
 
 **⚠️ CRITICAL:** DO NOT update `docs/api-coverage.md` during this phase. Documentation is updated in Phase 4 (post-merge).
 
-Once schemas are approved, the AI follows these steps:
+Once schemas are approved, the AI **immediately** follows these steps:
+
+#### Step 0: Create Issue + Branch (IMMEDIATELY After Approval)
+
+**🛑 CRITICAL:** This step happens BEFORE any Phase 2 implementation work begins.
+
+When user says "approved", AI must:
+
+1. **Check if on main branch:**
+
+   ```bash
+   git branch --show-current
+   ```
+
+   - If on `main` or `master`: **STOP** - must create branch now
+   - If already on feature branch: Can skip to Step 1
+
+2. **If on main, immediately create GitHub issue:**
+
+   ```bash
+   gh issue create --title "feat: implement {Endpoint Name}" --body "..."
+   ```
+
+   - Capture issue number (e.g., #288)
+   - Report to user: "✅ Created Issue #288"
+
+3. **Create feature branch with issue number:**
+
+   ```bash
+   git checkout -b feature/{endpoint-name}-issue-288
+   ```
+
+   - Use descriptive name + issue number
+   - Report to user: "✅ Created branch: feature/{name}-issue-288"
+
+4. **Commit schemas to branch (checkpoint):**
+
+   ```bash
+   git add src/schemas/mailchimp/...
+   git commit -m "feat: add {Endpoint Name} schemas (Phase 1)
+
+   Create Zod schemas for {endpoint description}.
+
+   - Parameters schema with validation
+   - Success response schema
+   - Error response schema
+
+   Part of Phase 1 (Schema Creation) for Issue #288"
+   ```
+
+5. **Push branch (recovery point):**
+
+   ```bash
+   git push -u origin feature/{endpoint-name}-issue-288
+   ```
+
+   - This creates a safe recovery point
+   - If session crashes, schemas are saved
+   - Can resume Phase 2 from this checkpoint
+
+6. **Update TodoWrite with issue number:**
+   ```typescript
+   TodoWrite({
+     todos: [
+       { content: "Phase 1: Create schemas", status: "completed" },
+       { content: "Phase 2: Implement {Endpoint} (Issue #288)", status: "in_progress" },
+       ...
+     ]
+   })
+   ```
+
+**Why This Order Is Critical:**
+
+✅ **Prevents working on main** - All Phase 2 work happens on feature branch
+✅ **Creates checkpoint** - Schemas committed early for recovery
+✅ **Matches Git workflow** - Issue → Branch → Commit (standard practice)
+✅ **Session crash protection** - Work is saved incrementally
+✅ **Zero main branch risk** - No chance of accidental commits to main
+
+**After completing Step 0, proceed to Step 1 below ↓**
 
 #### Step 1: Add Config to Registry
 
-6. **AI adds PageConfig** to `src/generation/page-configs.ts`:
+7. **AI adds PageConfig** to `src/generation/page-configs.ts`:
    ```typescript
    "report-endpoint": {
      schemas: { apiParams: "...", apiResponse: "...", apiError: "..." },
@@ -843,7 +925,7 @@ Once schemas are approved, the AI follows these steps:
 
 #### Step 2: Run Page Generator
 
-7. **AI runs generator programmatically** (creates infrastructure files):
+8. **AI runs generator programmatically** (creates infrastructure files):
    ```typescript
    // Creates page skeleton with TODOs/placeholders
    const config = getPageConfig("report-endpoint");
@@ -854,21 +936,21 @@ Once schemas are approved, the AI follows these steps:
 
 #### Step 3: Manual Implementation (AI completes these)
 
-8. **AI creates proper TypeScript types** in `src/types/mailchimp/{endpoint}.ts`:
+9. **AI creates proper TypeScript types** in `src/types/mailchimp/{endpoint}.ts`:
    - Export types inferred from Zod schemas
    - Follow existing pattern from `abuse-reports.ts`, `opens.ts`, etc.
 
-9. **AI creates skeleton component** in `src/skeletons/mailchimp/`:
-   - Copy pattern from similar pages (e.g., `CampaignAbuseReportsSkeleton.tsx`)
-   - Export from `src/skeletons/mailchimp/index.ts`
+10. **AI creates skeleton component** in `src/skeletons/mailchimp/`:
+    - Copy pattern from similar pages (e.g., `CampaignAbuseReportsSkeleton.tsx`)
+    - Export from `src/skeletons/mailchimp/index.ts`
 
-10. **AI replaces generated page.tsx** with proper implementation:
+11. **AI replaces generated page.tsx** with proper implementation:
     - Follow exact pattern from `abuse-reports/page.tsx` or `opens/page.tsx`
     - Use proper types (not `any`)
     - Include proper error handling with `handleApiError()`
     - Add metadata generation
 
-11. **AI implements table/display component**:
+12. **AI implements table/display component**:
     - **IMPORTANT:** Use existing shared components whenever possible:
       - **For ALL tables:** Use shadcn/ui `Table` component (from `@/components/ui/table`)
         - Simple lists: `Card` + `Table` (see `campaign-unsubscribes-table.tsx`, `reports-overview.tsx`)
@@ -885,21 +967,21 @@ Once schemas are approved, the AI follows these steps:
       </Card>
       ```
 
-12. **AI creates not-found.tsx** (copy from similar page, update text)
+13. **AI creates not-found.tsx** (copy from similar page, update text)
 
-13. **AI updates DAL method** in `src/dal/mailchimp.dal.ts`:
+14. **AI updates DAL method** in `src/dal/mailchimp.dal.ts`:
     - Replace `unknown` types with proper schemas
     - Follow existing method patterns
 
-14. **AI runs validation**:
+15. **AI runs validation**:
     - `pnpm type-check` - Must pass with zero errors
     - `pnpm lint:fix` - Auto-fix linting issues
     - `pnpm format` - Format all files
     - `pnpm test` - All tests pass
 
-15. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
+16. **AI updates `docs/api-coverage.md`** - Mark endpoint as ✅ complete
 
-16. **⚠️ CRITICAL: AI adds navigation links** (MANDATORY - Do NOT skip):
+17. **⚠️ CRITICAL: AI adds navigation links** (MANDATORY - Do NOT skip):
 
     **For ALL new pages, check and add navigation links:**
 
