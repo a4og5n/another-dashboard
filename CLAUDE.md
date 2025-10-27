@@ -1555,9 +1555,18 @@ test("should enforce new pattern", () => {
 });
 ```
 
-#### Step 4: Confirm All Checks Pass
+#### Step 4: Auto-Merge PR
 
-Once ALL checks pass:
+Once ALL checks pass, AI MUST automatically merge the PR:
+
+```bash
+# Merge PR with squash
+gh pr merge {pr_number} --squash --delete-branch
+
+# The --delete-branch flag automatically deletes the remote branch after merge
+```
+
+**Confirmation message:**
 
 ```
 ✅ CI/CD Complete - All checks passed
@@ -1568,25 +1577,31 @@ Once ALL checks pass:
 - ✅ Test Suite (2m 15s)
 - ✅ Vercel Preview (deployed)
 
-**PR Status:** Ready for merge
-**Next:** Waiting for user to merge PR
+**PR Status:** Merged to main
+**Branch:** Deleted automatically
+**Next:** Executing Phase 4 post-merge cleanup
 ```
 
-**Then wait for user to merge and confirm (do NOT auto-merge)**
+**Important Notes:**
+
+- User can block auto-merge by requesting changes on GitHub
+- User can comment on PR before checks complete
+- User approval was already given in Phase 1 (schema review)
+- Auto-merge ensures fast iteration without manual steps
 
 ### Phase 4: Post-Merge Cleanup & Documentation (Automatic)
 
-**Trigger**: User says "PR merged", "merged and deleted remote", "merge complete", or similar confirmation
+**Trigger**: Immediately after PR is auto-merged in Phase 3.5 Step 4
 
 **AI automatically executes these steps in order:**
 
 #### Step 1: Branch Cleanup & Sync
 
 ```bash
-# Checkout main, pull changes, verify local branch was deleted
+# Checkout main and pull merged changes
 git checkout main && git pull origin main
 
-# Check if local branch still exists (should be auto-deleted by GitHub)
+# Delete local branch (remote already deleted by auto-merge)
 BRANCH_EXISTS=$(git branch --list {branch-name})
 if [ -n "$BRANCH_EXISTS" ]; then
   git branch -d {branch-name}
@@ -1594,6 +1609,8 @@ if [ -n "$BRANCH_EXISTS" ]; then
 else
   echo "✅ Local branch already deleted: {branch-name}"
 fi
+
+echo "✅ Remote branch already deleted by auto-merge"
 ```
 
 #### Step 2: Close Related GitHub Issues
