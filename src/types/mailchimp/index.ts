@@ -11,3 +11,4 @@ export * from "@/types/mailchimp/reports";
 export * from "@/types/mailchimp/root";
 export * from "@/types/mailchimp/sent-to";
 export * from "@/types/mailchimp/unsubscribes";
+export * from "@/types/mailchimp/landing-pages";

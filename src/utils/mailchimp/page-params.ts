@@ -204,6 +204,21 @@ export async function validatePageParams<
   const rawParams = await searchParams;
   const validatedParams = uiSchema.parse(rawParams);
 
+  // Extract additional params (non-pagination params) to preserve during redirect
+  const {
+    page: _page,
+    perPage: _perPage,
+    ...additionalParams
+  } = validatedParams;
+  const additionalParamsRecord: Record<string, string | undefined> = {};
+
+  // Convert additional params to string record
+  Object.entries(additionalParams).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      additionalParamsRecord[key] = String(value);
+    }
+  });
+
   // Check for redirect based on defaults (to clean URL)
   const defaults = apiSchema.parse({});
   const defaultCount = defaults.count ?? 10;
@@ -212,6 +227,7 @@ export async function validatePageParams<
     currentPage: validatedParams.page,
     currentPerPage: validatedParams.perPage,
     defaultPerPage: defaultCount,
+    additionalParams: additionalParamsRecord,
   });
 
   if (redirectUrl) {
