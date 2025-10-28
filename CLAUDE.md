@@ -598,6 +598,25 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ````
 
+3. **⚠️ CRITICAL: Validate the update was successful**
+   ```bash
+   # Verify docs/api-coverage.md contains the ✅ marker for this endpoint
+   git diff HEAD~1 docs/api-coverage.md | grep "✅.*{Endpoint Name}" || {
+     echo ""
+     echo "❌ CRITICAL ERROR: docs/api-coverage.md was not updated correctly!"
+     echo ""
+     echo "Expected to find: ✅ **{Endpoint Name}**"
+     echo "But the marker was not added to docs/api-coverage.md"
+     echo ""
+     echo "Phase 4 Step 4 FAILED - Cannot proceed until fixed."
+     echo ""
+     exit 1
+   }
+   echo "✅ Verified: docs/api-coverage.md correctly marked as implemented"
+   ```
+
+**Why this validation matters:** Issue #338 - In PR #327 (List Interests), Phase 4 ran but Step 4 was silently skipped, leaving docs/api-coverage.md with stale 📋 markers. This led to duplicate work in Issue #336. This validation catches such failures immediately.
+
 **Note:** No push yet - will be included in final step.
 
 #### Step 5: CLAUDE.md Documentation Review (MANDATORY)
