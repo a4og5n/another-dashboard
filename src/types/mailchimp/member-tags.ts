@@ -10,12 +10,12 @@ import { z } from "zod";
 import {
   memberTagSchema,
   memberTagsSuccessSchema,
-} from "@/schemas/mailchimp/lists/member-tags/success.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/tags/success.schema";
 import {
   memberTagsPathParamsSchema,
   memberTagsQueryParamsSchema,
-} from "@/schemas/mailchimp/lists/member-tags/params.schema";
-import { memberTagsErrorSchema } from "@/schemas/mailchimp/lists/member-tags/error.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/tags/params.schema";
+import { memberTagsErrorSchema } from "@/schemas/mailchimp/lists/members/[subscriber_hash]/tags/error.schema";
 
 /**
  * Individual tag assigned to a member

@@ -10,12 +10,12 @@ import { z } from "zod";
 import {
   memberNoteSchema,
   memberNotesSuccessSchema,
-} from "@/schemas/mailchimp/lists/member-notes/success.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/notes/success.schema";
 import {
   memberNotesPathParamsSchema,
   memberNotesQueryParamsSchema,
-} from "@/schemas/mailchimp/lists/member-notes/params.schema";
-import { memberNotesErrorSchema } from "@/schemas/mailchimp/lists/member-notes/error.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/notes/params.schema";
+import { memberNotesErrorSchema } from "@/schemas/mailchimp/lists/members/[subscriber_hash]/notes/error.schema";
 
 /**
  * Individual note for a list member
