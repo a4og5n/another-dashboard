@@ -485,23 +485,31 @@ git checkout -b docs/post-merge-issue-{issue_number}
 
 **For Mailchimp endpoint implementations:**
 
-1. Update `docs/api-coverage.md`:
-   - Mark endpoint as ✅ Implemented
+1. Update `docs/api-coverage.md` in **TWO places**:
+
+   **A. Mark endpoint as ✅ Implemented (in endpoint list section):**
    - Add implementation details:
      - Route: `/mailchimp/{path}`
      - Features: List key features
      - Issue/PR numbers
    - Update coverage stats (X/Y endpoints, Z%)
 
-**Example update:**
+   **Example update:**
 
-```markdown
-- ✅ **List Locations** - `GET /lists/{list_id}/locations`
-  - Route: `/mailchimp/lists/[id]/locations`
-  - Features: Geographic member distribution, Country-based subscriber analytics
-  - **Priority 3:** Analytics insight
-  - **Implemented:** Issue #278, PR #279
-```
+   ```markdown
+   - ✅ **List Locations** - `GET /lists/{list_id}/locations`
+     - Route: `/mailchimp/lists/[id]/locations`
+     - Features: Geographic member distribution, Country-based subscriber analytics
+     - **Priority 3:** Analytics insight
+     - **Implemented:** Issue #278, PR #279
+   ```
+
+   **B. Update recommendation section (at bottom of file):**
+   - ⚠️ **CRITICAL:** If the implemented endpoint is listed in the "💡 Recommendation" section, remove it or update the recommendations
+   - Find alternative next priority endpoints
+   - Update "Top Choice" and "Second Choice" to reflect remaining work
+
+   **Why this matters:** Issue #358 - Member Activity and List Locations were completed but still appeared in recommendations, causing confusion and duplicate work attempts.
 
 2. Commit to documentation branch:
    ```bash
