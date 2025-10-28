@@ -387,9 +387,11 @@ File storage and asset management endpoints.
 
 Landing page creation and management endpoints.
 
-- 📋 **List Landing Pages** - `GET /landing-pages`
-  - Features: Landing page list
+- ✅ **List Landing Pages** - `GET /landing-pages`
+  - Route: `/mailchimp/landing-pages`
+  - Features: Landing page list with sortable columns (Created/Updated), server-side sorting, smart URL parameter handling, pagination
   - **Priority 3:** Landing page management
+  - **Implemented:** Issue #355, PR #356
 
 - 🔒 **Add Landing Page** - `POST /landing-pages`
   - **Priority 5:** Write operation (future)
@@ -1333,7 +1335,7 @@ Facebook advertising integration endpoints.
 - E-commerce Stores: 0/62 endpoints (0%)
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
-- Landing Pages: 0/9 endpoints (0%)
+- Landing Pages: 1/9 endpoints (11%)
 - Lists API: 16/45 endpoints (36%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
