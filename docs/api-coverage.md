@@ -1417,23 +1417,32 @@ The following foundational endpoints are now implemented:
 
 ### 💡 Recommendation:
 
-**Top Choice: Member Activity** (`GET /lists/{list_id}/members/{subscriber_hash}/activity`)
+**Top Choice: Get Landing Page Info** (`GET /landing-pages/{page_id}`)
 
 **Rationale:**
 
-1. **Natural progression:** Completes member detail view after notes and tags
-2. **User value:** High - users want to see member engagement timeline
-3. **Complexity:** Medium - similar pattern to Campaign Email Activity (already done)
-4. **Quick win:** Reuse existing activity feed patterns and components
+1. **Natural progression:** Completes Landing Pages feature (List Landing Pages just implemented in #355)
+2. **User value:** High - users want to click from list to see landing page details
+3. **Complexity:** Medium - similar pattern to Member Profile, List Details already done
+4. **Quick win:** Follows established detail page patterns
 
-**Second Choice: List Locations** (`GET /lists/{list_id}/locations`)
+**Second Choice: List Campaigns** (`GET /campaigns`)
 
 **Rationale:**
 
-1. **Quick win:** Very similar to Campaign Locations (already implemented)
-2. **Low complexity:** Reuse existing table components and geographic display
-3. **High value:** Users want to know where their audience is located
-4. **Analytics completion:** Rounds out list analytics features
+1. **High impact:** Foundation for campaign management features
+2. **Would unlock:** ~17 campaign management endpoints
+3. **User value:** High - central campaign management view
+4. **Complexity:** High - but worth it for the unlock value
+
+**Third Choice: API Root** (`GET /`)
+
+**Rationale:**
+
+1. **Very quick win:** Simple health check endpoint
+2. **Low complexity:** Minimal implementation
+3. **User value:** Medium - useful for monitoring
+4. **Time:** <30 minutes to implement
 
 ---
 
