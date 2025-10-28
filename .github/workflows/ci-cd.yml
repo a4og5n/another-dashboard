@@ -55,6 +55,23 @@ jobs:
       - name: Format checking
         run: pnpm format:check
 
+      - name: Check CLAUDE.md size
+        run: |
+          SIZE=$(wc -c < CLAUDE.md | tr -d ' ')
+          MAX_SIZE=40000
+
+          if [ "$SIZE" -gt "$MAX_SIZE" ]; then
+            echo "❌ CLAUDE.md is too large: $SIZE characters (limit: $MAX_SIZE)"
+            echo ""
+            echo "How to fix:"
+            echo "  1. Extract verbose sections to docs/ files"
+            echo "  2. Replace with condensed summary + link"
+            echo "  3. See PR #332 for examples"
+            exit 1
+          fi
+
+          echo "✅ CLAUDE.md size: $SIZE characters (under $MAX_SIZE limit)"
+
   # Test suite
   test:
     name: Test Suite

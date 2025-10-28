@@ -2061,6 +2061,63 @@ See [docs/development-patterns.md#schema-refactoring](docs/development-patterns.
 
 **Related Issues:** #222, #223 (October 2025)
 
+## Documentation Maintenance
+
+### CLAUDE.md Size Compliance
+
+**Target:** CLAUDE.md must stay under 40,000 characters for optimal AI performance.
+
+**Current Status:** ~39,800 characters (99.5% of limit)
+
+**Enforcement:**
+
+- ✅ Automated test: `src/test/architectural-enforcement/claude-md-size-enforcement.test.ts`
+- ✅ Pre-commit hook: Blocks commits if over limit, warns at 95% threshold
+- ✅ CI/CD check: Blocks PRs that exceed limit
+
+**When Approaching Limit (>38k characters):**
+
+1. **Identify verbose sections** (>200 lines or repetitive content)
+2. **Extract to docs/** (e.g., `docs/development-patterns.md`, `docs/schema-patterns.md`)
+3. **Replace with condensed summary** (10-30 lines) + link to full doc
+4. **See PR #332** for extraction examples (reduced 64.8KB → 39.8KB)
+
+**Red Flags:**
+
+- ❌ CLAUDE.md >40,000 characters (test fails, commit blocked)
+- ❌ Duplicate content in multiple sections (consolidate)
+- ❌ Verbose inline examples >100 lines (extract to docs/)
+- ❌ Missing links to extracted documentation
+
+**Documentation Principles:**
+
+- ✅ **Quick reference** in CLAUDE.md (critical patterns only)
+- ✅ **Detailed guides** in docs/ files (full examples and explanations)
+- ✅ **Use markdown links** for cross-referencing (`[text](docs/file.md)`)
+- ✅ **Define things ONCE** - Reference everywhere else
+- ✅ **Extract, don't expand** - When adding content, remove equivalent verbosity
+
+**Example: Good vs Bad**
+
+❌ **Bad** (inline verbose example):
+
+```markdown
+## Error Handling
+
+Here's the complete pattern with 50 lines of code examples...
+[50 lines of detailed examples]
+```
+
+✅ **Good** (condensed with link):
+
+```markdown
+## Error Handling
+
+**📚 Complete Guide:** [docs/development-patterns.md#error-handling](docs/development-patterns.md#error-handling)
+
+**Quick Reference:** All pages need `error.tsx` + `not-found.tsx`. Use `handleApiError()` + `MailchimpConnectionGuard`.
+```
+
 ## Pre-commit Hooks Setup
 
 **First-time setup:**
