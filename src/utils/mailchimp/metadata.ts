@@ -30,6 +30,7 @@ import { memberGoalsPageRouteParamsSchema } from "@/schemas/components/mailchimp
 import { listLocationsPageParamsSchema } from "@/schemas/components/mailchimp/list-locations-page-params";
 import { listInterestCategoriesPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-interest-categories-page-params";
 import { listInterestsPageRouteParamsSchema } from "@/schemas/components/mailchimp/list-interests-page-params";
+import { interestCategoryInfoPageRouteParamsSchema } from "@/schemas/components/mailchimp/interest-category-info-page-params";
 import type { CampaignReport, List } from "@/types/mailchimp";
 
 /**
@@ -984,6 +985,50 @@ export async function generateInterestsInCategoryMetadata({
     openGraph: {
       title: `${list.name} - Interests`,
       description: `Individual interests within an interest category for ${list.name}`,
+      type: "website",
+    },
+  };
+}
+
+/**
+ * Generates metadata specifically for interest category info pages
+ * @param params - Object containing the id and interest_category_id
+ * @returns Next.js Metadata object for the interest category info page
+ */
+export async function generateInterestCategoryInfoMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; interest_category_id: string }>;
+}): Promise<Metadata> {
+  const rawParams = await params;
+  const { id, interest_category_id } =
+    interestCategoryInfoPageRouteParamsSchema.parse(rawParams);
+
+  // Fetch interest category data
+  const categoryResponse = await mailchimpDAL.fetchInterestCategoryInfo(
+    id,
+    interest_category_id,
+  );
+
+  // Fetch list data for context
+  const listResponse = await mailchimpDAL.fetchList(id);
+
+  if (!categoryResponse.success || !categoryResponse.data) {
+    return {
+      title: "Interest Category - Not Found",
+      description: "The requested interest category could not be found.",
+    };
+  }
+
+  const category = categoryResponse.data;
+  const listName = listResponse.success ? listResponse.data?.name : "List";
+
+  return {
+    title: `${category.title} - ${listName}`,
+    description: `Details for ${category.title} interest category in ${listName}`,
+    openGraph: {
+      title: `${category.title} - Interest Category`,
+      description: `Type: ${category.type}, Display Order: ${category.display_order}`,
       type: "website",
     },
   };

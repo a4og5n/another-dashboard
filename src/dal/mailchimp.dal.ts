@@ -45,6 +45,8 @@ import { listInterestCategoriesQueryParamsSchema } from "@/schemas/mailchimp/lis
 import { listInterestCategoriesSuccessSchema } from "@/schemas/mailchimp/lists/interest-categories/success.schema";
 import { listInterestsQueryParamsSchema } from "@/schemas/mailchimp/lists/interests/params.schema";
 import { listInterestsSuccessSchema } from "@/schemas/mailchimp/lists/interests/success.schema";
+import { interestCategoryInfoQueryParamsSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/params.schema";
+import { interestCategoryInfoSuccessSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -576,6 +578,23 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof listInterestCategoriesSuccessSchema>>(
         `/lists/${listId}/interest-categories`,
+        params,
+      ),
+    );
+  }
+
+  /**
+   * Interest Category Info
+   * GET /lists/{list_id}/interest-categories/{interest_category_id}
+   */
+  async fetchInterestCategoryInfo(
+    listId: string,
+    categoryId: string,
+    params?: z.infer<typeof interestCategoryInfoQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof interestCategoryInfoSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof interestCategoryInfoSuccessSchema>>(
+        `/lists/${listId}/interest-categories/${categoryId}`,
         params,
       ),
     );
