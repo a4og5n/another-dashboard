@@ -10,12 +10,12 @@ import { z } from "zod";
 import {
   goalEventSchema,
   memberGoalsSuccessSchema,
-} from "@/schemas/mailchimp/lists/member-goals/success.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/goals/success.schema";
 import {
   memberGoalsPathParamsSchema,
   memberGoalsQueryParamsSchema,
-} from "@/schemas/mailchimp/lists/member-goals/params.schema";
-import { memberGoalsErrorSchema } from "@/schemas/mailchimp/lists/member-goals/error.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/goals/params.schema";
+import { memberGoalsErrorSchema } from "@/schemas/mailchimp/lists/members/[subscriber_hash]/goals/error.schema";
 
 /**
  * Individual goal event for a list member

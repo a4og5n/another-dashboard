@@ -21,7 +21,7 @@ import type { MemberActivitySuccess } from "@/types/mailchimp/member-activity";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { handleApiError, bc } from "@/utils";
 import { generateMemberActivityMetadata } from "@/utils/metadata";
-import { memberActivityQueryParamsSchema } from "@/schemas/mailchimp/lists/member-activity/params.schema";
+import { memberActivityQueryParamsSchema } from "@/schemas/mailchimp/lists/members/[subscriber_hash]/activity/params.schema";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
 
 async function MemberActivityPageContent({

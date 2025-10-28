@@ -1,10 +1,10 @@
 /**
  * TypeScript types for Member Info endpoint
- * Generated from Zod schemas in src/schemas/mailchimp/lists/member-info/
+ * Generated from Zod schemas in src/schemas/mailchimp/lists/members/[subscriber_hash]/
  *
- * @see src/schemas/mailchimp/lists/member-info/params.schema.ts
- * @see src/schemas/mailchimp/lists/member-info/success.schema.ts
- * @see src/schemas/mailchimp/lists/member-info/error.schema.ts
+ * @see src/schemas/mailchimp/lists/members/[subscriber_hash]/params.schema.ts
+ * @see src/schemas/mailchimp/lists/members/[subscriber_hash]/success.schema.ts
+ * @see src/schemas/mailchimp/lists/members/[subscriber_hash]/error.schema.ts
  * @see src/schemas/mailchimp/common/list-member.schema.ts
  */
 
@@ -12,8 +12,8 @@ import type { z } from "zod";
 import type {
   memberInfoPathParamsSchema,
   memberInfoQueryParamsSchema,
-} from "@/schemas/mailchimp/lists/member-info/params.schema";
-import type { memberInfoSuccessSchema } from "@/schemas/mailchimp/lists/member-info/success.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/params.schema";
+import type { memberInfoSuccessSchema } from "@/schemas/mailchimp/lists/members/[subscriber_hash]/success.schema";
 import type {
   listMemberSchema,
   memberStatsSchema,
@@ -23,7 +23,7 @@ import type {
   memberNoteSchema,
   lastNoteSchema,
 } from "@/schemas/mailchimp/common/list-member.schema";
-import type { memberInfoErrorSchema } from "@/schemas/mailchimp/lists/member-info/error.schema";
+import type { memberInfoErrorSchema } from "@/schemas/mailchimp/lists/members/[subscriber_hash]/error.schema";
 
 /**
  * Path parameters for member info endpoint

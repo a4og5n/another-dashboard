@@ -43,8 +43,8 @@ import { listLocationsQueryParamsSchema } from "@/schemas/mailchimp/lists/locati
 import { listLocationsSuccessSchema } from "@/schemas/mailchimp/lists/locations/success.schema";
 import { listInterestCategoriesQueryParamsSchema } from "@/schemas/mailchimp/lists/interest-categories/params.schema";
 import { listInterestCategoriesSuccessSchema } from "@/schemas/mailchimp/lists/interest-categories/success.schema";
-import { listInterestsQueryParamsSchema } from "@/schemas/mailchimp/lists/interests/params.schema";
-import { listInterestsSuccessSchema } from "@/schemas/mailchimp/lists/interests/success.schema";
+import { listInterestsQueryParamsSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/interests/params.schema";
+import { listInterestsSuccessSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/interests/success.schema";
 import { interestCategoryInfoQueryParamsSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/params.schema";
 import { interestCategoryInfoSuccessSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/success.schema";
 
@@ -347,19 +347,19 @@ export class MailchimpDAL {
     listId: string,
     subscriberHash: string,
     params?: z.infer<
-      typeof import("@/schemas/mailchimp/lists/member-info/params.schema").memberInfoQueryParamsSchema
+      typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/params.schema").memberInfoQueryParamsSchema
     >,
   ): Promise<
     ApiResponse<
       z.infer<
-        typeof import("@/schemas/mailchimp/lists/member-info/success.schema").memberInfoSuccessSchema
+        typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/success.schema").memberInfoSuccessSchema
       >
     >
   > {
     return mailchimpApiCall((client) =>
       client.get<
         z.infer<
-          typeof import("@/schemas/mailchimp/lists/member-info/success.schema").memberInfoSuccessSchema
+          typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/success.schema").memberInfoSuccessSchema
         >
       >(`/lists/${listId}/members/${subscriberHash}`, params),
     );
@@ -378,19 +378,19 @@ export class MailchimpDAL {
     listId: string,
     subscriberHash: string,
     params?: z.infer<
-      typeof import("@/schemas/mailchimp/lists/member-tags/params.schema").memberTagsQueryParamsSchema
+      typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/tags/params.schema").memberTagsQueryParamsSchema
     >,
   ): Promise<
     ApiResponse<
       z.infer<
-        typeof import("@/schemas/mailchimp/lists/member-tags/success.schema").memberTagsSuccessSchema
+        typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/tags/success.schema").memberTagsSuccessSchema
       >
     >
   > {
     return mailchimpApiCall((client) =>
       client.get<
         z.infer<
-          typeof import("@/schemas/mailchimp/lists/member-tags/success.schema").memberTagsSuccessSchema
+          typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/tags/success.schema").memberTagsSuccessSchema
         >
       >(`/lists/${listId}/members/${subscriberHash}/tags`, params),
     );
@@ -409,19 +409,19 @@ export class MailchimpDAL {
     listId: string,
     subscriberHash: string,
     params?: z.infer<
-      typeof import("@/schemas/mailchimp/lists/member-notes/params.schema").memberNotesQueryParamsSchema
+      typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/notes/params.schema").memberNotesQueryParamsSchema
     >,
   ): Promise<
     ApiResponse<
       z.infer<
-        typeof import("@/schemas/mailchimp/lists/member-notes/success.schema").memberNotesSuccessSchema
+        typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/notes/success.schema").memberNotesSuccessSchema
       >
     >
   > {
     return mailchimpApiCall((client) =>
       client.get<
         z.infer<
-          typeof import("@/schemas/mailchimp/lists/member-notes/success.schema").memberNotesSuccessSchema
+          typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/notes/success.schema").memberNotesSuccessSchema
         >
       >(`/lists/${listId}/members/${subscriberHash}/notes`, params),
     );
@@ -440,19 +440,19 @@ export class MailchimpDAL {
     listId: string,
     subscriberHash: string,
     params?: z.infer<
-      typeof import("@/schemas/mailchimp/lists/member-activity/params.schema").memberActivityQueryParamsSchema
+      typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/activity/params.schema").memberActivityQueryParamsSchema
     >,
   ): Promise<
     ApiResponse<
       z.infer<
-        typeof import("@/schemas/mailchimp/lists/member-activity/success.schema").memberActivitySuccessSchema
+        typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/activity/success.schema").memberActivitySuccessSchema
       >
     >
   > {
     return mailchimpApiCall((client) =>
       client.get<
         z.infer<
-          typeof import("@/schemas/mailchimp/lists/member-activity/success.schema").memberActivitySuccessSchema
+          typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/activity/success.schema").memberActivitySuccessSchema
         >
       >(`/lists/${listId}/members/${subscriberHash}/activity-feed`, params),
     );
@@ -471,19 +471,19 @@ export class MailchimpDAL {
     listId: string,
     subscriberHash: string,
     params?: z.infer<
-      typeof import("@/schemas/mailchimp/lists/member-goals/params.schema").memberGoalsQueryParamsSchema
+      typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/goals/params.schema").memberGoalsQueryParamsSchema
     >,
   ): Promise<
     ApiResponse<
       z.infer<
-        typeof import("@/schemas/mailchimp/lists/member-goals/success.schema").memberGoalsSuccessSchema
+        typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/goals/success.schema").memberGoalsSuccessSchema
       >
     >
   > {
     return mailchimpApiCall((client) =>
       client.get<
         z.infer<
-          typeof import("@/schemas/mailchimp/lists/member-goals/success.schema").memberGoalsSuccessSchema
+          typeof import("@/schemas/mailchimp/lists/members/[subscriber_hash]/goals/success.schema").memberGoalsSuccessSchema
         >
       >(`/lists/${listId}/members/${subscriberHash}/goals`, params),
     );

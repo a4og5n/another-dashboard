@@ -19,7 +19,7 @@ import { validatePageParams } from "@/utils/mailchimp/page-params";
 import { DashboardInlineError } from "@/components/dashboard/shared/dashboard-inline-error";
 import { memberNotesPageRouteParamsSchema } from "@/schemas/components/mailchimp/member-notes-page-params";
 import { memberNotesPageSearchParamsSchema } from "@/schemas/components/mailchimp/member-notes-page-params";
-import { memberNotesQueryParamsSchema } from "@/schemas/mailchimp/lists/member-notes/params.schema";
+import { memberNotesQueryParamsSchema } from "@/schemas/mailchimp/lists/members/[subscriber_hash]/notes/params.schema";
 import { generateMemberNotesMetadata } from "@/utils/metadata";
 
 export default async function Page({

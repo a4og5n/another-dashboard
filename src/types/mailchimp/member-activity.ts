@@ -15,12 +15,12 @@ import type {
   genericActivitySchema,
   memberActivityEventSchema,
   memberActivitySuccessSchema,
-} from "@/schemas/mailchimp/lists/member-activity/success.schema";
-import type { memberActivityErrorSchema } from "@/schemas/mailchimp/lists/member-activity/error.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/activity/success.schema";
+import type { memberActivityErrorSchema } from "@/schemas/mailchimp/lists/members/[subscriber_hash]/activity/error.schema";
 import type {
   memberActivityPathParamsSchema,
   memberActivityQueryParamsSchema,
-} from "@/schemas/mailchimp/lists/member-activity/params.schema";
+} from "@/schemas/mailchimp/lists/members/[subscriber_hash]/activity/params.schema";
 
 /**
  * Individual activity type schemas

@@ -9,12 +9,12 @@ import type { z } from "zod";
 import type {
   interestSchema,
   listInterestsSuccessSchema,
-} from "@/schemas/mailchimp/lists/interests/success.schema";
+} from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/interests/success.schema";
 import type {
   listInterestsPathParamsSchema,
   listInterestsQueryParamsSchema,
-} from "@/schemas/mailchimp/lists/interests/params.schema";
-import type { listInterestsErrorSchema } from "@/schemas/mailchimp/lists/interests/error.schema";
+} from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/interests/params.schema";
+import type { listInterestsErrorSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/interests/error.schema";
 
 /**
  * Individual interest in a category
