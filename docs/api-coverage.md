@@ -650,8 +650,11 @@ Audience list management endpoints.
 
 ### Interests
 
-- 📋 **List Interests in Category** - `GET /lists/{list_id}/interest-categories/{interest_category_id}/interests`
+- ✅ **List Interests in Category** - `GET /lists/{list_id}/interest-categories/{interest_category_id}/interests`
+  - Route: `/mailchimp/lists/[id]/interest-categories/[interest_category_id]/interests`
+  - Features: Interest list, subscriber counts, display order
   - **Priority 3:** Segmentation feature
+  - **Implemented:** Issue #325, PR #327
 
 - 🔒 **Add Interest in Category** - `POST /lists/{list_id}/interest-categories/{interest_category_id}/interests`
   - **Priority 5:** Write operation (future)
@@ -1269,16 +1272,17 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 28 endpoints
+- ✅ Implemented: 29 endpoints
 - ⭐ Priority 3: ~49 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 28/244 read endpoints (~11.5%)
+**Total Progress (Read-Only):** 29/244 read endpoints (~11.9%)
 
 **Recent Implementations:**
 
+- **List Interests in Category** (interest list with subscriber counts and display order - Issue #325, PR #327)
 - **List Automations** (automation workflow management with status tracking - Issue #248, PR #317)
 - **List Interest Categories** (subscription preference groups with category types - Issue #288, PR #289)
 - **List Locations** (geographic member distribution - Issue #278, PR #279)
@@ -1326,7 +1330,7 @@ Facebook advertising integration endpoints.
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
-- Lists API: 14/45 endpoints (31%)
+- Lists API: 15/45 endpoints (33%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)
