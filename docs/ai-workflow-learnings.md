@@ -104,11 +104,13 @@ it("should be under 40,000 characters for optimal AI performance", () => {
 **Quick Reference:** See [docs/detailed-guide.md](docs/detailed-guide.md)
 
 ### Essential Info (10-30 lines)
+
 - Critical rules
 - Common commands
 - Decision trees
 
 ### Full Details → External Doc
+
 All verbose examples, edge cases, and deep-dive content in dedicated doc.
 ```
 
@@ -128,6 +130,7 @@ All verbose examples, edge cases, and deep-dive content in dedicated doc.
 **Root Cause:** Enforcement test correctly fails when CLAUDE.md exceeds 40k, but we're implementing enforcement while file is still 66k
 
 **Solution:**
+
 - Used `--no-verify` flag to commit enforcement code
 - Documented dependency in PR #334 description
 - Verified enforcement works correctly (test failure proves it)
@@ -142,6 +145,7 @@ All verbose examples, edge cases, and deep-dive content in dedicated doc.
 **Root Cause:** Hook checks CLAUDE.md size, file currently 66k
 
 **Solution:**
+
 - Used `git commit --no-verify` to bypass hook for this specific commit
 - Documented in commit message why bypass was necessary
 - This actually validated that enforcement works correctly
@@ -151,6 +155,7 @@ All verbose examples, edge cases, and deep-dive content in dedicated doc.
 #### Implementation Stats 📊
 
 **PR #332 (Size Reduction):**
+
 - Files Created: 2 (development-patterns.md, schema-patterns.md)
 - Files Modified: 1 (CLAUDE.md)
 - Lines Added: 917
@@ -159,6 +164,7 @@ All verbose examples, edge cases, and deep-dive content in dedicated doc.
 - **Character Reduction: 24,978 (38.5%)**
 
 **PR #334 (Enforcement):**
+
 - Files Created: 1 (claude-md-size-enforcement.test.ts)
 - Files Modified: 3 (.husky/pre-commit, ci-cd.yml, CLAUDE.md)
 - Lines Added: 237
@@ -166,6 +172,7 @@ All verbose examples, edge cases, and deep-dive content in dedicated doc.
 - Test Coverage: 4 test cases
 
 **Validation:**
+
 - ✅ Type-check: Passed
 - ✅ Lint: Passed
 - ✅ Format: Passed
@@ -173,6 +180,7 @@ All verbose examples, edge cases, and deep-dive content in dedicated doc.
 - ✅ CI/CD: All checks passed on both PRs
 
 **Development Time:**
+
 - Analysis & Planning: ~15 minutes
 - PR #332 Implementation: ~20 minutes
 - PR #334 Implementation: ~15 minutes
@@ -181,28 +189,33 @@ All verbose examples, edge cases, and deep-dive content in dedicated doc.
 #### Key Learnings for Future Implementations 💡
 
 **1. Token Awareness Should Be Ongoing**
+
 - Check CLAUDE.md size regularly during development
 - Add new patterns to dedicated docs, not inline in CLAUDE.md
 - Use "Quick Reference + Link" pattern for all verbose content
 
 **2. Enforcement Prevents Debt Accumulation**
+
 - Architectural tests catch violations early
 - Pre-commit hooks provide immediate feedback
 - CI/CD checks prevent merging non-compliant code
 - Warning thresholds (95%) allow proactive fixes
 
 **3. Documentation Extraction Is Valuable**
+
 - Extracted sections become more discoverable (dedicated files)
 - Easier to expand detailed patterns without bloating main file
 - Single source of truth for complex patterns
 - Better searchability (file names vs searching monolithic file)
 
 **4. PR Dependencies Require Careful Coordination**
+
 - Document dependencies clearly in PR descriptions
 - Test failures during implementation can validate enforcement works
 - Use `--no-verify` judiciously when implementing constraints
 
 **5. Multi-Layer Enforcement Is Robust**
+
 - Developer (test), Commit (hook), PR (CI/CD)
 - If one layer is bypassed, others catch violations
 - Provides clear error messages at each layer
@@ -213,18 +226,22 @@ All verbose examples, edge cases, and deep-dive content in dedicated doc.
 **PR #332 (Size Reduction):**
 
 **Created:**
+
 - `docs/development-patterns.md` - Comprehensive development patterns guide (error handling, breadcrumbs, cards, tables, navigation, UI patterns)
 - `docs/schema-patterns.md` - Complete Zod schema validation patterns and best practices
 
 **Modified:**
+
 - `CLAUDE.md` - Reduced from 64,817 to 39,839 characters by extracting verbose sections and replacing with quick references
 
 **PR #334 (Enforcement):**
 
 **Created:**
+
 - `src/test/architectural-enforcement/claude-md-size-enforcement.test.ts` - Vitest test suite enforcing 40k character limit with 38k warning threshold
 
 **Modified:**
+
 - `.husky/pre-commit` - Added CLAUDE.md size check that blocks commits and warns at 95% threshold
 - `.github/workflows/ci-cd.yml` - Added size check to CI/CD quality job
 - `CLAUDE.md` - Added Documentation Maintenance section with compliance requirements and enforcement details
