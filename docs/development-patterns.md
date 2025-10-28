@@ -1,250 +1,615 @@
 # Development Patterns
 
-This document contains detailed development patterns, architectural decisions, and learnings from past implementations.
+Complete guide to development patterns and best practices used in this project.
+
+## Table of Contents
+
+- [Error Handling](#error-handling)
+- [Breadcrumbs](#breadcrumbs)
+- [Standard Card Components](#standard-card-components)
+- [URL Params Processing](#url-params-processing)
+- [Data Formatting](#data-formatting)
+- [Adding Navigation Links](#adding-navigation-links)
+- [Table Implementation Patterns](#table-implementation-patterns)
+- [PageLayout Component](#pagelayout-component)
+- [Metadata Helpers](#metadata-helpers)
+- [Page Component Headers](#page-component-headers)
+- [Component Development](#component-development)
+- [UI Component Patterns](#ui-component-patterns)
+- [Mailchimp Fetch Client Architecture](#mailchimp-fetch-client-architecture)
+- [OAuth Setup](#oauth-setup)
 
 ---
 
-## Schema Refactoring {#schema-refactoring}
+## Error Handling
 
-**Context:** During Issues #222 and #223 refactoring work (October 2025), we attempted to eliminate code duplication across schema files using factory functions and common patterns.
+**⚠️ CRITICAL: Standard Error Handling Pattern (Issue #240)**
 
-### When to Refactor Schemas
+All dynamic route pages MUST follow this pattern:
 
-#### Good Reasons to Refactor
+### Required Files
 
-- 10+ files with identical 5+ line patterns (e.g., pagination, path params)
-- Schema patterns change frequently and need single source of truth
-- New endpoint needs pattern that exists in 5+ places
-- Adding validation that should apply to all similar schemas
+- ✅ **error.tsx** - Client Component for unexpected crashes
+- ✅ **not-found.tsx** - Server Component for 404 errors
+- ❌ **NO loading.tsx** - Interferes with 404 flow (NEVER use)
 
-#### Bad Reasons to Refactor
+**Enforced by:** `src/test/architectural-enforcement/error-handling-enforcement.test.ts`
 
-- "Just because" DRY principle without concrete pain point
-- Duplication is only 2-3 lines
-- Pattern is stable and unlikely to change
-- Refactoring would break type inference
+### Standard Pattern
 
-#### Red Flags That Suggest NOT to Refactor
+```tsx
+export default async function Page({ params, searchParams }: PageProps) {
+  // 1. Parse route params
+  const { id } = routeParamsSchema.parse(await params);
 
-- Success schemas with unique resource keys (e.g., `abuse_reports`, `clicks`, `opens`)
-- Patterns that are self-documenting when inline
-- Duplication that aids readability
-- Cases where abstraction would require complex generics
+  // 2. Fetch data
+  const response = await mailchimpDAL.fetchData(id, apiParams);
 
----
+  // 3. Handle API errors (auto-triggers notFound() for 404s)
+  handleApiError(response);
 
-### ✅ What Works: Parameter Schema Patterns
+  // 4. Extract data safely
+  const data = response.success ? response.data : null;
 
-#### Path Parameters - Successfully Refactored
-
-Using re-exports preserves types:
-
-```typescript
-// ✅ WORKS: Direct re-export preserves types
-import { campaignIdPathParamsSchema } from "@/schemas/mailchimp/common/path-params.schema";
-export const myEndpointPathParamsSchema = campaignIdPathParamsSchema;
-
-// Type inference: { campaign_id: string }
+  // 5. Render with connection guard
+  return (
+    <PageLayout {...}>
+      <MailchimpConnectionGuard errorCode={response.errorCode}>
+        {data ? (
+          <ContentComponent data={data} {...} />
+        ) : (
+          <DashboardInlineError error="Failed to load data" />
+        )}
+      </MailchimpConnectionGuard>
+    </PageLayout>
+  );
+}
 ```
 
-#### Query Parameters - Successfully Refactored
+### Utilities
 
-Using composition extends schemas while maintaining type safety:
+**Location:** `src/utils/errors/`
 
-```typescript
-// ✅ WORKS: Extends standard schema
-import { standardQueryParamsSchema } from "@/schemas/mailchimp/common/pagination-params.schema";
-export const myQueryParamsSchema = standardQueryParamsSchema.extend({
-  since: z.iso.datetime({ offset: true }).optional(),
+- `handleApiError(response)` - Auto-handles 404s with `notFound()`, returns error message for UI
+- `handleApiErrorWithFallback(response, fallback)` - Same with custom fallback
+- `is404Error(message)` - Detects 404/not found errors
+
+### Key Principles
+
+1. ✅ **404 Handling**: Always use `handleApiError()` - it auto-triggers `notFound()`
+2. ✅ **Connection Errors**: Always use `MailchimpConnectionGuard` with `errorCode`
+3. ✅ **Other Errors**: Use `DashboardInlineError` component (not raw divs)
+4. ❌ **Never**: Call `notFound()` manually - `handleApiError()` does it
+5. ❌ **Never**: Use loading.tsx - interferes with 404 flow
+6. 📄 **error.tsx**: Only for unexpected crashes, not API errors
+
+**Philosophy:** Return expected errors as values, use `notFound()` for 404s, let error boundaries catch unexpected errors.
+
+---
+
+## Breadcrumbs
+
+**Utility:** `bc` from `@/utils/breadcrumbs`
+
+**Usage:**
+
+```tsx
+<BreadcrumbNavigation
+  items={[
+    bc.home,
+    bc.mailchimp,
+    bc.reports,
+    bc.report(id),
+    bc.current("Details"),
+  ]}
+/>
+```
+
+**Available Routes:**
+
+- `bc.home`
+- `bc.mailchimp`
+- `bc.reports`
+- `bc.lists`
+- `bc.generalInfo`
+- `bc.settings`
+- `bc.integrations`
+- `bc.report(id)`
+- `bc.list(id)`
+- `bc.reportOpens(id)`
+- `bc.reportAbuseReports(id)`
+- `bc.current(label)`
+- `bc.custom(label, href)`
+
+---
+
+## Standard Card Components
+
+**Components:** `StatCard` | `StatsGridCard` | `StatusCard`
+
+### Decision Tree
+
+- **StatCard**: Single metric with optional trend
+- **StatsGridCard**: 2-4 related metrics (simple value + label)
+- **StatusCard**: Status info with badge
+- **Custom**: Interactive features, charts, tables
+
+**Import types:** `@/types/components/ui`
+
+- `StatCardProps`
+- `StatsGridCardProps`
+- `StatusCardProps`
+
+---
+
+## URL Params Processing
+
+### Decision Tree
+
+- **Pagination** (`?page=N&perPage=M`) → `validatePageParams()` from `@/utils/mailchimp/page-params`
+- **Route params** (`[id]`, `[slug]`) → `processRouteParams()` from `@/utils/mailchimp/route-params`
+- **Neither** → No utility needed
+
+**Docs:** `src/utils/params/README.md`
+
+---
+
+## Data Formatting
+
+### Number Formatting
+
+```tsx
+// Format large numbers with thousand separators
+<CardTitle>Email Activity ({totalItems.toLocaleString()})</CardTitle>;
+// Output: "Email Activity (7,816)"
+
+// Format percentages
+const percentage = ((clicks / total) * 100).toFixed(2);
+// Output: "12.34"
+
+// Format currency
+const amount = revenue.toLocaleString("en-US", {
+  style: "currency",
+  currency: "USD",
 });
-
-// Type inference: { fields?: string, exclude_fields?: string, count: number, offset: number, since?: string }
+// Output: "$1,234.56"
 ```
 
-#### Results
+### Date Formatting
 
-- 8 parameter schema files successfully refactored
-- 110 lines of code eliminated (39% reduction)
-- Full type safety maintained
-- All 801 tests passing
+Use `formatDateTimeSafe()` from `@/utils/mailchimp/date`:
+
+```tsx
+import { formatDateTimeSafe } from "@/utils/mailchimp/date";
+
+// ISO 8601 → "Jan 15, 2025 at 2:30 PM"
+<TableCell>{formatDateTimeSafe(email.timestamp)}</TableCell>;
+```
+
+### Display Priority Guidelines
+
+1. **Card Titles:** Always format numbers (`.toLocaleString()`)
+2. **Table Headers:** Format if displaying counts
+3. **Table Cells:** Format dates, large numbers, percentages
+4. **Badges:** Raw values are okay (e.g., status badges)
+
+**See:** `docs/ai-workflow-learnings.md` for complete formatting guide
 
 ---
 
-### ❌ What Doesn't Work: Success Schema Factories
+## Adding Navigation Links
 
-#### Attempted: Paginated Response Factory
+When implementing a new detail page, add navigation links from parent pages following this standard pattern:
+
+### Pattern (used in campaign/list detail pages)
+
+1. **Location**: Add to the relevant tab (Stats, Details, Overview, etc.)
+2. **Component**: Use `CardFooter` with border styling
+3. **Button**: `Button` with `asChild`, `variant="outline"`, `size="sm"`
+4. **Link**: Next.js `Link` component
+5. **Icon**: Include `ArrowRight` icon for consistency
+
+### Example Implementation
+
+```tsx
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
+<Card>
+  <CardHeader>
+    <CardTitle>Engagement Metrics</CardTitle>
+  </CardHeader>
+  <CardContent>
+    {/* Metrics content */}
+    <div className="space-y-3">
+      <div className="flex justify-between">
+        <span className="text-muted-foreground">Open Rate:</span>
+        <span className="font-semibold">{openRate.toFixed(1)}%</span>
+      </div>
+      {/* More metrics... */}
+    </div>
+  </CardContent>
+  <CardFooter className="border-t pt-4">
+    <Button asChild variant="outline" size="sm" className="w-full">
+      <Link href={`/mailchimp/lists/${list.id}/growth-history`}>
+        View Growth History
+        <ArrowRight className="ml-2 h-4 w-4" />
+      </Link>
+    </Button>
+  </CardFooter>
+</Card>;
+```
+
+### Key Points
+
+- `CardFooter` always has `className="border-t pt-4"` for visual separation
+- Button uses `variant="outline"` for secondary action appearance
+- Button uses `size="sm"` and `className="w-full"` for consistent sizing
+- Arrow icon uses `className="ml-2 h-4 w-4"` for spacing and size
+- Text should be action-oriented: "View X", "Explore Y", "See Z"
+
+### Reference Implementation
+
+- Campaign Reports: `src/components/dashboard/reports/CampaignReportDetail.tsx`
+- List Details: `src/components/mailchimp/lists/list-detail.tsx:369-381`
+
+---
+
+## Table Implementation Patterns
+
+### Pagination Placement (CRITICAL)
+
+**✅ CORRECT** - Pagination OUTSIDE Card:
+
+```tsx
+<div className="space-y-6">
+  <Card>
+    <CardHeader>
+      <CardTitle>Title ({total.toLocaleString()})</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <Table>{/* Table rows */}</Table>
+    </CardContent>
+  </Card>
+
+  {/* Pagination Controls - OUTSIDE Card */}
+  {total_items > 0 && (
+    <div className="flex items-center justify-between">
+      <PerPageSelector
+        value={pageSize}
+        createPerPageUrl={createPerPageUrl}
+        itemName="items"
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        createPageUrl={createPageUrl}
+      />
+    </div>
+  )}
+</div>
+```
+
+**❌ INCORRECT** - Pagination inside CardContent:
+
+```tsx
+<Card>
+  <CardContent>
+    <Table>{/* Table rows */}</Table>
+
+    {/* DON'T PUT PAGINATION HERE - breaks visual hierarchy */}
+    <div className="flex items-center justify-between pt-4">
+      <PerPageSelector ... />
+      <Pagination ... />
+    </div>
+  </CardContent>
+</Card>
+```
+
+**Why**: Pagination controls should be siblings of the Card, not children of CardContent, to maintain proper visual separation and spacing consistency.
+
+**Reference Files**:
+
+- `src/components/mailchimp/reports/campaign-email-activity-table.tsx:148-163`
+- `src/components/mailchimp/reports/click-details-content.tsx:196-212`
+- `src/components/mailchimp/lists/list-activity-content.tsx:127-141`
+
+### Server Component Tables (Default Pattern)
+
+**Use for:** Simple lists, paginated data, read-only displays
 
 ```typescript
-// ❌ BREAKS TYPE INFERENCE: Computed property names lose specificity
-export function createPaginatedResponse<T extends ZodType>(
-  itemSchema: T,
-  resourceKey: string, // ← Dynamic key
-  idKey?: string, // ← Dynamic key
-) {
-  const baseShape = {
-    [resourceKey]: z.array(itemSchema), // ← TypeScript can't track this
-    total_items: z.number().min(0),
-    _links: z.array(linkSchema),
+// Server Component (no "use client")
+export function CampaignUnsubscribesTable({
+  data,
+  currentPage,
+  pageSize,
+  campaignId,
+}: Props) {
+  const baseUrl = `/mailchimp/reports/${campaignId}/unsubscribes`;
+
+  // URL generation functions
+  const createPageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    params.set("perPage", pageSize.toString());
+    return `${baseUrl}?${params.toString()}`;
   };
 
-  if (idKey) {
-    return z.object({
-      ...baseShape,
-      [idKey]: z.string().min(1), // ← TypeScript can't track this
-    });
-  }
+  const createPerPageUrl = (newPerPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("perPage", newPerPage.toString());
+    return `${baseUrl}?${params.toString()}`;
+  };
 
-  return z.object(baseShape);
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Unsubscribes ({data.total_items.toLocaleString()})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Email</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.members.map((member) => (
+                <TableRow key={member.email_id}>
+                  <TableCell>{member.email_address}</TableCell>
+                  <TableCell>{formatDateShort(member.timestamp)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Pagination OUTSIDE Card */}
+      {data.total_items > 0 && (
+        <div className="flex items-center justify-between">
+          <PerPageSelector value={pageSize} createPerPageUrl={createPerPageUrl} itemName="members" />
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(data.total_items / pageSize)} createPageUrl={createPageUrl} />
+        </div>
+      )}
+    </div>
+  );
 }
-
-// Usage:
-export const responseSchema = createPaginatedResponse(
-  abuseReportSchema,
-  "abuse_reports",
-  "campaign_id",
-);
-
-// ❌ Type inference becomes: Record<string, unknown>
-// ✅ Expected type: { abuse_reports: AbuseReport[], campaign_id: string, total_items: number, _links: Link[] }
 ```
 
-#### The Problem
+### Benefits
 
-1. **TypeScript limitation:** Cannot infer specific property names from computed object keys `[resourceKey]` or `[idKey]`
-2. **Type loss:** Inferred type becomes `Record<string, ...>` instead of having named properties
-3. **Cascading errors:** Breaks type safety for all consuming code:
-   - Page components can't access `data.abuse_reports` (property doesn't exist on `Record<string, ...>`)
-   - Table components lose autocomplete
-   - DAL methods have incorrect return types
-4. **Widespread impact:** Results in 27+ TypeScript errors across pages, components, and DAL
+- Server Component (smaller bundle, better performance)
+- URL-based pagination (SEO-friendly, shareable links)
+- No hooks needed (simpler code)
+- Always use shadcn/ui `Table` component (never raw HTML `<table>`)
 
-#### Why This Is a TypeScript Limitation
+**See:** `docs/ai-workflow-learnings.md` for complete table patterns and decision tree
 
-TypeScript's structural type system cannot track dynamic object keys at compile time:
+---
+
+## PageLayout Component
+
+**Usage:** All dashboard pages use `PageLayout` from `@/components/layout`
+
+### Patterns
+
+- **Static pages:** `breadcrumbs={[bc.home, bc.current("Page")]}`
+- **Dynamic pages:** `breadcrumbsSlot={<Suspense><BreadcrumbContent /></Suspense>}`
+
+**Props:** title, description, skeleton (required) + breadcrumbs XOR breadcrumbsSlot
+
+---
+
+## Metadata Helpers
+
+**Helpers:** Available from `@/utils/metadata`
+
+- `generateCampaignReportMetadata`
+- `generateCampaignOpensMetadata`
+- `generateCampaignAbuseReportsMetadata`
+
+**Usage:**
+
+```tsx
+export const generateMetadata = generateCampaignOpensMetadata;
+```
+
+(1 line vs 30+ inline)
+
+**Type helper:** `import type { GenerateMetadata } from "@/types/components/metadata"` for type-safe metadata functions
+
+---
+
+## Page Component Headers
+
+### Template
+
+```tsx
+/**
+ * [Page Title]
+ * [1-2 sentence description]
+ *
+ * @route [/path/to/page]
+ * @requires [None | Kinde Auth | Mailchimp connection | Both]
+ * @features [Feature 1, Feature 2, Feature 3]
+ */
+```
+
+**VSCode snippet:** Type `pageheader` + Tab
+
+---
+
+## Component Development
+
+### Server Components by Default
+
+- **CRITICAL:** layouts (`layout.tsx`, `dashboard-shell.tsx`) and `not-found.tsx` MUST be Server Components (404 status codes)
+- Only use `"use client"` for hooks (useState, useEffect) or browser APIs
+- Extract client logic to child components, keep parent as Server Component
+- **Tables:** Default to Server Components with URL-based pagination (see Table Implementation Patterns above)
+- Enforced by architectural tests
+
+**Patterns:** Atomic design, shadcn/ui base, JSDoc comments
+
+---
+
+## UI Component Patterns
+
+### Star Rating Display
+
+**When to use**: Member ratings, reviews, quality scores (0-5 scale)
 
 ```typescript
-const key = "abuse_reports";
-const obj = { [key]: value };
-
-// TypeScript only knows obj has *some* property,
-// but not which specific property
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star
+          key={index}
+          className={`h-3 w-3 ${
+            index < rating
+              ? "fill-yellow-400 text-yellow-400"
+              : "fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
 ```
 
-This is fundamental to how TypeScript works and cannot be worked around without losing type information.
+**Key points**:
 
-#### Attempted Solutions (All Failed)
+- 5-star maximum (industry standard)
+- Dark mode support with conditional classes
+- Small size (`h-3 w-3`) for inline display
+- Yellow fill for active stars, gray for inactive
 
-1. ❌ **Generic type parameters:** `createPaginatedResponse<T, K extends string>(itemSchema: T, resourceKey: K)` - Still loses specificity
-2. ❌ **Const assertions:** `as const` doesn't help with computed properties
-3. ❌ **Template literal types:** Can't be used to construct object types dynamically
-4. ❌ **Type predicates:** Would require manual type assertions everywhere
+### Badge Variant Mapping
 
----
+**Problem**: shadcn/ui Badge only has 4 variants, but you have 6+ statuses
 
-### 📊 Final Decision
-
-#### Code Duplication Is Acceptable When
-
-- The duplicated code is simple (4-5 lines)
-- It's stable and unlikely to change
-- Eliminating it breaks type safety
-- The pattern is self-documenting
-
-#### Preferred Pattern for Success Schemas
+**Solution**: Map multiple statuses to available variants
 
 ```typescript
-// ✅ PREFERRED: Explicit schema with full type inference
-export const abuseReportListSuccessSchema = z.object({
-  abuse_reports: z.array(abuseReportSchema),
-  campaign_id: z.string().min(1),
-  total_items: z.number().min(0),
-  _links: z.array(linkSchema),
-});
-
-// Type inference:
-// {
-//   abuse_reports: AbuseReport[],
-//   campaign_id: string,
-//   total_items: number,
-//   _links: Link[]
-// }
+function getStatusVariant(
+  status: string,
+): "default" | "secondary" | "destructive" | "outline" {
+  switch (status) {
+    case "subscribed":
+      return "default"; // Positive/active
+    case "unsubscribed":
+      return "destructive"; // Negative/error
+    case "cleaned":
+      return "secondary"; // Neutral/inactive
+    case "pending":
+      return "outline"; // Pending/transitional
+    case "transactional":
+      return "outline";
+    case "archived":
+      return "secondary";
+    default:
+      return "default";
+  }
+}
 ```
 
-#### Trade-offs
+**Mapping strategy**:
 
-- ❌ ~95 lines of duplication across 8 success schema files (~12 lines per file)
-- ✅ Full type safety with autocomplete
-- ✅ Clear, readable schemas
-- ✅ No TypeScript errors
-- ✅ Self-documenting structure
+- **default**: Positive/active states (subscribed, success, active)
+- **destructive**: Negative/error states (unsubscribed, failed, error)
+- **secondary**: Neutral/inactive states (cleaned, archived, disabled)
+- **outline**: Pending/transitional states (pending, transactional, processing)
 
----
+### Clickable Primary Identifier with Subtext
 
-### 🎓 Key Takeaway
-
-**Type safety > code deduplication**
-
-When refactoring creates type inference issues that ripple through the codebase, the duplication is worth keeping. TypeScript's primary value is catching errors at compile time - sacrificing that for DRY principles defeats the purpose.
-
----
-
-### Testing Strategy for Schema Refactoring
-
-#### When Creating Common Schema Patterns
-
-Write comprehensive tests (70+ recommended) covering:
-
-- **Valid inputs:** Basic cases
-- **Edge cases:** Empty strings, max values, boundary conditions
-- **Invalid inputs:** Wrong types, missing required fields, unknown properties
-- **Schema composition:** `.extend()`, `.merge()`, `.pick()`, `.omit()`
-- **Type inference:** Verify `z.infer<typeof schema>` works correctly
-
-#### Example Test Structure
+**When to use**: Table cells with primary identifier + optional secondary info
 
 ```typescript
-describe("Common Schema Pattern", () => {
-  describe("Valid Cases", () => {
-    it("should validate basic input", () => {});
-    it("should apply defaults", () => {});
-    it("should handle optional fields", () => {});
-  });
-
-  describe("Edge Cases", () => {
-    it("should accept minimum values", () => {});
-    it("should accept maximum values", () => {});
-    it("should handle empty arrays", () => {});
-  });
-
-  describe("Invalid Cases", () => {
-    it("should reject unknown properties (.strict())", () => {});
-    it("should reject wrong types", () => {});
-    it("should reject missing required fields", () => {});
-  });
-
-  describe("Composition", () => {
-    it("should extend with additional fields", () => {});
-    it("should override defaults when extended", () => {});
-  });
-});
+<TableCell>
+  <div className="space-y-1">
+    <Link
+      href={`/mailchimp/lists/${listId}/members/${member.id}`}
+      className="font-medium text-primary hover:underline"
+    >
+      {member.email_address}
+    </Link>
+    {member.full_name && (
+      <div className="text-sm text-muted-foreground">
+        {member.full_name}
+      </div>
+    )}
+  </div>
+</TableCell>
 ```
 
-#### After Refactoring Existing Schemas
+**Key points**:
 
-- **Run full test suite:** `pnpm test` (must show same pass count)
-- **Type-check:** `pnpm type-check` (zero errors)
-- **Lint:** `pnpm lint` (no new warnings)
-- **Manual verification:** Import refactored schema in consuming code, verify autocomplete works
+- Primary identifier is clickable link
+- `text-primary` for brand color consistency
+- `hover:underline` for clear affordance
+- Secondary info in smaller, muted text
+- Conditional rendering of optional fields
+
+**Examples**:
+
+- Email + Name (list members)
+- Campaign ID + Title (reports)
+- List ID + Description (lists)
 
 ---
 
-### Related Documentation
+## Mailchimp Fetch Client Architecture
 
-- [Large-Scale Refactoring Workflow](workflows/refactoring.md) - Complete refactoring guide
-- Issues #222 (folder reorganization), #223 (DRY refactoring)
+**Layers:** Server Actions → DAL → Action Wrapper → Fetch Client → Mailchimp API
+
+### Files
+
+- `src/lib/errors/mailchimp-errors.ts` - Error classes
+- `src/lib/mailchimp-fetch-client.ts` - Native fetch client (Edge compatible)
+- `src/lib/mailchimp-client-factory.ts` - `getUserMailchimpClient()`
+- `src/lib/mailchimp-action-wrapper.ts` - `mailchimpApiCall()` returns ApiResponse<T>
+- `src/dal/mailchimp.dal.ts` - Business logic (singleton)
+
+### Usage
+
+```tsx
+const result = await mailchimpDAL.fetchCampaignReports({ count: 10 });
+if (!result.success) {
+  // Handle error
+}
+```
+
+**Benefits:** 97% smaller bundle, Edge Runtime compatible, rate limit tracking, timeout handling
 
 ---
 
-## Future Patterns
+## OAuth Setup
 
-This document will be expanded with additional development patterns as they emerge from implementation sessions.
+### Mailchimp OAuth
+
+1. Create Neon DB via Vercel (Storage tab)
+2. `vercel env pull .env.local`
+3. Register OAuth app at Mailchimp → Add client ID/secret to `.env.local`
+4. Generate encryption key: `openssl rand -base64 32` → Add to `.env.local`
+5. `pnpm db:push` → `pnpm dev`
+6. Visit `/settings/integrations` to connect
+
+### Kinde Local HTTPS
+
+- **Required:** `KINDE_COOKIE_DOMAIN=127.0.0.1` in `.env.local` for OAuth state persistence
+- **Troubleshooting "State not found":** `pkill -f "next dev"` → `pnpm clean` → `pnpm dev` → Clear browser cache → Test in incognito
+- **Production:** Remove or set to custom domain
