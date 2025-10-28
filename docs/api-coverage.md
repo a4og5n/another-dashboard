@@ -639,8 +639,11 @@ Audience list management endpoints.
 - 🔒 **Add Interest Category** - `POST /lists/{list_id}/interest-categories`
   - **Priority 5:** Write operation (future)
 
-- 📋 **Get Interest Category Info** - `GET /lists/{list_id}/interest-categories/{interest_category_id}`
+- ✅ **Get Interest Category Info** - `GET /lists/{list_id}/interest-categories/{interest_category_id}`
+  - Route: `/mailchimp/lists/[id]/interest-categories/[interest_category_id]`
+  - Features: Category details, Type badge display, Display order, Navigation to interests
   - **Priority 4:** Low priority
+  - **Implemented:** Issue #345, PR #347
 
 - 🔒 **Update Interest Category** - `PATCH /lists/{list_id}/interest-categories/{interest_category_id}`
   - **Priority 5:** Write operation (future)
@@ -1278,10 +1281,11 @@ Facebook advertising integration endpoints.
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 29/244 read endpoints (~11.9%)
+**Total Progress (Read-Only):** 30/244 read endpoints (~12.3%)
 
 **Recent Implementations:**
 
+- **Get Interest Category Info** (category details with type badge and navigation to interests - Issue #345, PR #347)
 - **List Interests in Category** (interest list with subscriber counts and display order - Issue #325, PR #327)
 - **List Automations** (automation workflow management with status tracking - Issue #248, PR #317)
 - **List Interest Categories** (subscription preference groups with category types - Issue #288, PR #289)
@@ -1330,7 +1334,7 @@ Facebook advertising integration endpoints.
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
 - Landing Pages: 0/9 endpoints (0%)
-- Lists API: 15/45 endpoints (33%)
+- Lists API: 16/45 endpoints (36%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
 - Reports API: 12/28 endpoints (43%)
