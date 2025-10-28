@@ -9,6 +9,11 @@
 
 import { z } from "zod";
 import { listIdPathParamsSchema } from "@/schemas/mailchimp/common/path-params.schema";
+import {
+  createdAtFilterSchema,
+  updatedAtFilterSchema,
+} from "@/schemas/mailchimp/common/date-filters.schema";
+import { memberStatusInclusionSchema } from "@/schemas/mailchimp/common/member-status-filters.schema";
 
 /**
  * Path parameters for list segments endpoint
@@ -27,12 +32,8 @@ export const listSegmentsQueryParamsSchema = z
     count: z.coerce.number().min(1).max(1000).default(10), // Number of records to return (default: 10, max: 1000)
     offset: z.coerce.number().min(0).default(0), // Number of records to skip (default: 0)
     type: z.string().optional(), // Filter by segment type (saved, static, fuzzy)
-    since_created_at: z.iso.datetime({ offset: true }).optional(), // Restrict results to segments created after this timestamp (ISO 8601)
-    before_created_at: z.iso.datetime({ offset: true }).optional(), // Restrict results to segments created before this timestamp (ISO 8601)
-    include_cleaned: z.boolean().optional(), // Include cleaned members in response
-    include_transactional: z.boolean().optional(), // Include transactional members in response
-    include_unsubscribed: z.boolean().optional(), // Include unsubscribed members in response
-    since_updated_at: z.iso.datetime({ offset: true }).optional(), // Restrict results to segments updated after this timestamp (ISO 8601)
-    before_updated_at: z.iso.datetime({ offset: true }).optional(), // Restrict results to segments updated before this timestamp (ISO 8601)
+    ...createdAtFilterSchema.shape, // since_created_at, before_created_at
+    ...memberStatusInclusionSchema.shape, // include_cleaned, include_transactional, include_unsubscribed (with proper coercion)
+    ...updatedAtFilterSchema.shape, // since_updated_at, before_updated_at
   })
   .strict(); // Reject unknown properties for input validation

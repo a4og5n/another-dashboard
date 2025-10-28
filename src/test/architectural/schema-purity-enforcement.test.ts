@@ -19,6 +19,9 @@ const SCHEMAS_FOLDER = "src/schemas";
 // These functions CREATE schemas and must live in schema files
 const ALLOWED_FUNCTIONS = [
   "createIdPathParams", // Factory for custom ID path parameters
+  "createDateRangeFilterSchema", // Factory for date range filter schemas (Issue #252)
+  "createEnumSortingSchema", // Factory for enum-based sorting schemas (Issue #252)
+  "createDualSortingSchema", // Factory for dual sorting schemas (Issue #252)
 ];
 
 // Regex patterns to detect function definitions

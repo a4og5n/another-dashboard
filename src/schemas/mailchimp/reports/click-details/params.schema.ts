@@ -7,11 +7,7 @@
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
-
-/**
- * Sort direction enum values for Click Details Reports API
- */
-export const CLICK_DETAILS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
+import { createEnumSortingSchema } from "@/schemas/mailchimp/common/sorting.schema";
 
 /**
  * Sort field enum values for Click Details Reports API
@@ -35,11 +31,10 @@ export const clickListPathParamsSchema = z
  */
 export const clickListQueryParamsSchema = z
   .object({
-    fields: z.string().optional(),
-    exclude_fields: z.string().optional(),
-    count: z.coerce.number().min(1).max(1000).default(10).optional(),
-    offset: z.coerce.number().min(0).default(0).optional(),
-    sort_field: z.enum(CLICK_DETAILS_SORT_FIELDS).optional(),
-    sort_dir: z.enum(CLICK_DETAILS_SORT_DIRECTIONS).optional(),
+    fields: z.string().optional(), // Comma-separated fields to include
+    exclude_fields: z.string().optional(), // Comma-separated fields to exclude
+    count: z.coerce.number().min(1).max(1000).default(10), // .default() makes it optional
+    offset: z.coerce.number().min(0).default(0), // .default() makes it optional
+    ...createEnumSortingSchema(CLICK_DETAILS_SORT_FIELDS).shape,
   })
   .strict(); // Reject unknown properties for input validation

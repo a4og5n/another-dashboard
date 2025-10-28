@@ -7,11 +7,8 @@
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
-
-/**
- * Sort direction enum values for Open Details Reports API
- */
-export const OPEN_DETAILS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
+import { sortDirectionSchema } from "@/schemas/mailchimp/common/sorting.schema";
+import { sinceFilterSchema } from "@/schemas/mailchimp/common/date-filters.schema";
 
 /**
  * Schema for path parameters (campaign_id)
@@ -29,10 +26,10 @@ export const openListQueryParamsSchema = z
   .object({
     fields: z.string().optional(),
     exclude_fields: z.string().optional(),
-    count: z.coerce.number().min(1).max(1000).default(10).optional(),
-    offset: z.coerce.number().min(0).default(0).optional(),
-    since: z.iso.datetime({ offset: true }).optional(),
+    count: z.coerce.number().min(1).max(1000).default(10), // .default() makes it optional
+    offset: z.coerce.number().min(0).default(0), // .default() makes it optional
+    since: sinceFilterSchema,
     sort_field: z.string().optional(),
-    sort_dir: z.enum(OPEN_DETAILS_SORT_DIRECTIONS).optional(),
+    sort_dir: sortDirectionSchema,
   })
   .strict(); // Reject unknown properties for input validation
