@@ -1,14 +1,14 @@
 import { z } from "zod";
+import { sortDirectionSchema } from "@/schemas/mailchimp/common/sorting.schema";
+import {
+  dateCreatedFilterSchema,
+  campaignLastSentFilterSchema,
+} from "@/schemas/mailchimp/common/date-filters.schema";
 
 /**
  * Literal for date_created field
  */
 export const SORT_FIELD = "date_created" as const;
-
-/**
- * Sort direction enum values for Lists API
- */
-export const LISTS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
 
 /**
  * listsParamsSchema
@@ -25,18 +25,16 @@ export const LISTS_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
  */
 export const listsParamsSchema = z
   .object({
-    fields: z.string().optional(),
-    exclude_fields: z.string().optional(),
-    count: z.coerce.number().int().min(1).max(1000).default(10),
-    offset: z.coerce.number().int().min(0).default(0),
-    before_date_created: z.iso.datetime({ offset: true }).optional(),
-    since_date_created: z.iso.datetime({ offset: true }).optional(),
-    before_campaign_last_sent: z.iso.datetime({ offset: true }).optional(),
-    since_campaign_last_sent: z.iso.datetime({ offset: true }).optional(),
-    email: z.email().optional(),
-    sort_field: z.literal(SORT_FIELD).optional(),
-    sort_dir: z.enum(LISTS_SORT_DIRECTIONS).optional(),
-    has_ecommerce_store: z.boolean().optional(),
-    include_total_contacts: z.boolean().optional(),
+    fields: z.string().optional(), // Comma-separated fields to include
+    exclude_fields: z.string().optional(), // Comma-separated fields to exclude
+    count: z.coerce.number().int().min(1).max(1000).default(10), // Number of records (1-1000)
+    offset: z.coerce.number().int().min(0).default(0), // Records to skip for pagination
+    ...dateCreatedFilterSchema.shape, // before_date_created, since_date_created
+    ...campaignLastSentFilterSchema.shape, // before_campaign_last_sent, since_campaign_last_sent
+    email: z.email().optional(), // Filter by email address
+    sort_field: z.literal(SORT_FIELD).optional(), // Sort field (only date_created)
+    sort_dir: sortDirectionSchema, // Sort direction (ASC or DESC)
+    has_ecommerce_store: z.coerce.boolean().optional(), // Filter lists with ecommerce store
+    include_total_contacts: z.coerce.boolean().optional(), // Include total_contacts in response
   })
-  .strict(); // Reject unknown properties
+  .strict(); // Reject unknown properties for input validation

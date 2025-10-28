@@ -35,8 +35,8 @@ export type ListsParams = z.infer<typeof listsParamsSchema>;
 export {
   listsParamsSchema,
   SORT_FIELD,
-  LISTS_SORT_DIRECTIONS,
 } from "@/schemas/mailchimp/lists/params.schema";
+export { SORT_DIRECTIONS } from "@/schemas/mailchimp/common/sorting.schema";
 
 /**
  * Aggregate dashboard statistics for lists overview

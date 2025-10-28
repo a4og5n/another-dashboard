@@ -7,16 +7,12 @@
  * Follows PRD guideline: "Always use the same object/property names as the API"
  */
 import { z } from "zod";
+import { sortDirectionSchema } from "@/schemas/mailchimp/common/sorting.schema";
 
 /**
  * Literal for month sort field (only valid sort field for growth history)
  */
 export const GROWTH_HISTORY_SORT_FIELD = "month" as const;
-
-/**
- * Sort direction enum values for Growth History API
- */
-export const GROWTH_HISTORY_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
 
 /**
  * Path parameters for list growth history endpoint
@@ -34,11 +30,11 @@ export const growthHistoryPathParamsSchema = z
  */
 export const growthHistoryQueryParamsSchema = z
   .object({
-    fields: z.string().optional(), // Comma-separated list of fields to include
-    exclude_fields: z.string().optional(), // Comma-separated list of fields to exclude
-    count: z.coerce.number().min(1).max(1000).default(10), // Number of records to return (default: 10, max: 1000)
-    offset: z.coerce.number().min(0).default(0), // Number of records to skip (default: 0)
-    sort_field: z.literal(GROWTH_HISTORY_SORT_FIELD).optional(), // Field to sort by (only 'month' is valid)
-    sort_dir: z.enum(GROWTH_HISTORY_SORT_DIRECTIONS).optional(), // Sort direction (ASC or DESC)
+    fields: z.string().optional(), // Comma-separated fields to include
+    exclude_fields: z.string().optional(), // Comma-separated fields to exclude
+    count: z.coerce.number().min(1).max(1000).default(10), // Number of records (1-1000)
+    offset: z.coerce.number().min(0).default(0), // Records to skip for pagination
+    sort_field: z.literal(GROWTH_HISTORY_SORT_FIELD).optional(), // Sort field (only 'month')
+    sort_dir: sortDirectionSchema, // Sort direction (ASC or DESC)
   })
   .strict(); // Reject unknown properties for input validation

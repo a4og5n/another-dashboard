@@ -11,11 +11,7 @@
  */
 
 import { z } from "zod";
-
-/**
- * Sort direction enum values for Member Notes API
- */
-export const MEMBER_NOTES_SORT_DIRECTIONS = ["ASC", "DESC"] as const;
+import { createEnumSortingSchema } from "@/schemas/mailchimp/common/sorting.schema";
 
 /**
  * Sort field enum values for Member Notes API
@@ -46,36 +42,10 @@ export const memberNotesPathParamsSchema = z
  */
 export const memberNotesQueryParamsSchema = z
   .object({
-    /**
-     * Comma-separated list of fields to include in response
-     */
-    fields: z.string().optional(),
-
-    /**
-     * Comma-separated list of fields to exclude from response
-     */
-    exclude_fields: z.string().optional(),
-
-    /**
-     * Number of records to return (pagination)
-     * Default: 10, Max: 1000
-     */
-    count: z.coerce.number().min(1).max(1000).default(10),
-
-    /**
-     * Number of records to skip (pagination offset)
-     * Default: 0
-     */
-    offset: z.coerce.number().min(0).default(0),
-
-    /**
-     * Field to sort results by
-     */
-    sort_field: z.enum(MEMBER_NOTES_SORT_FIELDS).optional(),
-
-    /**
-     * Sort direction (ASC or DESC)
-     */
-    sort_dir: z.enum(MEMBER_NOTES_SORT_DIRECTIONS).optional(),
+    fields: z.string().optional(), // Comma-separated fields to include
+    exclude_fields: z.string().optional(), // Comma-separated fields to exclude
+    count: z.coerce.number().min(1).max(1000).default(10), // Number of records (1-1000)
+    offset: z.coerce.number().min(0).default(0), // Records to skip for pagination
+    ...createEnumSortingSchema(MEMBER_NOTES_SORT_FIELDS).shape, // sort_field, sort_dir
   })
   .strict(); // Reject unknown properties for input validation

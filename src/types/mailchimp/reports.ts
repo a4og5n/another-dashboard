@@ -42,8 +42,8 @@ import { reportErrorSchema } from "@/schemas/mailchimp/reports/detail/error.sche
 import {
   openListPathParamsSchema,
   openListQueryParamsSchema,
-  OPEN_DETAILS_SORT_DIRECTIONS,
 } from "@/schemas/mailchimp/reports/open-details/params.schema";
+import { SORT_DIRECTIONS } from "@/schemas/mailchimp/common/sorting.schema";
 import { reportOpenListSuccessSchema } from "@/schemas/mailchimp/reports/open-details/success.schema";
 import { openListErrorSchema } from "@/schemas/mailchimp/reports/open-details/error.schema";
 import { reportListMemberSchema } from "@/schemas/mailchimp/common/report-list-member.schema";
@@ -155,7 +155,7 @@ export type ReportOpenListMember = z.infer<typeof reportListMemberSchema>;
 /**
  * Sort direction type for open details
  */
-export type SortDirection = (typeof OPEN_DETAILS_SORT_DIRECTIONS)[number];
+export type SortDirection = (typeof SORT_DIRECTIONS)[number];
 
 // ============================================================================
 // Report Abuse Reports Types (GET /reports/{campaign_id}/abuse-reports)
