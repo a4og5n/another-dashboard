@@ -118,6 +118,14 @@ export const bc = {
   },
 
   /**
+   * Landing Pages breadcrumb
+   */
+  landingPages: {
+    label: "Landing Pages",
+    href: "/mailchimp/landing-pages",
+  } as const satisfies BreadcrumbItem,
+
+  /**
    * Campaign Locations breadcrumb
    *
    * @param id - ID

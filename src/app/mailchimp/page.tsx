@@ -43,7 +43,7 @@ async function MailchimpDashboardContent({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 max-w-7xl">
             <Link
               href="/mailchimp/general-info"
               className="flex flex-col items-center p-8 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -85,6 +85,17 @@ async function MailchimpDashboardContent({
               <h2 className="text-xl font-semibold mb-2">Automations</h2>
               <p className="text-sm text-muted-foreground">
                 View and manage your automation workflows
+              </p>
+            </Link>
+
+            <Link
+              href="/mailchimp/landing-pages"
+              className="flex flex-col items-center p-8 border rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="text-3xl mb-4">🎨</div>
+              <h2 className="text-xl font-semibold mb-2">Landing Pages</h2>
+              <p className="text-sm text-muted-foreground">
+                View and track your Mailchimp landing pages
               </p>
             </Link>
 

@@ -33,3 +33,4 @@ export * from "@/skeletons/mailchimp/MemberGoalsSkeleton";
 export * from "@/skeletons/mailchimp/InterestCategoriesSkeleton";
 export * from "@/skeletons/mailchimp/InterestsSkeleton";
 export * from "@/skeletons/mailchimp/InterestCategoryInfoSkeleton";
+export * from "@/skeletons/mailchimp/LandingPagesSkeleton";

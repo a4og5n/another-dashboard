@@ -1033,3 +1033,19 @@ export async function generateInterestCategoryInfoMetadata({
     },
   };
 }
+
+/**
+ * Generates metadata for landing pages list page
+ * @returns Next.js Metadata object for the landing pages page
+ */
+export function generateLandingPagesMetadata(): Metadata {
+  return {
+    title: "Landing Pages | Fichaz",
+    description: "View and track your Mailchimp landing pages",
+    openGraph: {
+      title: "Landing Pages | Fichaz",
+      description: "View and track your Mailchimp landing pages",
+      type: "website",
+    },
+  };
+}

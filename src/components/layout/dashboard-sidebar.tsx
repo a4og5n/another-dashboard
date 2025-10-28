@@ -18,6 +18,7 @@ import {
   Send,
   Building2,
   Workflow,
+  Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -69,6 +70,11 @@ const navigation: NavigationItem[] = [
         name: "Automations",
         href: "/mailchimp/automations",
         icon: Workflow,
+      },
+      {
+        name: "Landing Pages",
+        href: "/mailchimp/landing-pages",
+        icon: Palette,
       },
     ],
   },

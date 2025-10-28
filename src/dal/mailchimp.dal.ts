@@ -19,6 +19,8 @@ import type {
   ListsParams,
   ReportListParams,
   OpenListQueryParams,
+  LandingPagesQueryParams,
+  LandingPagesSuccess,
 } from "@/types/mailchimp";
 import { z } from "zod";
 import { automationsQueryParamsSchema } from "@/schemas/mailchimp/automations-params.schema";
@@ -632,6 +634,18 @@ export class MailchimpDAL {
         "/automations",
         params,
       ),
+    );
+  }
+
+  /**
+   * Landing Pages
+   * GET /landing-pages
+   */
+  async fetchLandingPages(
+    params?: LandingPagesQueryParams,
+  ): Promise<ApiResponse<LandingPagesSuccess>> {
+    return mailchimpApiCall((client) =>
+      client.get<LandingPagesSuccess>(`/landing-pages`, params),
     );
   }
 }

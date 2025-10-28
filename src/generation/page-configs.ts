@@ -785,6 +785,44 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Landing Pages List Page
+   * View and manage Mailchimp landing pages
+   */
+  "landing-pages-list": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/landing-pages-params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/landing-pages-success.schema.ts",
+      apiError: "src/schemas/mailchimp/landing-pages-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/landing-pages",
+      params: [],
+    },
+    api: {
+      endpoint: "/landing-pages",
+      method: "GET",
+      dalMethod: "fetchLandingPages",
+    },
+    page: {
+      type: "list",
+      title: "Landing Pages",
+      description: "View and track your Mailchimp landing pages",
+      features: [
+        "Pagination",
+        "Status badges",
+        "Performance metrics",
+        "Sort by date",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        label: "Landing Pages",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
