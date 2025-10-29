@@ -823,6 +823,43 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  landingPageInfo: {
+    schemas: {
+      apiParams:
+        "src/schemas/mailchimp/landing-pages/[page_id]/params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/landing-pages/[page_id]/success.schema.ts",
+      apiError: "src/schemas/mailchimp/landing-pages/[page_id]/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/landing-pages/[page_id]",
+      params: ["page_id"],
+    },
+    api: {
+      endpoint: "/landing-pages/{page_id}",
+      method: "GET",
+      dalMethod: "fetchLandingPageInfo",
+    },
+    page: {
+      type: "detail",
+      title: "Landing Page Details",
+      description: "View detailed information about this landing page",
+      features: [
+        "Landing page status",
+        "Publication details",
+        "Performance metrics",
+        "Tracking settings",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        label: "{name}",
+        parent: "landingPages",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**

@@ -406,6 +406,25 @@ export const bc = {
       href: `/mailchimp/lists/${id}/interest-categories/[interest_category_id]/interests`,
     };
   },
+
+  /**
+   * Landing Page Details breadcrumb
+   *
+   * @param page_id - PAGE_ID
+   * @returns Breadcrumb item for landing page details
+   *
+   * @example
+   * ```tsx
+   * bc.landingPageDetails("abc123")
+   * // Returns: { label: "{name}", href: "/mailchimp/landing-pages/${page_id}" }
+   * ```
+   */
+  landingPageDetails(page_id: string): BreadcrumbItem {
+    return {
+      label: "{name}",
+      href: `/mailchimp/landing-pages/${page_id}`,
+    };
+  },
   listActivity(id: string): BreadcrumbItem {
     return {
       label: "Activity",

@@ -1049,3 +1049,19 @@ export function generateLandingPagesMetadata(): Metadata {
     },
   };
 }
+
+/**
+ * Generates metadata specifically for landing page details pages
+ * @returns Next.js Metadata object for the landing page details page
+ */
+export function generateLandingPageDetailsMetadata(): Metadata {
+  return {
+    title: "Landing Page Details",
+    description: "View detailed information about this landing page",
+    openGraph: {
+      title: "Landing Page Details",
+      description: "View detailed information about this landing page",
+      type: "website",
+    },
+  };
+}

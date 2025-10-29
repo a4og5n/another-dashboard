@@ -9,7 +9,7 @@
 
 import { PageLayout } from "@/components/layout";
 import { LandingPagesSkeleton } from "@/skeletons/mailchimp";
-import { landingPagesQueryParamsSchema } from "@/schemas/mailchimp/landing-pages-params.schema";
+import { landingPagesQueryParamsSchema } from "@/schemas/mailchimp/landing-pages/landing-pages-params.schema";
 import {
   pageSearchParamsSchema,
   type PageSearchParams,
