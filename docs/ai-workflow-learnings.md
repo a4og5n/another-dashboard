@@ -16,6 +16,190 @@ This document captures key learnings from implementing Mailchimp dashboard featu
 
 ## Session Reviews
 
+### Session: API Root Implementation (2025-10-28)
+
+**Endpoint:** `GET /`
+**Route:** `/mailchimp/api-root`
+**Issue:** #366 | **PR:** #367 | **Status:** ✅ Merged
+
+#### What Worked Exceptionally Well ✅
+
+**1. Leveraging Existing Schemas** ⭐⭐⭐
+
+**What Happened:**
+
+- Root schemas were already implemented in the codebase
+- Discovered during Phase 1 schema review step
+- Applied "Option A" improvements (`.min(1)` on IDs, inline comments) for consistency
+- Skipped redundant schema creation, moved directly to implementation
+
+**Why This Matters:**
+
+- **Time saved:** ~20 minutes that would have been spent recreating schemas
+- **Consistency:** Applied current patterns to existing schemas
+- **Validation:** Confirmed schemas match Mailchimp API documentation
+- **Process improvement:** Workflow adapted to unexpected scenario
+
+**2. Server Component Architecture (Error Recovery)** ⭐⭐⭐
+
+**What Happened:**
+
+- Generated component initially included `"use client"` directive
+- Runtime error: "Database connection string not found" in browser console
+- Root cause: Client component tried to import server-only database code
+- Solution: Removed `"use client"` to make it a proper server component
+
+**Root Cause:**
+
+The component imports `MailchimpConnectionGuard` which indirectly references database code:
+
+```typescript
+// ❌ Wrong: Client component with server dependencies
+"use client";
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
+```
+
+**Solution:**
+
+```typescript
+// ✅ Correct: Server component (no directive)
+import { MailchimpConnectionGuard } from "@/components/mailchimp";
+```
+
+**Why This Matters:**
+
+- **Architecture clarity:** Server components are default, only add "use client" when needed
+- **Error pattern:** Database errors in browser console = client/server boundary violation
+- **Prevention:** Generated components should never include "use client" unless explicitly needed
+- **Learning:** When in doubt, start as server component (can always convert to client later)
+
+**3. Data Organization and UI Clarity** ⭐⭐
+
+**What Happened:**
+
+- Initial implementation had misleading card title "Account Statistics" showing `industry_stats` data
+- User feedback caught the mismatch immediately
+- Renamed card to "Industry Stats" and moved Total Subscribers to Account Information
+- Result: Clear separation between account data and industry benchmarks
+
+**Before (Confusing):**
+
+```typescript
+<Card title="Account Statistics">
+  {/* Shows industry_stats.open_rate, click_rate, bounce_rate */}
+  {/* Total Subscribers mixed in */}
+</Card>
+```
+
+**After (Clear):**
+
+```typescript
+<Card title="Account Information">
+  {/* 9 account fields including Total Subscribers */}
+</Card>
+
+<StatsGridCard title="Industry Stats">
+  {/* 3 industry benchmark metrics */}
+</StatsGridCard>
+```
+
+**Why This Matters:**
+
+- **User trust:** Data labels must accurately reflect what's being shown
+- **Clarity:** Separate account info from industry benchmarks
+- **Feedback loop:** User testing caught UI issue before merge
+- **Pattern:** When mixing data sources, ensure titles/labels match the source
+
+#### Implementation Stats 📊
+
+**Development Time:**
+
+- Phase 0 (Git Setup): ~2 minutes
+- Phase 1 (Schema Review & Updates): ~15 minutes
+- Phase 2 (Implementation): ~25 minutes
+- Phase 2.75 (Testing & Fixes): ~3 iterations (10 minutes)
+- **Total:** ~52 minutes
+
+**Code Metrics:**
+
+- Files Created: 5 (component, index, route files)
+- Files Modified: 7 (schemas, configs, navigation, metadata, breadcrumbs)
+- Lines Added: ~400
+- Lines Removed: ~20
+
+**Validation:**
+
+- ✅ Type-check: passed
+- ✅ Lint: passed
+- ✅ Format: passed
+- ✅ Tests: 905/905 passing
+- ✅ CI/CD: All checks passed
+
+#### Key Learnings for Future Implementations 💡
+
+**1. Check for Existing Schemas First**
+
+Before creating new schemas, search codebase for existing implementations:
+
+```bash
+# Quick check for existing schemas
+ls src/schemas/mailchimp/ | grep -i "root\|api"
+```
+
+If found, review and apply current patterns instead of recreating.
+
+**2. Server Components by Default**
+
+Generated components should NEVER include `"use client"` directive unless:
+
+- Component needs useState, useEffect, or other React hooks
+- Component has interactive client-side behavior
+- Explicitly required by design
+
+**Rule:** Start as server component (no directive), only add "use client" when needed.
+
+**3. Data Source Must Match Labels**
+
+When displaying data from multiple sources:
+
+- Card titles must accurately reflect data source (`industry_stats` → "Industry Stats")
+- Group related data together (all account fields in one card)
+- Separate different data domains (account info vs. industry benchmarks)
+- Use semantic component types (Card vs. StatsGridCard)
+
+**4. Page Generator Type Selection**
+
+For endpoints with no route parameters:
+
+- Use `type: "list"` (not "detail")
+- Detail pages require at least one param (e.g., `[id]`)
+- Validation will catch this mismatch early
+
+#### Files Modified/Created 📁
+
+**Created:**
+
+- `src/components/mailchimp/api-root/api-root-content.tsx` - Main content component with 4-section UI
+- `src/components/mailchimp/api-root/index.ts` - Export barrel
+- `src/app/mailchimp/api-root/page.tsx` - Server component page
+- `src/app/mailchimp/api-root/loading.tsx` - Generated loading skeleton
+- `src/app/mailchimp/api-root/not-found.tsx` - Generated 404 page
+
+**Modified:**
+
+- `src/schemas/mailchimp/root/success.schema.ts` - Applied Option A improvements
+- `src/schemas/mailchimp/root/params.schema.ts` - Added inline comments
+- `src/generation/page-configs.ts` - Added API Root page config
+- `src/app/mailchimp/page.tsx` - Added navigation link to API Root
+- `src/components/mailchimp/index.ts` - Exported APIRootContent
+- `src/utils/metadata.ts` - Exported generateApiRootMetadata
+- `src/utils/mailchimp/metadata.ts` - Created metadata generation function
+- `src/utils/breadcrumbs/breadcrumb-builder.ts` - Added apiRoot breadcrumb
+- `src/dal/mailchimp.dal.ts` - Added fetchApiRoot method
+- `src/types/mailchimp/root.ts` - Type exports (already existed)
+
+---
+
 ### Session: Filter System Standardization - Phase 1 (2025-10-28)
 
 **Endpoint:** Filter Components for Mailchimp Dashboard
