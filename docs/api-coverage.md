@@ -396,9 +396,11 @@ Landing page creation and management endpoints.
 - 🔒 **Add Landing Page** - `POST /landing-pages`
   - **Priority 5:** Write operation (future)
 
-- 📋 **Get Landing Page Info** - `GET /landing-pages/{page_id}`
-  - Features: Landing page details
+- ✅ **Get Landing Page Info** - `GET /landing-pages/{page_id}`
+  - Route: `/mailchimp/landing-pages/[page_id]`
+  - Features: Landing page status, Publication details, Performance metrics, Tracking settings
   - **Priority 3:** Landing page analytics
+  - **Implemented:** Issue #361, PR #362
 
 - 🔒 **Update Landing Page** - `PATCH /landing-pages/{page_id}`
   - **Priority 5:** Write operation (future)
@@ -1417,16 +1419,7 @@ The following foundational endpoints are now implemented:
 
 ### 💡 Recommendation:
 
-**Top Choice: Get Landing Page Info** (`GET /landing-pages/{page_id}`)
-
-**Rationale:**
-
-1. **Natural progression:** Completes Landing Pages feature (List Landing Pages just implemented in #355)
-2. **User value:** High - users want to click from list to see landing page details
-3. **Complexity:** Medium - similar pattern to Member Profile, List Details already done
-4. **Quick win:** Follows established detail page patterns
-
-**Second Choice: List Campaigns** (`GET /campaigns`)
+**Top Choice: List Campaigns** (`GET /campaigns`)
 
 **Rationale:**
 
@@ -1434,8 +1427,18 @@ The following foundational endpoints are now implemented:
 2. **Would unlock:** ~17 campaign management endpoints
 3. **User value:** High - central campaign management view
 4. **Complexity:** High - but worth it for the unlock value
+5. **Natural progression:** After completing Landing Pages (both list and detail implemented)
 
-**Third Choice: API Root** (`GET /`)
+**Second Choice: API Root** (`GET /`)
+
+**Rationale:**
+
+1. **Foundation:** Provides API metadata and health status
+2. **User value:** Medium - useful for debugging and API exploration
+3. **Complexity:** Low - simple single endpoint
+4. **Quick win:** Could be implemented quickly
+
+**Third Choice: List Account Exports** (`GET /account-exports`)
 
 **Rationale:**
 
