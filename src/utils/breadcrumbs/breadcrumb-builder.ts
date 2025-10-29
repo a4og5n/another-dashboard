@@ -126,6 +126,14 @@ export const bc = {
   },
 
   /**
+   * Batch Webhooks breadcrumb
+   */
+  batchWebhooks: {
+    label: "Batch Webhooks",
+    href: "/mailchimp/batch-webhooks",
+  } as const satisfies BreadcrumbItem,
+
+  /**
    * Landing Pages breadcrumb
    */
   landingPages: {
