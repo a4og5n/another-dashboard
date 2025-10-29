@@ -103,9 +103,11 @@ Batch operation management endpoints.
 
 Batch webhook management endpoints.
 
-- 📋 **List Batch Webhooks** - `GET /batch-webhooks`
-  - Features: Webhook batch subscriptions
+- ✅ **List Batch Webhooks** - `GET /batch-webhooks`
+  - Route: `/mailchimp/batch-webhooks`
+  - Features: Webhook batch subscriptions, URL display, event tracking, source filtering, status badges, creation/update timestamps
   - **Priority 4:** Integration feature
+  - **Implemented:** Issue #372, PR #373
 
 - 🔒 **Add Batch Webhook** - `POST /batch-webhooks`
   - **Priority 5:** Write operation (future)
@@ -1281,16 +1283,17 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 30 endpoints
+- ✅ Implemented: 31 endpoints
 - ⭐ Priority 3: ~48 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 30/244 read endpoints (~12.3%)
+**Total Progress (Read-Only):** 31/244 read endpoints (~12.7%)
 
 **Recent Implementations:**
 
+- **List Batch Webhooks** (webhook batch subscriptions, URL display, event tracking, status badges - Issue #372, PR #373)
 - **API Root** (API metadata, account information, industry benchmarks, timeline - Issue #366, PR #367)
 - **Get Interest Category Info** (category details with type badge and navigation to interests - Issue #345, PR #347)
 - **List Interests in Category** (interest list with subscriber counts and display order - Issue #325, PR #327)
@@ -1330,7 +1333,7 @@ Facebook advertising integration endpoints.
 - Authorized Apps: 0/2 endpoints (0%)
 - Automation Flows (Customer Journeys): 0/1 endpoint (0%)
 - Batch Operations: 0/4 endpoints (0%)
-- Batch Webhooks: 0/5 endpoints (0%)
+- Batch Webhooks: 1/5 endpoints (20%)
 - Campaign Folders: 0/5 endpoints (0%)
 - Campaigns API: 0/17 endpoints (0%)
 - Chimp Chatter Activity: 0/1 endpoint (0%)
