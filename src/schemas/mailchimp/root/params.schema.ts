@@ -17,7 +17,7 @@ import { z } from "zod";
  */
 export const rootParamsSchema = z
   .object({
-    fields: z.string().optional(),
-    exclude_fields: z.string().optional(),
+    fields: z.string().optional(), // Comma-separated fields to include
+    exclude_fields: z.string().optional(), // Comma-separated fields to exclude
   })
-  .strict(); // Reject unknown properties
+  .strict(); // Reject unknown properties for input validation

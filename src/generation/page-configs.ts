@@ -189,6 +189,44 @@ export interface PageConfig {
  */
 export const pageConfigs = {
   /**
+   * API Root Page
+   * Display Mailchimp API metadata, account information, and health status
+   */
+  "api-root": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/root/params.schema.ts",
+      apiResponse: "src/schemas/mailchimp/root/success.schema.ts",
+      apiError: "src/schemas/mailchimp/root/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/api-root",
+      params: [],
+    },
+    api: {
+      endpoint: "/",
+      method: "GET",
+      dalMethod: "fetchApiRoot",
+    },
+    page: {
+      type: "list",
+      title: "API Root",
+      description: "View Mailchimp API metadata and account information",
+      features: [
+        "API version and health status",
+        "Account information",
+        "Total subscribers count",
+        "Industry benchmark statistics",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        label: "API Info",
+      },
+    },
+  } satisfies PageConfig,
+
+  /**
    * Example: Reports List Page (existing page for reference)
    */
   "reports-list": {

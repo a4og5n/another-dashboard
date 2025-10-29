@@ -60,6 +60,7 @@ export {
   generateInterestCategoryInfoMetadata,
   generateLandingPagesMetadata,
   generateLandingPageDetailsMetadata,
+  generateApiRootMetadata,
 } from "@/utils/mailchimp/metadata";
 
 export { generateClickDetailsMetadata } from "@/utils/mailchimp/metadata";
