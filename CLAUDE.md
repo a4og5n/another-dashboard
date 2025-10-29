@@ -269,11 +269,27 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 2. Create Zod schemas: `*-params.schema.ts`, `*-success.schema.ts`, `*-error.schema.ts`
 3. Present schemas for review
 4. ⏸️ Wait for user: "approved"
-5. **When user says "approved":** Immediately proceed to Phase 2 (no additional pause)
-   - DO NOT ask "Would you like me to proceed?"
-   - DO NOT wait for additional confirmation
-   - Respond: "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
-   - Start Phase 2 implementation immediately
+5. **🚨 CRITICAL - When user says "approved":** Immediately proceed to Phase 2 (no additional pause)
+   - ✅ **DO:** Immediately respond "✅ Schemas approved. Proceeding to Phase 2..."
+   - ✅ **DO:** Start Phase 2 implementation in the SAME message
+   - ❌ **DO NOT:** Ask "Would you like me to proceed?"
+   - ❌ **DO NOT:** Ask "Ready to continue?" or any similar question
+   - ❌ **DO NOT:** Wait for ANY additional confirmation
+
+   **This is the ONLY checkpoint between Phase 1 and Phase 2. The word "approved" means GO immediately.**
+
+   **Common Mistake to Avoid:**
+
+   ```
+   ❌ WRONG:
+   User: "approved"
+   AI: "Great! Would you like me to proceed to implementation?"  [STOPS]
+
+   ✅ CORRECT:
+   User: "approved"
+   AI: "✅ Schemas approved. Proceeding to Phase 2 (implementation)..."
+   AI: [Immediately adds PageConfig to registry in same message]
+   ```
 
 ### Phase 2: Implementation
 

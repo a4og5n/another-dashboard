@@ -38,6 +38,7 @@ function generateMetadataFunction(
   config: PageConfig,
   functionName: string,
 ): string {
+  const hasParams = config.route.params && config.route.params.length > 0;
   const paramName = config.route.params?.[0] || "id";
   const schemaName = `${toCamelCase(config.page.title)}PageParamsSchema`;
 
@@ -45,7 +46,10 @@ function generateMetadataFunction(
   const description = config.page.description;
   const title = config.page.title;
 
-  return `/**
+  // Generate function signature based on whether route has params
+  if (hasParams) {
+    // Route with params (e.g., /lists/[id]/members)
+    return `/**
  * Generates metadata specifically for ${title.toLowerCase()} pages
  * @param params - Object containing the ${paramName}
  * @returns Next.js Metadata object for the ${title.toLowerCase()} page
@@ -82,6 +86,38 @@ export async function ${functionName}({
   };
 }
 `;
+  } else {
+    // Route without params (e.g., /mailchimp/api-root)
+    return `/**
+ * Generates metadata for ${title.toLowerCase()} page
+ * @returns Next.js Metadata object for the ${title.toLowerCase()} page
+ */
+export async function ${functionName}(): Promise<Metadata> {
+  // Fetch data for metadata
+  // TODO: Implement proper data fetching using DAL method
+  const response = await mailchimpDAL.fetchApiRoot();
+
+  if (!response.success || !response.data) {
+    return {
+      title: "${title} - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data as any; // TODO: Add proper type
+
+  return {
+    title: \`\${data.account_name || "${title}"} - ${title}\`,
+    description: "${description}",
+    openGraph: {
+      title: \`\${data.account_name || "${title}"} - ${title}\`,
+      description: "${description}",
+      type: "website",
+    },
+  };
+}
+`;
+  }
 }
 
 /**
