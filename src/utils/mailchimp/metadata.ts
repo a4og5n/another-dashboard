@@ -1093,3 +1093,21 @@ export async function generateApiRootMetadata(): Promise<Metadata> {
     },
   };
 }
+
+/**
+ * Generates metadata for batch webhooks page
+ * @returns Next.js Metadata object for the batch webhooks page
+ */
+export async function generateBatchWebhooksMetadata(): Promise<Metadata> {
+  return {
+    title: "Batch Webhooks - Fichaz",
+    description:
+      "Manage batch webhooks for batch operations API responses (max 20 webhooks)",
+    openGraph: {
+      title: "Batch Webhooks - Fichaz",
+      description:
+        "Manage batch webhooks for batch operations API responses (max 20 webhooks)",
+      type: "website",
+    },
+  };
+}

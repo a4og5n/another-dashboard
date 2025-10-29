@@ -120,6 +120,17 @@ async function MailchimpDashboardContent({
                 View API metadata and account details
               </p>
             </Link>
+
+            <Link
+              href="/mailchimp/batch-webhooks"
+              className="flex flex-col items-center p-8 border rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="text-3xl mb-4">🔔</div>
+              <h2 className="text-xl font-semibold mb-2">Batch Webhooks</h2>
+              <p className="text-sm text-muted-foreground">
+                Manage batch operation webhooks
+              </p>
+            </Link>
           </div>
         </div>
       </div>

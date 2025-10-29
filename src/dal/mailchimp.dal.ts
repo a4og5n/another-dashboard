@@ -50,6 +50,8 @@ import { listInterestsQueryParamsSchema } from "@/schemas/mailchimp/lists/intere
 import { listInterestsSuccessSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/interests/success.schema";
 import { interestCategoryInfoQueryParamsSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/params.schema";
 import { interestCategoryInfoSuccessSchema } from "@/schemas/mailchimp/lists/interest-categories/[interest_category_id]/success.schema";
+import { batchWebhooksQueryParamsSchema } from "@/schemas/mailchimp/batch-webhooks/batch-webhooks-params.schema";
+import { batchWebhooksSuccessSchema } from "@/schemas/mailchimp/batch-webhooks/batch-webhooks-success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -665,6 +667,21 @@ export class MailchimpDAL {
       client.get<LandingPage>(`/landing-pages/${page_id}`, {
         params: queryParams,
       }),
+    );
+  }
+
+  /**
+   * Batch Webhooks
+   * GET /batch-webhooks
+   */
+  async fetchBatchWebhooks(
+    params?: z.infer<typeof batchWebhooksQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof batchWebhooksSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof batchWebhooksSuccessSchema>>(
+        `/batch-webhooks`,
+        params,
+      ),
     );
   }
 }

@@ -898,6 +898,43 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  batchWebhooks: {
+    schemas: {
+      apiParams:
+        "src/schemas/mailchimp/batch-webhooks/batch-webhooks-params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/batch-webhooks/batch-webhooks-success.schema.ts",
+      apiError:
+        "src/schemas/mailchimp/batch-webhooks/batch-webhooks-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/batch-webhooks",
+      params: [],
+    },
+    api: {
+      endpoint: "/batch-webhooks",
+      method: "GET",
+      dalMethod: "fetchBatchWebhooks",
+    },
+    page: {
+      type: "list",
+      title: "Batch Webhooks",
+      description:
+        "Manage batch webhooks for batch operations API responses (max 20 webhooks)",
+      features: [
+        "Webhook URL configuration",
+        "Enable/disable webhooks",
+        "HATEOAS navigation",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        label: "Batch Webhooks",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
