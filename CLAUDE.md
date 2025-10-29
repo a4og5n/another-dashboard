@@ -351,18 +351,11 @@ git add -A && git commit --amend --no-edit
 
 **See [docs/workflows/](docs/workflows/) for detailed phase documentation.**
 
-## Git Amend Workflow (Phase 2.75 Reference)
+## Phase 2.75: Testing Loop
 
-During Phase 2.75 local iteration, use `git commit --amend --no-edit` to keep one clean commit:
+During Phase 2.75, use `git commit --amend --no-edit` to keep one clean commit.
 
-```bash
-# Make changes, then:
-git add -A && git commit --amend --no-edit
-```
-
-**Why:** Single atomic commit instead of messy "fix: X", "fix: Y" history.
-
-**Safe when:** Commit is local-only (not pushed). **Never** amend after pushing without force-push.
+**Details:** See [docs/workflows/phase-2.75.md](docs/workflows/phase-2.75.md)
 
 ### Phase 3: Push & Create PR (ONLY after explicit approval)
 
@@ -642,132 +635,40 @@ EOF
 - Repeat validation commands (reference Standard Validation Suite)
 - Embed complete workflows (summarize + link)
 
-**Example: Good Documentation Structure**
-
-```markdown
-## Feature X
-
-**Quick Reference:** See [docs/feature-x-guide.md](docs/feature-x-guide.md)
-
-### Essential Info (keep in CLAUDE.md)
-
-- Critical rules (2-3 bullet points)
-- Common command: `command --flags`
-- Link to detailed guide
-
-### Detailed Guide (extract to docs/)
-
-- Step-by-step instructions
-- All edge cases
-- Verbose examples
-- Troubleshooting
-```
+**Documentation Structure:** See [docs/templates/documentation-template.md](docs/templates/documentation-template.md)
 
 **Token Cost Awareness:**
 
-- Every 1,000 lines ≈ 3,000 tokens
-- CLAUDE.md should stay <2,500 lines (<7,500 tokens)
-- Aim for: "Can AI read entire file in one context window"`
+- CLAUDE.md target: 24-28k chars (60-70% of 40k limit)
+- Extract workflows >200 lines to `docs/workflows/`
+- Extract patterns >300 lines to `docs/development-patterns.md`
 
 #### Step 6: Add Session Review to ai-workflow-learnings.md
 
-**AI MUST document this implementation session:**
+**AI MUST document this implementation session at the TOP of the "Session Reviews" section.**
 
-**Create comprehensive session review at the TOP of the "Session Reviews" section:**
+**Template:** See [docs/templates/session-review.md](docs/templates/session-review.md)
 
-````markdown
-### Session: {Endpoint Name} Implementation (YYYY-MM-DD)
+**Commit command:**
 
-**Endpoint:** `{HTTP_METHOD} /path/to/endpoint`
-**Route:** `/mailchimp/{route}`
-**Issue:** #{issue_number} | **PR:** #{pr_number} | **Status:** ✅ Merged
+```bash
+git add docs/ai-workflow-learnings.md
+git commit -m "docs: add session review for {Endpoint Name} implementation
 
-#### What Worked Exceptionally Well ✅
+Documented implementation session for Issue #${issue_number}, PR #${pr_number}.
 
-**1. {Pattern/Approach That Worked}** ⭐⭐⭐
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-**What Happened:**
-
-- {Describe what was successful}
-- {Why it worked well}
-
-**Implementation Details:**
-
-```{language}
-// Show code example if relevant
+Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
-````
 
-**Why This Matters:**
+**Note:** No push yet - will be included in Step 7.
 
-- {Benefit 1}
-- {Benefit 2}
+#### Step 6.5: Present Completion Summary (Automatic - DO NOT SKIP)
 
-#### Issues Encountered & Solutions 🔧
+**⚠️ CRITICAL: After Step 6, AI MUST immediately present completion summary. DO NOT wait for user to ask.**
 
-**1. {Problem Description}**
-
-**Problem:** {What went wrong}
-
-**Root Cause:** {Why it happened}
-
-**Solution:** {How it was fixed}
-
-**Prevention:** {How to avoid in future}
-
-#### Implementation Stats 📊
-
-**Development Time:**
-
-- Phase 1 (Schemas): ~X minutes
-- Phase 2 (Implementation): ~Y minutes
-- Phase 2.75 (Testing & Iteration): ~Z iterations
-- **Total:** ~N hours
-
-**Code Metrics:**
-
-- Files Created: {count}
-- Files Modified: {count}
-- Lines Added: ~{count}
-- Lines Removed: ~{count}
-
-**Validation:**
-
-- ✅ Type-check: passed
-- ✅ Lint: passed
-- ✅ Format: passed
-- ✅ Tests: {count} passing
-- ✅ CI/CD: All checks passed
-
-#### Key Learnings for Future Implementations 💡
-
-1. **{Learning 1 Title}**
-   - {Description}
-   - {Actionable takeaway}
-
-2. **{Learning 2 Title}**
-   - {Description}
-   - {Actionable takeaway}
-
-#### Files Modified/Created 📁
-
-**Created:**
-
-- `{file_path}` - {purpose}
-- `{file_path}` - {purpose}
-
-**Modified:**
-
-- `{file_path}` - {change description}
-- `{file_path}` - {change description}
-
----
-
-#### Step 6: Present Completion Summary (Automatic - DO NOT SKIP)
-
-**⚠️ CRITICAL: After completing all Phase 4 steps, AI MUST automatically present a completion summary. DO NOT wait for user to ask.**
-
-**AI must immediately output:**
+**Format:**
 
 ```
 ✅ Workflow Complete
@@ -779,55 +680,16 @@ EOF
 
 **Phase 4 Cleanup Complete:**
 - ✅ Issue #{issue_number} closed
-- ✅ API coverage updated: docs/api-coverage.md (if applicable)
-- ✅ Workflow documentation updated: CLAUDE.md (if applicable)
-- ✅ Session review added: docs/ai-workflow-learnings.md (if applicable)
-
-**Changes Merged:**
-{Brief 1-2 sentence summary of what was implemented/fixed}
+- ✅ API coverage updated (if applicable)
+- ✅ Session review added
 
 **Implementation Summary:**
 - Files created: {count}
 - Files modified: {count}
 - Tests: {count} passing
-- Total time: ~{time}
 
-The workflow is now complete. All changes have been merged to main and documented.
+The workflow is now complete.
 ```
-
-**Rules:**
-
-1. **DO NOT STOP** after Phase 4 cleanup - immediately present this summary
-2. **DO NOT WAIT** for user to ask "is it done?" or "did it work?"
-3. **DO NOT ASK** "would you like a summary?" - just present it
-4. This is the final step of the workflow - present it automatically
-
-**Why this matters:** Silent completion makes the workflow appear stuck or incomplete. Users should not have to prompt AI to confirm the workflow finished successfully.
-
----
-
-````
-
-**Commit the session review:**
-
-```bash
-git add docs/ai-workflow-learnings.md
-git commit -m "docs: add session review for {Endpoint Name} implementation
-
-Documented implementation session for Issue #${issue_number}, PR #${pr_number}.
-
-Captured:
-- What worked exceptionally well
-- Issues encountered and solutions
-- Implementation stats and metrics
-- Key learnings for future work
-- Complete file change list
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
-# Note: No push yet - will be included in final step
-````
 
 #### Step 7: Push Documentation Branch & Create PR
 
