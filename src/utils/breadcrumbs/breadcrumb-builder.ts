@@ -31,6 +31,14 @@ export const bc = {
   // ============================================================================
 
   /**
+   * API Root breadcrumb
+   */
+  apiRoot: {
+    label: "API Info",
+    href: "/mailchimp/api-root",
+  } as const satisfies BreadcrumbItem,
+
+  /**
    * Dashboard home page breadcrumb
    */
   home: {

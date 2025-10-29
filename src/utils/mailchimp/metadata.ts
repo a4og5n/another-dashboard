@@ -1065,3 +1065,31 @@ export function generateLandingPageDetailsMetadata(): Metadata {
     },
   };
 }
+
+/**
+ * Generates metadata specifically for api root pages
+ * @returns Next.js Metadata object for the api root page
+ */
+export async function generateApiRootMetadata(): Promise<Metadata> {
+  // Fetch data for metadata
+  const response = await mailchimpDAL.fetchApiRoot();
+
+  if (!response.success || !response.data) {
+    return {
+      title: "API Root - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data;
+
+  return {
+    title: `${data.account_name} - API Root`,
+    description: "View Mailchimp API metadata and account information",
+    openGraph: {
+      title: `${data.account_name} - API Root`,
+      description: "View Mailchimp API metadata and account information",
+      type: "website",
+    },
+  };
+}
