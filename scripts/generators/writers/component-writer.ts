@@ -68,13 +68,13 @@ function generateComponentContent(config: PageConfig): string {
  * TODO: Remove debug console.log statements before committing
  *
  * Implementation Tips:
+ * - Server component by default (no "use client" needed)
+ * - Only add "use client" if you need useState, useEffect, or client-side interactivity
  * - For lists: Use TanStack Table with proper column definitions
  * - For metrics: Use StatsGridCard or StatCard components
  * - Empty dates: {value ? formatDateTime(value) : "N/A"}
  * - Import metadata directly: import { ... } from "@/utils/metadata"
  */
-
-"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Construction } from "lucide-react";
