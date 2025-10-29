@@ -16,9 +16,11 @@ This file tracks which Mailchimp API endpoints have been implemented in the Fich
 
 Core API information endpoint.
 
-- 📋 **API Root** - `GET /`
-  - Features: API version, health status, account info
+- ✅ **API Root** - `GET /`
+  - Route: `/mailchimp/api-root`
+  - Features: API metadata, account information, industry benchmarks, account timeline
   - **Priority 3:** API information
+  - **Implemented:** Issue #366, PR #367
 
 ---
 
@@ -1279,8 +1281,8 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 29 endpoints
-- ⭐ Priority 3: ~49 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
+- ✅ Implemented: 30 endpoints
+- ⭐ Priority 3: ~48 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
@@ -1289,6 +1291,7 @@ Facebook advertising integration endpoints.
 
 **Recent Implementations:**
 
+- **API Root** (API metadata, account information, industry benchmarks, timeline - Issue #366, PR #367)
 - **Get Interest Category Info** (category details with type badge and navigation to interests - Issue #345, PR #347)
 - **List Interests in Category** (interest list with subscriber counts and display order - Issue #325, PR #327)
 - **List Automations** (automation workflow management with status tracking - Issue #248, PR #317)
@@ -1321,7 +1324,7 @@ Facebook advertising integration endpoints.
 
 **API Coverage by Section:**
 
-- API Root: 0/1 endpoint (0%)
+- API Root: 1/1 endpoint (100%)
 - Account Exports: 0/3 endpoints (0%)
 - Audiences (BETA): 0/2 endpoints (0%)
 - Authorized Apps: 0/2 endpoints (0%)
@@ -1337,7 +1340,7 @@ Facebook advertising integration endpoints.
 - E-commerce Stores: 0/62 endpoints (0%)
 - Facebook Ads: 0/2 endpoints (0%)
 - File Manager: 0/11 endpoints (0%)
-- Landing Pages: 1/9 endpoints (11%)
+- Landing Pages: 2/9 endpoints (22%)
 - Lists API: 16/45 endpoints (36%)
 - Ping API: 0/1 endpoint (0%)
 - Reporting API: 0/15 endpoints (0%)
@@ -1429,23 +1432,14 @@ The following foundational endpoints are now implemented:
 4. **Complexity:** High - but worth it for the unlock value
 5. **Natural progression:** After completing Landing Pages (both list and detail implemented)
 
-**Second Choice: API Root** (`GET /`)
+**Second Choice: List Account Exports** (`GET /account-exports`)
 
 **Rationale:**
 
-1. **Foundation:** Provides API metadata and health status
-2. **User value:** Medium - useful for debugging and API exploration
-3. **Complexity:** Low - simple single endpoint
-4. **Quick win:** Could be implemented quickly
-
-**Third Choice: List Account Exports** (`GET /account-exports`)
-
-**Rationale:**
-
-1. **Very quick win:** Simple health check endpoint
-2. **Low complexity:** Minimal implementation
-3. **User value:** Medium - useful for monitoring
-4. **Time:** <30 minutes to implement
+1. **Data export feature:** View account export history
+2. **Low complexity:** Simple list endpoint with pagination
+3. **User value:** Medium - useful for data management
+4. **Quick win:** Similar pattern to other list endpoints
 
 ---
 
