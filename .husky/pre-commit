@@ -56,6 +56,16 @@ echo "✅ Branch check passed: $branch"
 echo ""
 
 # ========================================
+# Documentation Size Check
+# ========================================
+
+# Check if CLAUDE.md was modified in staged changes
+if git diff --cached --name-only | grep -q "^CLAUDE.md$"; then
+  echo "📄 Checking CLAUDE.md size..."
+  .husky/check-claude-size.sh
+fi
+
+# ========================================
 # Pre-commit Validation Suite
 # ========================================
 
