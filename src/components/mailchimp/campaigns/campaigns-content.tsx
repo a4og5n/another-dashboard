@@ -99,27 +99,7 @@ export function CampaignsContent({
   const createPageUrl = (page: number) => {
     const params = new URLSearchParams();
 
-    // Preserve existing search params
-    if (searchParams) {
-      Object.entries(searchParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          const stringValue = Array.isArray(value) ? value[0] : value;
-          if (stringValue) {
-            params.set(key, stringValue);
-          }
-        }
-      });
-    }
-
-    params.set("page", page.toString());
-    params.set("perPage", pageSize.toString());
-    return `${baseUrl}?${params.toString()}`;
-  };
-
-  const createPerPageUrl = (newPerPage: number) => {
-    const params = new URLSearchParams();
-
-    // Preserve existing search params
+    // Preserve existing search params (except page and perPage which we'll set explicitly)
     if (searchParams) {
       Object.entries(searchParams).forEach(([key, value]) => {
         if (
@@ -136,19 +116,32 @@ export function CampaignsContent({
       });
     }
 
-    params.set("page", "1");
-    params.set("perPage", newPerPage.toString());
-    return `${baseUrl}?${params.toString()}`;
+    // Set page (unless it's the default)
+    if (page !== 1) {
+      params.set("page", page.toString());
+    }
+
+    // Set perPage (unless it's the default)
+    if (pageSize !== 10) {
+      params.set("perPage", pageSize.toString());
+    }
+
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   };
 
-  // URL generator for sorting (preserves all query params)
-  const createSortUrl = (field?: string, direction?: "ASC" | "DESC") => {
+  const createPerPageUrl = (newPerPage: number) => {
     const params = new URLSearchParams();
 
-    // Preserve existing search params
+    // Preserve existing search params (except page and perPage which we'll set explicitly)
     if (searchParams) {
       Object.entries(searchParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
+        if (
+          value !== undefined &&
+          value !== null &&
+          key !== "page" &&
+          key !== "perPage"
+        ) {
           const stringValue = Array.isArray(value) ? value[0] : value;
           if (stringValue) {
             params.set(key, stringValue);
@@ -157,22 +150,51 @@ export function CampaignsContent({
       });
     }
 
-    params.set("page", "1"); // Reset to first page when sorting changes
+    // Don't set page=1 (it's the default, will be handled by navigation)
+    // Set new perPage (unless it's the default)
+    if (newPerPage !== 10) {
+      params.set("perPage", newPerPage.toString());
+    }
+
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+  };
+
+  // URL generator for sorting (preserves all query params)
+  const createSortUrl = (field?: string, direction?: "ASC" | "DESC") => {
+    const params = new URLSearchParams();
+
+    // Preserve existing search params (except page, sortField, sortDir, perPage which we'll handle explicitly)
+    if (searchParams) {
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (
+          value !== undefined &&
+          value !== null &&
+          key !== "page" &&
+          key !== "sortField" &&
+          key !== "sortDir" &&
+          key !== "perPage"
+        ) {
+          const stringValue = Array.isArray(value) ? value[0] : value;
+          if (stringValue) {
+            params.set(key, stringValue);
+          }
+        }
+      });
+    }
+
+    // Don't set page=1 (it's the default, sorting resets to first page automatically)
+
+    // Set sorting params
     if (field) {
       params.set("sortField", field);
       params.set("sortDir", direction || "ASC");
-    } else {
-      // Clear sorting
-      params.delete("sortField");
-      params.delete("sortDir");
     }
+    // Note: if field is undefined, we don't set sortField/sortDir (clears sorting)
 
-    // Clean up default values
-    if (params.get("page") === "1") {
-      params.delete("page");
-    }
-    if (params.get("perPage") === "10") {
-      params.delete("perPage");
+    // Preserve perPage if it's not the default
+    if (pageSize !== 10) {
+      params.set("perPage", pageSize.toString());
     }
 
     const queryString = params.toString();
