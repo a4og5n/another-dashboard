@@ -287,13 +287,20 @@ export function CampaignsContent({
                 <TableBody>
                   {campaigns.map((campaign) => {
                     const statusInfo = formatCampaignStatus(campaign.status);
+                    const campaignTitle =
+                      campaign.settings.title ||
+                      campaign.settings.subject_line ||
+                      "Untitled";
 
                     return (
                       <TableRow key={campaign.id}>
                         <TableCell className="font-medium">
-                          {campaign.settings.title ||
-                            campaign.settings.subject_line ||
-                            "Untitled"}
+                          <Link
+                            href={`/mailchimp/campaigns/${campaign.id}`}
+                            className="text-primary hover:underline"
+                          >
+                            {campaignTitle}
+                          </Link>
                         </TableCell>
                         <TableCell>
                           {formatCampaignType(campaign.type)}
@@ -303,7 +310,14 @@ export function CampaignsContent({
                             {statusInfo.label}
                           </Badge>
                         </TableCell>
-                        <TableCell>{campaign.recipients.list_name}</TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/mailchimp/lists/${campaign.recipients.list_id}`}
+                            className="text-primary hover:underline"
+                          >
+                            {campaign.recipients.list_name}
+                          </Link>
+                        </TableCell>
                         <TableCell>
                           {campaign.recipients.recipient_count.toLocaleString()}
                         </TableCell>

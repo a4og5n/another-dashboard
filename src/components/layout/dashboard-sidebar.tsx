@@ -67,6 +67,11 @@ const navigation: NavigationItem[] = [
         icon: Send,
       },
       {
+        name: "Campaigns",
+        href: "/mailchimp/campaigns",
+        icon: Mail,
+      },
+      {
         name: "Automations",
         href: "/mailchimp/automations",
         icon: Workflow,
