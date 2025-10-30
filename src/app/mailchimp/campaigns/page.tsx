@@ -13,13 +13,39 @@ import { CampaignsContent } from "@/components/mailchimp/campaigns/campaigns-con
 import { mailchimpDAL } from "@/dal/mailchimp.dal";
 import { handleApiError, bc } from "@/utils";
 import { validatePageParams } from "@/utils/mailchimp/page-params";
-import { campaignsListPageParamsSchema } from "@/schemas/components/mailchimp/campaigns-list-page-params";
+import {
+  campaignsListPageParamsSchema,
+  type PageSearchParams,
+} from "@/schemas/components/mailchimp/campaigns-list-page-params";
 import { campaignsParamsSchema } from "@/schemas/mailchimp/campaigns/campaigns-params.schema";
 import { generateCampaignsMetadata } from "@/utils/mailchimp/metadata";
 import type { Metadata } from "next";
+import { z } from "zod";
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+// Infer API params type from schema
+type CampaignsQueryParams = z.infer<typeof campaignsParamsSchema>;
+
+/**
+ * Transform UI params (camelCase) to API params (snake_case)
+ */
+function transformCampaignsParams(
+  uiParams: PageSearchParams,
+): Partial<CampaignsQueryParams> {
+  const apiParams: Partial<CampaignsQueryParams> = {};
+
+  // Transform sort params from camelCase to snake_case
+  if (uiParams.sortField) {
+    apiParams.sort_field = uiParams.sortField as "create_time" | "send_time";
+  }
+  if (uiParams.sortDir) {
+    apiParams.sort_dir = uiParams.sortDir as "ASC" | "DESC";
+  }
+
+  return apiParams;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -27,13 +53,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page({ searchParams }: PageProps) {
+  // Await searchParams to get the actual values
+  const resolvedSearchParams = await searchParams;
+
   // Validate page params with redirect handling
   const { apiParams, currentPage, pageSize } = await validatePageParams({
     searchParams,
     uiSchema: campaignsListPageParamsSchema,
     apiSchema: campaignsParamsSchema,
     basePath: "/mailchimp/campaigns",
+    transformer: transformCampaignsParams,
   });
+
+  // Extract sort parameters from validated API params
+  const sortField = apiParams.sort_field;
+  const sortDirection = apiParams.sort_dir as "ASC" | "DESC" | undefined;
 
   // Fetch data
   const response = await mailchimpDAL.fetchCampaigns(apiParams);
@@ -58,6 +92,9 @@ export default async function Page({ searchParams }: PageProps) {
         pageSize={pageSize}
         totalItems={totalItems}
         errorCode={response.errorCode}
+        sortField={sortField}
+        sortDirection={sortDirection}
+        searchParams={resolvedSearchParams}
       />
     </PageLayout>
   );

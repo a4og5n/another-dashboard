@@ -7,11 +7,13 @@ import { z } from "zod";
 
 /**
  * Schema for page search params
- * Validates pagination parameters only
+ * Validates pagination and sorting parameters
  */
 export const pageSearchParamsSchema = z.object({
   page: z.string().optional(),
   perPage: z.string().optional(),
+  sortField: z.string().optional(),
+  sortDir: z.string().optional(),
 });
 
 /**

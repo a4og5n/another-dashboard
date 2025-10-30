@@ -44,6 +44,9 @@ export function CampaignsSkeleton() {
               <TableHead>
                 <div className="h-4 w-24 bg-muted animate-pulse rounded" />
               </TableHead>
+              <TableHead>
+                <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -66,6 +69,9 @@ export function CampaignsSkeleton() {
                 </TableCell>
                 <TableCell>
                   <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+                </TableCell>
+                <TableCell>
+                  <div className="h-4 w-32 bg-muted animate-pulse rounded" />
                 </TableCell>
                 <TableCell>
                   <div className="h-4 w-32 bg-muted animate-pulse rounded" />

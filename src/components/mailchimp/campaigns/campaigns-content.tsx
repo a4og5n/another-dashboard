@@ -1,8 +1,8 @@
 /**
  * Campaigns Content Component
- * Displays campaigns table with pagination
+ * Displays campaigns table with pagination and sorting
  *
- * Server Component using URL-based pagination
+ * Server Component using URL-based pagination and sorting
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,11 +15,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import type { Campaign } from "@/types/mailchimp/campaigns";
 import { formatDateTimeSafe } from "@/utils";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import Link from "next/link";
 
 interface CampaignsContentProps {
   campaigns: Campaign[];
@@ -27,6 +30,9 @@ interface CampaignsContentProps {
   pageSize: number;
   totalItems: number;
   errorCode?: string;
+  sortField?: string;
+  sortDirection?: "ASC" | "DESC";
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
 /**
@@ -83,12 +89,28 @@ export function CampaignsContent({
   pageSize,
   totalItems,
   errorCode,
+  sortField,
+  sortDirection = "ASC",
+  searchParams,
 }: CampaignsContentProps) {
   const baseUrl = "/mailchimp/campaigns";
 
   // URL generation functions for pagination
   const createPageUrl = (page: number) => {
     const params = new URLSearchParams();
+
+    // Preserve existing search params
+    if (searchParams) {
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          const stringValue = Array.isArray(value) ? value[0] : value;
+          if (stringValue) {
+            params.set(key, stringValue);
+          }
+        }
+      });
+    }
+
     params.set("page", page.toString());
     params.set("perPage", pageSize.toString());
     return `${baseUrl}?${params.toString()}`;
@@ -96,9 +118,65 @@ export function CampaignsContent({
 
   const createPerPageUrl = (newPerPage: number) => {
     const params = new URLSearchParams();
+
+    // Preserve existing search params
+    if (searchParams) {
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (
+          value !== undefined &&
+          value !== null &&
+          key !== "page" &&
+          key !== "perPage"
+        ) {
+          const stringValue = Array.isArray(value) ? value[0] : value;
+          if (stringValue) {
+            params.set(key, stringValue);
+          }
+        }
+      });
+    }
+
     params.set("page", "1");
     params.set("perPage", newPerPage.toString());
     return `${baseUrl}?${params.toString()}`;
+  };
+
+  // URL generator for sorting (preserves all query params)
+  const createSortUrl = (field?: string, direction?: "ASC" | "DESC") => {
+    const params = new URLSearchParams();
+
+    // Preserve existing search params
+    if (searchParams) {
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          const stringValue = Array.isArray(value) ? value[0] : value;
+          if (stringValue) {
+            params.set(key, stringValue);
+          }
+        }
+      });
+    }
+
+    params.set("page", "1"); // Reset to first page when sorting changes
+    if (field) {
+      params.set("sortField", field);
+      params.set("sortDir", direction || "ASC");
+    } else {
+      // Clear sorting
+      params.delete("sortField");
+      params.delete("sortDir");
+    }
+
+    // Clean up default values
+    if (params.get("page") === "1") {
+      params.delete("page");
+    }
+    if (params.get("perPage") === "10") {
+      params.delete("perPage");
+    }
+
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   };
 
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -125,7 +203,63 @@ export function CampaignsContent({
                     <TableHead>List</TableHead>
                     <TableHead>Recipients</TableHead>
                     <TableHead>Emails Sent</TableHead>
-                    <TableHead>Send Time</TableHead>
+                    <TableHead>
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 font-medium"
+                      >
+                        <Link
+                          href={createSortUrl(
+                            "create_time",
+                            sortField === "create_time" &&
+                              sortDirection === "ASC"
+                              ? "DESC"
+                              : "ASC",
+                          )}
+                        >
+                          Created
+                          {sortField === "create_time" ? (
+                            sortDirection === "ASC" ? (
+                              <ArrowUp className="ml-1 h-3 w-3" />
+                            ) : (
+                              <ArrowDown className="ml-1 h-3 w-3" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="ml-1 h-3 w-3" />
+                          )}
+                        </Link>
+                      </Button>
+                    </TableHead>
+                    <TableHead>
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 font-medium"
+                      >
+                        <Link
+                          href={createSortUrl(
+                            "send_time",
+                            sortField === "send_time" && sortDirection === "ASC"
+                              ? "DESC"
+                              : "ASC",
+                          )}
+                        >
+                          Sent
+                          {sortField === "send_time" ? (
+                            sortDirection === "ASC" ? (
+                              <ArrowUp className="ml-1 h-3 w-3" />
+                            ) : (
+                              <ArrowDown className="ml-1 h-3 w-3" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="ml-1 h-3 w-3" />
+                          )}
+                        </Link>
+                      </Button>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -153,6 +287,11 @@ export function CampaignsContent({
                         </TableCell>
                         <TableCell>
                           {campaign.emails_sent.toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          {campaign.create_time
+                            ? formatDateTimeSafe(campaign.create_time)
+                            : "—"}
                         </TableCell>
                         <TableCell>
                           {campaign.send_time
