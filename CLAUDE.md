@@ -294,7 +294,24 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 ### Phase 2: Implementation
 
 1. Add PageConfig to `src/generation/page-configs.ts`
-2. Run page generator
+2. **Run page generator (with validation)**:
+
+   ```bash
+   # ⚠️ CRITICAL: Use npm script wrapper (validates path automatically)
+   pnpm generate:from-config {config-key}
+
+   # Example: pnpm generate:from-config campaigns-list
+   ```
+
+   **❌ NEVER use these incorrect paths:**
+   - ~~`npx tsx src/scripts/generators/generate-from-config.ts`~~ (wrong: `src/` prefix)
+   - ~~`npx tsx scripts/generators/generate-from-config.ts`~~ (wrong: direct tsx, no validation)
+
+   **Pre-flight validation:**
+   - Check that PageConfig key exists in `src/generation/page-configs.ts`
+   - Verify generator script path: `ls scripts/generators/api/generate-from-config.ts`
+   - If either check fails, STOP and report error to user
+
 3. Implement: types, skeleton, page.tsx, components
 4. Update DAL method
 5. Run [Standard Validation Suite](#commands)

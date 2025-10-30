@@ -29,6 +29,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "generate:page": "tsx scripts/generate-page.ts",
+    "generate:from-config": "tsx scripts/generators/api/generate-from-config.ts",
     "prepare": "husky"
   },
   "lint-staged": {
