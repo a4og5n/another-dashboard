@@ -1,3 +1,4 @@
+export * from "@/types/mailchimp/campaigns";
 export * from "@/types/mailchimp/common";
 export * from "@/types/mailchimp/domain-performance";
 export * from "@/types/mailchimp/email-activity";

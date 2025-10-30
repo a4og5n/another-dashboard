@@ -1158,3 +1158,35 @@ export async function generateCampaignsMetadata(): Promise<Metadata> {
     },
   };
 }
+
+/**
+ * Generates metadata specifically for campaign content pages
+ * @param campaign_id - The campaign ID
+ * @returns Next.js Metadata object for the campaign content page
+ */
+export async function generateCampaignContentMetadata(
+  campaign_id: string,
+): Promise<Metadata> {
+  // Fetch campaign data for metadata
+  const response = await mailchimpDAL.fetchCampaign(campaign_id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Content - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const campaign = response.data;
+  const campaignTitle = campaign.settings?.title || "Untitled Campaign";
+
+  return {
+    title: `${campaignTitle} - Campaign Content`,
+    description: "Preview campaign HTML and plain-text content",
+    openGraph: {
+      title: `${campaignTitle} - Campaign Content`,
+      description: "Preview campaign HTML and plain-text content",
+      type: "website",
+    },
+  };
+}

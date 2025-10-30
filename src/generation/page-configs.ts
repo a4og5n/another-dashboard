@@ -1019,6 +1019,50 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Campaign Content Page
+   * Preview campaign HTML and plain-text content before sending
+   */
+  "campaign-content": {
+    schemas: {
+      apiParams:
+        "src/schemas/mailchimp/campaigns/[campaign_id]/content/params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/campaigns/[campaign_id]/content/success.schema.ts",
+      apiError:
+        "src/schemas/mailchimp/campaigns/[campaign_id]/content/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/campaigns/[campaign_id]/content",
+      params: ["campaign_id"],
+    },
+    api: {
+      endpoint: "/campaigns/{campaign_id}/content",
+      method: "GET",
+      dalMethod: "fetchCampaignContent",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Campaign Content",
+      description: "Preview campaign HTML and plain-text content",
+      features: [
+        "HTML content preview",
+        "Plain-text version display",
+        "Archive HTML view",
+        "Variate content support (multivariate campaigns)",
+        "Content sanitization and security",
+        "Responsive display",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        parent: "campaign-detail",
+        label: "Content",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
