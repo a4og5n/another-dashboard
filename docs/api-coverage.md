@@ -153,9 +153,11 @@ Campaign management and operations endpoints.
 
 ### Campaign Management
 
-- 📋 **List Campaigns** - `GET /campaigns`
-  - Features: Campaign list with filtering and pagination
+- ✅ **List Campaigns** - `GET /campaigns`
+  - Route: `/mailchimp/campaigns`
+  - Features: Campaign list with sorting (create_time, send_time), pagination, status badges, navigation links
   - **Priority 3:** Campaign management
+  - **Implemented:** Issue #375, PR #376
 
 - 🔒 **Add Campaign** - `POST /campaigns`
   - **Priority 5:** Write operation (future)
@@ -1425,15 +1427,15 @@ The following foundational endpoints are now implemented:
 
 ### 💡 Recommendation:
 
-**Top Choice: List Campaigns** (`GET /campaigns`)
+**Top Choice: Get Campaign Info** (`GET /campaigns/{campaign_id}`)
 
 **Rationale:**
 
-1. **High impact:** Foundation for campaign management features
-2. **Would unlock:** ~17 campaign management endpoints
-3. **User value:** High - central campaign management view
-4. **Complexity:** High - but worth it for the unlock value
-5. **Natural progression:** After completing Landing Pages (both list and detail implemented)
+1. **Natural next step:** List Campaigns already implemented (Issue #375)
+2. **High user value:** Campaign detail view with full settings and configuration
+3. **Would enable:** Clicking campaign titles from list view (links already added)
+4. **Complexity:** Medium - similar to List detail pages already implemented
+5. **Would unlock:** Campaign Content and Send Checklist endpoints
 
 **Second Choice: List Account Exports** (`GET /account-exports`)
 
