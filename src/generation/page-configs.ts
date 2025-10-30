@@ -935,6 +935,45 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Campaigns List Page
+   * Display and manage all marketing campaigns
+   */
+  "campaigns-list": {
+    schemas: {
+      apiParams: "src/schemas/mailchimp/campaigns/campaigns-params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/campaigns/campaigns-success.schema.ts",
+      apiError: "src/schemas/mailchimp/campaigns/campaigns-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/campaigns",
+      params: [],
+    },
+    api: {
+      endpoint: "/campaigns",
+      method: "GET",
+      dalMethod: "fetchCampaigns",
+    },
+    page: {
+      type: "list",
+      title: "Campaigns",
+      description: "View and manage all your Mailchimp marketing campaigns",
+      features: [
+        "Campaign status tracking",
+        "Performance metrics",
+        "Filter by type, status, and list",
+        "Pagination and sorting",
+      ],
+    },
+    ui: {
+      hasPagination: true,
+      breadcrumbs: {
+        label: "Campaigns",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
