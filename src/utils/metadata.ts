@@ -60,6 +60,7 @@ export {
   generateInterestCategoryInfoMetadata,
   generateLandingPagesMetadata,
   generateLandingPageDetailsMetadata,
+  generateCampaignDetailMetadata,
   generateApiRootMetadata,
   generateBatchWebhooksMetadata,
   generateCampaignsMetadata,

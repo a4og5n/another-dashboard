@@ -134,6 +134,26 @@ export const bc = {
   } as const satisfies BreadcrumbItem,
 
   /**
+   * Campaign Detail breadcrumb
+   *
+   * @param id - Campaign ID
+   * @param title - Optional campaign title for label
+   * @returns Breadcrumb item for campaign detail
+   *
+   * @example
+   * ```tsx
+   * bc.campaign("abc123", "My Campaign")
+   * // Returns: { label: "My Campaign", href: "/mailchimp/campaigns/abc123" }
+   * ```
+   */
+  campaign(id: string, title?: string): BreadcrumbItem {
+    return {
+      label: title || "Campaign Details",
+      href: `/mailchimp/campaigns/${id}`,
+    };
+  },
+
+  /**
    * Batch Webhooks breadcrumb
    */
   batchWebhooks: {

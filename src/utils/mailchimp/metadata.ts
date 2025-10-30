@@ -1067,6 +1067,24 @@ export function generateLandingPageDetailsMetadata(): Metadata {
 }
 
 /**
+ * Generates metadata specifically for campaign detail pages
+ * @returns Next.js Metadata object for the campaign detail page
+ */
+export function generateCampaignDetailMetadata(): Metadata {
+  return {
+    title: "Campaign Details",
+    description:
+      "Complete campaign information including settings, recipients, and performance metrics",
+    openGraph: {
+      title: "Campaign Details",
+      description:
+        "View detailed information about this campaign including settings, recipients, and performance metrics",
+      type: "website",
+    },
+  };
+}
+
+/**
  * Generates metadata specifically for api root pages
  * @returns Next.js Metadata object for the api root page
  */

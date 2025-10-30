@@ -53,7 +53,11 @@ import { interestCategoryInfoSuccessSchema } from "@/schemas/mailchimp/lists/int
 import { batchWebhooksQueryParamsSchema } from "@/schemas/mailchimp/batch-webhooks/batch-webhooks-params.schema";
 import { batchWebhooksSuccessSchema } from "@/schemas/mailchimp/batch-webhooks/batch-webhooks-success.schema";
 import { campaignsParamsSchema } from "@/schemas/mailchimp/campaigns/campaigns-params.schema";
-import { campaignsSuccessSchema } from "@/schemas/mailchimp/campaigns/campaigns-success.schema";
+import {
+  campaignsSuccessSchema,
+  campaignSchema,
+} from "@/schemas/mailchimp/campaigns/campaigns-success.schema";
+import { campaignQueryParamsSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/params.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -83,9 +87,15 @@ export class MailchimpDAL {
     );
   }
 
-  async fetchCampaign(campaignId: string): Promise<ApiResponse<unknown>> {
+  async fetchCampaign(
+    campaignId: string,
+    params?: z.infer<typeof campaignQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof campaignSchema>>> {
     return mailchimpApiCall((client) =>
-      client.get<unknown>(`/campaigns/${campaignId}`),
+      client.get<z.infer<typeof campaignSchema>>(
+        `/campaigns/${campaignId}`,
+        params,
+      ),
     );
   }
 
