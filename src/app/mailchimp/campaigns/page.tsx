@@ -37,6 +37,16 @@ function transformCampaignsParams(
 ): Partial<CampaignsQueryParams> {
   const apiParams: Partial<CampaignsQueryParams> = {};
 
+  // Transform pagination params
+  if (uiParams.perPage) {
+    apiParams.count = parseInt(uiParams.perPage);
+  }
+  if (uiParams.page) {
+    const page = parseInt(uiParams.page);
+    const perPage = uiParams.perPage ? parseInt(uiParams.perPage) : 10;
+    apiParams.offset = (page - 1) * perPage;
+  }
+
   // Transform sort params from camelCase to snake_case
   if (uiParams.sortField) {
     apiParams.sort_field = uiParams.sortField as "create_time" | "send_time";
