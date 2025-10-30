@@ -16,6 +16,231 @@ This document captures key learnings from implementing Mailchimp dashboard featu
 
 ## Session Reviews
 
+### Session: Get Campaign Info Implementation (2025-10-30)
+
+**Endpoint:** `GET /campaigns/{campaign_id}`
+**Route:** `/mailchimp/campaigns/[campaign_id]`
+**Issue:** #383 | **PR:** #384 | **Status:** ✅ Merged
+
+#### What Worked Exceptionally Well ✅
+
+**1. Always-Visible Card Pattern with N/A Fallbacks** ⭐⭐⭐
+
+**What Happened:**
+
+- User requested iterative enhancements to display ALL campaign data
+- Applied consistent pattern: render all cards regardless of data availability
+- Used N/A fallbacks for missing fields instead of conditional rendering
+- Covered 12+ distinct card sections with comprehensive data display
+
+**Implementation Details:**
+
+```tsx
+{
+  /* Always render card wrapper */
+}
+<Card>
+  <CardHeader>
+    <CardTitle>Resend Eligibility</CardTitle>
+  </CardHeader>
+  <CardContent>
+    {!data.resend_shortcut_eligibility ? (
+      <p className="text-sm text-muted-foreground">
+        Resend eligibility information not available for this campaign.
+      </p>
+    ) : (
+      <div className="space-y-3">
+        {/* Show N/A for individual missing fields */}
+        <div>
+          <span className="text-sm">Resend to Non-Openers</span>
+          {data.resend_shortcut_eligibility.to_non_openers ? (
+            <Badge>{/* data */}</Badge>
+          ) : (
+            <span className="text-muted-foreground">N/A</span>
+          )}
+        </div>
+      </div>
+    )}
+  </CardContent>
+</Card>;
+```
+
+**Why This Matters:**
+
+- **Predictable UX:** Users always see the same card structure
+- **Better information architecture:** Missing data clearly indicated with N/A
+- **Reduced cognitive load:** No cards appearing/disappearing based on data
+- **Debugging friendly:** Easy to identify what data is missing
+
+**2. HTML Content Rendering with Typography** ⭐⭐⭐
+
+**What Happened:**
+
+- User asked: "Segment Info contains HTML tags. How can we better display that content?"
+- Used `dangerouslySetInnerHTML` with Tailwind's `prose` classes
+- Applied `dark:prose-invert` for dark mode support
+
+**Implementation Details:**
+
+```tsx
+<div
+  className="text-sm prose prose-sm max-w-none dark:prose-invert"
+  dangerouslySetInnerHTML={{
+    __html: data.recipients.segment_text,
+  }}
+/>
+```
+
+**Why This Matters:**
+
+- **Proper HTML rendering:** Tags like `<strong>`, `<em>`, `<a>` display correctly
+- **Beautiful typography:** `prose` classes provide professional text styling
+- **Dark mode support:** Content adapts to user's theme preference
+- **User-friendly:** HTML appears as intended, not as raw tags
+
+**3. Security Vulnerability Auto-Fix During CI/CD** ⭐⭐
+
+**What Happened:**
+
+- Security Audit failed: `tar` package vulnerability (CVE moderate severity)
+- Identified transitive dependency through Tailwind CSS
+- Updated `pnpm-lock.yaml` with `pnpm update tar`
+- Committed fix, pushed, CI passed on second run
+
+**Solution:**
+
+```bash
+pnpm update tar
+git commit -m "chore: update tar package to fix security vulnerability"
+git push
+```
+
+**Why This Matters:**
+
+- **Proactive security:** Caught and fixed before merge
+- **CI/CD effectiveness:** Security checks prevent vulnerable code
+- **Quick recovery:** Simple dependency update resolved the issue
+- **Clean history:** Security fix committed separately for audit trail
+
+#### Issues Encountered & Solutions 🔧
+
+**1. Iterative Data Display Requests**
+
+**Problem:** User made 8 separate requests to add different data fields throughout the session
+
+**Root Cause:**
+
+- Initial implementation didn't comprehensively analyze all available schema fields
+- User discovered missing fields through manual review
+
+**Solution:**
+
+- Responded to each request promptly with amends to same commit
+- Maintained single clean commit with all enhancements
+
+**Prevention:**
+
+- In Phase 2, perform comprehensive schema analysis
+- Create checklist of ALL available fields in success schema
+- Ask user: "These are all available fields. Which should we display?"
+
+**2. Security Audit Failure (tar package)**
+
+**Problem:** CI/CD Security Audit failed with moderate severity vulnerability
+
+**Root Cause:** Transitive dependency (`@tailwindcss/oxide > tar@7.5.1`) had known CVE
+
+**Solution:**
+
+- Ran `pnpm update tar` to get patched version (>=7.5.2)
+- Committed lockfile update with clear description
+- Re-ran CI/CD, all checks passed
+
+**Prevention:** Regular dependency updates (this is a transitive dependency, hard to prevent)
+
+#### Implementation Stats 📊
+
+**Development Time:**
+
+- Phase 1 (Schemas): ~15 minutes
+- Phase 2 (Implementation): ~30 minutes
+- Phase 2.75 (Testing & Iteration): ~8 enhancement requests over 2 hours
+- Phase 3 (CI/CD): ~5 minutes (including security fix)
+- Phase 4 (Post-merge): ~10 minutes
+- **Total:** ~3 hours
+
+**Code Metrics:**
+
+- Files Created: 9
+- Files Modified: 6
+- Lines Added: ~1,929
+- Lines Removed: ~3
+
+**Validation:**
+
+- ✅ Type-check: passed
+- ✅ Lint: passed (with ESLint auto-fix for Image icon name collision)
+- ✅ Format: passed
+- ✅ Tests: 905/905 passing
+- ✅ CI/CD: All checks passed (after security fix)
+
+#### Key Learnings for Future Implementations 💡
+
+1. **Comprehensive Schema Analysis Up Front**
+   - Don't wait for user to discover missing fields
+   - Analyze entire success schema in Phase 1
+   - Present checklist of all displayable fields for user approval
+   - Reduces back-and-forth iteration in Phase 2.75
+
+2. **Always-Visible UI Pattern is Highly Effective**
+   - Prefer `N/A` fallbacks over conditional rendering
+   - Makes absence of data explicit rather than implicit
+   - Users appreciate consistent, predictable layouts
+   - Apply this pattern by default for all detail pages
+
+3. **HTML Content Needs Special Handling**
+   - Use `dangerouslySetInnerHTML` for API-returned HTML content
+   - Always combine with `prose` classes for typography
+   - Remember `dark:prose-invert` for dark mode
+   - This applies to: segment text, campaign content, email descriptions
+
+4. **Security Audit is Non-Negotiable**
+   - Even transitive dependencies can block merges
+   - `pnpm update {package}` usually resolves CVEs
+   - Commit security fixes separately for clear audit trail
+   - CI/CD catches vulnerabilities local tests miss
+
+5. **Iterative Enhancement Pattern Works Well**
+   - Git amend for related enhancements keeps history clean
+   - User can review page live and request additions
+   - Each enhancement validated immediately (type-check, lint, test)
+   - Single comprehensive commit at the end
+
+#### Files Modified/Created 📁
+
+**Created:**
+
+- `src/app/mailchimp/campaigns/[campaign_id]/page.tsx` - Main detail page
+- `src/app/mailchimp/campaigns/[campaign_id]/error.tsx` - Error boundary
+- `src/app/mailchimp/campaigns/[campaign_id]/not-found.tsx` - 404 page
+- `src/components/mailchimp/campaigns/campaign-detail-content.tsx` - Content component (1,565 lines)
+- `src/schemas/components/mailchimp/campaign-detail-page-params.ts` - UI schema
+- `src/schemas/mailchimp/campaigns/[campaign_id]/params.schema.ts` - Params validation
+- `src/schemas/mailchimp/campaigns/[campaign_id]/success.schema.ts` - Success response schema
+- `src/schemas/mailchimp/campaigns/[campaign_id]/error.schema.ts` - Error response schema
+- `src/skeletons/mailchimp/CampaignDetailSkeleton.tsx` - Loading skeleton
+
+**Modified:**
+
+- `pnpm-lock.yaml` - Updated tar package to fix CVE
+- `src/dal/mailchimp.dal.ts` - Added getCampaignById method
+- `src/generation/page-configs.ts` - Added campaign-detail config
+- `src/utils/breadcrumbs/breadcrumb-builder.ts` - Added bc.campaignDetail helper
+- `src/utils/mailchimp/metadata.ts` - Added generateCampaignDetailMetadata export
+- `src/utils/metadata.ts` - Re-exported campaign detail metadata helper
+
+---
+
 ### Session: List Campaigns Implementation (2025-10-30)
 
 **Endpoint:** `GET /campaigns`
