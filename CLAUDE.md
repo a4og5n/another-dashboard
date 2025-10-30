@@ -131,7 +131,7 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 
 **Docs:** `pnpm docs` | `pnpm docs:watch`
 
-**Page Generator:** `pnpm generate:page` (interactive CLI for humans)
+**Page Generator:** `pnpm generate:page` (interactive CLI for humans) | `pnpm generate:from-config {config-key}` (non-interactive, for AI workflow)
 
 ## Architecture
 
@@ -294,7 +294,23 @@ See "Phase 0: Git Setup" in the AI-First Development Workflow section below for 
 ### Phase 2: Implementation
 
 1. Add PageConfig to `src/generation/page-configs.ts`
-2. Run page generator
+2. **Run page generator:**
+
+   ```bash
+   pnpm generate:from-config {config-key}
+
+   # Example: pnpm generate:from-config campaign-detail
+   ```
+
+   **What this does:**
+   - Reads the PageConfig from `src/generation/page-configs.ts`
+   - Generates page files (page.tsx, error.tsx, not-found.tsx)
+   - Generates UI schema file
+   - Generates placeholder component
+   - Adds DAL method stub
+   - Adds breadcrumb function
+   - Adds metadata helper
+
 3. Implement: types, skeleton, page.tsx, components
 4. Update DAL method
 5. Run [Standard Validation Suite](#commands)
