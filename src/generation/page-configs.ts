@@ -974,6 +974,51 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Campaign Detail Page
+   * Display complete campaign information, settings, and performance
+   */
+  "campaign-detail": {
+    schemas: {
+      apiParams:
+        "src/schemas/mailchimp/campaigns/[campaign_id]/params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/campaigns/[campaign_id]/success.schema.ts",
+      apiError: "src/schemas/mailchimp/campaigns/[campaign_id]/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/campaigns/[campaign_id]",
+      params: ["campaign_id"],
+    },
+    api: {
+      endpoint: "/campaigns/{campaign_id}",
+      method: "GET",
+      dalMethod: "fetchCampaign",
+    },
+    page: {
+      type: "detail",
+      title: "Campaign Details",
+      description:
+        "Complete campaign information including settings, recipients, and performance metrics",
+      features: [
+        "Campaign settings and configuration",
+        "Recipient information",
+        "Performance metrics",
+        "Tracking options",
+        "RSS options (if applicable)",
+        "A/B split options (if applicable)",
+        "Links to campaign reports",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        parent: "campaigns-list",
+        label: "Campaign Details",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
