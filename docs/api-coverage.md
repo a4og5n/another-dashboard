@@ -162,9 +162,11 @@ Campaign management and operations endpoints.
 - 🔒 **Add Campaign** - `POST /campaigns`
   - **Priority 5:** Write operation (future)
 
-- 📋 **Get Campaign Info** - `GET /campaigns/{campaign_id}`
-  - Features: Campaign details and settings
+- ✅ **Get Campaign Info** - `GET /campaigns/{campaign_id}`
+  - Route: `/mailchimp/campaigns/[campaign_id]`
+  - Features: Comprehensive campaign details with always-visible cards (overview, settings, recipients with segment options, tracking, report summary with drill-down link, delivery stats, resend features, social card, A/B split test, multivariate test, RSS options, archive links), HTML rendering for segment text, N/A fallbacks for all optional fields
   - **Priority 3:** Campaign analytics
+  - **Implemented:** Issue #383, PR #384
 
 - 🔒 **Update Campaign Settings** - `PATCH /campaigns/{campaign_id}`
   - **Priority 5:** Write operation (future)
@@ -1427,24 +1429,25 @@ The following foundational endpoints are now implemented:
 
 ### 💡 Recommendation:
 
-**Top Choice: Get Campaign Info** (`GET /campaigns/{campaign_id}`)
+**Top Choice: Get Campaign Content** (`GET /campaigns/{campaign_id}/content`)
 
 **Rationale:**
 
-1. **Natural next step:** List Campaigns already implemented (Issue #375)
-2. **High user value:** Campaign detail view with full settings and configuration
-3. **Would enable:** Clicking campaign titles from list view (links already added)
-4. **Complexity:** Medium - similar to List detail pages already implemented
-5. **Would unlock:** Campaign Content and Send Checklist endpoints
+1. **Natural next step:** Get Campaign Info just implemented (Issue #383)
+2. **High user value:** Preview campaign HTML content directly
+3. **Would enable:** Content preview button in campaign detail page
+4. **Complexity:** Medium - HTML rendering with proper sanitization
+5. **Complements:** Campaign details with actual content view
 
-**Second Choice: List Account Exports** (`GET /account-exports`)
+**Second Choice: Get Campaign Send Checklist** (`GET /campaigns/{campaign_id}/send-checklist`)
 
 **Rationale:**
 
-1. **Data export feature:** View account export history
-2. **Low complexity:** Simple list endpoint with pagination
-3. **User value:** Medium - useful for data management
-4. **Quick win:** Similar pattern to other list endpoints
+1. **Follows Campaign Info:** Logical next step for campaign analytics
+2. **User value:** High - pre-send validation insights
+3. **Low complexity:** Simple checklist data structure
+4. **Would enable:** "Ready to send?" status indicator in campaign detail
+5. **Quick win:** Clear, actionable data for users
 
 ---
 
