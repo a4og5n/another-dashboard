@@ -1111,3 +1111,32 @@ export async function generateBatchWebhooksMetadata(): Promise<Metadata> {
     },
   };
 }
+
+/**
+ * Generates metadata for campaigns page
+ * @returns Next.js Metadata object for the campaigns page
+ */
+export async function generateCampaignsMetadata(): Promise<Metadata> {
+  // Fetch data for metadata
+  // TODO: Implement proper data fetching using DAL method
+  const response = await mailchimpDAL.fetchApiRoot();
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaigns - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const data = response.data as { account_name?: string };
+
+  return {
+    title: `${data.account_name || "Campaigns"} - Campaigns`,
+    description: "View and manage all your Mailchimp marketing campaigns",
+    openGraph: {
+      title: `${data.account_name || "Campaigns"} - Campaigns`,
+      description: "View and manage all your Mailchimp marketing campaigns",
+      type: "website",
+    },
+  };
+}
