@@ -66,6 +66,7 @@ export {
   generateCampaignsMetadata,
   generateCampaignContentMetadata,
   generateSendChecklistMetadata,
+  generateLandingPageReportMetadata,
 } from "@/utils/mailchimp/metadata";
 
 export { generateClickDetailsMetadata } from "@/utils/mailchimp/metadata";

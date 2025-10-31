@@ -488,6 +488,25 @@ export const bc = {
       href: `/mailchimp/landing-pages/${page_id}`,
     };
   },
+
+  /**
+   * Landing Page Report breadcrumb
+   *
+   * @param outreach_id - OUTREACH_ID
+   * @returns Breadcrumb item for landing page report
+   *
+   * @example
+   * ```tsx
+   * bc.landingPageReport("abc123")
+   * // Returns: { label: "Report", href: "/mailchimp/reporting/landing-pages/${outreach_id}" }
+   * ```
+   */
+  landingPageReport(outreach_id: string): BreadcrumbItem {
+    return {
+      label: "Report",
+      href: `/mailchimp/reporting/landing-pages/${outreach_id}`,
+    };
+  },
   listActivity(id: string): BreadcrumbItem {
     return {
       label: "Activity",
