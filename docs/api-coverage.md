@@ -210,9 +210,11 @@ Campaign management and operations endpoints.
 
 ### Campaign Send Checklist
 
-- 📋 **Get Campaign Send Checklist** - `GET /campaigns/{campaign_id}/send-checklist`
-  - Features: Pre-send validation checklist
+- ✅ **Get Campaign Send Checklist** - `GET /campaigns/{campaign_id}/send-checklist`
+  - Route: `/mailchimp/campaigns/[campaign_id]/send-checklist`
+  - Features: Pre-send validation checklist, Overall campaign readiness status, Individual validation checks with error/warning/success indicators, Visual status display
   - **Priority 3:** Campaign validation
+  - **Implemented:** Issue #392, PR #393
 
 ---
 
@@ -1432,15 +1434,25 @@ The following foundational endpoints are now implemented:
 
 ### 💡 Recommendation:
 
-**Top Choice: Get Campaign Send Checklist** (`GET /campaigns/{campaign_id}/send-checklist`)
+**Top Choice: Get Landing Page Report** (`GET /reporting/landing-pages/{outreach_id}`)
 
 **Rationale:**
 
-1. **Follows Campaign Info:** Logical next step for campaign analytics
-2. **User value:** High - pre-send validation insights
-3. **Low complexity:** Simple checklist data structure
-4. **Would enable:** "Ready to send?" status indicator in campaign detail
-5. **Quick win:** Clear, actionable data for users
+1. **New Feature Area:** Landing pages reporting and analytics
+2. **User value:** High - conversion tracking and landing page performance insights
+3. **Would unlock:** Access to ~9 landing page reporting endpoints
+4. **Moderate complexity:** Performance metrics and visitor tracking
+5. **Strategic value:** Complements existing landing pages list view
+
+**Second Choice: Get Workflow Email Info** (`GET /automations/{workflow_id}/emails/{workflow_email_id}`)
+
+**Rationale:**
+
+1. **Automation Detail:** Drill-down into specific automation emails
+2. **User value:** Medium-High - automation email configuration and metrics
+3. **Would enable:** Complete automation workflow visibility
+4. **Low complexity:** Similar to campaign email patterns
+5. **Quick win:** Extends existing automations functionality
 
 ---
 
