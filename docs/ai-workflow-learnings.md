@@ -16,6 +16,174 @@ This document captures key learnings from implementing Mailchimp dashboard featu
 
 ## Session Reviews
 
+### Session: Get Campaign Content Implementation (2025-10-31)
+
+**Endpoint:** `GET /campaigns/{campaign_id}/content`
+**Route:** `/mailchimp/campaigns/[campaign_id]/content`
+**Issue:** #388 | **PR:** #389 | **Status:** ✅ Merged
+
+#### What Worked Exceptionally Well ✅
+
+**1. Iframe Isolation Pattern for HTML Content** ⭐⭐⭐
+
+**What Happened:**
+
+- Discovered CSS conflict: email HTML contained nested `<main>` elements conflicting with page layout
+- Attempted CSS-based solutions first (`!bg-transparent` overrides) - failed and broke email styling
+- Implemented iframe with `srcDoc` attribute for complete HTML isolation
+- Solution worked perfectly for both HTML and Archive HTML tabs
+
+**Implementation Details:**
+
+```tsx
+<div className="p-6 rounded-lg border bg-card">
+  <iframe
+    className="w-full min-h-[600px] border-0"
+    srcDoc={data.html || ""}
+    title="Campaign HTML Preview"
+    sandbox="allow-same-origin"
+  />
+</div>
+```
+
+**Why This Matters:**
+
+- **Complete CSS isolation:** Email HTML can't interfere with page styles
+- **Security:** `sandbox="allow-same-origin"` prevents scripts, allows styling
+- **Reusable pattern:** Works for any user-generated HTML (landing pages, templates)
+- **Maintainable:** No complex CSS overrides to maintain
+
+**2. Multivariate Content Support** ⭐⭐
+
+**What Happened:**
+
+- Discovered `variate_contents` array in API response (A/B test variants)
+- Added selector UI to switch between content variations
+- Conditionally displayed variant content or fallback to main content
+
+**Implementation Details:**
+
+```tsx
+{
+  data.variate_contents?.map((variate, index) => (
+    <Badge
+      key={index}
+      variant={selectedVariate === index ? "default" : "outline"}
+      className="cursor-pointer"
+      onClick={() => setSelectedVariate(index)}
+    >
+      {variate.content_label || `Variation ${index + 1}`}
+    </Badge>
+  ));
+}
+```
+
+**Why This Matters:**
+
+- **Handles A/B tests:** Users can preview all campaign variations
+- **Progressive enhancement:** Falls back gracefully if no variants exist
+- **Intuitive UX:** Badge selector makes variant switching obvious
+
+#### Issues Encountered & Solutions 🔧
+
+**1. Database Connection Error in Browser**
+
+**Problem:** "Database connection string not found. Expected one of: POSTGRES_PRISMA_URL..."
+
+**Root Cause:** Client component imported `MailchimpConnectionGuard` from barrel export `@/components/mailchimp`, which pulled in server-side database initialization code
+
+**Solution:** Changed to direct import `@/components/mailchimp/mailchimp-connection-guard`
+
+**Prevention:** Always use direct imports for client components that might have server-side dependencies. Barrel exports can inadvertently pull in server code.
+
+**2. Black Background CSS Conflict**
+
+**Problem:** Black background appeared in main content area, but only on HTML/Archive tabs (not Plain Text)
+
+**Root Cause:** Email HTML contained `<main>` or `<body>` tags with black background that conflicted with page's `<main>` element from `dashboard-layout.tsx`
+
+**Failed Solutions:**
+
+- Attempted CSS override with `[&>body]:!bg-transparent` - broke email styling
+- Attempted blanket override with `[&_*]:!bg-transparent` - broke newsletter body design
+
+**Successful Solution:** Use iframe with `srcDoc` for complete document isolation
+
+**Prevention:** For user-generated HTML, always use iframe isolation to prevent CSS conflicts. Don't try to override styles - isolate the content instead.
+
+#### Implementation Stats 📊
+
+**Development Time:**
+
+- Phase 1 (Schemas): ~15 minutes
+- Phase 2 (Implementation): ~25 minutes
+- Phase 2.75 (Testing & Iteration): ~3 iterations (CSS fixes + iframe solution)
+- **Total:** ~2 hours
+
+**Code Metrics:**
+
+- Files Created: 8 (schemas, pages, components)
+- Files Modified: 8 (types, DAL, navigation, breadcrumbs, etc.)
+- Lines Added: ~659
+- Lines Removed: ~0
+
+**Validation:**
+
+- ✅ Type-check: passed
+- ✅ Lint: passed
+- ✅ Format: passed
+- ✅ Tests: 905/913 passing
+- ✅ CI/CD: All checks passed (Build: 1m49s, Tests: 2m3s)
+
+#### Key Learnings for Future Implementations 💡
+
+1. **For User-Generated HTML: Always Use Iframe Isolation**
+   - Don't attempt CSS overrides to fix conflicts
+   - Iframe with `srcDoc` provides complete document isolation
+   - `sandbox="allow-same-origin"` balances security with functionality
+   - Reusable for: landing pages, email templates, any third-party HTML
+
+2. **Test with Real HTML Content Early**
+   - CSS conflicts only appear with actual email HTML
+   - Early testing would have revealed nested `<main>` issue sooner
+   - Could have skipped failed CSS override attempts
+
+3. **Direct Imports for Client Components**
+   - Barrel exports can pull in unintended server-side code
+   - Direct imports prevent database/server code from reaching browser
+   - Pattern: `@/components/path/to/specific-file` over `@/components/group`
+
+4. **Multivariate Content is Common**
+   - Many Mailchimp endpoints support A/B testing with `variate_contents`
+   - Always check API docs for variant support
+   - Consider variant UI in initial design, not as afterthought
+
+#### Files Modified/Created 📁
+
+**Created:**
+
+- `src/app/mailchimp/campaigns/[campaign_id]/content/page.tsx` - Main content page
+- `src/app/mailchimp/campaigns/[campaign_id]/content/error.tsx` - Error boundary
+- `src/app/mailchimp/campaigns/[campaign_id]/content/not-found.tsx` - 404 handler
+- `src/components/mailchimp/campaigns/campaign-content-content.tsx` - Content component with iframe isolation
+- `src/schemas/mailchimp/campaigns/[campaign_id]/content/params.schema.ts` - Query params
+- `src/schemas/mailchimp/campaigns/[campaign_id]/content/success.schema.ts` - Response schema
+- `src/schemas/mailchimp/campaigns/[campaign_id]/content/error.schema.ts` - Error schema
+- `src/schemas/components/mailchimp/campaign-content-page-params.ts` - UI schema
+
+**Modified:**
+
+- `src/types/mailchimp/campaigns.ts` - Added content types
+- `src/dal/mailchimp.dal.ts` - Added fetchCampaignContent method
+- `src/generation/page-configs.ts` - Added campaign-content config
+- `src/components/mailchimp/campaigns/campaign-detail-content.tsx` - Added "Preview Content" navigation button
+- `src/utils/breadcrumbs/breadcrumb-builder.ts` - Added campaignContent function
+- `src/utils/mailchimp/metadata.ts` - Added campaignContentMetadata helper
+- `src/utils/metadata.ts` - Export new helper
+- `src/types/mailchimp/index.ts` - Export campaign content types
+
+---
+
 ### Session: Get Campaign Info Implementation (2025-10-30)
 
 **Endpoint:** `GET /campaigns/{campaign_id}`
