@@ -16,6 +16,238 @@ This document captures key learnings from implementing Mailchimp dashboard featu
 
 ## Session Reviews
 
+### Session: Get Campaign Send Checklist Implementation (2025-10-31)
+
+**Endpoint:** `GET /campaigns/{campaign_id}/send-checklist`
+**Route:** `/mailchimp/campaigns/[campaign_id]/send-checklist`
+**Issue:** #392 | **PR:** #393 | **Status:** ✅ Merged
+
+#### What Worked Exceptionally Well ✅
+
+**1. Enum Constant Pattern (User Feedback)** ⭐⭐⭐
+
+**What Happened:**
+
+- Initially created enum using exported Zod schema: `export const checklistItemTypeSchema = z.enum(["success", "error", "warning"])`
+- User provided feedback to use constant pattern instead
+- Updated to: `export const CHECKLIST_ITEM_TYPES = ["success", "error", "warning"] as const` with `z.enum(CHECKLIST_ITEM_TYPES)`
+- Pattern matches existing codebase (BOUNCE_TYPES, EMAIL_TYPE_FILTER)
+
+**Implementation Details:**
+
+```typescript
+// Pattern: Export constant, use in schema
+export const CHECKLIST_ITEM_TYPES = ["success", "error", "warning"] as const;
+
+export const checklistItemSchema = z.object({
+  type: z.enum(CHECKLIST_ITEM_TYPES),
+  id: z.number(),
+  heading: z.string(),
+  details: z.string(),
+});
+
+// Infer type
+export type ChecklistItemType = (typeof CHECKLIST_ITEM_TYPES)[number];
+```
+
+**Why This Matters:**
+
+- **Consistency:** Matches documented schema pattern in CLAUDE.md
+- **Type safety:** Constant provides autocomplete and type checking
+- **Reusability:** Can reference CHECKLIST_ITEM_TYPES in UI logic (filters, icons, etc.)
+- **Single source of truth:** Type and validation share same constant
+
+**2. Visual Status Indicators with Alert Component** ⭐⭐
+
+**What Happened:**
+
+- Campaign send readiness requires clear visual status (ready vs. not ready)
+- Used Alert component with variant="destructive" for not ready state
+- Added badge counts for error/warning/success items
+- Used semantic icons (XCircle, AlertTriangle, CheckCircle2) for each item type
+
+**Implementation Details:**
+
+```tsx
+<Alert variant={is_ready ? "default" : "destructive"}>
+  <AlertDescription>
+    <p className="text-lg font-semibold mb-2">
+      {is_ready ? "Ready to Send" : "Not Ready to Send"}
+    </p>
+    <div className="flex gap-2 flex-wrap">
+      {errorCount > 0 && (
+        <Badge variant="destructive">
+          {errorCount} Error{errorCount !== 1 ? "s" : ""}
+        </Badge>
+      )}
+      {/* Similar for warnings and success */}
+    </div>
+  </AlertDescription>
+</Alert>
+```
+
+**Why This Matters:**
+
+- **Clear communication:** Users immediately see if campaign can be sent
+- **Actionable summary:** Badge counts show how many issues need attention
+- **Consistent pattern:** Alert component reusable for other validation checks
+- **Accessibility:** Semantic HTML and color-independent icons (XCircle, AlertTriangle)
+
+#### Issues Encountered & Solutions 🔧
+
+**1. Schema Naming Inconsistency**
+
+**Problem:** Type error - module has no exported member 'campaignSendChecklistPageParamsSchema'
+
+**Root Cause:** Page generator created UI schema with name `sendChecklistPageParamsSchema` but imports expected `campaignSendChecklistPageParamsSchema`
+
+**Solution:** Updated all references to use the generated name `sendChecklistPageParamsSchema`
+
+**Prevention:** Verify schema naming convention after running page generator. Consider updating generator to use full path-based naming for consistency.
+
+**2. Syntax Error in metadata.ts**
+
+**Problem:** Type check error - "Identifier expected" at line 67 in metadata.ts
+
+**Root Cause:** Double comma in export statement when adding new metadata helper: `generateCampaignContentMetadata,,`
+
+**Solution:** Removed duplicate comma
+
+**Prevention:** Run type-check immediately after modifying export lists. Consider using trailing commas on separate lines to prevent this.
+
+**3. AlertTitle Component Not Exported**
+
+**Problem:** Module `@/components/ui/alert` has no exported member 'AlertTitle'
+
+**Root Cause:** Alert component doesn't export AlertTitle, only Alert and AlertDescription
+
+**Solution:** Restructured Alert to use AlertDescription with custom styling for title section
+
+**Prevention:** Verify component exports before using. Check existing alert usages for patterns.
+
+**4. Wrong Error Component Pattern**
+
+**Problem:** Type error with DashboardError expecting different props
+
+**Root Cause:** Used DashboardError component, but campaign pages use DashboardInlineError pattern
+
+**Solution:** Updated error.tsx to use DashboardInlineError matching other campaign pages
+
+**Prevention:** Always check similar pages in same resource (campaigns/) for consistent error patterns.
+
+**5. Missing error.tsx File**
+
+**Problem:** Architectural enforcement test failure - "Dynamic routes missing error.tsx files"
+
+**Root Cause:** Did not create error.tsx file during initial implementation
+
+**Solution:** Created error.tsx using DashboardInlineError pattern
+
+**Prevention:** Follow Pre-Implementation Checklist - all pages need error.tsx + not-found.tsx.
+
+**6. Unused Parameter Warning**
+
+**Problem:** `'campaign_id' is declared but its value is never read` in SendChecklistContent
+
+**Root Cause:** Component doesn't need campaign_id, only the data
+
+**Solution:** Removed campaign_id from component props
+
+**Prevention:** Review generated component signatures and remove unused props.
+
+#### Implementation Stats 📊
+
+**Development Time:**
+
+- Phase 1 (Schemas): ~10 minutes (includes user feedback iteration)
+- Phase 2 (Implementation): ~25 minutes
+- Phase 2.75 (Testing & Iteration): ~6 error fixes
+- **Total:** ~1.5 hours (including error resolution)
+
+**Code Metrics:**
+
+- Files Created: 11
+  - 3 schemas (params, success, error)
+  - 1 types file
+  - 1 skeleton component
+  - 4 page files (page.tsx, loading.tsx, error.tsx, not-found.tsx)
+  - 1 UI schema
+  - 1 content component
+- Files Modified: 7
+  - page-configs.ts (PageConfig)
+  - mailchimp.dal.ts (DAL method)
+  - breadcrumb-builder.ts (breadcrumb function)
+  - metadata.ts (metadata helper)
+  - campaign-detail-content.tsx (navigation link)
+  - docs/api-coverage.md (implementation tracking)
+  - docs/ai-workflow-learnings.md (this review)
+- Lines Added: ~500
+- Lines Removed: ~0
+
+**Validation:**
+
+- ✅ Type-check: passed
+- ✅ Lint: passed
+- ✅ Format: passed
+- ✅ Tests: 905/905 passing
+- ✅ CI/CD: All checks passed
+
+#### Key Learnings for Future Implementations 💡
+
+1. **Verify Component Exports Before Usage**
+   - Alert component doesn't export AlertTitle, only Alert and AlertDescription
+   - Check shadcn/ui component exports when using new components
+   - Look at existing usage examples in codebase
+
+2. **Consistent Error Patterns Within Resources**
+   - Campaign pages use DashboardInlineError, not DashboardError
+   - Always check similar pages in same resource directory for patterns
+   - Error handling patterns may differ between resources (lists vs campaigns vs reports)
+
+3. **Run Type-Check After Each File Modification**
+   - Catches syntax errors (double commas) immediately
+   - Identifies schema naming mismatches early
+   - Faster iteration than waiting for full validation suite
+
+4. **Enum Constant Pattern Preferred**
+   - Export constant: `export const TYPES = [...] as const`
+   - Use in schema: `z.enum(TYPES)`
+   - Provides type safety, reusability, and single source of truth
+   - Already documented in CLAUDE.md Schema Patterns
+
+5. **Page Generator Output Verification**
+   - Check generated schema names match import expectations
+   - Verify component prop signatures match usage
+   - Remove unused parameters from generated components
+
+#### Files Modified/Created 📁
+
+**Created:**
+
+- `src/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/params.schema.ts` - Path/query parameter validation
+- `src/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/success.schema.ts` - Response schema with checklist items
+- `src/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/error.schema.ts` - Error response schema
+- `src/types/mailchimp/campaigns/send-checklist.types.ts` - TypeScript type definitions
+- `src/skeletons/mailchimp/CampaignSendChecklistSkeleton.tsx` - Loading skeleton
+- `src/app/mailchimp/campaigns/[campaign_id]/send-checklist/page.tsx` - Main page with data fetching
+- `src/app/mailchimp/campaigns/[campaign_id]/send-checklist/loading.tsx` - Loading wrapper
+- `src/app/mailchimp/campaigns/[campaign_id]/send-checklist/error.tsx` - Error boundary
+- `src/app/mailchimp/campaigns/[campaign_id]/send-checklist/not-found.tsx` - 404 page
+- `src/schemas/components/mailchimp/send-checklist-page-params.ts` - UI schema for page params
+- `src/components/mailchimp/campaigns/send-checklist-content.tsx` - Checklist display component
+
+**Modified:**
+
+- `src/generation/page-configs.ts` - Added campaign-send-checklist configuration
+- `src/dal/mailchimp.dal.ts` - Added fetchCampaignSendChecklist method
+- `src/utils/breadcrumbs/breadcrumb-builder.ts` - Added campaignSendChecklist function
+- `src/utils/mailchimp/metadata.ts` - Added generateCampaignSendChecklistMetadata helper
+- `src/components/mailchimp/campaigns/campaign-detail-content.tsx` - Added "Send Checklist" button
+- `docs/api-coverage.md` - Marked endpoint as implemented
+- `docs/ai-workflow-learnings.md` - Added this session review
+
+---
+
 ### Session: Get Campaign Content Implementation (2025-10-31)
 
 **Endpoint:** `GET /campaigns/{campaign_id}/content`
