@@ -570,6 +570,52 @@ function getStatusVariant(
 - Campaign ID + Title (reports)
 - List ID + Description (lists)
 
+### HTML Content Preview with Iframe Isolation
+
+**When to use**: Displaying user-generated or third-party HTML content (campaign content, landing pages, templates)
+
+**Problem**: Injected HTML can conflict with page CSS (e.g., nested `<main>` elements, conflicting styles)
+
+**Solution**: Use iframe with `srcDoc` for complete CSS isolation
+
+```typescript
+<div className="p-6 rounded-lg border bg-card">
+  <iframe
+    className="w-full min-h-[600px] border-0"
+    srcDoc={htmlContent}
+    title="Content Preview"
+    sandbox="allow-same-origin"
+  />
+</div>
+```
+
+**Key points**:
+
+- `srcDoc` creates isolated document context (no CSS leakage)
+- `sandbox="allow-same-origin"` for security (prevents scripts, allows same-origin access)
+- Wrapper div provides card styling (border, padding, background)
+- Set appropriate `min-h-[XXpx]` based on content type
+- Always provide descriptive `title` attribute for accessibility
+
+**Use cases**:
+
+- Campaign content preview (HTML, archive HTML)
+- Landing page HTML preview
+- Email template rendering
+- Newsletter content display
+- Any third-party HTML injection
+
+**Example from campaign-content-content.tsx** (Issue #388):
+
+```tsx
+<iframe
+  className="w-full min-h-[600px] border-0"
+  srcDoc={data.html || ""}
+  title="Campaign HTML Preview"
+  sandbox="allow-same-origin"
+/>
+```
+
 ---
 
 ## Mailchimp Fetch Client Architecture
