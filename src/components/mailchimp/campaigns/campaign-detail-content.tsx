@@ -173,6 +173,14 @@ export function CampaignDetailContent({
               </div>
             </div>
           </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full">
+              <Link href={`/mailchimp/campaigns/${data.id}/content`}>
+                Preview Content
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardFooter>
         </Card>
 
         {/* Campaign Settings */}

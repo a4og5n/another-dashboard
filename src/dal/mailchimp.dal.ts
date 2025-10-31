@@ -58,6 +58,8 @@ import {
   campaignSchema,
 } from "@/schemas/mailchimp/campaigns/campaigns-success.schema";
 import { campaignQueryParamsSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/params.schema";
+import { campaignContentQueryParamsSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/content/params.schema";
+import { campaignContentSuccessSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/content/success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -694,6 +696,22 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof batchWebhooksSuccessSchema>>(
         `/batch-webhooks`,
+        params,
+      ),
+    );
+  }
+
+  /**
+   * Campaign Content
+   * GET /campaigns/{campaign_id}/content
+   */
+  async fetchCampaignContent(
+    campaign_id: string,
+    params?: z.infer<typeof campaignContentQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof campaignContentSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof campaignContentSuccessSchema>>(
+        `/campaigns/${campaign_id}/content`,
         params,
       ),
     );

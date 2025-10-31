@@ -181,6 +181,25 @@ export const bc = {
    * // Returns: { label: "Locations", href: "/mailchimp/reports/${id}/locations" }
    * ```
    */
+
+  /**
+   * Campaign Content breadcrumb
+   *
+   * @param campaign_id - CAMPAIGN_ID
+   * @returns Breadcrumb item for campaign content
+   *
+   * @example
+   * ```tsx
+   * bc.campaignContent("abc123")
+   * // Returns: { label: "Content", href: "/mailchimp/campaigns/${campaign_id}/content" }
+   * ```
+   */
+  campaignContent(campaign_id: string): BreadcrumbItem {
+    return {
+      label: "Content",
+      href: `/mailchimp/campaigns/${campaign_id}/content`,
+    };
+  },
   campaignLocations(id: string): BreadcrumbItem {
     return {
       label: "Locations",
