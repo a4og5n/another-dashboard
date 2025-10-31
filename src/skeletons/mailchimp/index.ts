@@ -39,3 +39,4 @@ export * from "@/skeletons/mailchimp/BatchWebhooksSkeleton";
 export * from "@/skeletons/mailchimp/CampaignsSkeleton";
 export * from "@/skeletons/mailchimp/CampaignDetailSkeleton";
 export * from "@/skeletons/mailchimp/CampaignSendChecklistSkeleton";
+export * from "@/skeletons/mailchimp/LandingPageReportSkeleton";

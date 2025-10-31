@@ -21,7 +21,13 @@ import type { LandingPagesSuccess } from "@/types/mailchimp/landing-pages";
 import { Pagination } from "@/components/ui/pagination";
 import { PerPageSelector } from "@/components/dashboard/shared/per-page-selector";
 import { createPaginationUrls } from "@/utils/pagination/url-generators";
-import { ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  ExternalLink,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  BarChart3,
+} from "lucide-react";
 import Link from "next/link";
 import { formatDateTimeSafe } from "@/utils/format-date";
 import { Button } from "@/components/ui/button";
@@ -186,6 +192,7 @@ export function LandingPagesContent({
                       </Link>
                     </Button>
                   </TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -268,6 +275,18 @@ export function LandingPagesContent({
                       ) : (
                         <span className="text-sm text-muted-foreground">—</span>
                       )}
+                    </TableCell>
+
+                    {/* Actions - View Report */}
+                    <TableCell>
+                      <Button asChild variant="outline" size="sm">
+                        <Link
+                          href={`/mailchimp/reporting/landing-pages/${page.id}`}
+                        >
+                          <BarChart3 className="mr-2 h-4 w-4" />
+                          View Report
+                        </Link>
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

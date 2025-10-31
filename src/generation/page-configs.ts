@@ -899,6 +899,51 @@ export const pageConfigs = {
     },
   } satisfies PageConfig,
 
+  /**
+   * Landing Page Report Page
+   * View detailed performance analytics for a landing page
+   */
+  "landing-page-report": {
+    schemas: {
+      apiParams:
+        "src/schemas/mailchimp/reporting/landing-pages/report-params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/reporting/landing-pages/report-success.schema.ts",
+      apiError:
+        "src/schemas/mailchimp/reporting/landing-pages/report-error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/reporting/landing-pages/[outreach_id]",
+      params: ["outreach_id"],
+    },
+    api: {
+      endpoint: "/reporting/landing-pages/{outreach_id}",
+      method: "GET",
+      dalMethod: "fetchLandingPageReport",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Landing Page Report",
+      description:
+        "View comprehensive performance analytics and conversion metrics for this landing page",
+      features: [
+        "Conversion tracking",
+        "Traffic analytics",
+        "Signup metrics",
+        "E-commerce revenue",
+        "Time-series performance",
+        "Click tracking",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        label: "Report",
+        parent: "landing-pages-list",
+      },
+    },
+  } satisfies PageConfig,
+
   batchWebhooks: {
     schemas: {
       apiParams:

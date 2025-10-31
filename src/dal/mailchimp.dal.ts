@@ -62,6 +62,8 @@ import { campaignContentQueryParamsSchema } from "@/schemas/mailchimp/campaigns/
 import { campaignContentSuccessSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/content/success.schema";
 import { campaignSendChecklistQueryParamsSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/params.schema";
 import { campaignSendChecklistSuccessSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/success.schema";
+import { landingPageReportQueryParamsSchema } from "@/schemas/mailchimp/reporting/landing-pages/report-params.schema";
+import { landingPageReportSuccessSchema } from "@/schemas/mailchimp/reporting/landing-pages/report-success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -730,6 +732,22 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof campaignSendChecklistSuccessSchema>>(
         `/campaigns/${campaign_id}/send-checklist`,
+        params,
+      ),
+    );
+  }
+
+  /**
+   * Landing Page Report
+   * GET /reporting/landing-pages/{outreach_id}
+   */
+  async fetchLandingPageReport(
+    outreachId: string,
+    params?: z.infer<typeof landingPageReportQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof landingPageReportSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof landingPageReportSuccessSchema>>(
+        `/reporting/landing-pages/${outreachId}`,
         params,
       ),
     );

@@ -1222,3 +1222,22 @@ export async function generateSendChecklistMetadata(
     },
   };
 }
+
+/**
+ * Generates metadata specifically for landing page report pages
+ * @param params - Object containing the outreach_id
+ * @returns Next.js Metadata object for the landing page report page
+ */
+export function generateLandingPageReportMetadata(): Metadata {
+  return {
+    title: "Landing Page Report",
+    description:
+      "View comprehensive performance analytics and conversion metrics for this landing page",
+    openGraph: {
+      title: "Landing Page Report",
+      description:
+        "View comprehensive performance analytics and conversion metrics for this landing page",
+      type: "website",
+    },
+  };
+}
