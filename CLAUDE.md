@@ -466,15 +466,8 @@ See [docs/workflows/phase-3-cicd.md](docs/workflows/phase-3-cicd.md) for complet
 git checkout main && git pull origin main
 
 # Delete local branch (remote already deleted by auto-merge)
-BRANCH_EXISTS=$(git branch --list {branch-name})
-if [ -n "$BRANCH_EXISTS" ]; then
-  git branch -d {branch-name}
-  echo "✅ Deleted local branch: {branch-name}"
-else
-  echo "✅ Local branch already deleted: {branch-name}"
-fi
-
-echo "✅ Remote branch already deleted by auto-merge"
+# Suppresses error if branch doesn't exist, always succeeds
+git branch -d {branch-name} 2>/dev/null || echo "✅ Branch cleanup complete"
 ```
 
 #### Step 2: Close Related GitHub Issues
