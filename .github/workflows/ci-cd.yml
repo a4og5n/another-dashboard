@@ -11,10 +11,90 @@ env:
   PNPM_VERSION: "10"
 
 jobs:
+  # Detect what files changed to optimize CI/CD runs
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    # Only run path filtering on PRs, not on push to main/develop
+    if: github.event_name == 'pull_request'
+    outputs:
+      docs-only: ${{ steps.filter.outputs.docs == 'true' && steps.filter.outputs.code == 'false' }}
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            docs:
+              - 'docs/**'
+              - 'scripts/**'
+              - '*.md'
+              - '.github/workflows/**'
+            code:
+              - 'src/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'next.config.ts'
+              - 'tsconfig.json'
+              - 'tailwind.config.ts'
+              - 'vitest.config.ts'
+              - 'drizzle.config.ts'
+
+  # Lightweight validation for docs-only changes
+  docs-quality:
+    name: Docs Quality Checks
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docs-only == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format checking
+        run: pnpm format:check
+
+      - name: Check for secrets
+        run: pnpm check:no-secrets-logged
+
   # Quality checks that run on every PR and push
   quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
+    needs: detect-changes
+    # Run on push to main/develop, OR on PR with code changes
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && needs.detect-changes.outputs.code == 'true')
 
     steps:
       - name: Checkout code
@@ -59,7 +139,11 @@ jobs:
   test:
     name: Test Suite
     runs-on: ubuntu-latest
-    needs: quality
+    needs: [detect-changes, quality]
+    # Run on push to main/develop, OR on PR with code changes
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && needs.detect-changes.outputs.code == 'true')
 
     steps:
       - name: Checkout code
@@ -108,7 +192,11 @@ jobs:
   build:
     name: Build Verification
     runs-on: ubuntu-latest
-    needs: [quality, test]
+    needs: [detect-changes, quality, test]
+    # Run on push to main/develop, OR on PR with code changes
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && needs.detect-changes.outputs.code == 'true')
 
     steps:
       - name: Checkout code
@@ -177,7 +265,11 @@ jobs:
   security:
     name: Security Audit
     runs-on: ubuntu-latest
-    needs: quality
+    needs: [detect-changes, quality]
+    # Run on push to main/develop, OR on PR with code changes
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && needs.detect-changes.outputs.code == 'true')
 
     steps:
       - name: Checkout code
