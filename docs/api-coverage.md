@@ -909,9 +909,11 @@ Facebook Ads, Landing Pages, and Survey reporting.
   - Features: Landing page performance
   - **Priority 3:** Conversion tracking
 
-- 📋 **Get Landing Page Report** - `GET /reporting/landing-pages/{outreach_id}`
-  - Features: Individual landing page report
+- ✅ **Get Landing Page Report** - `GET /reporting/landing-pages/{outreach_id}`
+  - Route: `/mailchimp/reporting/landing-pages/[outreach_id]`
+  - Features: Traffic analytics, conversion metrics, click tracking, e-commerce revenue, time-series performance
   - **Priority 3:** Drill-down details
+  - **Implemented:** Issue #400, PR #402
 
 ### Survey Question Answers
 
@@ -1434,17 +1436,7 @@ The following foundational endpoints are now implemented:
 
 ### 💡 Recommendation:
 
-**Top Choice: Get Landing Page Report** (`GET /reporting/landing-pages/{outreach_id}`)
-
-**Rationale:**
-
-1. **New Feature Area:** Landing pages reporting and analytics
-2. **User value:** High - conversion tracking and landing page performance insights
-3. **Would unlock:** Access to ~9 landing page reporting endpoints
-4. **Moderate complexity:** Performance metrics and visitor tracking
-5. **Strategic value:** Complements existing landing pages list view
-
-**Second Choice: Get Workflow Email Info** (`GET /automations/{workflow_id}/emails/{workflow_email_id}`)
+**Top Choice: Get Workflow Email Info** (`GET /automations/{workflow_id}/emails/{workflow_email_id}`)
 
 **Rationale:**
 
@@ -1453,6 +1445,16 @@ The following foundational endpoints are now implemented:
 3. **Would enable:** Complete automation workflow visibility
 4. **Low complexity:** Similar to campaign email patterns
 5. **Quick win:** Extends existing automations functionality
+
+**Second Choice: List Landing Pages Reports** (`GET /reporting/landing-pages`)
+
+**Rationale:**
+
+1. **Completes Landing Pages Feature:** Pairs with recently implemented landing page report detail
+2. **User value:** High - overview of all landing page performance
+3. **Would unlock:** Landing page analytics dashboard
+4. **Moderate complexity:** List endpoint with performance metrics
+5. **Strategic value:** Completes landing pages reporting section
 
 ---
 
