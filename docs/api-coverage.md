@@ -199,9 +199,11 @@ Campaign management and operations endpoints.
 
 ### Campaign Content
 
-- 📋 **Get Campaign Content** - `GET /campaigns/{campaign_id}/content`
-  - Features: Campaign HTML content
+- ✅ **Get Campaign Content** - `GET /campaigns/{campaign_id}/content`
+  - Route: `/mailchimp/campaigns/[campaign_id]/content`
+  - Features: HTML content preview with iframe isolation, Plain-text version display, Archive HTML view, Multivariate campaign support (variate content selector), Complete CSS isolation for nested HTML
   - **Priority 3:** Content preview
+  - **Implemented:** Issue #388, PR #389
 
 - 🔒 **Set Campaign Content** - `PUT /campaigns/{campaign_id}/content`
   - **Priority 5:** Write operation (future)
@@ -1287,16 +1289,17 @@ Facebook advertising integration endpoints.
 
 **Current Coverage (Read-Only Endpoints):**
 
-- ✅ Implemented: 31 endpoints
-- ⭐ Priority 3: ~48 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
+- ✅ Implemented: 32 endpoints
+- ⭐ Priority 3: ~47 endpoints (Campaigns, member details, analytics, landing pages, automations, customer journeys)
 - 📋 Priority 4: ~170 endpoints (surveys, templates, webhooks, e-commerce, drill-downs, file management, connected sites, batch operations, exports, authorized apps)
 - 🔒 Write Operations: ~150 endpoints (future consideration)
 - ⚠️ Deprecated: ~4 endpoints (Conversations API - not planned for implementation)
 
-**Total Progress (Read-Only):** 31/244 read endpoints (~12.7%)
+**Total Progress (Read-Only):** 32/244 read endpoints (~13.1%)
 
 **Recent Implementations:**
 
+- **Get Campaign Content** (HTML/plain-text/archive content preview with iframe isolation, multivariate campaign support - Issue #388, PR #389)
 - **List Batch Webhooks** (webhook batch subscriptions, URL display, event tracking, status badges - Issue #372, PR #373)
 - **API Root** (API metadata, account information, industry benchmarks, timeline - Issue #366, PR #367)
 - **Get Interest Category Info** (category details with type badge and navigation to interests - Issue #345, PR #347)
@@ -1339,7 +1342,7 @@ Facebook advertising integration endpoints.
 - Batch Operations: 0/4 endpoints (0%)
 - Batch Webhooks: 1/5 endpoints (20%)
 - Campaign Folders: 0/5 endpoints (0%)
-- Campaigns API: 0/17 endpoints (0%)
+- Campaigns API: 3/17 endpoints (18%)
 - Chimp Chatter Activity: 0/1 endpoint (0%)
 - Classic Automations: 1/14 endpoints (7%)
 - Connected Sites: 0/5 endpoints (0%)
@@ -1429,17 +1432,7 @@ The following foundational endpoints are now implemented:
 
 ### 💡 Recommendation:
 
-**Top Choice: Get Campaign Content** (`GET /campaigns/{campaign_id}/content`)
-
-**Rationale:**
-
-1. **Natural next step:** Get Campaign Info just implemented (Issue #383)
-2. **High user value:** Preview campaign HTML content directly
-3. **Would enable:** Content preview button in campaign detail page
-4. **Complexity:** Medium - HTML rendering with proper sanitization
-5. **Complements:** Campaign details with actual content view
-
-**Second Choice: Get Campaign Send Checklist** (`GET /campaigns/{campaign_id}/send-checklist`)
+**Top Choice: Get Campaign Send Checklist** (`GET /campaigns/{campaign_id}/send-checklist`)
 
 **Rationale:**
 
