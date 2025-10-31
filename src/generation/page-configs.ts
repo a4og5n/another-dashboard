@@ -1063,6 +1063,50 @@ export const pageConfigs = {
       },
     },
   } satisfies PageConfig,
+
+  /**
+   * Campaign Send Checklist Page
+   * Review pre-send validation checklist for a campaign
+   */
+  "campaign-send-checklist": {
+    schemas: {
+      apiParams:
+        "src/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/params.schema.ts",
+      apiResponse:
+        "src/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/success.schema.ts",
+      apiError:
+        "src/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/error.schema.ts",
+    },
+    route: {
+      path: "/mailchimp/campaigns/[campaign_id]/send-checklist",
+      params: ["campaign_id"],
+    },
+    api: {
+      endpoint: "/campaigns/{campaign_id}/send-checklist",
+      method: "GET",
+      dalMethod: "fetchCampaignSendChecklist",
+    },
+    page: {
+      type: "nested-detail",
+      title: "Send Checklist",
+      description:
+        "Review pre-send validation checklist to ensure campaign is ready",
+      features: [
+        "Overall campaign readiness status",
+        "Individual validation checks (subject, content, recipients)",
+        "Error and warning indicators",
+        "Detailed issue descriptions",
+        "Pre-send verification workflow",
+      ],
+    },
+    ui: {
+      hasPagination: false,
+      breadcrumbs: {
+        parent: "campaign-detail",
+        label: "Send Checklist",
+      },
+    },
+  } satisfies PageConfig,
 } as const;
 
 /**
