@@ -60,6 +60,8 @@ import {
 import { campaignQueryParamsSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/params.schema";
 import { campaignContentQueryParamsSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/content/params.schema";
 import { campaignContentSuccessSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/content/success.schema";
+import { campaignSendChecklistQueryParamsSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/params.schema";
+import { campaignSendChecklistSuccessSchema } from "@/schemas/mailchimp/campaigns/[campaign_id]/send-checklist/success.schema";
 
 // Re-export the report type for external use
 export type { Report as CampaignReport };
@@ -712,6 +714,22 @@ export class MailchimpDAL {
     return mailchimpApiCall((client) =>
       client.get<z.infer<typeof campaignContentSuccessSchema>>(
         `/campaigns/${campaign_id}/content`,
+        params,
+      ),
+    );
+  }
+
+  /**
+   * Campaign Send Checklist
+   * GET /campaigns/{campaign_id}/send-checklist
+   */
+  async fetchCampaignSendChecklist(
+    campaign_id: string,
+    params?: z.infer<typeof campaignSendChecklistQueryParamsSchema>,
+  ): Promise<ApiResponse<z.infer<typeof campaignSendChecklistSuccessSchema>>> {
+    return mailchimpApiCall((client) =>
+      client.get<z.infer<typeof campaignSendChecklistSuccessSchema>>(
+        `/campaigns/${campaign_id}/send-checklist`,
         params,
       ),
     );

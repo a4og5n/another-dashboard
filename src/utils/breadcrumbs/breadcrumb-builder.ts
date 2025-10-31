@@ -671,6 +671,24 @@ export const bc = {
     };
   },
 
+  /**
+   * Send Checklist breadcrumb
+   *
+   * @param campaign_id - CAMPAIGN_ID
+   * @returns Breadcrumb item for send checklist
+   *
+   * @example
+   * ```tsx
+   * bc.sendChecklist("abc123")
+   * // Returns: { label: "Send Checklist", href: "/mailchimp/campaigns/${campaign_id}/send-checklist" }
+   * ```
+   */
+  sendChecklist(campaign_id: string): BreadcrumbItem {
+    return {
+      label: "Send Checklist",
+      href: `/mailchimp/campaigns/${campaign_id}/send-checklist`,
+    };
+  },
   // Helper Functions
   // ============================================================================
 

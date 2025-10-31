@@ -1190,3 +1190,35 @@ export async function generateCampaignContentMetadata(
     },
   };
 }
+
+/**
+ * Generates metadata specifically for campaign send checklist pages
+ * @param campaign_id - The campaign ID
+ * @returns Next.js Metadata object for the campaign send checklist page
+ */
+export async function generateSendChecklistMetadata(
+  campaign_id: string,
+): Promise<Metadata> {
+  // Fetch campaign data for metadata
+  const response = await mailchimpDAL.fetchCampaign(campaign_id);
+
+  if (!response.success || !response.data) {
+    return {
+      title: "Campaign Send Checklist - Not Found",
+      description: "The requested resource could not be found.",
+    };
+  }
+
+  const campaign = response.data;
+  const campaignTitle = campaign.settings?.title || "Untitled Campaign";
+
+  return {
+    title: `${campaignTitle} - Send Checklist | Fichaz`,
+    description: `Review pre-send validation checklist for ${campaignTitle} to ensure the campaign is ready to send.`,
+    openGraph: {
+      title: `${campaignTitle} - Send Checklist`,
+      description: `Review pre-send validation checklist for ${campaignTitle} to ensure the campaign is ready to send.`,
+      type: "website",
+    },
+  };
+}

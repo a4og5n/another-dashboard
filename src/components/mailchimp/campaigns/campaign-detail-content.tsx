@@ -29,6 +29,7 @@ import {
   XCircle,
   ArrowRight,
   Image as ImageIcon,
+  ClipboardCheck,
 } from "lucide-react";
 import type { Campaign } from "@/types/mailchimp/campaigns";
 import { formatDateTimeSafe } from "@/utils";
@@ -173,11 +174,17 @@ export function CampaignDetailContent({
               </div>
             </div>
           </CardContent>
-          <CardFooter>
-            <Button asChild variant="outline" className="w-full">
+          <CardFooter className="flex gap-2">
+            <Button asChild variant="outline" className="flex-1">
               <Link href={`/mailchimp/campaigns/${data.id}/content`}>
+                <Eye className="mr-2 h-4 w-4" />
                 Preview Content
-                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="flex-1">
+              <Link href={`/mailchimp/campaigns/${data.id}/send-checklist`}>
+                <ClipboardCheck className="mr-2 h-4 w-4" />
+                Send Checklist
               </Link>
             </Button>
           </CardFooter>

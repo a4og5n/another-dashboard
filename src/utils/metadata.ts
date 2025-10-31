@@ -65,6 +65,7 @@ export {
   generateBatchWebhooksMetadata,
   generateCampaignsMetadata,
   generateCampaignContentMetadata,
+  generateSendChecklistMetadata,
 } from "@/utils/mailchimp/metadata";
 
 export { generateClickDetailsMetadata } from "@/utils/mailchimp/metadata";
