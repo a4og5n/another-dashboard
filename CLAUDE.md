@@ -448,7 +448,9 @@ See [docs/workflows/phase-3-cicd.md](docs/workflows/phase-3-cicd.md) for complet
 
 - ⚠️ **MUST monitor in FOREGROUND mode** (NOT background): `gh pr checks {pr_number} --watch`
 - ⚠️ **MUST fix ALL failures** before proceeding to merge
-- ⚠️ **Auto-merge ONLY when ALL checks pass:** `gh pr merge {pr_number} --squash --delete-branch`
+- ⚠️ **Auto-merge ONLY when ALL checks pass:**
+  - **Recommended:** `./scripts/merge-pr.sh {pr_number}` (automated merge + cleanup)
+  - **Alternative:** `gh pr merge {pr_number} --squash --delete-branch` (manual cleanup required)
 - ⚠️ **IMMEDIATELY proceed to Phase 4** after merge (no user confirmation needed)
 
 ### Phase 4: Post-Merge Cleanup & Documentation (Automatic)
@@ -461,6 +463,8 @@ See [docs/workflows/phase-3-cicd.md](docs/workflows/phase-3-cicd.md) for complet
 
 #### Step 1: Branch Cleanup & Sync
 
+**If NOT using `./scripts/merge-pr.sh`:** (script already handles this)
+
 ```bash
 # Checkout main and pull merged changes
 git checkout main && git pull origin main
@@ -469,6 +473,8 @@ git checkout main && git pull origin main
 # Suppresses error if branch doesn't exist, always succeeds
 git branch -d {branch-name} 2>/dev/null || echo "✅ Branch cleanup complete"
 ```
+
+**Note:** The `./scripts/merge-pr.sh` script automatically handles all cleanup steps in this section.
 
 #### Step 2: Close Related GitHub Issues
 
