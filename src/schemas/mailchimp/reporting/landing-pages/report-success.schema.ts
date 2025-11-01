@@ -11,40 +11,48 @@ import { z } from "zod";
 import { linkSchema } from "@/schemas/mailchimp/common/link.schema";
 
 /**
- * Landing page signup statistics schema
+ * Signup tag object schema
  */
-export const landingPageReportSignupsSchema = z.object({
-  total_signups: z.number().min(0), // Total number of signups
+export const signupTagSchema = z.object({
+  tag_id: z.number().int().min(0), // Tag ID
+  tag_name: z.string(), // Tag name
 });
 
 /**
- * Landing page click statistics schema
+ * Timeseries data point schema
+ * Represents a single data point in the timeseries with date and value
  */
-export const landingPageReportClicksSchema = z.object({
-  clicks_total: z.number().min(0), // Total number of clicks
-  unique_clicks: z.number().min(0), // Unique clicks
-  click_rate: z.number().min(0).max(100), // Click rate percentage
+const timeseriesDataPointSchema = z.object({
+  date: z.iso.datetime({ offset: true }).optional(), // Date for this data point
+  val: z.number().int().min(0), // Integer value for this data point
+});
+
+/**
+ * Timeseries statistics data structure
+ * Used for both daily_stats and weekly_stats
+ */
+const timeseriesStatsSchema = z.object({
+  clicks: z.array(timeseriesDataPointSchema), // Array of click data points
+  visits: z.array(timeseriesDataPointSchema), // Array of visit data points
+  unique_visits: z.array(timeseriesDataPointSchema), // Array of unique visit data points
 });
 
 /**
  * Landing page timeseries data schema
  */
-export const landingPageReportTimeseriesSchema = z.array(
-  z.object({
-    timestamp: z.iso.datetime({ offset: true }), // ISO 8601 format
-    unique_visits: z.number().min(0), // Unique visits at this time
-    signups: z.number().min(0), // Signups at this time
-  }),
-);
+export const landingPageReportTimeseriesSchema = z.object({
+  daily_stats: timeseriesStatsSchema.optional(), // Daily performance data
+  weekly_stats: timeseriesStatsSchema.optional(), // Weekly performance data
+});
 
 /**
  * Landing page e-commerce data schema
  */
 export const landingPageReportEcommerceSchema = z.object({
   total_revenue: z.number().min(0), // Total revenue generated
-  total_orders: z.number().min(0), // Total orders
+  currency_code: z.string().length(3).toUpperCase().optional(), // The three-letter ISO 4217 code for the currency (e.g., USD, EUR, GBP)
+  total_orders: z.number().int().min(0), // Total orders
   average_order_revenue: z.number().min(0).optional(), // Average order revenue
-  currency_code: z.string().optional(), // Currency code (e.g., "USD")
 });
 
 /**
@@ -56,29 +64,21 @@ export const landingPageReportSuccessSchema = z
     id: z.string().min(1), // Landing page ID
     name: z.string(), // Landing page name
     title: z.string().optional(), // Page title
-    description: z.string().optional(), // Page description
     url: z.url().optional(), // Published page URL
     published_at: z.iso.datetime({ offset: true }).optional(), // Publication timestamp
     unpublished_at: z.iso.datetime({ offset: true }).optional(), // Unpublication timestamp
     status: z.string(), // Publication status
     list_id: z.string().optional(), // Associated list ID
-    visits: z.number().min(0).optional(), // Total page visits
-    unique_visits: z.number().min(0).optional(), // Unique visitor count
-    subscribes: z.number().min(0).optional(), // Number of subscribes
-    clicks: z.number().min(0).optional(), // Total clicks
+    visits: z.number().int().min(0).optional(), // Total page visits
+    unique_visits: z.number().int().min(0).optional(), // Unique visitor count
+    subscribes: z.number().int().min(0).optional(), // Number of subscribes
+    clicks: z.number().int().min(0).optional(), // Total clicks
     conversion_rate: z.number().min(0).max(100).optional(), // Conversion rate percentage
     timeseries: landingPageReportTimeseriesSchema.optional(), // Time-based performance data
     ecommerce: landingPageReportEcommerceSchema.optional(), // E-commerce metrics
     web_id: z.number().int().min(0).optional(), // Web ID for the landing page
     list_name: z.string().optional(), // Associated list name
-    signup_tags: z
-      .array(
-        z.object({
-          tag_id: z.number().int().min(0), // Tag ID
-          tag_name: z.string(), // Tag name
-        }),
-      )
-      .optional(), // Tags applied to signups
+    signup_tags: z.array(signupTagSchema).optional(), // Tags applied to signups
     _links: z.array(linkSchema).optional(), // HATEOAS navigation links
   })
   .strict(); // Ensures no extra fields are present

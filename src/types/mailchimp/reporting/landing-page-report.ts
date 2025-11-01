@@ -10,14 +10,12 @@ import { z } from "zod";
 import {
   landingPageReportPathParamsSchema,
   landingPageReportQueryParamsSchema,
-  landingPageReportParamsSchema,
 } from "@/schemas/mailchimp/reporting/landing-pages/report-params.schema";
 import {
   landingPageReportSuccessSchema,
-  landingPageReportSignupsSchema,
-  landingPageReportClicksSchema,
   landingPageReportTimeseriesSchema,
   landingPageReportEcommerceSchema,
+  signupTagSchema,
 } from "@/schemas/mailchimp/reporting/landing-pages/report-success.schema";
 import { landingPageReportErrorSchema } from "@/schemas/mailchimp/reporting/landing-pages/report-error.schema";
 
@@ -36,27 +34,6 @@ export type LandingPageReportQueryParams = z.infer<
 >;
 
 /**
- * Combined params type
- */
-export type LandingPageReportParams = z.infer<
-  typeof landingPageReportParamsSchema
->;
-
-/**
- * Signup statistics type
- */
-export type LandingPageReportSignups = z.infer<
-  typeof landingPageReportSignupsSchema
->;
-
-/**
- * Click statistics type
- */
-export type LandingPageReportClicks = z.infer<
-  typeof landingPageReportClicksSchema
->;
-
-/**
  * Timeseries data type
  */
 export type LandingPageReportTimeseries = z.infer<
@@ -69,6 +46,11 @@ export type LandingPageReportTimeseries = z.infer<
 export type LandingPageReportEcommerce = z.infer<
   typeof landingPageReportEcommerceSchema
 >;
+
+/**
+ * Signup tag type
+ */
+export type SignupTag = z.infer<typeof signupTagSchema>;
 
 /**
  * Success response type
