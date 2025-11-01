@@ -19,20 +19,16 @@ export const landingPageReportPathParamsSchema = z.object({
 
 /**
  * Query parameters schema for landing page report endpoint
- * Currently no query parameters for this endpoint
  */
-export const landingPageReportQueryParamsSchema = z.object({
-  fields: z.array(z.string()).optional(), // Comma-separated list of fields to return
-  exclude_fields: z.array(z.string()).optional(), // Comma-separated list of fields to exclude
-});
-
-/**
- * Combined params schema for landing page report endpoint
- * Used for server-side validation
- *
- * @property {string} outreach_id - The outreach ID for the landing page (path param)
- * @property {string[]} fields - Optional fields to include
- * @property {string[]} exclude_fields - Optional fields to exclude
- */
-export const landingPageReportParamsSchema =
-  landingPageReportPathParamsSchema.merge(landingPageReportQueryParamsSchema);
+export const landingPageReportQueryParamsSchema = z
+  .object({
+    /**
+     * A comma-separated list of fields to return. Reference parameters of sub-objects with dot notation.
+     */
+    fields: z.string().optional(),
+    /**
+     * A comma-separated list of fields to exclude. Reference parameters of sub-objects with dot notation.
+     */
+    exclude_fields: z.string().optional(),
+  })
+  .strict();

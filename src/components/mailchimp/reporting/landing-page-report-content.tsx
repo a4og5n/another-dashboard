@@ -16,6 +16,8 @@ import {
   DollarSign,
   Eye,
   Target,
+  Calendar,
+  Tag,
 } from "lucide-react";
 import { MailchimpConnectionGuard } from "@/components/mailchimp";
 import { formatDateTimeSafe } from "@/utils/format-date";
@@ -39,29 +41,21 @@ export function LandingPageReportContent({
             <div className="flex items-start justify-between">
               <div className="space-y-2">
                 <CardTitle className="text-2xl">{data.name}</CardTitle>
-                {data.title && (
-                  <p className="text-sm text-muted-foreground">{data.title}</p>
-                )}
+                <p className="text-sm text-muted-foreground">
+                  {data.title || "N/A"}
+                </p>
               </div>
               <Badge
                 variant={data.status === "published" ? "default" : "secondary"}
               >
-                {data.status}
+                {data.status || "N/A"}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {data.description && (
-              <div>
-                <p className="text-sm font-medium mb-1">Description</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.description}
-                </p>
-              </div>
-            )}
-            {data.url && (
-              <div>
-                <p className="text-sm font-medium mb-1">URL</p>
+            <div>
+              <p className="text-sm font-medium mb-1">URL</p>
+              {data.url ? (
                 <a
                   href={data.url}
                   target="_blank"
@@ -70,16 +64,26 @@ export function LandingPageReportContent({
                 >
                   {data.url}
                 </a>
-              </div>
-            )}
-            {data.published_at && (
-              <div>
-                <p className="text-sm font-medium mb-1">Published</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatDateTimeSafe(data.published_at)}
-                </p>
-              </div>
-            )}
+              ) : (
+                <p className="text-sm text-muted-foreground">N/A</p>
+              )}
+            </div>
+            <div>
+              <p className="text-sm font-medium mb-1">Published</p>
+              <p className="text-sm text-muted-foreground">
+                {data.published_at
+                  ? formatDateTimeSafe(data.published_at)
+                  : "N/A"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium mb-1">Unpublished</p>
+              <p className="text-sm text-muted-foreground">
+                {data.unpublished_at
+                  ? formatDateTimeSafe(data.unpublished_at)
+                  : "N/A"}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -126,15 +130,15 @@ export function LandingPageReportContent({
         )}
 
         {/* E-commerce Metrics */}
-        {data.ecommerce && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                E-commerce Performance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              E-commerce Performance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {data.ecommerce ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <p className="text-sm font-medium mb-1">Total Revenue</p>
@@ -152,25 +156,324 @@ export function LandingPageReportContent({
                     {data.ecommerce.total_orders.toLocaleString()}
                   </p>
                 </div>
-                {data.ecommerce.average_order_revenue !== undefined && (
-                  <div>
-                    <p className="text-sm font-medium mb-1">Avg Order Value</p>
-                    <p className="text-2xl font-bold">
-                      {data.ecommerce.currency_code ?? ""}{" "}
-                      {data.ecommerce.average_order_revenue.toLocaleString(
-                        undefined,
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        },
-                      )}
-                    </p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm font-medium mb-1">Avg Order Value</p>
+                  <p className="text-2xl font-bold">
+                    {data.ecommerce.average_order_revenue !== undefined
+                      ? `${data.ecommerce.currency_code ?? ""} ${data.ecommerce.average_order_revenue.toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )}`
+                      : "N/A"}
+                  </p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ) : (
+              <p className="text-sm text-muted-foreground">N/A</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Timeseries Data */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Performance Over Time
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {data.timeseries ? (
+              <div className="space-y-6">
+                {/* Daily Stats */}
+                {data.timeseries.daily_stats ? (
+                  <div>
+                    <h4 className="text-sm font-semibold mb-3">Daily Stats</h4>
+                    <div className="space-y-4">
+                      {/* Clicks */}
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground mb-2">
+                          Clicks
+                        </p>
+                        {data.timeseries.daily_stats.clicks?.length > 0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b">
+                                  <th className="text-left py-2 px-2">Date</th>
+                                  <th className="text-right py-2 px-2">
+                                    Value
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {data.timeseries.daily_stats.clicks.map(
+                                  (point, idx) => (
+                                    <tr key={idx} className="border-b">
+                                      <td className="py-2 px-2">
+                                        {point.date}
+                                      </td>
+                                      <td className="text-right py-2 px-2">
+                                        {point.val.toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No data
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Visits */}
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground mb-2">
+                          Visits
+                        </p>
+                        {data.timeseries.daily_stats.visits?.length > 0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b">
+                                  <th className="text-left py-2 px-2">Date</th>
+                                  <th className="text-right py-2 px-2">
+                                    Value
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {data.timeseries.daily_stats.visits.map(
+                                  (point, idx) => (
+                                    <tr key={idx} className="border-b">
+                                      <td className="py-2 px-2">
+                                        {point.date}
+                                      </td>
+                                      <td className="text-right py-2 px-2">
+                                        {point.val.toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No data
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Unique Visits */}
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground mb-2">
+                          Unique Visits
+                        </p>
+                        {data.timeseries.daily_stats.unique_visits?.length >
+                        0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b">
+                                  <th className="text-left py-2 px-2">Date</th>
+                                  <th className="text-right py-2 px-2">
+                                    Value
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {data.timeseries.daily_stats.unique_visits.map(
+                                  (point, idx) => (
+                                    <tr key={idx} className="border-b">
+                                      <td className="py-2 px-2">
+                                        {point.date}
+                                      </td>
+                                      <td className="text-right py-2 px-2">
+                                        {point.val.toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No data
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                {/* Weekly Stats */}
+                {data.timeseries.weekly_stats ? (
+                  <div>
+                    <h4 className="text-sm font-semibold mb-3">Weekly Stats</h4>
+                    <div className="space-y-4">
+                      {/* Clicks */}
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground mb-2">
+                          Clicks
+                        </p>
+                        {data.timeseries.weekly_stats.clicks?.length > 0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b">
+                                  <th className="text-left py-2 px-2">Date</th>
+                                  <th className="text-right py-2 px-2">
+                                    Value
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {data.timeseries.weekly_stats.clicks.map(
+                                  (point, idx) => (
+                                    <tr key={idx} className="border-b">
+                                      <td className="py-2 px-2">
+                                        {point.date}
+                                      </td>
+                                      <td className="text-right py-2 px-2">
+                                        {point.val.toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No data
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Visits */}
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground mb-2">
+                          Visits
+                        </p>
+                        {data.timeseries.weekly_stats.visits?.length > 0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b">
+                                  <th className="text-left py-2 px-2">Date</th>
+                                  <th className="text-right py-2 px-2">
+                                    Value
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {data.timeseries.weekly_stats.visits.map(
+                                  (point, idx) => (
+                                    <tr key={idx} className="border-b">
+                                      <td className="py-2 px-2">
+                                        {point.date}
+                                      </td>
+                                      <td className="text-right py-2 px-2">
+                                        {point.val.toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No data
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Unique Visits */}
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground mb-2">
+                          Unique Visits
+                        </p>
+                        {data.timeseries.weekly_stats.unique_visits?.length >
+                        0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b">
+                                  <th className="text-left py-2 px-2">Date</th>
+                                  <th className="text-right py-2 px-2">
+                                    Value
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {data.timeseries.weekly_stats.unique_visits.map(
+                                  (point, idx) => (
+                                    <tr key={idx} className="border-b">
+                                      <td className="py-2 px-2">
+                                        {point.date}
+                                      </td>
+                                      <td className="text-right py-2 px-2">
+                                        {point.val.toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No data
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                {/* If both daily and weekly are missing */}
+                {!data.timeseries.daily_stats &&
+                  !data.timeseries.weekly_stats && (
+                    <p className="text-sm text-muted-foreground">N/A</p>
+                  )}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">N/A</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Signup Tags */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Tag className="h-5 w-5" />
+              Signup Tags
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {data.signup_tags && data.signup_tags.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {data.signup_tags.map((tag) => (
+                  <Badge key={tag.tag_id} variant="secondary">
+                    {tag.tag_name}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">N/A</p>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Additional Info */}
         {(data.list_name || data.web_id) && (
